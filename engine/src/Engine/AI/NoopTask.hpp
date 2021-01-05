@@ -8,7 +8,7 @@ class NoopTask : public Task {
   public:
     NoopTask() {}
 
-    TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    TaskStatus update(const std::shared_ptr<Blackboard> &) override {
         return TaskStatus::Success;
     }
 };

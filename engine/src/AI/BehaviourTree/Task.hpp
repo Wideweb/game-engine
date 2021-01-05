@@ -14,7 +14,7 @@ class Task {
     virtual ~Task() {}
 
     virtual TaskStatus
-    update(const std::shared_ptr<Blackboard> blackboard = nullptr) = 0;
+    update(const std::shared_ptr<Blackboard> &blackboard = nullptr) = 0;
 };
 
 } // namespace Engine

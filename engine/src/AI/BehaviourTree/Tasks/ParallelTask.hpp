@@ -11,7 +11,7 @@ class ParallelTask : public Task {
     std::vector<Task *> m_Tasks;
 
   public:
-    ParallelTask(const std::vector<Task *> tasks) : m_Tasks(tasks) {}
+    ParallelTask(std::vector<Task *> tasks) : m_Tasks(std::move(tasks)) {}
 
     virtual ~ParallelTask() {
         for (auto task : m_Tasks) {
@@ -20,7 +20,7 @@ class ParallelTask : public Task {
         m_Tasks.clear();
     }
 
-    TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    TaskStatus update(const std::shared_ptr<Blackboard> &blackboard) override {
         TaskStatus result = TaskStatus::Fail;
 
         for (auto &task : m_Tasks) {

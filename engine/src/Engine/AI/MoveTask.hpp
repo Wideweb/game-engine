@@ -15,7 +15,7 @@ class MoveTask : public Task {
   public:
     MoveTask(float speed) : m_Speed(speed) {}
 
-    TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    TaskStatus update(const std::shared_ptr<Blackboard> &blackboard) override {
         const auto &layerName = blackboard->getValue<std::string>("layer");
         auto &layer = Application::get().getLayer(layerName);
         auto &coordinator = layer.getCoordinator();

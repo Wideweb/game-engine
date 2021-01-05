@@ -9,7 +9,7 @@ Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc) {
     compile(vertexSrc, fragmentSrc);
 }
 
-Shader::~Shader() { glDeleteProgram(m_Program); };
+Shader::~Shader() { glDeleteProgram(m_Program); }
 
 void Shader::bind() const {
     glUseProgram(m_Program);
@@ -145,12 +145,12 @@ void Shader::setMatrix2(const std::string &name,
     glUniformMatrix2fv(location, 1, GL_FALSE, matrix.data());
 }
 
-GLuint Shader::getUniformLocation(const std::string &name) {
+GLint Shader::getUniformLocation(const std::string &name) {
     auto it = m_UniformLocationMap.find(name);
     if (it != m_UniformLocationMap.end()) {
         return it->second;
     }
-    GLuint location = glGetUniformLocation(m_Program, name.c_str());
+    GLint location = glGetUniformLocation(m_Program, name.c_str());
     // std::cout << glGetError() << std::endl;
     m_UniformLocationMap[name] = location;
     return location;

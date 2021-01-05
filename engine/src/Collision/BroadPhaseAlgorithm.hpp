@@ -11,7 +11,7 @@ struct OverlappingPair {
     CollisionShape shape1;
     CollisionShape shape2;
 
-    OverlappingPair(){};
+    OverlappingPair() {}
     OverlappingPair(const CollisionShape &shape1, const CollisionShape &shape2)
         : shape1(shape1), shape2(shape2) {}
 };
@@ -19,7 +19,7 @@ struct OverlappingPair {
 class BroadPhaseAlgorithm {
   public:
     std::vector<OverlappingPair>
-    computeOverlappingPairs(const std::vector<CollisionShape> &shapes);
+    computeOverlappingPairs(const std::vector<CollisionShape> &shapes) const;
 };
 
 } // namespace Engine

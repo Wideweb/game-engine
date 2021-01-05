@@ -4,8 +4,6 @@
 
 namespace Engine {
 
-void Time::init() { tick(); }
-
 void Time::tick() {
     auto time_point = std::chrono::high_resolution_clock::now();
     auto time_since_epoch = time_point.time_since_epoch();

@@ -8,7 +8,7 @@ namespace Engine {
 
 class TimeLine {
   private:
-    int m_ActionIndex = 0;
+    size_t m_ActionIndex = 0;
     std::vector<Action> m_Actions;
     float m_ElapsedTime = 0.0;
     float m_Step = 0.0;

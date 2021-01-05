@@ -16,7 +16,7 @@ class EntityManager {
         IteratorRange<std::array<Entity, c_MaxEntities>::const_iterator>;
 
     EntityManager() {
-        for (size_t i = 0; i < c_MaxEntities; i++) {
+        for (Entity i = 0; i < c_MaxEntities; i++) {
             m_Entities[i] = i;
         }
     }
@@ -43,7 +43,7 @@ class EntityManager {
         m_Entities[entity] = m_Entities[m_ActiveEntities];
     }
 
-    const Entity GetEntity(const std::string &name) {
+    Entity GetEntity(const std::string &name) const {
         const auto &it = m_NameToEntity.find(name);
 
         assert(it != m_NameToEntity.end() && "no entity.");
@@ -51,7 +51,7 @@ class EntityManager {
         return it->second;
     }
 
-    const EntityRange GetAll() {
+    EntityRange GetAll() const {
         return {m_Entities.cbegin(), m_Entities.cbegin() + m_ActiveEntities};
     }
 

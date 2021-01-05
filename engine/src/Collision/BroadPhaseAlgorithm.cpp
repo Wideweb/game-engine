@@ -4,7 +4,7 @@
 namespace Engine {
 
 std::vector<OverlappingPair> BroadPhaseAlgorithm::computeOverlappingPairs(
-    const std::vector<CollisionShape> &shapes) {
+    const std::vector<CollisionShape> &shapes) const {
     std::vector<OverlappingPair> pairs;
 
     std::vector<AABB> aabbs;

@@ -13,7 +13,7 @@ class SystemManager {
         m_Signatures.push_back(signature);
     }
 
-    const void Update(ComponentManager &components) {
+    void Update(ComponentManager &components) const {
         for (const auto &system : m_Systems) {
             system->Update(components);
         }

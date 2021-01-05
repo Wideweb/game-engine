@@ -53,7 +53,7 @@ class AppLayer : public Engine::Layer {
                     new Engine::SelectorTask({
                         new Engine::SequenceTask({
                             new Engine::ControllerTask(Engine::KeyCode::W),
-                            new Engine::MoveTask(0.01),
+                            new Engine::MoveTask(0.01f),
                         }),
                         new Engine::SequenceTask({
                             new Engine::ControllerTask(Engine::KeyCode::S),
@@ -104,8 +104,8 @@ class AppLayer : public Engine::Layer {
             Engine::LocationComponent location(
                 glm::vec3(0.0f, 2.0f, 0.0f),
                 glm::vec3(0.0f, glm::radians(-90.0), 0.0f));
-            Engine::VelocityComponent velocity(0.01,
-                                               glm::vec3(-0.005f, 0.0, 0.0f));
+            Engine::VelocityComponent velocity(0.01f,
+                                               glm::vec3(-0.005f, 0.0f, 0.0f));
             Engine::Light3DComponent light;
             Engine::Render3DComponent render{box_model, 0.01f};
 

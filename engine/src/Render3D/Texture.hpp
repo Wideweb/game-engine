@@ -19,9 +19,9 @@ class Texture {
     void bind();
     void unbind();
 
-    uint32_t getId() { return m_TextureID; };
-    uint32_t getIndex() { return m_Index; };
-    void setIndex(uint32_t index) { m_Index = index; };
+    uint32_t getId() { return m_TextureID; }
+    uint32_t getIndex() { return m_Index; }
+    void setIndex(uint32_t index) { m_Index = index; }
 
   private:
     bool load(const std::string &path);

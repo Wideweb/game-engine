@@ -5,15 +5,13 @@
 
 namespace Engine {
 
-const void PhysicsSystem::Update(ComponentManager &components) {
-    auto &app = Application::get();
+void PhysicsSystem::Update(ComponentManager &) const {
+    // for (const auto entity : m_Entities) {
+    // auto &physics = components.GetComponent<PhysicsComponent>(entity);
+    // auto &velocity = components.GetComponent<VelocityComponent>(entity);
 
-    for (const auto entity : m_Entities) {
-        auto &physics = components.GetComponent<PhysicsComponent>(entity);
-        auto &velocity = components.GetComponent<VelocityComponent>(entity);
-
-        // velocity.velocity.y -= physics.weight;
-    }
+    // velocity.velocity.y -= physics.weight;
+    // }
 }
 
 } // namespace Engine

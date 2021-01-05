@@ -8,7 +8,8 @@ class Fail : public TaskDecorator {
   public:
     Fail(Task *task) : TaskDecorator(task) {}
 
-    virtual TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    virtual TaskStatus
+    update(const std::shared_ptr<Blackboard> &blackboard) override {
         if (m_Task->update(blackboard) == TaskStatus::Running) {
             return TaskStatus::Running;
         }

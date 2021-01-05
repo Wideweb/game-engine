@@ -1,5 +1,6 @@
 #include "AnimationLoader.hpp"
 
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -27,7 +28,7 @@ AnimationScene AnimationLoader::load(const std::string &path) {
 
             in >> propertyName >> targetValue >> time;
 
-            AnimationProperty property;
+            AnimationProperty property = AnimationProperty::None;
             if (propertyName == "x") {
                 property = AnimationProperty::X;
             } else if (propertyName == "y") {
@@ -45,6 +46,9 @@ AnimationScene AnimationLoader::load(const std::string &path) {
             } else if (propertyName == "ambient") {
                 property = AnimationProperty::Ambient;
             }
+
+            assert(property != AnimationProperty::None &&
+                   "Wrong animation property");
 
             timeLines.back().add(
                 Action::animation(property, targetValue, time));

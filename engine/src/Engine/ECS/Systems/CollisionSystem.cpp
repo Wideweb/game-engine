@@ -2,6 +2,7 @@
 #include "Application.hpp"
 #include "CollisionComponent.hpp"
 #include "LocationComponent.hpp"
+#include "Math.hpp"
 #include "VelocityComponent.hpp"
 
 #include <cmath>
@@ -10,7 +11,7 @@
 
 namespace Engine {
 
-const void CollisionSystem::Update(ComponentManager &components) {
+void CollisionSystem::Update(ComponentManager &components) const {
     auto &app = Application::get();
     auto &eventHandler = app.getEventHandler();
 
@@ -43,8 +44,8 @@ const void CollisionSystem::Update(ComponentManager &components) {
     for (auto &result : results) {
         auto &location =
             components.GetComponent<LocationComponent>(result.shape1);
-        auto &velocity =
-            components.GetComponent<VelocityComponent>(result.shape1);
+        // auto &velocity =
+        //     components.GetComponent<VelocityComponent>(result.shape1);
         auto &collision1 =
             components.GetComponent<CollisionComponent>(result.shape1);
         auto &collision2 =
@@ -56,12 +57,12 @@ const void CollisionSystem::Update(ComponentManager &components) {
         location.position.y += result.mtv.y;
         location.position.x += result.mtv.x;
 
-        if (result.mtv.x != 0) {
+        if (!Math::isEqual(result.mtv.x, 0.0f)) {
             // location.position.x += velocity.velocity.x;
             // velocity.velocity.x = 0;
         }
 
-        if (result.mtv.y != 0) {
+        if (!Math::isEqual(result.mtv.y, 0.0f)) {
             // location.position.y += velocity.velocity.y;
             // velocity.velocity.y = 0;
         }

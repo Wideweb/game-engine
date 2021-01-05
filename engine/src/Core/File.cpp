@@ -14,8 +14,8 @@ std::string File::read(const std::string &path) {
     }
 
     in.seekg(0, std::ios_base::end);
-    size_t size = static_cast<size_t>(in.tellg());
-    result.resize(size);
+    auto size = in.tellg();
+    result.resize(static_cast<size_t>(size));
     in.seekg(0, std::ios_base::beg);
     in.read(&result[0], size);
     in.close();

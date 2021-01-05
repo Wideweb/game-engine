@@ -8,7 +8,7 @@
 namespace Engine {
 
 glm::vec2 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
-                                        const CollisionShape &shape2) {
+                                        const CollisionShape &shape2) const {
     glm::vec2 mtv;
     float minOverlap = std::numeric_limits<float>::max();
 
@@ -53,7 +53,7 @@ glm::vec2 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
 }
 
 std::vector<glm::vec2>
-NarrowPhaseAlgorithm::getAxis(const std::vector<glm::vec2> &corners) {
+NarrowPhaseAlgorithm::getAxis(const std::vector<glm::vec2> &corners) const {
     std::vector<glm::vec2> axis;
     for (size_t i = 0; i < corners.size() - 1; i++) {
         glm::vec2 v1 = corners[i];

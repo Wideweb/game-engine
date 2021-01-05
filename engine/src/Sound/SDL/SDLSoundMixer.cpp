@@ -5,9 +5,7 @@
 
 namespace Engine {
 
-SDLSoundMixer::SDLSoundMixer() {}
-
-void SDLSoundMixer::init() {
+SDLSoundMixer::SDLSoundMixer() {
     m_DeviceSpec.freq = 48000;
     m_DeviceSpec.format = AUDIO_S16LSB;
     m_DeviceSpec.channels = 2;

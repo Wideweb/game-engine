@@ -12,7 +12,7 @@ class ControllerTask : public Task {
   public:
     ControllerTask(KeyCode key) : m_key(key) {}
 
-    TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    TaskStatus update(const std::shared_ptr<Blackboard> &) override {
         auto &input = Application::get().getInput();
         return input.IsKeyPressed(m_key) ? TaskStatus::Success
                                          : TaskStatus::Fail;

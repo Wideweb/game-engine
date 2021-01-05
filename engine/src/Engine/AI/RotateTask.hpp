@@ -13,7 +13,7 @@ class RotateTask : public Task {
   public:
     RotateTask(glm::vec3 rotation) : m_Rotation(rotation) {}
 
-    TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    TaskStatus update(const std::shared_ptr<Blackboard> &blackboard) override {
         const auto &layerName = blackboard->getValue<std::string>("layer");
         auto &layer = Application::get().getLayer(layerName);
         auto &coordinator = layer.getCoordinator();

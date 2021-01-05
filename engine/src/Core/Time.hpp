@@ -9,7 +9,6 @@ class Time {
     float m_LastFrameTime = 0;
 
   public:
-    void init();
     void tick();
 
     float getDeltaSeconds() const { return m_deltaTime; }

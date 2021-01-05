@@ -21,12 +21,12 @@ class Layer {
 
     Coordinator &getCoordinator() { return m_Coordinator; }
 
-    virtual void onAttach(){};
-    virtual void onDetach(){};
-    virtual void onUpdate(){};
+    virtual void onAttach() {}
+    virtual void onDetach() {}
+    virtual void onUpdate() {}
 
-    virtual void onMouseEvent(MouseEvent &e){};
-    virtual void onWindowEvent(WindowEvent &e){};
+    virtual void onMouseEvent(MouseEvent &) {}
+    virtual void onWindowEvent(WindowEvent &) {}
 };
 
 } // namespace Engine

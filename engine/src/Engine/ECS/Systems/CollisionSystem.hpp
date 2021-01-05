@@ -10,7 +10,7 @@ class CollisionSystem : public System {
     CollisionDetection m_CollisionDetection;
 
   public:
-    virtual const void Update(ComponentManager &components) override;
+    virtual void Update(ComponentManager &components) const override;
 };
 
 } // namespace Engine

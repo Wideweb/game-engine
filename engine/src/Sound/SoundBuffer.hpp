@@ -20,7 +20,7 @@ class SoundBuffer {
     virtual bool isLooped() = 0;
     virtual bool isEnd() = 0;
     virtual uint32_t rest() = 0;
-    virtual void move(int) = 0;
+    virtual void move(uint32_t) = 0;
     virtual uint32_t position() = 0;
     virtual uint8_t *data() = 0;
     virtual float volume() = 0;

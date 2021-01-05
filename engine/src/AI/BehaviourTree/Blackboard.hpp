@@ -44,7 +44,7 @@ class Blackboard {
 
     virtual ~Blackboard() = default;
 
-    void setParent(const std::shared_ptr<Blackboard> parent) {
+    void setParent(const std::shared_ptr<Blackboard> &parent) {
         m_Parent = parent;
     }
 

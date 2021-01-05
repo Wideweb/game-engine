@@ -31,7 +31,7 @@ class SDLSoundBuffer : public SoundBuffer {
     virtual void reset() override { m_Index = 0; }
     virtual void stop() override { m_Playing = false; }
     virtual uint32_t rest() override { return m_Length - m_Index; }
-    virtual void move(int step) override { m_Index += step; }
+    virtual void move(uint32_t step) override { m_Index += step; }
     virtual uint32_t position() override { return m_Index; }
     virtual uint8_t *data() override { return m_Buffer; }
     virtual float volume() override { return m_Volume; }

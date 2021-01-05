@@ -15,11 +15,7 @@ static std::ostream &operator<<(std::ostream &out, const SDL_version &v) {
     return out;
 }
 
-SDLWindow::SDLWindow() {}
-
-SDLWindow::~SDLWindow() {}
-
-void SDLWindow::init(const WindowProps &props) {
+SDLWindow::SDLWindow(const WindowProps &props) {
     using namespace std;
     using namespace std::string_view_literals;
 
@@ -104,6 +100,8 @@ void SDLWindow::init(const WindowProps &props) {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 }
+
+SDLWindow::~SDLWindow() {}
 
 int SDLWindow::getWidth() const { return m_Props.width; }
 

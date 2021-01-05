@@ -3,6 +3,6 @@
 
 namespace Engine {
 
-Window *Window::create() { return new SDLWindow(); }
+Window *Window::create(const WindowProps &props) { return new SDLWindow(props); }
 
 } // namespace Engine

@@ -21,11 +21,11 @@ class Coordinator {
         return m_EntityManager->CreateEntity(name);
     }
 
-    const Entity GetEntity(const std::string &name) {
+    Entity GetEntity(const std::string &name) const {
         return m_EntityManager->GetEntity(name);
     }
 
-    const EntityManager::EntityRange GetAll() {
+    EntityManager::EntityRange GetAll() const {
         return m_EntityManager->GetAll();
     }
 

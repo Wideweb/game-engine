@@ -21,9 +21,6 @@
 #include "UntilFail.hpp"
 
 #include "ControllerTask.hpp"
-#include "JumpTask.hpp"
-#include "MoveLeftTask.hpp"
-#include "MoveRightTask.hpp"
 #include "MoveTask.hpp"
 #include "NoopTask.hpp"
 #include "RotateTask.hpp"

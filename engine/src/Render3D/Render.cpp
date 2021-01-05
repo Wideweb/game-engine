@@ -8,9 +8,7 @@
 
 namespace Engine {
 
-Render::Render() {}
-
-void Render::init() {
+Render::Render() {
     auto vertexSrc = File::read("./shaders/vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/fragment-shader.glsl");
     shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);

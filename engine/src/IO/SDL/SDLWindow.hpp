@@ -15,10 +15,8 @@ class SDLWindow : public Window {
     EventCallbackFn<WindowEvent> m_windowEventCallback;
 
   public:
-    SDLWindow();
+    SDLWindow(const WindowProps &props);
     virtual ~SDLWindow();
-
-    virtual void init(const WindowProps &props) override;
 
     virtual int getWidth() const override;
     virtual int getHeight() const override;

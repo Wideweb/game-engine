@@ -8,11 +8,11 @@ namespace Engine {
 
 class SequenceTask : public Task {
   private:
-    int taskIndex = 0;
+    size_t taskIndex = 0;
     std::vector<Task *> m_Tasks;
 
   public:
-    SequenceTask(const std::vector<Task *> tasks) : m_Tasks(tasks) {}
+    SequenceTask(std::vector<Task *> tasks) : m_Tasks(std::move(tasks)) {}
 
     virtual ~SequenceTask() {
         for (auto task : m_Tasks) {
@@ -21,7 +21,7 @@ class SequenceTask : public Task {
         m_Tasks.clear();
     }
 
-    TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    TaskStatus update(const std::shared_ptr<Blackboard> &blackboard) override {
         auto task = m_Tasks[taskIndex];
 
         TaskStatus taskStatus = task->update(blackboard);

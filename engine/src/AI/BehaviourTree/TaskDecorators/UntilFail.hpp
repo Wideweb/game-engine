@@ -8,7 +8,8 @@ class UntilFail : public TaskDecorator {
   public:
     UntilFail(Task *task) : TaskDecorator(task) {}
 
-    virtual TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    virtual TaskStatus
+    update(const std::shared_ptr<Blackboard> &blackboard) override {
         if (m_Task->update(blackboard) != TaskStatus::Fail) {
             return TaskStatus::Running;
         }

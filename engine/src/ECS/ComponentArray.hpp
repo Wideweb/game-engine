@@ -39,7 +39,8 @@ template <typename T> class ComponentArray : public IComponentArray {
 
         const auto index = m_EntityToIndex[entity];
         --m_Size;
-        m_EntityToIndex[index] = m_EntityToIndex[m_Size];
+        m_Components[index] = m_Components[m_Size];
+        m_EntityToIndex.erase(entity);
     }
 
   private:

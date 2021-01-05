@@ -7,9 +7,9 @@ namespace Engine {
 
 Camera::Camera() {}
 
-Camera::Camera(const glm::vec3 &position, const glm::vec3 &up,
-               const glm::vec3 &front)
-    : position(position), up(up), front(front) {}
+Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 front)
+    : position(std::move(position)), up(std::move(up)),
+      front(std::move(front)) {}
 
 Camera::~Camera() {}
 
@@ -29,22 +29,21 @@ void Camera::setSize(uint32_t width, uint32_t height) {
 }
 
 void Camera::setPerspective(float fieldOfView, float zNear, float zFar) {
-    perspective = glm::perspective(fieldOfView, (float)width / (float)height,
-                                   zNear, zFar);
+    perspective = glm::perspective(
+        fieldOfView, static_cast<float>(width) / static_cast<float>(height),
+        zNear, zFar);
 }
 
 void Camera::setOrthogonal(float zNear, float zFar) {
-    orthogonal =
-        glm::ortho(0.0f, (float)width, 0.0f, (float)height, zNear, zFar);
+    orthogonal = glm::ortho(0.0f, static_cast<float>(width), 0.0f,
+                            static_cast<float>(height), zNear, zFar);
 }
 
 void Camera::setProjection(Projection mode) { this->mode = mode; }
 
-void Camera::setPosition(const glm::vec3 position) {
-    this->position = position;
-}
+void Camera::setPosition(glm::vec3 position) { this->position = position; }
 
-void Camera::setRotation(const glm::vec3 rotation) {
+void Camera::setRotation(glm::vec3 rotation) {
     this->rotation = rotation;
     this->front = Math::getDirection(rotation);
 }

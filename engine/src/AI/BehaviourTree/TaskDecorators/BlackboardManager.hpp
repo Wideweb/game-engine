@@ -9,10 +9,11 @@ class BlackboardManager : public TaskDecorator {
     std::shared_ptr<Blackboard> m_Blackboard;
 
   public:
-    BlackboardManager(std::shared_ptr<Blackboard> blackboard, Task *task)
+    BlackboardManager(const std::shared_ptr<Blackboard> &blackboard, Task *task)
         : TaskDecorator(task), m_Blackboard(blackboard) {}
 
-    virtual TaskStatus update(std::shared_ptr<Blackboard> blackboard) override {
+    virtual TaskStatus
+    update(const std::shared_ptr<Blackboard> &blackboard) override {
         if (blackboard) {
             m_Blackboard->setParent(blackboard);
         }

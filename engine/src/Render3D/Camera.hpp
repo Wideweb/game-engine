@@ -10,8 +10,7 @@ class Camera {
     enum class Movement { FORWARD, BACKWARD, LEFT, RIGHT };
     enum class Projection { PERSPECTIVE, ORTHOGONAL };
 
-    Camera(const glm::vec3 &position, const glm::vec3 &up,
-           const glm::vec3 &direction);
+    Camera(glm::vec3 position, glm::vec3 up, glm::vec3 direction);
     Camera();
     ~Camera();
 
@@ -26,16 +25,16 @@ class Camera {
     void setPerspective(float fieldOfView, float zNear, float zFar);
     void setOrthogonal(float zNear, float zFar);
     void setProjection(Projection mode);
-    void setPosition(const glm::vec3 position);
-    void setRotation(const glm::vec3 direction);
+    void setPosition(glm::vec3 position);
+    void setRotation(glm::vec3 direction);
 
   private:
     uint32_t width;
     uint32_t height;
 
     glm::vec3 position;
-    glm::vec3 front;
     glm::vec3 up;
+    glm::vec3 front;
     glm::vec3 rotation;
 
     Projection mode;

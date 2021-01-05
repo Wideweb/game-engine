@@ -6,7 +6,7 @@ namespace Engine {
 
 class Render3DSystem : public System {
   public:
-    virtual const void Update(ComponentManager &components) override;
+    virtual void Update(ComponentManager &components) const override;
 };
 
 } // namespace Engine

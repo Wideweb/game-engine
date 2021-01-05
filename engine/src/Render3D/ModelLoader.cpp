@@ -38,7 +38,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
             nVertices.emplace_back(x, y, z);
         } else if (attribute == "f") {
             char divider;
-            int p, t, n;
+            size_t p, t, n;
             in >> p >> divider >> t >> divider >> n;
             vertices.emplace_back(pVertices[p - 1], nVertices[n - 1],
                                   tVertices[t - 1]);

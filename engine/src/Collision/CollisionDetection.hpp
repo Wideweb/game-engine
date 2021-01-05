@@ -25,7 +25,7 @@ class CollisionDetection {
 
   public:
     std::vector<CollisionResult>
-    detect(const std::vector<CollisionShape> &shapesd);
+    detect(const std::vector<CollisionShape> &shapesd) const;
 };
 
 } // namespace Engine

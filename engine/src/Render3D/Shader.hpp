@@ -34,7 +34,7 @@ class Shader {
   private:
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc);
     GLuint compileShader(GLenum type, const std::string &source);
-    GLuint getUniformLocation(const std::string &name);
+    GLint getUniformLocation(const std::string &name);
 };
 
 } // namespace Engine

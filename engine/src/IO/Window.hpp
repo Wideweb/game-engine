@@ -28,7 +28,8 @@ struct WindowEvent {
     std::string text;
 
     WindowEvent(EventType type) : type(type) {}
-    WindowEvent(EventType type, std::string text) : type(type) {}
+    WindowEvent(EventType type, std::string text)
+        : type(type), text(std::move(text)) {}
 };
 
 struct WindowProps {
@@ -41,8 +42,6 @@ class Window {
     template <typename T> using EventCallbackFn = std::function<void(T &)>;
 
     virtual ~Window() = default;
-
-    virtual void init(const WindowProps &props) = 0;
 
     virtual int getWidth() const = 0;
     virtual int getHeight() const = 0;
@@ -59,7 +58,7 @@ class Window {
     virtual void shutDown() = 0;
     virtual void *getNaviteWindow() const = 0;
 
-    static Window *create();
+    static Window *create(const WindowProps &props);
 };
 
 } // namespace Engine
