@@ -10,10 +10,12 @@ class VelocityComponent {
   public:
     float speed;
     glm::vec3 rotation;
+    glm::vec3 velocity;
 
     VelocityComponent() {}
-    VelocityComponent(float speed, glm::vec3 rotation)
-        : speed(speed), rotation(rotation) {}
+    VelocityComponent(float speed, glm::vec3 rotation, glm::vec3 velocity)
+        : speed(speed), rotation(std::move(rotation)),
+          velocity(std::move(velocity)) {}
 };
 
 } // namespace Engine

@@ -6,7 +6,7 @@ namespace Engine {
 
 class AABBOverlap {
   public:
-    static bool test(AABB &a, AABB &b);
+    static bool test(const AABB &a, const AABB &b);
 };
 
 } // namespace Engine

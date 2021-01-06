@@ -76,4 +76,6 @@ target_link_libraries(engine PUBLIC glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui)
 target_link_libraries(engine PRIVATE imgui)
 
+target_link_libraries(engine PRIVATE -lprofiler)
+
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/shaders DESTINATION ${OUTPUT_DIRECTORY})

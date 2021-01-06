@@ -7,22 +7,31 @@
 
 namespace Engine {
 
-glm::vec2 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
+glm::vec3 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
                                         const CollisionShape &shape2) const {
-    glm::vec2 mtv;
+    glm::vec3 mtv;
     float minOverlap = std::numeric_limits<float>::max();
 
-    auto axis1 = getAxis(shape1.vertices);
-    auto axis2 = getAxis(shape2.vertices);
+    std::vector<glm::vec3> axis;
+    axis.reserve(15);
 
-    std::vector<glm::vec2> axis;
+    axis.push_back(glm::normalize(shape1.vertices[4] - shape1.vertices[0]));
+    axis.push_back(glm::normalize(shape1.vertices[3] - shape1.vertices[0]));
+    axis.push_back(glm::normalize(shape1.vertices[1] - shape1.vertices[0]));
 
-    axis.insert(axis.end(), axis1.begin(), axis1.end());
-    axis.insert(axis.end(), axis2.begin(), axis2.end());
+    axis.push_back(glm::normalize(shape2.vertices[4] - shape2.vertices[0]));
+    axis.push_back(glm::normalize(shape2.vertices[3] - shape2.vertices[0]));
+    axis.push_back(glm::normalize(shape2.vertices[1] - shape2.vertices[0]));
+
+    std::vector<float> scalars1;
+    scalars1.reserve(shape1.vertices.size());
+
+    std::vector<float> scalars2;
+    scalars2.reserve(shape2.vertices.size());
 
     for (size_t i = 0; i < axis.size(); i++) {
-        std::vector<float> scalars1;
-        std::vector<float> scalars2;
+        scalars1.clear();
+        scalars2.clear();
 
         for (auto corner : shape1.vertices) {
             scalars1.push_back(glm::dot(axis[i], corner));
@@ -39,7 +48,7 @@ glm::vec2 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
         float s2min = *std::min_element(scalars2.begin(), scalars2.end());
 
         if (s1min > s2max || s2min > s1max) {
-            return glm::vec2(0);
+            return glm::vec3(0);
         }
 
         float overlap = s1max > s2max ? (s2max - s1min) : (s2min - s1max);
@@ -50,32 +59,6 @@ glm::vec2 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
     }
 
     return mtv;
-}
-
-std::vector<glm::vec2>
-NarrowPhaseAlgorithm::getAxis(const std::vector<glm::vec2> &corners) const {
-    std::vector<glm::vec2> axis;
-    for (size_t i = 0; i < corners.size() - 1; i++) {
-        glm::vec2 v1 = corners[i];
-        glm::vec2 v2 = corners[i + 1];
-        glm::vec2 d = v2 - v1;
-
-        glm::vec2 perp(d.y, -d.x);
-        glm::normalize(perp);
-
-        axis.push_back(glm::normalize(perp));
-    }
-
-    glm::vec2 v1 = corners.back();
-    glm::vec2 v2 = corners.front();
-    glm::vec2 d = v2 - v1;
-
-    glm::vec2 perp(d.y, -d.x);
-    glm::normalize(perp);
-
-    axis.push_back(glm::normalize(perp));
-
-    return axis;
 }
 
 } // namespace Engine

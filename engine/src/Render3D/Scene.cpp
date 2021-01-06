@@ -2,16 +2,15 @@
 
 namespace Engine {
 
-void Scene::addObject(const std::shared_ptr<Model> &model,
-                      const glm::mat4 &position) {
+void Scene::addObject(const std::shared_ptr<Model> &model, glm::mat4 position) {
     m_Objects[m_ActiveObjects].model = model;
-    m_Objects[m_ActiveObjects].position = position;
+    m_Objects[m_ActiveObjects].position = std::move(position);
     ++m_ActiveObjects;
 }
 
-void Scene::addLight(const Light &light, const glm::vec3 &position) {
+void Scene::addLight(const Light &light, glm::vec3 position) {
     m_Lights[m_ActiveLights].light = light;
-    m_Lights[m_ActiveLights].position = position;
+    m_Lights[m_ActiveLights].position = std::move(position);
     ++m_ActiveLights;
 }
 

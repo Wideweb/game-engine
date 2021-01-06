@@ -24,9 +24,12 @@ class AppLayer : public Engine::Layer {
         {
             auto player = m_Coordinator.CreateEntity("player");
 
-            Engine::LocationComponent location(glm::vec3(0.0f, 0.03f, 0.0f),
+            Engine::LocationComponent location(glm::vec3(10.0f, 10.0f, 0.0f),
                                                glm::vec3(0.0f, 0.0f, 0.0f));
-            Engine::VelocityComponent velocity(0, glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity(0, glm::vec3(0.0f, 0.0f, 0.0f),
+                                               glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::CollisionComponent collision{1.0f, 5.0f, 1.0f, false};
+            Engine::PhysicsComponent physics{0.01f};
             Engine::CameraComponent camera;
 
             auto blackboard = std::make_shared<Engine::Blackboard>();
@@ -53,14 +56,20 @@ class AppLayer : public Engine::Layer {
                     new Engine::SelectorTask({
                         new Engine::SequenceTask({
                             new Engine::ControllerTask(Engine::KeyCode::W),
-                            new Engine::MoveTask(0.01f),
+                            new Engine::MoveTask(0.1f),
                         }),
                         new Engine::SequenceTask({
                             new Engine::ControllerTask(Engine::KeyCode::S),
-                            new Engine::MoveTask(-0.01f),
+                            new Engine::MoveTask(-0.1f),
                         }),
                         new Engine::MoveTask(0)
-                    })
+                    }),
+
+                    new Engine::SequenceTask({
+                            new Engine::OnGroundTask(),
+                            new Engine::ControllerTask(Engine::KeyCode::Space),
+                            new Engine::JumpTask(0.25f),
+                        }),
                 })
             );
             // clang-format on
@@ -69,6 +78,8 @@ class AppLayer : public Engine::Layer {
             m_Coordinator.AddComponent(player, velocity);
             m_Coordinator.AddComponent(player, ai);
             m_Coordinator.AddComponent(player, camera);
+            m_Coordinator.AddComponent(player, collision);
+            m_Coordinator.AddComponent(player, physics);
         }
 
         {
@@ -81,36 +92,106 @@ class AppLayer : public Engine::Layer {
             m_Coordinator.AddComponent(cottage, render);
         }
 
-        for (size_t y = 0; y < 20; y++) {
-            for (size_t x = 0; x < 20; x++) {
-                {
-                    std::ostringstream name;
-                    name << "box" << x << y;
-                    auto box = m_Coordinator.CreateEntity(name.str());
+        {
+            auto box = m_Coordinator.CreateEntity("box");
 
-                    Engine::LocationComponent location(
-                        glm::vec3(0.02f * x, 0.02f * y, -1.0f),
-                        glm::vec3(0.0f, 0.0f, 0.0f));
-                    Engine::Render3DComponent render{box_model, 0.01f};
+            Engine::LocationComponent location(glm::vec3(0.0f, 5.0f, -1.0f),
+                                               glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity(0, glm::vec3(0.0f, 0.0f, 0.0f),
+                                               glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::Render3DComponent render{box_model, 1.0f};
+            Engine::CollisionComponent collision{2.0f, 2.0f, 2.0f, false};
+            Engine::PhysicsComponent physics{0.001f};
 
-                    m_Coordinator.AddComponent(box, location);
-                    m_Coordinator.AddComponent(box, render);
-                }
-            }
+            m_Coordinator.AddComponent(box, location);
+            m_Coordinator.AddComponent(box, velocity);
+            m_Coordinator.AddComponent(box, render);
+            m_Coordinator.AddComponent(box, collision);
+            m_Coordinator.AddComponent(box, physics);
         }
 
         {
-            auto entity = m_Coordinator.CreateEntity("light");
-            Engine::LocationComponent location(
-                glm::vec3(0.0f, 2.0f, 0.0f),
-                glm::vec3(0.0f, glm::radians(-90.0), 0.0f));
-            Engine::VelocityComponent velocity(0.01f,
-                                               glm::vec3(-0.005f, 0.0f, 0.0f));
+            auto box = m_Coordinator.CreateEntity("box1");
+
+            Engine::LocationComponent location(glm::vec3(4.0f, 10.0f, -1.0f),
+                                               glm::vec3(0, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity(
+                0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::Render3DComponent render{box_model, 1.0f};
+            Engine::CollisionComponent collision{2.0f, 2.0f, 2.0f, false};
+            Engine::PhysicsComponent physics{0.001f};
+
+            m_Coordinator.AddComponent(box, location);
+            m_Coordinator.AddComponent(box, velocity);
+            m_Coordinator.AddComponent(box, render);
+            m_Coordinator.AddComponent(box, collision);
+            m_Coordinator.AddComponent(box, physics);
+        }
+
+        {
+            auto box = m_Coordinator.CreateEntity("floor");
+
+            Engine::LocationComponent location(glm::vec3(0.0f, -20.0f, 0.0f),
+                                               glm::vec3(0, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity(
+                0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::Render3DComponent render{box_model, 20.0f};
+            Engine::CollisionComponent collision{40.0f, 40.0f, 40.0f, true};
+
+            m_Coordinator.AddComponent(box, location);
+            m_Coordinator.AddComponent(box, velocity);
+            m_Coordinator.AddComponent(box, render);
+            m_Coordinator.AddComponent(box, collision);
+        }
+
+        // for (size_t y = 0; y < 20; y++) {
+        //     for (size_t x = 0; x < 20; x++) {
+        //         {
+        //             std::ostringstream name;
+        //             name << "box" << x << y;
+        //             auto box = m_Coordinator.CreateEntity(name.str());
+
+        //             Engine::LocationComponent location(
+        //                 glm::vec3(0.02f * x, 0.02f * y, -1.0f),
+        //                 glm::vec3(0.0f, 0.0f, 0.0f));
+        //             Engine::Render3DComponent render{box_model, 0.01f};
+        //             Engine::VelocityComponent velocity(
+        //                 0.002f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+        //             m_Coordinator.AddComponent(box, location);
+        //             m_Coordinator.AddComponent(box, render);
+        //             m_Coordinator.AddComponent(box, velocity);
+        //         }
+        //     }
+        // }
+
+        // {
+        //     auto entity = m_Coordinator.CreateEntity("light");
+        //     Engine::LocationComponent location(
+        //         glm::vec3(0.0f, 10.0f, 0.0f),
+        //         glm::vec3(0.0f, glm::radians(-90.0), 0.0f));
+        //     Engine::VelocityComponent velocity(0.1f,
+        //                                        glm::vec3(-0.01f, 0.0f, 0.0f),
+        //                                        glm::vec3(0.0f, 0.0f, 0.0f));
+        //     Engine::Light3DComponent light;
+        //     Engine::Render3DComponent render{box_model, 1.0f};
+
+        //     m_Coordinator.AddComponent(entity, location);
+        //     m_Coordinator.AddComponent(entity, velocity);
+        //     m_Coordinator.AddComponent(entity, light);
+        //     m_Coordinator.AddComponent(entity, render);
+        // }
+
+        {
+            auto entity = m_Coordinator.CreateEntity("light2");
+            Engine::LocationComponent location(glm::vec3(50.0f, 50.0f, 0.0f),
+                                               glm::vec3(0.0f, 0.0f, 0.0f));
             Engine::Light3DComponent light;
-            Engine::Render3DComponent render{box_model, 0.01f};
+            light.light.ambient = glm::vec3(1.0f);
+            light.light.quadratic = 0.0f;
+            Engine::Render3DComponent render{box_model, 1.0f};
 
             m_Coordinator.AddComponent(entity, location);
-            m_Coordinator.AddComponent(entity, velocity);
             m_Coordinator.AddComponent(entity, light);
             m_Coordinator.AddComponent(entity, render);
         }

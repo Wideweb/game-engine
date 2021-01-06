@@ -33,9 +33,8 @@ class Scene {
     using SceneLightsRange =
         IteratorRange<std::array<SceneLight, c_MaxSceneLights>::const_iterator>;
 
-    void addObject(const std::shared_ptr<Model> &model,
-                   const glm::mat4 &position);
-    void addLight(const Light &light, const glm::vec3 &position);
+    void addObject(const std::shared_ptr<Model> &model, glm::mat4 position);
+    void addLight(const Light &light, glm::vec3 position);
 
     const SceneObjectsRange getObjects() const;
     const SceneLightsRange getLights() const;

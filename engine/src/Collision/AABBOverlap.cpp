@@ -3,19 +3,10 @@
 
 namespace Engine {
 
-bool AABBOverlap::test(AABB &a, AABB &b) {
-    float d1x = b.min.x - a.max.x;
-    float d1y = b.min.y - a.max.y;
-    float d2x = a.min.x - b.max.x;
-    float d2y = a.min.y - b.max.y;
-
-    if (d1x > 0.0f || d1y > 0.0f)
-        return false;
-
-    if (d2x > 0.0f || d2y > 0.0f)
-        return false;
-
-    return true;
+bool AABBOverlap::test(const AABB &box1, const AABB &box2) {
+    return (box1.max.x > box2.min.x && box1.min.x < box2.max.x &&
+            box1.max.y > box2.min.y && box1.min.y < box2.max.y &&
+            box1.max.z > box2.min.z && box1.min.z < box2.max.z);
 }
 
 } // namespace Engine

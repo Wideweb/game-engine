@@ -16,20 +16,25 @@ void CollisionSystem::Update(ComponentManager &components) const {
     auto &eventHandler = app.getEventHandler();
 
     std::vector<CollisionShape> colliders;
+    colliders.reserve(m_Entities.size());
+
+    std::vector<glm::vec3> vertices;
+    vertices.reserve(8);
+
     for (const auto entity : m_Entities) {
         auto &collision = components.GetComponent<CollisionComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
         auto &velocity = components.GetComponent<VelocityComponent>(entity);
 
         collision.entities.clear();
+        vertices.clear();
 
-        glm::vec2 move(location.position);
-        move = move + glm::vec2(location.front) * glm::vec2(velocity.speed);
+        glm::vec3 move(location.position);
+        move = move + glm::vec3(location.front) * glm::vec3(velocity.speed);
 
-        std::vector<glm::vec2> vertices;
         std::transform(collision.vertices.begin(), collision.vertices.end(),
                        std::back_inserter(vertices),
-                       [&](glm::vec2 &v) { return v + move; });
+                       [&](const glm::vec3 &v) { return v + move; });
 
         colliders.emplace_back(entity, vertices, collision.isStatic);
     }
@@ -41,11 +46,11 @@ void CollisionSystem::Update(ComponentManager &components) const {
     std::vector<CollisionResult> results =
         m_CollisionDetection.detect(colliders);
 
-    for (auto &result : results) {
+    for (const auto &result : results) {
         auto &location =
             components.GetComponent<LocationComponent>(result.shape1);
-        // auto &velocity =
-        //     components.GetComponent<VelocityComponent>(result.shape1);
+        auto &velocity =
+            components.GetComponent<VelocityComponent>(result.shape1);
         auto &collision1 =
             components.GetComponent<CollisionComponent>(result.shape1);
         auto &collision2 =
@@ -54,17 +59,19 @@ void CollisionSystem::Update(ComponentManager &components) const {
         collision1.entities.insert(result.shape2);
         collision2.entities.insert(result.shape1);
 
-        location.position.y += result.mtv.y;
-        location.position.x += result.mtv.x;
+        location.position += result.mtv;
+        velocity.speed = 0;
 
         if (!Math::isEqual(result.mtv.x, 0.0f)) {
-            // location.position.x += velocity.velocity.x;
-            // velocity.velocity.x = 0;
+            velocity.velocity.x = 0;
         }
 
         if (!Math::isEqual(result.mtv.y, 0.0f)) {
-            // location.position.y += velocity.velocity.y;
-            // velocity.velocity.y = 0;
+            velocity.velocity.y = 0;
+        }
+
+        if (!Math::isEqual(result.mtv.z, 0.0f)) {
+            velocity.velocity.z = 0;
         }
 
         BeginCollisionEvent event;

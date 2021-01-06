@@ -6,8 +6,10 @@ namespace Engine {
 std::vector<OverlappingPair> BroadPhaseAlgorithm::computeOverlappingPairs(
     const std::vector<CollisionShape> &shapes) const {
     std::vector<OverlappingPair> pairs;
+    pairs.reserve(shapes.size() * shapes.size());
 
     std::vector<AABB> aabbs;
+    aabbs.reserve(shapes.size());
     std::transform(
         shapes.begin(), shapes.end(), std::back_inserter(aabbs),
         [](const CollisionShape &shape) { return AABB(shape.vertices); });

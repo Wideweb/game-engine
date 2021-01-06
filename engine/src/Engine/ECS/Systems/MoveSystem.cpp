@@ -14,6 +14,7 @@ void MoveSystem::Update(ComponentManager &components) const {
         location.rotation += velocity.rotation;
         location.front = Math::getDirection(location.rotation);
         location.position += location.front * velocity.speed;
+        location.position += velocity.velocity;
     }
 }
 

@@ -8,11 +8,8 @@ namespace Engine {
 
 class NarrowPhaseAlgorithm {
   public:
-    glm::vec2 collide(const CollisionShape &shape1,
+    glm::vec3 collide(const CollisionShape &shape1,
                       const CollisionShape &shape2) const;
-
-  private:
-    std::vector<glm::vec2> getAxis(const std::vector<glm::vec2> &corners) const;
 };
 
 } // namespace Engine

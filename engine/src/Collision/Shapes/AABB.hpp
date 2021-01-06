@@ -1,30 +1,44 @@
 #pragma once
 
 #include <algorithm>
-#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <vector>
 
 namespace Engine {
 
 struct AABB {
-    glm::vec2 min;
-    glm::vec2 max;
+    glm::vec3 min;
+    glm::vec3 max;
 
     AABB() {}
-    AABB(const std::vector<glm::vec2> &vertices) {
-        std::vector<float> x;
-        std::transform(vertices.begin(), vertices.end(), std::back_inserter(x),
-                       [](glm::vec2 v) { return v.x; });
+    AABB(const std::vector<glm::vec3> &vertices) {
+        std::vector<float> coords;
+        coords.reserve(vertices.size());
 
-        std::vector<float> y;
-        std::transform(vertices.begin(), vertices.end(), std::back_inserter(y),
-                       [](glm::vec2 v) { return v.y; });
+        std::transform(vertices.begin(), vertices.end(),
+                       std::back_inserter(coords),
+                       [](glm::vec3 v) { return v.x; });
 
-        max.x = *std::max_element(x.begin(), x.end());
-        max.y = *std::max_element(y.begin(), y.end());
+        max.x = *std::max_element(coords.begin(), coords.end());
+        min.x = *std::min_element(coords.begin(), coords.end());
 
-        min.x = *std::min_element(x.begin(), x.end());
-        min.y = *std::min_element(y.begin(), y.end());
+        coords.clear();
+
+        std::transform(vertices.begin(), vertices.end(),
+                       std::back_inserter(coords),
+                       [](glm::vec3 v) { return v.y; });
+
+        max.y = *std::max_element(coords.begin(), coords.end());
+        min.y = *std::min_element(coords.begin(), coords.end());
+
+        coords.clear();
+
+        std::transform(vertices.begin(), vertices.end(),
+                       std::back_inserter(coords),
+                       [](glm::vec3 v) { return v.z; });
+
+        max.z = *std::max_element(coords.begin(), coords.end());
+        min.z = *std::min_element(coords.begin(), coords.end());
     }
 };
 

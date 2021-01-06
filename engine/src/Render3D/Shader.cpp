@@ -91,20 +91,17 @@ GLuint Shader::compileShader(GLenum type, const std::string &source) {
 }
 
 void Shader::setInt(const std::string &name, int value) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniform1i(location, value);
 }
 
 void Shader::setFloat(const std::string &name, float value) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniform1f(location, value);
     // std::cout << glGetError() << std::endl;
 }
 
 void Shader::setFloat2(const std::string &name, float value1, float value2) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniform2f(location, value1, value2);
     // std::cout << glGetError() << std::endl;
@@ -112,7 +109,6 @@ void Shader::setFloat2(const std::string &name, float value1, float value2) {
 
 void Shader::setFloat3(const std::string &name, float value1, float value2,
                        float value3) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniform3f(location, value1, value2, value3);
     // std::cout << glGetError() << std::endl;
@@ -125,7 +121,6 @@ void Shader::setFloat3(const std::string &name, glm::vec3 value) {
 }
 
 void Shader::setMatrix4(const std::string &name, const float *matrix) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
     // std::cout << glGetError() << std::endl;
@@ -133,14 +128,12 @@ void Shader::setMatrix4(const std::string &name, const float *matrix) {
 
 void Shader::setMatrix2x3(const std::string &name,
                           const std::vector<float> &matrix) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniformMatrix2x3fv(location, 1, GL_FALSE, matrix.data());
 }
 
 void Shader::setMatrix2(const std::string &name,
                         const std::vector<float> &matrix) {
-    bind();
     GLint location = getUniformLocation(name);
     glUniformMatrix2fv(location, 1, GL_FALSE, matrix.data());
 }

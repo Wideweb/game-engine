@@ -40,15 +40,6 @@ Layer::Layer() {
 
     {
         Signature signature;
-        signature.set(m_Coordinator.GetComponentType<CollisionComponent>());
-        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
-        signature.set(m_Coordinator.GetComponentType<VelocityComponent>());
-
-        m_Coordinator.RegisterSystem<CollisionSystem>(signature);
-    }
-
-    {
-        Signature signature;
         signature.set(m_Coordinator.GetComponentType<PhysicsComponent>());
         signature.set(m_Coordinator.GetComponentType<VelocityComponent>());
 
@@ -65,6 +56,22 @@ Layer::Layer() {
 
     {
         Signature signature;
+        signature.set(m_Coordinator.GetComponentType<CollisionComponent>());
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+        signature.set(m_Coordinator.GetComponentType<VelocityComponent>());
+
+        m_Coordinator.RegisterSystem<CollisionSystem>(signature);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<AIComponent>());
+
+        m_Coordinator.RegisterSystem<AISystem>(signature);
+    }
+
+    {
+        Signature signature;
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
         signature.set(m_Coordinator.GetComponentType<Render3DComponent>());
 
@@ -77,13 +84,6 @@ Layer::Layer() {
         signature.set(m_Coordinator.GetComponentType<Light3DComponent>());
 
         m_Coordinator.RegisterSystem<Light3DSystem>(signature);
-    }
-
-    {
-        Signature signature;
-        signature.set(m_Coordinator.GetComponentType<AIComponent>());
-
-        m_Coordinator.RegisterSystem<AISystem>(signature);
     }
 
     {

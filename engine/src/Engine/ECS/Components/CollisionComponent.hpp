@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Entity.hpp"
-#include <glm/vec2.hpp>
+
+#include <glm/vec3.hpp>
 #include <unordered_set>
 
 namespace Engine {
@@ -18,24 +19,27 @@ struct EndCollisionEvent {
 
 class CollisionComponent {
   public:
-    std::vector<glm::vec2> vertices;
+    std::vector<glm::vec3> vertices;
     std::unordered_set<Entity> entities;
     bool isStatic;
 
-    CollisionComponent() : CollisionComponent(0, 0, false) {}
-    CollisionComponent(float width, float height, bool isStatic)
+    CollisionComponent() : CollisionComponent(0, 0, 0, false) {}
+    CollisionComponent(float width, float height, float depth, bool isStatic)
         : isStatic(isStatic) {
         float wHalf = width / 2;
         float hHalf = height / 2;
+        float dHalf = depth / 2;
 
-        vertices.emplace_back(-wHalf, -hHalf);
-        vertices.emplace_back(-wHalf, hHalf);
-        vertices.emplace_back(wHalf, hHalf);
-        vertices.emplace_back(wHalf, -hHalf);
+        vertices.emplace_back(-wHalf, hHalf, -dHalf);
+        vertices.emplace_back(wHalf, hHalf, -dHalf);
+        vertices.emplace_back(wHalf, hHalf, dHalf);
+        vertices.emplace_back(-wHalf, hHalf, dHalf);
+
+        vertices.emplace_back(-wHalf, -hHalf, -dHalf);
+        vertices.emplace_back(wHalf, -hHalf, -dHalf);
+        vertices.emplace_back(wHalf, -hHalf, dHalf);
+        vertices.emplace_back(-wHalf, -hHalf, dHalf);
     }
-
-    CollisionComponent(const std::vector<glm::vec2> &vertices)
-        : vertices(vertices) {}
 };
 
 } // namespace Engine

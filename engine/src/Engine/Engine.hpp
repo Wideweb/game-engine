@@ -21,8 +21,10 @@
 #include "UntilFail.hpp"
 
 #include "ControllerTask.hpp"
+#include "JumpTask.hpp"
 #include "MoveTask.hpp"
 #include "NoopTask.hpp"
+#include "OnGroundTask.hpp"
 #include "RotateTask.hpp"
 
 #include "ModelLoader.hpp"

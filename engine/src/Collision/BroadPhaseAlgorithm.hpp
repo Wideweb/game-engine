@@ -12,8 +12,8 @@ struct OverlappingPair {
     CollisionShape shape2;
 
     OverlappingPair() {}
-    OverlappingPair(const CollisionShape &shape1, const CollisionShape &shape2)
-        : shape1(shape1), shape2(shape2) {}
+    OverlappingPair(CollisionShape shape1, CollisionShape shape2)
+        : shape1(std::move(shape1)), shape2(std::move(shape2)) {}
 };
 
 class BroadPhaseAlgorithm {

@@ -11,11 +11,11 @@ namespace Engine {
 struct CollisionResult {
     uint32_t shape1;
     uint32_t shape2;
-    glm::vec2 mtv;
+    glm::vec3 mtv;
 
     CollisionResult() {}
-    CollisionResult(uint32_t shape1, uint32_t shape2, glm::vec2 mtv)
-        : shape1(shape1), shape2(shape2), mtv(mtv) {}
+    CollisionResult(uint32_t shape1, uint32_t shape2, glm::vec3 mtv)
+        : shape1(shape1), shape2(shape2), mtv(std::move(mtv)) {}
 };
 
 class CollisionDetection {
