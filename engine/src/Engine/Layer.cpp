@@ -89,6 +89,7 @@ Layer::Layer() {
     {
         Signature signature;
         signature.set(m_Coordinator.GetComponentType<CameraComponent>());
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
 
         m_Coordinator.RegisterSystem<CameraSystem>(signature);
     }

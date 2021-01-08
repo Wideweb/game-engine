@@ -14,9 +14,9 @@ struct Vertex {
     glm::vec3 normal = glm::vec3(0.0f);
     glm::vec2 textCoord = glm::vec3(0.0f);
 
-    Vertex(const glm::vec3 &position, const glm::vec3 &normal,
-           const glm::vec2 &textCoord)
-        : position(position), normal(normal), textCoord(textCoord) {}
+    Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 textCoord)
+        : position(std::move(position)), normal(std::move(normal)),
+          textCoord(std::move(textCoord)) {}
 };
 
 struct Material {

@@ -23,6 +23,8 @@ glm::mat4 Camera::projectionMatrix() const {
 
 glm::vec3 Camera::positionVec() const { return position; }
 
+glm::vec3 Camera::upVec() const { return up; }
+
 void Camera::setSize(uint32_t width, uint32_t height) {
     this->width = width;
     this->height = height;
@@ -53,15 +55,10 @@ void Camera::rotate(const glm::vec3 &offset) {
     this->front = Math::getDirection(rotation);
 }
 
-void Camera::move(Movement direction, float offset) {
-    if (direction == Movement::FORWARD)
-        position += front * offset;
-    if (direction == Movement::BACKWARD)
-        position -= front * offset;
-    if (direction == Movement::LEFT)
-        position -= glm::normalize(glm::cross(front, up)) * offset;
-    if (direction == Movement::RIGHT)
-        position += glm::normalize(glm::cross(front, up)) * offset;
+void Camera::move(const glm::vec3 &offset) {
+    position += front * offset.x;
+    position += up * offset.y;
+    position += glm::normalize(glm::cross(front, up)) * offset.z;
 }
 
 } // namespace Engine

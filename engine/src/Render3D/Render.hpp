@@ -11,7 +11,8 @@ namespace Engine {
 
 class Render {
   private:
-    std::unique_ptr<Shader> shader;
+    std::unique_ptr<Shader> m_Shader;
+    std::unique_ptr<Shader> m_SkyboxShader;
 
   public:
     Render();

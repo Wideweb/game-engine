@@ -3,6 +3,8 @@
 #include "Application.hpp"
 #include "EntryPoint.hpp"
 
+#include "TextureLoader.hpp"
+
 #include "AIComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"

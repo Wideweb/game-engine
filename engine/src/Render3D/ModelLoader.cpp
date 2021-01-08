@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "ModelLoader.hpp"
+#include "TextureLoader.hpp"
 
 namespace Engine {
 
@@ -55,12 +56,65 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
 
     in.close();
 
-    material.diffuseMap.reset(new Texture(toDiffuseMap));
-    material.specularMap.reset(new Texture(toSpecularMap));
-    material.normalMap.reset(new Texture(toNormalMap));
+    material.diffuseMap.reset(TextureLoader::loadTexture(toDiffuseMap));
+    material.specularMap.reset(TextureLoader::loadTexture(toSpecularMap));
+    material.normalMap.reset(TextureLoader::loadTexture(toNormalMap));
 
     Mesh mesh(vertices, indices, material);
     return std::shared_ptr<Model>(new Model({mesh}));
+}
+
+std::shared_ptr<Skybox>
+ModelLoader::loadSkybox(const std::vector<std::string> &faces) {
+    // clang-format off
+    std::vector<SkyboxVertex> vertices = {
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
+
+        SkyboxVertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
+
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+        SkyboxVertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
+        SkyboxVertex(glm::vec3(1.0f, -1.0f,  1.0f))
+    };
+    // clang-format on
+
+    auto cubemapTexture =
+        std::shared_ptr<Texture>(TextureLoader::loadCubemap(faces));
+    return std::make_shared<Skybox>(vertices, cubemapTexture);
 }
 
 } // namespace Engine

@@ -8,23 +8,20 @@
 namespace Engine {
 
 class Texture {
-  private:
-    GLuint m_TextureID;
-    uint32_t m_Index;
-
   public:
-    Texture(const std::string &path);
+    enum class TextureType { SIMPLE, CUBE_MAP };
+
+    Texture(GLuint id, TextureType type = TextureType::SIMPLE);
     ~Texture();
 
     void bind();
     void unbind();
 
     uint32_t getId() { return m_TextureID; }
-    uint32_t getIndex() { return m_Index; }
-    void setIndex(uint32_t index) { m_Index = index; }
 
   private:
-    bool load(const std::string &path);
+    GLuint m_TextureID;
+    TextureType m_Type;
 };
 
 } // namespace Engine

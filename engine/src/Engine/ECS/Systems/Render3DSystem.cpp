@@ -24,7 +24,7 @@ void Render3DSystem::Update(ComponentManager &components) const {
         model = glm::rotate(model, location.rotation.x,
                             glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, location.rotation.y,
-                            glm::vec3(0.0f, 1.0f, 0.0f));
+                            glm::vec3(0.0f, -1.0f, 0.0f));
         model = glm::rotate(model, location.rotation.z,
                             glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(render.scale));

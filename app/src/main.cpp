@@ -9,6 +9,15 @@ class AppLayer : public Engine::Layer {
   private:
   public:
     virtual void onAttach() override {
+        auto skybox_model = Engine::ModelLoader::loadSkybox(
+            {"./assets/models/skybox/right.jpg",
+             "./assets/models/skybox/left.jpg",
+             "./assets/models/skybox/top.jpg",
+             "./assets/models/skybox/bottom.jpg",
+             "./assets/models/skybox/front.jpg",
+             "./assets/models/skybox/back.jpg"});
+        Engine::Application::get().getScene().setSkybox(skybox_model);
+
         auto box_model =
             Engine::ModelLoader::load("./assets/models/box/box.obj",
                                       "./assets/models/box/diffuse-map.png",
@@ -26,11 +35,12 @@ class AppLayer : public Engine::Layer {
 
             Engine::LocationComponent location(glm::vec3(10.0f, 10.0f, 0.0f),
                                                glm::vec3(0.0f, 0.0f, 0.0f));
-            Engine::VelocityComponent velocity(0, glm::vec3(0.0f, 0.0f, 0.0f),
-                                               glm::vec3(0.0f, 0.0f, 0.0f));
-            Engine::CollisionComponent collision{1.0f, 5.0f, 1.0f, false};
+            Engine::VelocityComponent velocity;
+            Engine::Render3DComponent render{box_model, 0.5f};
+            Engine::CollisionComponent collision{1.0f, 1.0f, 1.0f, false};
             Engine::PhysicsComponent physics{0.01f};
             Engine::CameraComponent camera;
+            camera.offset = glm::vec3(-5.0f, 1.0f, 0.0f);
 
             auto blackboard = std::make_shared<Engine::Blackboard>();
             blackboard->setValue<std::string>("layer",
@@ -76,6 +86,7 @@ class AppLayer : public Engine::Layer {
             Engine::AIComponent ai{std::shared_ptr<Engine::Task>(state)};
             m_Coordinator.AddComponent(player, location);
             m_Coordinator.AddComponent(player, velocity);
+            m_Coordinator.AddComponent(player, render);
             m_Coordinator.AddComponent(player, ai);
             m_Coordinator.AddComponent(player, camera);
             m_Coordinator.AddComponent(player, collision);
@@ -97,8 +108,7 @@ class AppLayer : public Engine::Layer {
 
             Engine::LocationComponent location(glm::vec3(0.0f, 5.0f, -1.0f),
                                                glm::vec3(0.0f, 0.0f, 0.0f));
-            Engine::VelocityComponent velocity(0, glm::vec3(0.0f, 0.0f, 0.0f),
-                                               glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity;
             Engine::Render3DComponent render{box_model, 1.0f};
             Engine::CollisionComponent collision{2.0f, 2.0f, 2.0f, false};
             Engine::PhysicsComponent physics{0.001f};
@@ -115,8 +125,7 @@ class AppLayer : public Engine::Layer {
 
             Engine::LocationComponent location(glm::vec3(4.0f, 10.0f, -1.0f),
                                                glm::vec3(0, 0.0f, 0.0f));
-            Engine::VelocityComponent velocity(
-                0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity;
             Engine::Render3DComponent render{box_model, 1.0f};
             Engine::CollisionComponent collision{2.0f, 2.0f, 2.0f, false};
             Engine::PhysicsComponent physics{0.001f};
@@ -132,9 +141,8 @@ class AppLayer : public Engine::Layer {
             auto box = m_Coordinator.CreateEntity("floor");
 
             Engine::LocationComponent location(glm::vec3(0.0f, -20.0f, 0.0f),
-                                               glm::vec3(0, 0.0f, 0.0f));
-            Engine::VelocityComponent velocity(
-                0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+                                               glm::vec3(0.0f, 0.0f, 0.0f));
+            Engine::VelocityComponent velocity;
             Engine::Render3DComponent render{box_model, 20.0f};
             Engine::CollisionComponent collision{40.0f, 40.0f, 40.0f, true};
 

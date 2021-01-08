@@ -3,8 +3,10 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "Model.hpp"
+#include "Skybox.hpp"
 
 namespace Engine {
 
@@ -14,6 +16,9 @@ class ModelLoader {
                                        const std::string &toDiffuseMap,
                                        const std::string &toSpecularMap,
                                        const std::string &toNormalMap);
+
+    static std::shared_ptr<Skybox>
+    loadSkybox(const std::vector<std::string> &faces);
 };
 
 } // namespace Engine

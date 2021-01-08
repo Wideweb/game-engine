@@ -8,9 +8,9 @@ namespace Engine {
 
 class VelocityComponent {
   public:
-    float speed;
-    glm::vec3 rotation;
-    glm::vec3 velocity;
+    float speed = 0.0f;
+    glm::vec3 rotation = glm::vec3(0.0f);
+    glm::vec3 velocity = glm::vec3(0.0f);
 
     VelocityComponent() {}
     VelocityComponent(float speed, glm::vec3 rotation, glm::vec3 velocity)

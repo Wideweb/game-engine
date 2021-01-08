@@ -7,19 +7,19 @@ namespace Engine {
 
 class Camera {
   public:
-    enum class Movement { FORWARD, BACKWARD, LEFT, RIGHT };
     enum class Projection { PERSPECTIVE, ORTHOGONAL };
 
-    Camera(glm::vec3 position, glm::vec3 up, glm::vec3 direction);
+    Camera(glm::vec3 position, glm::vec3 up, glm::vec3 front);
     Camera();
     ~Camera();
 
-    void move(Movement direction, float offset);
+    void move(const glm::vec3 &offset);
     void rotate(const glm::vec3 &offset);
 
     glm::mat4 viewMatrix() const;
     glm::mat4 projectionMatrix() const;
     glm::vec3 positionVec() const;
+    glm::vec3 upVec() const;
 
     void setSize(uint32_t width, uint32_t height);
     void setPerspective(float fieldOfView, float zNear, float zFar);

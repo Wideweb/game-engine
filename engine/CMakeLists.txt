@@ -28,11 +28,13 @@ set(SOURCE_LIB
     src/Render3D/Camera.cpp
     src/Render3D/Mesh.cpp
     src/Render3D/Model.cpp
+    src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/Render.cpp
     src/Render3D/Scene.cpp
     src/Render3D/Shader.cpp
     src/Render3D/Texture.cpp
+    src/Render3D/TextureLoader.cpp
     src/Collision/CollisionDetection.cpp
     src/Collision/BroadPhaseAlgorithm.cpp
     src/Collision/NarrowPhaseAlgorithm.cpp

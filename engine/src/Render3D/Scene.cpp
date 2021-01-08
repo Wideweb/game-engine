@@ -2,6 +2,12 @@
 
 namespace Engine {
 
+void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) {
+    m_Skybox = skybox;
+}
+
+const std::shared_ptr<Skybox> Scene::getSkybox() const { return m_Skybox; }
+
 void Scene::addObject(const std::shared_ptr<Model> &model, glm::mat4 position) {
     m_Objects[m_ActiveObjects].model = model;
     m_Objects[m_ActiveObjects].position = std::move(position);
