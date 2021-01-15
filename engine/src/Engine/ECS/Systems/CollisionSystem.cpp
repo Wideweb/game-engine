@@ -11,7 +11,7 @@
 
 namespace Engine {
 
-void CollisionSystem::Update(ComponentManager &components) {
+void CollisionSystem::Update(ComponentManager &components) const {
     auto &app = Application::get();
     auto &collision3D = app.getCollision();
     auto &eventHandler = app.getEventHandler();

@@ -6,7 +6,7 @@ namespace Engine {
 
 class CameraSystem : public System {
   public:
-    virtual void Update(ComponentManager &components) override;
+    virtual void Update(ComponentManager &components) const override;
 };
 
 } // namespace Engine

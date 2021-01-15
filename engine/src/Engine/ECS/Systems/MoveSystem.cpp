@@ -6,7 +6,7 @@
 
 namespace Engine {
 
-void MoveSystem::Update(ComponentManager &components) {
+void MoveSystem::Update(ComponentManager &components) const {
     for (const auto entity : m_Entities) {
         auto &velocity = components.GetComponent<VelocityComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);

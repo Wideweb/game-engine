@@ -8,7 +8,7 @@ namespace Engine {
 
 class CollisionSystem : public System {
   public:
-    virtual void Update(ComponentManager &components) override;
+    virtual void Update(ComponentManager &components) const override;
 };
 
 } // namespace Engine

@@ -7,7 +7,7 @@
 
 namespace Engine {
 
-void StaticCollisionSystem::Update(ComponentManager &components) {
+void StaticCollisionSystem::Update(ComponentManager &components) const {
     auto &app = Application::get();
     auto &collision3D = app.getCollision();
 

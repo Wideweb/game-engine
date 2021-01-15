@@ -3,7 +3,7 @@
 #include "Application.hpp"
 
 namespace Engine {
-void AISystem::Update(ComponentManager &components) {
+void AISystem::Update(ComponentManager &components) const {
     for (const auto entity : m_Entities) {
         auto &ai = components.GetComponent<AIComponent>(entity);
         ai.tree->update();
