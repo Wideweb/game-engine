@@ -25,20 +25,10 @@ class Coordinator {
         return m_EntityManager->GetEntity(name);
     }
 
-    EntityManager::EntityRange GetAll() const {
-        return m_EntityManager->GetAll();
-    }
-
     void DestroyEntity(Entity entity) {
         m_SystemManager->RemoveEntity(entity);
         m_ComponentManager->RemoveEntityComponents(entity);
         m_EntityManager->DestroyEntity(entity);
-    }
-
-    void DestroyEntities() {
-        for (auto entity : GetAll()) {
-            DestroyEntity(entity);
-        }
     }
 
     template <typename T> void RegisterComponent() {

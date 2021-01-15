@@ -14,6 +14,7 @@
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
+#include "StaticCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include "AISystem.hpp"
@@ -23,6 +24,7 @@
 #include "MoveSystem.hpp"
 #include "PhysicsSystem.hpp"
 #include "Render3DSystem.hpp"
+#include "StaticCollisionSystem.hpp"
 
 namespace Engine {
 
@@ -33,6 +35,7 @@ Layer::Layer() {
     m_Coordinator.RegisterComponent<VelocityComponent>();
     m_Coordinator.RegisterComponent<LocationComponent>();
     m_Coordinator.RegisterComponent<Render3DComponent>();
+    m_Coordinator.RegisterComponent<StaticCollisionComponent>();
     m_Coordinator.RegisterComponent<CollisionComponent>();
     m_Coordinator.RegisterComponent<Light3DComponent>();
     m_Coordinator.RegisterComponent<AIComponent>();
@@ -52,6 +55,15 @@ Layer::Layer() {
         signature.set(m_Coordinator.GetComponentType<VelocityComponent>());
 
         m_Coordinator.RegisterSystem<MoveSystem>(signature);
+    }
+
+    {
+        Signature signature;
+        signature.set(
+            m_Coordinator.GetComponentType<StaticCollisionComponent>());
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+
+        m_Coordinator.RegisterSystem<StaticCollisionSystem>(signature);
     }
 
     {
@@ -96,7 +108,5 @@ Layer::Layer() {
 }
 
 void Layer::update() { m_Coordinator.UpdateSystems(); }
-
-void Layer::clear() { m_Coordinator.DestroyEntities(); }
 
 } // namespace Engine

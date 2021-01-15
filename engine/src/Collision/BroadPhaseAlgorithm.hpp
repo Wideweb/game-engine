@@ -1,25 +1,29 @@
 #pragma once
 
 #include "AABB.hpp"
+#include "AABBOverlap.hpp"
 #include "CollisionShape.hpp"
 
 #include <vector>
 
 namespace Engine {
 
-struct OverlappingPair {
-    CollisionShape shape1;
-    CollisionShape shape2;
-
-    OverlappingPair() {}
-    OverlappingPair(CollisionShape shape1, CollisionShape shape2)
-        : shape1(std::move(shape1)), shape2(std::move(shape2)) {}
-};
-
-class BroadPhaseAlgorithm {
+template <typename T> class BroadPhaseAlgorithm {
   public:
-    std::vector<OverlappingPair>
-    computeOverlappingPairs(const std::vector<CollisionShape> &shapes) const;
+    std::vector<CollisionShape<T>>
+    ComputeOverlaps(const std::vector<glm::vec3> &vertices,
+                    const std::vector<CollisionShape<T>> &shapes) const {
+        std::vector<CollisionShape<T>> overlaps;
+        overlaps.reserve(shapes.size());
+
+        for (size_t i = 0; i < shapes.size(); i++) {
+            if (AABBOverlap::test(AABB(vertices), AABB(shapes[i].vertices))) {
+                overlaps.push_back(shapes[i]);
+            }
+        }
+
+        return overlaps;
+    }
 };
 
 } // namespace Engine

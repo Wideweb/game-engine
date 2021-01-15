@@ -17,7 +17,6 @@ class Layer {
     virtual ~Layer() = default;
 
     void update();
-    void clear();
 
     Coordinator &getCoordinator() { return m_Coordinator; }
 

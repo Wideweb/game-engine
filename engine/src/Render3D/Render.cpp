@@ -24,7 +24,8 @@ void Render::setClearColor(float r, float g, float b, float a) {
 
 void Render::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
-void Render::draw(const Scene &scene, const Camera &camera) {
+void Render::draw(Scene &scene, const ModelManager &models,
+                  const Camera &camera) {
     m_Shader->bind();
 
     glm::mat4 view = camera.viewMatrix();
@@ -44,10 +45,20 @@ void Render::draw(const Scene &scene, const Camera &camera) {
         m_Shader->setFloat("Light.quadratic", object.light.quadratic);
     }
 
-    for (const auto &object : scene.getObjects()) {
-        for (const auto &mesh : object.model->meshes) {
-            m_Shader->setMatrix4("Model", glm::value_ptr(object.position));
-            mesh.draw(*m_Shader);
+    for (auto &pair : scene.getObjects()) {
+        for (const auto &mesh : models.GetModel(pair.first)->meshes) {
+            auto &instances = pair.second;
+            if (instances.resize) {
+                mesh.setInstances(instances.GetData());
+            } else if (instances.update) {
+                mesh.updateInstances(instances.from, instances.to,
+                                     instances.GetData());
+            }
+
+            mesh.draw(*m_Shader, instances.GetData().size());
+
+            instances.resize = false;
+            instances.update = false;
         }
     }
 

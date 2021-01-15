@@ -56,7 +56,7 @@ void Application::run() {
         for (auto layer : m_LayerStack) {
             layer->update();
         }
-        m_Render->draw(m_Scene, *m_Camera);
+        m_Render->draw(m_Scene, m_Models, *m_Camera);
 
         m_Window->swapBuffers();
     }

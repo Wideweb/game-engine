@@ -18,6 +18,7 @@ Mesh::Mesh(const Mesh &mesh) {
     VAO = mesh.VAO;
     EBO = mesh.EBO;
     VBO = mesh.VBO;
+    instanceVBO = mesh.instanceVBO;
 
     vertices = mesh.vertices;
     indices = mesh.indices;
@@ -53,10 +54,54 @@ void Mesh::setUp() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+    // clang-format off
+    GLsizei vec4Size = sizeof(glm::vec4);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
+    glEnableVertexAttribArray(3); 
+
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
+    glEnableVertexAttribArray(4); 
+
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
+    glEnableVertexAttribArray(5); 
+
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
+    glEnableVertexAttribArray(6);
+    // clang-format on
+
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     glBindVertexArray(0);
 }
 
-void Mesh::draw(Shader &shader) const {
+void Mesh::setInstances(const std::vector<glm::mat4> &positions) const {
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER,
+                 static_cast<GLsizeiptr>(sizeof(glm::mat4) * positions.size()),
+                 positions.data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Mesh::updateInstances(size_t from, size_t to,
+                           const std::vector<glm::mat4> &positions) const {
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferSubData(
+        GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4) * from),
+        static_cast<GLsizeiptr>(sizeof(glm::mat4) * (to - from + 1)),
+        positions.data() + from);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Mesh::draw(Shader &shader, size_t instanceCount) const {
     glActiveTexture(GL_TEXTURE0);
     // std::cout << glGetError() << std::endl;
     material.diffuseMap->bind();
@@ -76,7 +121,10 @@ void Mesh::draw(Shader &shader) const {
 
     glBindVertexArray(VAO);
     // std::cout << glGetError() << std::endl;
-    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
+
+    glDrawArraysInstanced(GL_TRIANGLES, 0,
+                          static_cast<GLsizei>(vertices.size()),
+                          static_cast<GLsizei>(instanceCount));
     // glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     // std::cout << glGetError() << std::endl;
     glBindVertexArray(0);

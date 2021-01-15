@@ -6,7 +6,7 @@
 
 namespace Engine {
 
-void MoveSystem::Update(ComponentManager &components) const {
+void MoveSystem::Update(ComponentManager &components) {
     for (const auto entity : m_Entities) {
         auto &velocity = components.GetComponent<VelocityComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
@@ -15,6 +15,8 @@ void MoveSystem::Update(ComponentManager &components) const {
         location.front = Math::getDirection(location.rotation);
         location.position += location.front * velocity.speed;
         location.position += velocity.velocity;
+
+        location.updated = true;
     }
 }
 

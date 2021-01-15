@@ -1,16 +1,14 @@
 #pragma once
 
-#include "CollisionDetection.hpp"
+#include "Collision3D.hpp"
+#include "Entity.hpp"
 #include "System.hpp"
 
 namespace Engine {
 
 class CollisionSystem : public System {
-  private:
-    CollisionDetection m_CollisionDetection;
-
   public:
-    virtual void Update(ComponentManager &components) const override;
+    virtual void Update(ComponentManager &components) override;
 };
 
 } // namespace Engine

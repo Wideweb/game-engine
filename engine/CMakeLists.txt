@@ -22,6 +22,7 @@ set(SOURCE_LIB
     src/Engine/ECS/Systems/Render3DSystem.cpp
     src/Engine/ECS/Systems/PhysicsSystem.cpp
     src/Engine/ECS/Systems/CollisionSystem.cpp
+    src/Engine/ECS/Systems/StaticCollisionSystem.cpp
     src/Engine/ECS/Systems/AISystem.cpp
     src/Engine/ECS/Systems/CameraSystem.cpp
     src/Animation/AnimationLoader.cpp
@@ -35,8 +36,6 @@ set(SOURCE_LIB
     src/Render3D/Shader.cpp
     src/Render3D/Texture.cpp
     src/Render3D/TextureLoader.cpp
-    src/Collision/CollisionDetection.cpp
-    src/Collision/BroadPhaseAlgorithm.cpp
     src/Collision/NarrowPhaseAlgorithm.cpp
     src/Collision/AABBOverlap.cpp
     src/Sound/SoundMixer.cpp
@@ -78,6 +77,7 @@ target_link_libraries(engine PUBLIC glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui)
 target_link_libraries(engine PRIVATE imgui)
 
-target_link_libraries(engine PRIVATE -lprofiler)
+# target_link_libraries(engine PRIVATE -lprofiler)
+# target_link_libraries(engine PRIVATE -ltcmalloc)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/shaders DESTINATION ${OUTPUT_DIRECTORY})

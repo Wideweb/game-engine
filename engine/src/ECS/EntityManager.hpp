@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <queue>
 #include <string>
 #include <unordered_map>
 
@@ -17,14 +18,15 @@ class EntityManager {
 
     EntityManager() {
         for (Entity i = 0; i < c_MaxEntities; i++) {
-            m_Entities[i] = i;
+            m_Entities.push(i);
         }
     }
 
     Entity CreateEntity(const std::string &name) {
         assert(m_ActiveEntities < c_MaxEntities && "Too many entities");
 
-        Entity id = m_Entities[m_ActiveEntities];
+        Entity id = m_Entities.front();
+        m_Entities.pop();
 
         m_NameToEntity[name] = id;
         m_EntityToName[id] = name;
@@ -39,8 +41,8 @@ class EntityManager {
         m_EntityToName.erase(entity);
         m_NameToEntity.erase(name);
 
+        m_Entities.push(entity);
         --m_ActiveEntities;
-        m_Entities[entity] = m_Entities[m_ActiveEntities];
     }
 
     Entity GetEntity(const std::string &name) const {
@@ -51,10 +53,6 @@ class EntityManager {
         return it->second;
     }
 
-    EntityRange GetAll() const {
-        return {m_Entities.cbegin(), m_Entities.cbegin() + m_ActiveEntities};
-    }
-
     void SetSignature(Entity entity, Signature signature) {
         m_Signatures[entity] = signature;
     }
@@ -62,7 +60,7 @@ class EntityManager {
     Signature GetSignature(Entity entity) { return m_Signatures[entity]; }
 
   private:
-    std::array<Entity, c_MaxEntities> m_Entities;
+    std::queue<Entity> m_Entities;
     std::array<Signature, c_MaxEntities> m_Signatures;
     std::unordered_map<std::string, Entity> m_NameToEntity;
     std::unordered_map<Entity, std::string> m_EntityToName;

@@ -11,6 +11,7 @@ class LocationComponent {
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 front;
+    bool updated = false;
 
     LocationComponent() {}
     LocationComponent(glm::vec3 position, glm::vec3 rotation)

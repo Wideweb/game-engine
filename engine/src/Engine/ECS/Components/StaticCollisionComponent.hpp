@@ -3,27 +3,17 @@
 #include "Entity.hpp"
 
 #include <glm/vec3.hpp>
-#include <unordered_set>
+#include <vector>
 
 namespace Engine {
 
-struct BeginCollisionEvent {
-    Entity first;
-    Entity second;
-};
-
-struct EndCollisionEvent {
-    Entity first;
-    Entity second;
-};
-
-class CollisionComponent {
+class StaticCollisionComponent {
   public:
     std::vector<glm::vec3> vertices;
-    std::unordered_set<Entity> entities;
+    bool created = false;
 
-    CollisionComponent() : CollisionComponent(0.0f, 0.0f, 0.0f) {}
-    CollisionComponent(float width, float height, float depth) {
+    StaticCollisionComponent() : StaticCollisionComponent(0.0f, 0.0f, 0.0f) {}
+    StaticCollisionComponent(float width, float height, float depth) {
         float wHalf = width / 2;
         float hHalf = height / 2;
         float dHalf = depth / 2;

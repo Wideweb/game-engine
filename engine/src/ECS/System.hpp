@@ -12,7 +12,7 @@ class System {
     std::set<Entity> m_Entities;
 
     virtual ~System() = default;
-    virtual void Update(ComponentManager &components) const = 0;
+    virtual void Update(ComponentManager &components) = 0;
 };
 
 } // namespace Engine

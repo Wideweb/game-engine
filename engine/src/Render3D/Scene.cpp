@@ -6,12 +6,15 @@ void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) {
     m_Skybox = skybox;
 }
 
-const std::shared_ptr<Skybox> Scene::getSkybox() const { return m_Skybox; }
+std::shared_ptr<Skybox> Scene::getSkybox() { return m_Skybox; }
 
-void Scene::addObject(const std::shared_ptr<Model> &model, glm::mat4 position) {
-    m_Objects[m_ActiveObjects].model = model;
-    m_Objects[m_ActiveObjects].position = std::move(position);
-    ++m_ActiveObjects;
+ModelInstance Scene::addObject(const std::string &model, glm::mat4 position) {
+    return m_Objects[model].Create(std::move(position));
+}
+
+void Scene::updateObject(const std::string &model, glm::mat4 position,
+                         ModelInstance instance) {
+    m_Objects[model].Update(instance, std::move(position));
 }
 
 void Scene::addLight(const Light &light, glm::vec3 position) {
@@ -20,17 +23,14 @@ void Scene::addLight(const Light &light, glm::vec3 position) {
     ++m_ActiveLights;
 }
 
-const Scene::SceneObjectsRange Scene::getObjects() const {
-    return {m_Objects.cbegin(), m_Objects.cbegin() + m_ActiveObjects};
+Scene::SceneObjectsRange Scene::getObjects() {
+    return {m_Objects.begin(), m_Objects.end()};
 }
 
-const Scene::SceneLightsRange Scene::getLights() const {
+Scene::SceneLightsRange Scene::getLights() {
     return {m_Lights.cbegin(), m_Lights.cbegin() + m_ActiveLights};
 }
 
-void Scene::clear() {
-    m_ActiveObjects = 0;
-    m_ActiveLights = 0;
-}
+void Scene::clear() { m_ActiveLights = 0; }
 
 } // namespace Engine

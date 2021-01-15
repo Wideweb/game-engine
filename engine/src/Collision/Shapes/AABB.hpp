@@ -11,6 +11,7 @@ struct AABB {
     glm::vec3 max;
 
     AABB() {}
+    AABB(glm::vec3 min, glm::vec3 max) : min(std::move(min)), max(std::move(max)) {}
     AABB(const std::vector<glm::vec3> &vertices) {
         std::vector<float> coords;
         coords.reserve(vertices.size());

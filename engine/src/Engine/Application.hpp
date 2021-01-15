@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "Collision3D.hpp"
 #include "EventHandler.hpp"
 #include "Input.hpp"
 #include "Layer.hpp"
+#include "ModelManager.hpp"
 #include "Render.hpp"
 #include "Scene.hpp"
 #include "SoundMixer.hpp"
@@ -26,6 +28,7 @@ class Application {
     std::unique_ptr<Input> m_Input;
     std::unique_ptr<Render> m_Render;
     Scene m_Scene;
+    Collision3D<Entity> m_Collision;
     std::unique_ptr<Camera> m_Camera;
     std::unique_ptr<TextureManager> m_Texture;
     std::unique_ptr<EventHandler> m_EventHandler;
@@ -33,6 +36,7 @@ class Application {
     std::vector<std::shared_ptr<Layer>> m_LayerStack;
     std::unordered_map<std::string, std::shared_ptr<Layer>> m_NameToLayer;
     Time m_Time;
+    ModelManager m_Models;
 
     bool m_Running = true;
 
@@ -62,7 +66,9 @@ class Application {
     Camera &getCamera() { return *m_Camera; }
     Time &getTime() { return m_Time; }
     TextureManager &getTextures() { return *m_Texture; }
+    ModelManager &getModels() { return m_Models; }
     EventHandler &getEventHandler() { return *m_EventHandler; }
+    Collision3D<Entity> &getCollision() { return m_Collision; }
     Layer &getLayer(const std::string &label) { return *m_NameToLayer[label]; }
     glm::vec2 getScreenFix();
 

@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Collision3D.hpp"
+#include "Entity.hpp"
 #include "System.hpp"
 
 namespace Engine {
 
-class Light3DSystem : public System {
+class StaticCollisionSystem : public System {
   public:
     virtual void Update(ComponentManager &components) override;
 };

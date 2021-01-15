@@ -7,37 +7,38 @@
 
 namespace Engine {
 
-glm::vec3 NarrowPhaseAlgorithm::collide(const CollisionShape &shape1,
-                                        const CollisionShape &shape2) const {
+glm::vec3
+NarrowPhaseAlgorithm::Collide(const std::vector<glm::vec3> &vertices1,
+                              const std::vector<glm::vec3> &vertices2) const {
     glm::vec3 mtv;
     float minOverlap = std::numeric_limits<float>::max();
 
     std::vector<glm::vec3> axis;
     axis.reserve(15);
 
-    axis.push_back(glm::normalize(shape1.vertices[4] - shape1.vertices[0]));
-    axis.push_back(glm::normalize(shape1.vertices[3] - shape1.vertices[0]));
-    axis.push_back(glm::normalize(shape1.vertices[1] - shape1.vertices[0]));
+    axis.push_back(glm::normalize(vertices1[4] - vertices1[0]));
+    axis.push_back(glm::normalize(vertices1[3] - vertices1[0]));
+    axis.push_back(glm::normalize(vertices1[1] - vertices1[0]));
 
-    axis.push_back(glm::normalize(shape2.vertices[4] - shape2.vertices[0]));
-    axis.push_back(glm::normalize(shape2.vertices[3] - shape2.vertices[0]));
-    axis.push_back(glm::normalize(shape2.vertices[1] - shape2.vertices[0]));
+    axis.push_back(glm::normalize(vertices2[4] - vertices2[0]));
+    axis.push_back(glm::normalize(vertices2[3] - vertices2[0]));
+    axis.push_back(glm::normalize(vertices2[1] - vertices2[0]));
 
     std::vector<float> scalars1;
-    scalars1.reserve(shape1.vertices.size());
+    scalars1.reserve(vertices1.size());
 
     std::vector<float> scalars2;
-    scalars2.reserve(shape2.vertices.size());
+    scalars2.reserve(vertices2.size());
 
     for (size_t i = 0; i < axis.size(); i++) {
         scalars1.clear();
         scalars2.clear();
 
-        for (auto corner : shape1.vertices) {
+        for (auto corner : vertices1) {
             scalars1.push_back(glm::dot(axis[i], corner));
         }
 
-        for (auto corner : shape2.vertices) {
+        for (auto corner : vertices2) {
             scalars2.push_back(glm::dot(axis[i], corner));
         }
 

@@ -6,7 +6,7 @@ namespace Engine {
 
 class PhysicsSystem : public System {
   public:
-    virtual void Update(ComponentManager &components) const override;
+    virtual void Update(ComponentManager &components) override;
 };
 
 } // namespace Engine

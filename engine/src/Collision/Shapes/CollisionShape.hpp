@@ -3,16 +3,18 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
+#include "AABB.hpp"
+
 namespace Engine {
 
-struct CollisionShape {
-    uint32_t id;
+template <typename T> struct CollisionShape {
+    T id;
     std::vector<glm::vec3> vertices;
-    bool isStatic;
+    AABB box;
 
     CollisionShape() {}
-    CollisionShape(uint32_t id, std::vector<glm::vec3> vertices, bool isStatic)
-        : id(id), vertices(std::move(vertices)), isStatic(isStatic) {}
+    CollisionShape(T id, const std::vector<glm::vec3> &vertices)
+        : id(id), vertices(vertices), box(AABB(vertices)) {}
 };
 
 } // namespace Engine

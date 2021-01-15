@@ -2,6 +2,7 @@
 
 #include "Application.hpp"
 #include "LocationComponent.hpp"
+#include "ModelInstanceManager.hpp"
 #include "Render3DComponent.hpp"
 #include "cmath"
 
@@ -11,13 +12,16 @@
 
 namespace Engine {
 
-void Render3DSystem::Update(ComponentManager &components) const {
+void Render3DSystem::Update(ComponentManager &components) {
     auto &scene = Application::get().getScene();
 
     for (auto entity : m_Entities) {
-        const auto &render = components.GetComponent<Render3DComponent>(entity);
-        const auto &location =
-            components.GetComponent<LocationComponent>(entity);
+        auto &render = components.GetComponent<Render3DComponent>(entity);
+        auto &location = components.GetComponent<LocationComponent>(entity);
+
+        if (render.instance != NoModelInstance && !location.updated) {
+            continue;
+        }
 
         glm::mat4 model(1);
         model = glm::translate(model, location.position);
@@ -29,7 +33,12 @@ void Render3DSystem::Update(ComponentManager &components) const {
                             glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(render.scale));
 
-        scene.addObject(render.obj, model);
+        if (render.instance == NoModelInstance) {
+            render.instance = scene.addObject(render.model, model);
+        } else if (location.updated) {
+            scene.updateObject(render.model, model, render.instance);
+            location.updated = false;
+        }
     }
 }
 

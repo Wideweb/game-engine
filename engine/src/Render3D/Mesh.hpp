@@ -41,10 +41,14 @@ class Mesh {
     Mesh();
     ~Mesh();
 
-    void draw(Shader &shader) const;
+    void setInstances(const std::vector<glm::mat4> &positions) const;
+    void updateInstances(size_t from, size_t to,
+                         const std::vector<glm::mat4> &positions) const;
+
+    void draw(Shader &shader, size_t instanceCount) const;
 
   private:
-    GLuint VAO, VBO, EBO;
+    GLuint VAO, VBO, EBO, instanceVBO;
 
     void setUp();
 };

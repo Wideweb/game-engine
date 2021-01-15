@@ -7,7 +7,7 @@ namespace Engine {
 
 using Entity = uint32_t;
 
-constexpr Entity c_MaxEntities = 500;
+constexpr Entity c_MaxEntities = 40100;
 
 using ComponentType = std::uint8_t;
 

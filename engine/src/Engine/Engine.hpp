@@ -12,6 +12,7 @@
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
+#include "StaticCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include "BlackboardManager.hpp"

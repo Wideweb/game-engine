@@ -7,7 +7,7 @@
 
 namespace Engine {
 
-void CameraSystem::Update(ComponentManager &components) const {
+void CameraSystem::Update(ComponentManager &components) {
     auto &camera = Application::get().getCamera();
 
     for (const auto entity : m_Entities) {

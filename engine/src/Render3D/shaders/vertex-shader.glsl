@@ -3,8 +3,8 @@
 layout(location = 0) in vec3 VertexPosition;
 layout(location = 1) in vec3 VertexNormal;
 layout(location = 2) in vec2 VertexTextureCoord;
+layout(location = 3) in mat4 Model;
 
-uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
 
