@@ -4,24 +4,22 @@
 #include "StaticCollisionComponent.hpp"
 
 #include <glm/vec2.hpp>
+#include <vector>
 
 namespace Engine {
 
 void StaticCollisionSystem::Update(ComponentManager &components) const {
-    auto &app = Application::get();
-    auto &collision3D = app.getCollision();
+    auto &coordinator = getCoordinator();
+    auto &collision3D = getCollision();
 
     std::vector<glm::vec3> vertices;
     vertices.reserve(8);
 
-    for (const auto entity : m_Entities) {
+    std::vector<Entity> entitis(m_Entities.begin(), m_Entities.end());
+
+    for (const auto &entity : entitis) {
         auto &collision =
             components.GetComponent<StaticCollisionComponent>(entity);
-
-        if (collision.created) {
-            continue;
-        }
-
         auto &location = components.GetComponent<LocationComponent>(entity);
 
         vertices.clear();
@@ -32,7 +30,8 @@ void StaticCollisionSystem::Update(ComponentManager &components) const {
                        });
 
         collision3D.AddShape(entity, vertices);
-        collision.created = true;
+
+        coordinator.RemoveComponent<StaticCollisionComponent>(entity);
     }
 }
 

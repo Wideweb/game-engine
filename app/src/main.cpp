@@ -6,8 +6,9 @@
 #include <string>
 
 class AppLayer : public Engine::Layer {
-  private:
   public:
+    using Layer::Layer;
+
     virtual void onAttach() override {
         auto skybox_model = Engine::ModelLoader::loadSkybox(
             {"./assets/models/skybox/right.jpg",
@@ -16,7 +17,7 @@ class AppLayer : public Engine::Layer {
              "./assets/models/skybox/bottom.jpg",
              "./assets/models/skybox/front.jpg",
              "./assets/models/skybox/back.jpg"});
-        Engine::Application::get().getScene().setSkybox(skybox_model);
+        getScene().setSkybox(skybox_model);
 
         auto box_model =
             Engine::ModelLoader::load("./assets/models/box/box.obj",
@@ -101,7 +102,7 @@ class AppLayer : public Engine::Layer {
             auto cottage = m_Coordinator.CreateEntity("cottage");
             Engine::LocationComponent location(glm::vec3(0.0f, 0.0f, 1.0f),
                                                glm::vec3(0.0f, 0.0f, 0.0f));
-            Engine::Render3DComponent render{"cottage", 0.2f};
+            Engine::StaticRender3DComponent render{"cottage", 0.2f};
             Engine::StaticCollisionComponent collision{6.0f, 6.0f, 4.0f};
 
             m_Coordinator.AddComponent(cottage, location);
@@ -148,7 +149,7 @@ class AppLayer : public Engine::Layer {
 
             Engine::LocationComponent location(glm::vec3(0.0f, -20.0f, 0.0f),
                                                glm::vec3(0.0f, 0.0f, 0.0f));
-            Engine::Render3DComponent render{"box", 20.0f};
+            Engine::StaticRender3DComponent render{"box", 20.0f};
             Engine::StaticCollisionComponent collision{40.0f, 40.0f, 40.0f};
 
             m_Coordinator.AddComponent(box, location);
@@ -156,23 +157,26 @@ class AppLayer : public Engine::Layer {
             m_Coordinator.AddComponent(box, collision);
         }
 
-        for (size_t y = 0; y < 20; y++) {
-            for (size_t x = 0; x < 20; x++) {
-                {
-                    std::ostringstream name;
-                    name << "box" << x << y;
-                    auto box = m_Coordinator.CreateEntity(name.str());
+        for (size_t z = 0; z < 10; z++) {
+            for (size_t y = 0; y < 10; y++) {
+                for (size_t x = 0; x < 10; x++) {
+                    {
+                        std::ostringstream name;
+                        name << "box" << x << y;
+                        auto box = m_Coordinator.CreateEntity(name.str());
 
-                    Engine::LocationComponent location(
-                        glm::vec3(-20.0f, 2.0f * y, 2.0f * x - 5),
-                        glm::vec3(0.0f, 0.0f, 0.0f));
-                    Engine::Render3DComponent render{"box", 0.25f};
-                    Engine::StaticCollisionComponent collision{0.5f, 0.5f,
-                                                               0.5f};
+                        Engine::LocationComponent location(
+                            glm::vec3(-20.0f - 2.0f * z, 2.0f * y,
+                                      2.0f * x - 5),
+                            glm::vec3(0.0f, 0.0f, 0.0f));
+                        Engine::StaticRender3DComponent render{"box", 0.25f};
+                        Engine::StaticCollisionComponent collision{0.5f, 0.5f,
+                                                                   0.5f};
 
-                    m_Coordinator.AddComponent(box, location);
-                    m_Coordinator.AddComponent(box, render);
-                    m_Coordinator.AddComponent(box, collision);
+                        m_Coordinator.AddComponent(box, location);
+                        m_Coordinator.AddComponent(box, render);
+                        m_Coordinator.AddComponent(box, collision);
+                    }
                 }
             }
         }
@@ -183,8 +187,9 @@ class AppLayer : public Engine::Layer {
         //         glm::vec3(0.0f, 10.0f, 0.0f),
         //         glm::vec3(0.0f, glm::radians(-90.0), 0.0f));
         //     Engine::VelocityComponent velocity(0.1f,
-        //                                        glm::vec3(-0.01f, 0.0f, 0.0f),
-        //                                        glm::vec3(0.0f, 0.0f, 0.0f));
+        //                                        glm::vec3(-0.01f, 0.0f,
+        //                                        0.0f), glm::vec3(0.0f,
+        //                                        0.0f, 0.0f));
         //     Engine::Light3DComponent light;
         //     Engine::Render3DComponent render{box_model, 1.0f};
 

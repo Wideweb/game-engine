@@ -20,6 +20,7 @@ set(SOURCE_LIB
     src/Engine/ECS/Systems/MoveSystem.cpp
     src/Engine/ECS/Systems/Light3DSystem.cpp
     src/Engine/ECS/Systems/Render3DSystem.cpp
+    src/Engine/ECS/Systems/StaticRender3DSystem.cpp
     src/Engine/ECS/Systems/PhysicsSystem.cpp
     src/Engine/ECS/Systems/CollisionSystem.cpp
     src/Engine/ECS/Systems/StaticCollisionSystem.cpp

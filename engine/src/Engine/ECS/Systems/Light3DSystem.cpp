@@ -12,7 +12,7 @@
 namespace Engine {
 
 void Light3DSystem::Update(ComponentManager &components) const {
-    auto &scene = Application::get().getScene();
+    auto &scene = getScene();
 
     for (auto entity : m_Entities) {
         const auto &light = components.GetComponent<Light3DComponent>(entity);

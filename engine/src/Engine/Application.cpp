@@ -52,11 +52,11 @@ void Application::run() {
         m_Input->update();
 
         m_Render->clear();
-        m_Scene.clear();
         for (auto layer : m_LayerStack) {
+            layer->getScene().clear();
             layer->update();
+            m_Render->draw(layer->getScene(), m_Models, *m_Camera);
         }
-        m_Render->draw(m_Scene, m_Models, *m_Camera);
 
         m_Window->swapBuffers();
     }

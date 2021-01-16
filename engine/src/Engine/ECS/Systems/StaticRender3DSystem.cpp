@@ -1,9 +1,9 @@
-#include "Render3DSystem.hpp"
+#include "StaticRender3DSystem.hpp"
 
 #include "Application.hpp"
 #include "LocationComponent.hpp"
 #include "ModelInstanceManager.hpp"
-#include "Render3DComponent.hpp"
+#include "StaticRender3DComponent.hpp"
 #include "cmath"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,11 +12,14 @@
 
 namespace Engine {
 
-void Render3DSystem::Update(ComponentManager &components) const {
+void StaticRender3DSystem::Update(ComponentManager &components) const {
     auto &scene = getScene();
+    auto &coordinator = getCoordinator();
 
-    for (auto entity : m_Entities) {
-        auto &render = components.GetComponent<Render3DComponent>(entity);
+    std::vector<Entity> entitis(m_Entities.begin(), m_Entities.end());
+
+    for (auto entity : entitis) {
+        auto &render = components.GetComponent<StaticRender3DComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
 
         glm::mat4 model(1);
@@ -29,12 +32,8 @@ void Render3DSystem::Update(ComponentManager &components) const {
                             glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(render.scale));
 
-        if (render.instance == NoModelInstance) {
-            render.instance = scene.addObject(render.model, model);
-        } else if (location.updated) {
-            scene.updateObject(render.model, model, render.instance);
-            location.updated = false;
-        }
+        render.instance = scene.addObject(render.model, model);
+        coordinator.RemoveComponent<StaticRender3DComponent>(entity);
     }
 }
 

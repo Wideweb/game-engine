@@ -11,7 +11,7 @@ namespace Engine {
 
 class Coordinator {
   public:
-    void Init() {
+    Coordinator() {
         m_ComponentManager = std::make_unique<ComponentManager>();
         m_EntityManager = std::make_unique<EntityManager>();
         m_SystemManager = std::make_unique<SystemManager>();
@@ -68,8 +68,10 @@ class Coordinator {
         m_ComponentManager->GetComponentArray<T>();
     }
 
-    template <typename T> void RegisterSystem(Signature signature) {
-        m_SystemManager->RegisterSystem<T>(signature);
+    template <typename T, class... TArgs>
+    void RegisterSystem(Signature signature, TArgs &&... args) {
+        m_SystemManager->RegisterSystem<T>(signature,
+                                           std::forward<TArgs>(args)...);
     }
 
     void UpdateSystems() { m_SystemManager->Update(*m_ComponentManager); }

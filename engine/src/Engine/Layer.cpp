@@ -15,6 +15,7 @@
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "StaticCollisionComponent.hpp"
+#include "StaticRender3DComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include "AISystem.hpp"
@@ -25,15 +26,15 @@
 #include "PhysicsSystem.hpp"
 #include "Render3DSystem.hpp"
 #include "StaticCollisionSystem.hpp"
+#include "StaticRender3DSystem.hpp"
 
 namespace Engine {
 
-Layer::Layer() {
-    m_Coordinator.Init();
-
+Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<PhysicsComponent>();
     m_Coordinator.RegisterComponent<VelocityComponent>();
     m_Coordinator.RegisterComponent<LocationComponent>();
+    m_Coordinator.RegisterComponent<StaticRender3DComponent>();
     m_Coordinator.RegisterComponent<Render3DComponent>();
     m_Coordinator.RegisterComponent<StaticCollisionComponent>();
     m_Coordinator.RegisterComponent<CollisionComponent>();
@@ -63,7 +64,7 @@ Layer::Layer() {
             m_Coordinator.GetComponentType<StaticCollisionComponent>());
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
 
-        m_Coordinator.RegisterSystem<StaticCollisionSystem>(signature);
+        m_Coordinator.RegisterSystem<StaticCollisionSystem>(signature, m_Name);
     }
 
     {
@@ -72,7 +73,7 @@ Layer::Layer() {
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
         signature.set(m_Coordinator.GetComponentType<VelocityComponent>());
 
-        m_Coordinator.RegisterSystem<CollisionSystem>(signature);
+        m_Coordinator.RegisterSystem<CollisionSystem>(signature, m_Name);
     }
 
     {
@@ -85,9 +86,18 @@ Layer::Layer() {
     {
         Signature signature;
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+        signature.set(
+            m_Coordinator.GetComponentType<StaticRender3DComponent>());
+
+        m_Coordinator.RegisterSystem<StaticRender3DSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
         signature.set(m_Coordinator.GetComponentType<Render3DComponent>());
 
-        m_Coordinator.RegisterSystem<Render3DSystem>(signature);
+        m_Coordinator.RegisterSystem<Render3DSystem>(signature, m_Name);
     }
 
     {
@@ -95,7 +105,7 @@ Layer::Layer() {
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
         signature.set(m_Coordinator.GetComponentType<Light3DComponent>());
 
-        m_Coordinator.RegisterSystem<Light3DSystem>(signature);
+        m_Coordinator.RegisterSystem<Light3DSystem>(signature, m_Name);
     }
 
     {

@@ -1,13 +1,14 @@
 #pragma once
 
+#include "BaseSystem.hpp"
 #include "Collision3D.hpp"
 #include "Entity.hpp"
-#include "System.hpp"
 
 namespace Engine {
 
-class CollisionSystem : public System {
+class CollisionSystem : public BaseSystem {
   public:
+    using BaseSystem::BaseSystem;
     virtual void Update(ComponentManager &components) const override;
 };
 

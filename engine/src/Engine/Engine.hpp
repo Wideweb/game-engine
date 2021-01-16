@@ -13,6 +13,7 @@
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "StaticCollisionComponent.hpp"
+#include "StaticRender3DComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include "BlackboardManager.hpp"

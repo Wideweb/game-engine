@@ -13,7 +13,7 @@ namespace Engine {
 
 void CollisionSystem::Update(ComponentManager &components) const {
     auto &app = Application::get();
-    auto &collision3D = app.getCollision();
+    auto &collision3D = getCollision();
     auto &eventHandler = app.getEventHandler();
 
     std::vector<glm::vec3> vertices;

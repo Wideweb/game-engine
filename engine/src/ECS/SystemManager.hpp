@@ -8,8 +8,9 @@ namespace Engine {
 
 class SystemManager {
   public:
-    template <typename T> void RegisterSystem(Signature signature) {
-        m_Systems.push_back(std::make_shared<T>());
+    template <typename T, class... TArgs>
+    void RegisterSystem(Signature signature, TArgs &&... args) {
+        m_Systems.push_back(std::make_shared<T>(std::forward<TArgs>(args)...));
         m_Signatures.push_back(signature);
     }
 

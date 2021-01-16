@@ -4,7 +4,7 @@
 
 namespace Engine {
 
-class Light3DSystem : public BaseSystem {
+class StaticRender3DSystem : public BaseSystem {
   public:
     using BaseSystem::BaseSystem;
     virtual void Update(ComponentManager &components) const override;

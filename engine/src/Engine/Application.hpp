@@ -1,13 +1,11 @@
 #pragma once
 
 #include "Camera.hpp"
-#include "Collision3D.hpp"
 #include "EventHandler.hpp"
 #include "Input.hpp"
 #include "Layer.hpp"
 #include "ModelManager.hpp"
 #include "Render.hpp"
-#include "Scene.hpp"
 #include "SoundMixer.hpp"
 #include "TextureManager.hpp"
 #include "Time.hpp"
@@ -27,8 +25,6 @@ class Application {
     std::unique_ptr<Window> m_Window;
     std::unique_ptr<Input> m_Input;
     std::unique_ptr<Render> m_Render;
-    Scene m_Scene;
-    Collision3D<Entity> m_Collision;
     std::unique_ptr<Camera> m_Camera;
     std::unique_ptr<TextureManager> m_Texture;
     std::unique_ptr<EventHandler> m_EventHandler;
@@ -52,7 +48,7 @@ class Application {
     void stop();
 
     template <typename T> void addLayer(const std::string &label) {
-        auto layer = std::make_shared<T>();
+        auto layer = std::make_shared<T>(label);
         m_LayerStack.push_back(layer);
         m_NameToLayer[label] = layer;
         layer->onAttach();
@@ -62,13 +58,11 @@ class Application {
     SoundMixer &getSound() { return *m_Sound; }
     Input &getInput() { return *m_Input; }
     Render &getRender() { return *m_Render; }
-    Scene &getScene() { return m_Scene; }
     Camera &getCamera() { return *m_Camera; }
     Time &getTime() { return m_Time; }
     TextureManager &getTextures() { return *m_Texture; }
     ModelManager &getModels() { return m_Models; }
     EventHandler &getEventHandler() { return *m_EventHandler; }
-    Collision3D<Entity> &getCollision() { return m_Collision; }
     Layer &getLayer(const std::string &label) { return *m_NameToLayer[label]; }
     glm::vec2 getScreenFix();
 

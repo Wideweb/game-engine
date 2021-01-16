@@ -10,7 +10,6 @@ namespace Engine {
 class StaticCollisionComponent {
   public:
     std::vector<glm::vec3> vertices;
-    bool created = false;
 
     StaticCollisionComponent() : StaticCollisionComponent(0.0f, 0.0f, 0.0f) {}
     StaticCollisionComponent(float width, float height, float depth) {
