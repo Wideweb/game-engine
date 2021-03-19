@@ -15,6 +15,8 @@ class Shader {
 
   public:
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc);
+    Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
+           const std::string &geometrySrc);
     ~Shader();
 
     void bind() const;
@@ -33,6 +35,8 @@ class Shader {
 
   private:
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc);
+    void compile(const std::string &vertexSrc, const std::string &fragmentSrc,
+                 const std::string &geometrySrc);
     GLuint compileShader(GLenum type, const std::string &source);
     GLint getUniformLocation(const std::string &name);
 };

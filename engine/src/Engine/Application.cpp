@@ -18,7 +18,7 @@ Application::Application() {
 
     m_Input = std::unique_ptr<Input>(Input::create());
 
-    m_Render = std::make_unique<Render>();
+    m_Render = std::make_unique<Render>(960 * 2, 540 * 2);
 
     m_Camera = std::unique_ptr<Camera>(new Camera(glm::vec3(0.0f, 0.0f, 1.0f),
                                                   glm::vec3(0.0f, 1.0f, 0.0f),

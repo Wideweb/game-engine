@@ -8,6 +8,8 @@ static GLenum getGLTextureType(Texture::TextureType type) {
         return GL_TEXTURE_2D;
     case Texture::TextureType::CUBE_MAP:
         return GL_TEXTURE_CUBE_MAP;
+    case Texture::TextureType::DEPTH_BUFFER:
+        return GL_TEXTURE_2D;
     default:
         return GL_TEXTURE_2D;
     }

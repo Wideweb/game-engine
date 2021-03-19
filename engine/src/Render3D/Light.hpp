@@ -1,6 +1,9 @@
 #pragma once
 
+#include "CubeMap.hpp"
+
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace Engine {
 

@@ -76,6 +76,12 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major_ver);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor_ver);
 
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
+                        SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
     m_Context = SDL_GL_CreateContext(reinterpret_cast<SDL_Window *>(m_Window));
 
     if (m_Context == nullptr) {
@@ -98,6 +104,7 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     glDepthMask(GL_TRUE);
 }
 

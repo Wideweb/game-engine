@@ -37,6 +37,7 @@ set(SOURCE_LIB
     src/Render3D/Shader.cpp
     src/Render3D/Texture.cpp
     src/Render3D/TextureLoader.cpp
+    src/Render3D/CubeMap.cpp
     src/Collision/NarrowPhaseAlgorithm.cpp
     src/Collision/AABBOverlap.cpp
     src/Sound/SoundMixer.cpp

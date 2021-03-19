@@ -9,7 +9,7 @@ namespace Engine {
 
 class Texture {
   public:
-    enum class TextureType { SIMPLE, CUBE_MAP };
+    enum class TextureType { SIMPLE, CUBE_MAP, DEPTH_BUFFER };
 
     Texture(GLuint id, TextureType type = TextureType::SIMPLE);
     ~Texture();

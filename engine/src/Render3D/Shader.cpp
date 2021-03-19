@@ -9,6 +9,11 @@ Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc) {
     compile(vertexSrc, fragmentSrc);
 }
 
+Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
+               const std::string &geometrySrc) {
+    compile(vertexSrc, fragmentSrc, geometrySrc);
+}
+
 Shader::~Shader() { glDeleteProgram(m_Program); }
 
 void Shader::bind() const {
@@ -60,6 +65,62 @@ void Shader::compile(const std::string &vertexSrc,
     glDetachShader(programId, fragmentShader);
 
     glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    m_Program = programId;
+}
+
+void Shader::compile(const std::string &vertexSrc,
+                     const std::string &fragmentSrc,
+                     const std::string &geometrySrc) {
+
+    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSrc);
+    if (vertexShader == 0) {
+        return;
+    }
+
+    GLuint geometryShader = compileShader(GL_GEOMETRY_SHADER, geometrySrc);
+    if (geometryShader == 0) {
+        return;
+    }
+
+    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSrc);
+    if (fragmentShader == 0) {
+        return;
+    }
+
+    GLuint programId = glCreateProgram();
+    if (programId == 0) {
+        std::cerr << "failed to create gl program";
+        return;
+    }
+
+    glAttachShader(programId, vertexShader);
+    glAttachShader(programId, geometryShader);
+    glAttachShader(programId, fragmentShader);
+
+    glLinkProgram(programId);
+
+    GLint linked_status = 0;
+    glGetProgramiv(programId, GL_LINK_STATUS, &linked_status);
+    if (linked_status == 0) {
+        GLint infoLen = 0;
+        glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLen);
+
+        std::vector<char> infoLog(static_cast<size_t>(infoLen));
+        glGetProgramInfoLog(programId, infoLen, nullptr, infoLog.data());
+
+        std::cerr << "Error linking program:\n" << infoLog.data();
+        glDeleteProgram(programId);
+        return;
+    }
+
+    glDetachShader(programId, vertexShader);
+    glDetachShader(programId, geometryShader);
+    glDetachShader(programId, fragmentShader);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
 
     m_Program = programId;

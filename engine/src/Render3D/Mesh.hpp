@@ -45,7 +45,8 @@ class Mesh {
     void updateInstances(size_t from, size_t to,
                          const std::vector<glm::mat4> &positions) const;
 
-    void draw(Shader &shader, size_t instanceCount) const;
+    void draw(Shader &shader, size_t instanceCount,
+              unsigned int textureShift) const;
 
   private:
     GLuint VAO, VBO, EBO, instanceVBO;

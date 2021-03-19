@@ -101,21 +101,22 @@ void Mesh::updateInstances(size_t from, size_t to,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(Shader &shader, size_t instanceCount) const {
-    glActiveTexture(GL_TEXTURE0);
+void Mesh::draw(Shader &shader, size_t instanceCount,
+                unsigned int textureShift = 0) const {
+    glActiveTexture(GL_TEXTURE0 + textureShift);
     // std::cout << glGetError() << std::endl;
     material.diffuseMap->bind();
-    shader.setInt("Material.diffuse", 0);
+    shader.setInt("Material.diffuse", static_cast<int>(textureShift));
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE1 + textureShift);
     // std::cout << glGetError() << std::endl;
     material.specularMap->bind();
-    shader.setInt("Material.specular", 1);
+    shader.setInt("Material.specular", static_cast<int>(textureShift) + 1);
 
-    glActiveTexture(GL_TEXTURE2);
+    glActiveTexture(GL_TEXTURE2 + textureShift);
     // std::cout << glGetError() << std::endl;
     material.normalMap->bind();
-    shader.setInt("Material.normal", 2);
+    shader.setInt("Material.normal", static_cast<int>(textureShift) + 2);
 
     shader.setFloat("Material.shininess", material.shininess);
 
