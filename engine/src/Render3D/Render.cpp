@@ -189,29 +189,32 @@ void Render::draw(Scene &scene, const ModelManager &models,
     // m_ShadowShader->setMatrix4("LightSpaceMatrix",
     //                            glm::value_ptr(lightSpaceMatrix));
 
-    glViewport(0, 0, 1024, 1024);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_DepthCubeMapFBO);
+    if (m_Bake) {
+        glViewport(0, 0, 1024, 1024);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_DepthCubeMapFBO);
 
-    m_CubeShadowShader->bind();
-    unsigned int index = 0;
-    for (const auto &lightObj : scene.getLights()) {
-        auto &cubeMap = m_SadowCubeMaps[index];
+        m_CubeShadowShader->bind();
+        unsigned int index = 0;
+        for (const auto &lightObj : scene.getLights()) {
+            auto &cubeMap = m_SadowCubeMaps[index];
 
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                             cubeMap->texture().getId(), 0);
-        glClear(GL_DEPTH_BUFFER_BIT);
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                 cubeMap->texture().getId(), 0);
+            glClear(GL_DEPTH_BUFFER_BIT);
 
-        cubeMap->setPosition(lightObj.position);
-        cubeMap->bind(*m_CubeShadowShader);
+            cubeMap->setPosition(lightObj.position);
+            cubeMap->bind(*m_CubeShadowShader);
 
-        drawSceneObjects(*m_CubeShadowShader, scene, models, 1);
+            drawSceneStaticObjects(*m_CubeShadowShader, scene, models, 1);
 
-        index++;
+            index++;
+        }
+
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, m_Width, m_Height);
+        // glCullFace(GL_BACK);
+        m_Bake = true;
     }
-
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, m_Width, m_Height);
-    // glCullFace(GL_BACK);
 
     /////////////////////////////////////////////////////////////
     ///////////////////// FILL G BUFFER /////////////////////////
@@ -236,7 +239,7 @@ void Render::draw(Scene &scene, const ModelManager &models,
     // m_Shader->setMatrix4("LightSpaceMatrix",
     // glm::value_ptr(lightSpaceMatrix));
 
-    index = 0;
+    unsigned int index = 0;
     for (const auto &object : scene.getLights()) {
         m_DeferredShader->setFloat3(
             "Lights[" + std::to_string(index) + "].position", object.position);
@@ -312,6 +315,25 @@ void Render::draw(Scene &scene, const ModelManager &models,
         scene.getSkybox()->draw(*m_SkyboxShader);
 
         glDepthFunc(GL_LESS);
+    }
+}
+
+void Render::drawSceneStaticObjects(Shader &shader, Scene &scene,
+                                    const ModelManager &models,
+                                    unsigned int textureShift) {
+    for (auto &pair : scene.getObjects()) {
+        for (const auto &mesh : models.GetModel(pair.first)->meshes) {
+            auto &instances = pair.second;
+            if (instances.resize) {
+                mesh.setInstances(instances.GetData());
+
+                instances.resize = false;
+                instances.update = false;
+            }
+
+            mesh.draw(shader, instances.GetData().size() - instances.staticEnd,
+                      textureShift);
+        }
     }
 }
 

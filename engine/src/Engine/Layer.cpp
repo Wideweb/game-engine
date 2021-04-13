@@ -8,6 +8,7 @@
 #include "SystemManager.hpp"
 
 #include "AIComponent.hpp"
+#include "BehaviourComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "Light3DComponent.hpp"
@@ -19,6 +20,7 @@
 #include "VelocityComponent.hpp"
 
 #include "AISystem.hpp"
+#include "BehaviourSystem.hpp"
 #include "CameraSystem.hpp"
 #include "CollisionSystem.hpp"
 #include "Light3DSystem.hpp"
@@ -41,6 +43,7 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<Light3DComponent>();
     m_Coordinator.RegisterComponent<AIComponent>();
     m_Coordinator.RegisterComponent<CameraComponent>();
+    m_Coordinator.RegisterComponent<BehaviourComponent>();
 
     {
         Signature signature;
@@ -115,8 +118,28 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
 
         m_Coordinator.RegisterSystem<CameraSystem>(signature);
     }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<BehaviourComponent>());
+
+        m_Coordinator.RegisterSystem<BehaviourSystem>(signature, m_Name);
+    }
 }
 
-void Layer::update() { m_Coordinator.UpdateSystems(); }
+void Layer::attach() {
+    onAttach();
+    m_Active = true;
+}
+
+void Layer::update() {
+    m_Coordinator.UpdateSystems();
+    onUpdate();
+}
+
+void Layer::detach() {
+    onDetach();
+    m_Active = false;
+}
 
 } // namespace Engine

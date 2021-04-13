@@ -25,6 +25,7 @@ class Render {
     std::unique_ptr<Shader> m_CubeShadowShader;
     unsigned int m_DepthCubeMapFBO;
     std::array<std::unique_ptr<CubeMap>, 4> m_SadowCubeMaps;
+    bool m_Bake = true;
 
     std::unique_ptr<Shader> m_GBufferShader;
     std::unique_ptr<Shader> m_DeferredShader;
@@ -44,6 +45,9 @@ class Render {
     void clear();
 
   private:
+    void drawSceneStaticObjects(Shader &shader, Scene &scene,
+                                const ModelManager &models,
+                                unsigned int textureShift);
     void drawSceneObjects(Shader &shader, Scene &scene,
                           const ModelManager &models,
                           unsigned int textureShift);

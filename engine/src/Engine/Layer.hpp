@@ -4,6 +4,7 @@
 #include "Coordinator.hpp"
 #include "Layer.hpp"
 #include "Scene.hpp"
+#include "ScriptManager.hpp"
 #include "Window.hpp"
 
 #include <string>
@@ -16,18 +17,26 @@ class Layer {
     Coordinator m_Coordinator;
     Scene m_Scene;
     Collision3D<Entity> m_Collision;
+    ScriptManager m_Scripts;
+
+    bool m_Active = false;
 
   public:
     explicit Layer(std::string name);
     virtual ~Layer() = default;
 
+    bool isActive() { return m_Active; }
+
+    void attach();
     void update();
+    void detach();
 
     std::string &getName() { return m_Name; }
 
     Coordinator &getCoordinator() { return m_Coordinator; }
     Scene &getScene() { return m_Scene; }
     Collision3D<Entity> &getCollision() { return m_Collision; }
+    ScriptManager &getScripts() { return m_Scripts; }
 
     virtual void onAttach() {}
     virtual void onDetach() {}

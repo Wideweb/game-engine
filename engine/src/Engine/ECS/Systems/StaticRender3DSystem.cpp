@@ -32,7 +32,7 @@ void StaticRender3DSystem::Update(ComponentManager &components) const {
                             glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(render.scale));
 
-        render.instance = scene.addObject(render.model, model);
+        render.instance = scene.addStaticObject(render.model, model);
         coordinator.RemoveComponent<StaticRender3DComponent>(entity);
     }
 }

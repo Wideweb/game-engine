@@ -106,6 +106,7 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glDepthMask(GL_TRUE);
+    glCullFace(GL_BACK);
 }
 
 SDLWindow::~SDLWindow() {}

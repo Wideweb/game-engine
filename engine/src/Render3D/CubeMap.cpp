@@ -1,5 +1,9 @@
 #include "CubeMap.hpp"
 
+#include "TextureLoader.hpp"
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "glad/glad.h"
 
 namespace Engine {

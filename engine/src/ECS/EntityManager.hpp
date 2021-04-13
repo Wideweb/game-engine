@@ -2,9 +2,11 @@
 
 #include <array>
 #include <cassert>
+#include <numeric>
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Entity.hpp"
 #include "IteratorRange.hpp"
@@ -58,6 +60,13 @@ class EntityManager {
     }
 
     Signature GetSignature(Entity entity) { return m_Signatures[entity]; }
+
+    std::vector<Entity> GetEntities() {
+        std::vector<Entity> entitites;
+        entitites.resize(m_ActiveEntities);
+        std::iota(entitites.begin(), entitites.end(), 0);
+        return entitites;
+    }
 
   private:
     std::queue<Entity> m_Entities;

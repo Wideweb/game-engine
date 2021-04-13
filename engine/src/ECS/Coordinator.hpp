@@ -69,12 +69,19 @@ class Coordinator {
     }
 
     template <typename T, class... TArgs>
-    void RegisterSystem(Signature signature, TArgs &&... args) {
+    void RegisterSystem(Signature signature, TArgs &&...args) {
         m_SystemManager->RegisterSystem<T>(signature,
                                            std::forward<TArgs>(args)...);
     }
 
     void UpdateSystems() { m_SystemManager->Update(*m_ComponentManager); }
+
+    void Clear() {
+        auto entitites = m_EntityManager->GetEntities();
+        for (auto &entity : entitites) {
+            DestroyEntity(entity);
+        }
+    }
 
   private:
     std::unique_ptr<ComponentManager> m_ComponentManager;

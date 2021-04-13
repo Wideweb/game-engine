@@ -20,16 +20,16 @@ Application::Application() {
 
     m_Render = std::make_unique<Render>(960 * 2, 540 * 2);
 
-    m_Camera = std::unique_ptr<Camera>(new Camera(glm::vec3(0.0f, 0.0f, 1.0f),
-                                                  glm::vec3(0.0f, 1.0f, 0.0f),
-                                                  glm::vec3(0.0, 0.0f, -1.0f)));
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 1.0f),
+                                        glm::vec3(0.0f, 1.0f, 0.0f),
+                                        glm::vec3(0.0, 0.0f, -1.0f));
     m_Camera->setSize(960, 540);
     m_Camera->setPerspective(glm::radians(45.0f), 0.01f, 100.0f);
     m_Camera->setProjection(Camera::Projection::PERSPECTIVE);
 
     m_Texture = std::unique_ptr<TextureManager>(new TextureManager());
 
-    m_EventHandler = std::unique_ptr<EventHandler>(new EventHandler());
+    m_EventHandler = std::make_unique<EventHandler>();
 
     m_Sound = std::unique_ptr<SoundMixer>(SoundMixer::create());
 
@@ -55,6 +55,11 @@ void Application::run() {
         for (auto layer : m_LayerStack) {
             layer->getScene().clear();
             layer->update();
+
+            if (!layer->isActive()) {
+                break;
+            }
+
             m_Render->draw(layer->getScene(), m_Models, *m_Camera);
         }
 
@@ -65,9 +70,8 @@ void Application::run() {
 void Application::stop() { m_Running = false; }
 
 void Application::onMouseEvent(MouseEvent &e) {
-    for (size_t i = m_LayerStack.size() - 1; i > 0; i--) {
-        auto layer = m_LayerStack[i];
-        layer->onMouseEvent(e);
+    for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+        (*it)->onMouseEvent(e);
         if (e.handled) {
             break;
         }

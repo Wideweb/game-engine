@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(Engine VERSION 1.0)
+project(EngineApp VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(SOURCE_LIB 
+set(SOURCE_EXE 
     vendor/glad/glad.c
+    src/main.cpp
     src/Core/Time.cpp
     src/Core/File.cpp
     src/Core/Math.cpp
@@ -26,6 +27,13 @@ set(SOURCE_LIB
     src/Engine/ECS/Systems/StaticCollisionSystem.cpp
     src/Engine/ECS/Systems/AISystem.cpp
     src/Engine/ECS/Systems/CameraSystem.cpp
+    src/Engine/ECS/Systems/BehaviourSystem.cpp
+    src/Engine/Scripting/Context/LuaCore.cpp
+    src/Engine/Scripting/Context/LuaEntity.cpp
+    src/Engine/Scripting/Context/LuaInput.cpp
+    src/Engine/Scripting/Context/LuaLayer.cpp
+    src/Engine/Scripting/Scripts/EntityScript.cpp
+    src/Engine/Scripting/Scripts/EntryScript.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
     src/Render3D/Mesh.cpp
@@ -45,11 +53,11 @@ set(SOURCE_LIB
     src/Sound/SDL/SDLSoundMixer.cpp    
 )	
 
-add_library(engine SHARED ${SOURCE_LIB})
+add_executable(${PROJECT_NAME} ${SOURCE_EXE})
 
-set_target_properties(engine PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree/Tasks
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree/TaskDecorators
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Animation
@@ -63,6 +71,9 @@ target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Beha
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Scripting
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Scripting/Context
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Scripting/Scripts
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/ECS/Components
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/ECS/Systems
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/AI
@@ -70,16 +81,19 @@ target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Beha
 
 
 find_package(SDL2 REQUIRED)
-target_include_directories(engine PRIVATE ${SDL2_INCLUDE_DIRS})
-target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
 
 find_package(glm REQUIRED)
-target_link_libraries(engine PUBLIC glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC glm)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui)
-target_link_libraries(engine PRIVATE imgui)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
 
-# target_link_libraries(engine PRIVATE -lprofiler)
-# target_link_libraries(engine PRIVATE -ltcmalloc)
+target_include_directories(${PROJECT_NAME} PRIVATE /usr/local/include)
+target_link_libraries(${PROJECT_NAME} PRIVATE /usr/local/lib/liblua.a)
+
+# target_link_libraries(${PROJECT_NAME} PRIVATE -lprofiler)
+# target_link_libraries(${PROJECT_NAME} PRIVATE -ltcmalloc)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/shaders DESTINATION ${OUTPUT_DIRECTORY})

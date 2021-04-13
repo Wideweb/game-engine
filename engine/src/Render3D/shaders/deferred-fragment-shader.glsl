@@ -50,8 +50,9 @@ float shadowCalculation(TLight light, vec3 fragPos) {
     float shadow = 0.0;
     float bias = 0.15;
     int samples = 20;
-    float viewDistance = length(ViewPos - fragPos);
-    float diskRadius = (1.0 + (viewDistance / light.farPlane)) / 20.0;
+    // float viewDistance = length(ViewPos - fragPos);
+    // float diskRadius = (1.0 + (viewDistance / light.farPlane)) / 20.0;
+    float diskRadius = 0.02;
     for (int i = 0; i < samples; ++i) {
         float closestDepth =
             texture(light.depthMap,
@@ -87,7 +88,7 @@ vec3 lightCalculation(TLight light, TMaterial material, vec3 normal,
     diffuse *= attenuation;
     specular *= attenuation;
 
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    // float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     float shadow = shadowCalculation(light, fragPos);
     vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);
 

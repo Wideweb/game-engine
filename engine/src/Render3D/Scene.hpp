@@ -28,22 +28,24 @@ class Scene {
   public:
     ~Scene() = default;
 
-    using SceneObjectsRange = IteratorRange<
+    using ObjectsRange = IteratorRange<
         std::unordered_map<std::string, ModelInstanceManager>::iterator>;
 
-    using SceneLightsRange =
+    using LightsRange =
         IteratorRange<std::array<SceneLight, c_MaxSceneLights>::const_iterator>;
 
     void setSkybox(const std::shared_ptr<Skybox> skybox);
     std::shared_ptr<Skybox> getSkybox();
+
+    ModelInstance addStaticObject(const std::string &model, glm::mat4 position);
 
     ModelInstance addObject(const std::string &model, glm::mat4 position);
     void updateObject(const std::string &model, glm::mat4 position,
                       ModelInstance instance);
     void addLight(const Light &light, glm::vec3 position);
 
-    SceneObjectsRange getObjects();
-    SceneLightsRange getLights();
+    ObjectsRange getObjects();
+    LightsRange getLights();
 
     void clear();
 

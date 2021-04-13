@@ -12,17 +12,17 @@ class BaseSystem : public System {
     std::string m_Layer;
 
   protected:
-    Coordinator &getCoordinator() const {
-        return Application::get().getLayer(m_Layer).getCoordinator();
-    }
+    Layer &getLayer() const { return Application::get().getLayer(m_Layer); }
 
-    Scene &getScene() const {
-        return Application::get().getLayer(m_Layer).getScene();
-    }
+    Coordinator &getCoordinator() const { return getLayer().getCoordinator(); }
+
+    Scene &getScene() const { return getLayer().getScene(); }
 
     Collision3D<Entity> &getCollision() const {
-        return Application::get().getLayer(m_Layer).getCollision();
+        return getLayer().getCollision();
     }
+
+    ScriptManager &getScripts() const { return getLayer().getScripts(); }
 
   public:
     explicit BaseSystem(std::string layer) : m_Layer(std::move(layer)) {}

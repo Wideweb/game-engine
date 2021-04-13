@@ -8,8 +8,13 @@ void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) {
 
 std::shared_ptr<Skybox> Scene::getSkybox() { return m_Skybox; }
 
+ModelInstance Scene::addStaticObject(const std::string &model,
+                                     glm::mat4 position) {
+    return m_Objects[model].Create(std::move(position), true);
+}
+
 ModelInstance Scene::addObject(const std::string &model, glm::mat4 position) {
-    return m_Objects[model].Create(std::move(position));
+    return m_Objects[model].Create(std::move(position), false);
 }
 
 void Scene::updateObject(const std::string &model, glm::mat4 position,
@@ -23,11 +28,11 @@ void Scene::addLight(const Light &light, glm::vec3 position) {
     ++m_ActiveLights;
 }
 
-Scene::SceneObjectsRange Scene::getObjects() {
+Scene::ObjectsRange Scene::getObjects() {
     return {m_Objects.begin(), m_Objects.end()};
 }
 
-Scene::SceneLightsRange Scene::getLights() {
+Scene::LightsRange Scene::getLights() {
     return {m_Lights.cbegin(), m_Lights.cbegin() + m_ActiveLights};
 }
 

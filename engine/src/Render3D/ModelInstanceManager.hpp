@@ -14,9 +14,14 @@ class ModelInstanceManager {
     bool update = false;
     size_t from = 0;
     size_t to = 0;
+    size_t staticEnd = 0;
 
-    ModelInstance Create(glm::mat4 position) {
+    ModelInstance Create(glm::mat4 position, bool isStatic) {
         m_InstancesPositions.push_back(std::move(position));
+
+        if (isStatic) {
+            staticEnd = m_InstancesPositions.size() - 1;
+        }
 
         resize = true;
 

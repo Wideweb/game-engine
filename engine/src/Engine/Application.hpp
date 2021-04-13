@@ -11,6 +11,8 @@
 #include "Time.hpp"
 #include "Window.hpp"
 
+#include <iterator>
+#include <list>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -29,8 +31,9 @@ class Application {
     std::unique_ptr<TextureManager> m_Texture;
     std::unique_ptr<EventHandler> m_EventHandler;
     std::unique_ptr<SoundMixer> m_Sound;
-    std::vector<std::shared_ptr<Layer>> m_LayerStack;
-    std::unordered_map<std::string, std::shared_ptr<Layer>> m_NameToLayer;
+    std::list<std::shared_ptr<Layer>> m_LayerStack;
+    std::unordered_map<std::string, std::list<std::shared_ptr<Layer>>::iterator>
+        m_NameToLayer;
     Time m_Time;
     ModelManager m_Models;
 
@@ -50,8 +53,20 @@ class Application {
     template <typename T> void addLayer(const std::string &label) {
         auto layer = std::make_shared<T>(label);
         m_LayerStack.push_back(layer);
-        m_NameToLayer[label] = layer;
-        layer->onAttach();
+        m_NameToLayer[label] = std::prev(m_LayerStack.end());
+        layer->attach();
+    }
+
+    void removeLayer(const std::string &label) {
+        auto layerIt = m_NameToLayer[label];
+        (*layerIt)->detach();
+        m_LayerStack.erase(layerIt);
+        m_NameToLayer.erase(label);
+    }
+
+    template <typename T> void reloadLayer(const std::string &label) {
+        removeLayer(label);
+        addLayer<T>(label);
     }
 
     Window &getWindow() { return *m_Window; }
@@ -63,7 +78,7 @@ class Application {
     TextureManager &getTextures() { return *m_Texture; }
     ModelManager &getModels() { return m_Models; }
     EventHandler &getEventHandler() { return *m_EventHandler; }
-    Layer &getLayer(const std::string &label) { return *m_NameToLayer[label]; }
+    Layer &getLayer(const std::string &label) { return **m_NameToLayer[label]; }
     glm::vec2 getScreenFix();
 
     static Application &get() { return *s_Instance; }

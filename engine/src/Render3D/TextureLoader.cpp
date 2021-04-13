@@ -14,6 +14,7 @@
 #pragma GCC diagnostic pop
 
 #include <cassert>
+#include <vector>
 
 namespace Engine {
 

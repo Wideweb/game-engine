@@ -12,6 +12,7 @@ class StaticCollisionComponent {
     std::vector<glm::vec3> vertices;
 
     StaticCollisionComponent() : StaticCollisionComponent(0.0f, 0.0f, 0.0f) {}
+    StaticCollisionComponent(glm::vec3 box) : StaticCollisionComponent(box.x, box.y, box.z) {}
     StaticCollisionComponent(float width, float height, float depth) {
         float wHalf = width / 2;
         float hHalf = height / 2;

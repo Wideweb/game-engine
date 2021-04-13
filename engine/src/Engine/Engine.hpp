@@ -6,6 +6,7 @@
 #include "TextureLoader.hpp"
 
 #include "AIComponent.hpp"
+#include "BehaviourComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "Light3DComponent.hpp"

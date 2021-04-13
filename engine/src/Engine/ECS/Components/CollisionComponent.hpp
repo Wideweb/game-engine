@@ -23,6 +23,8 @@ class CollisionComponent {
     std::unordered_set<Entity> entities;
 
     CollisionComponent() : CollisionComponent(0.0f, 0.0f, 0.0f) {}
+    CollisionComponent(glm::vec3 box)
+        : CollisionComponent(box.x, box.y, box.z) {}
     CollisionComponent(float width, float height, float depth) {
         float wHalf = width / 2;
         float hHalf = height / 2;
