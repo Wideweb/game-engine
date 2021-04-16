@@ -49,7 +49,7 @@ float shadowCalculation(TLight light, vec3 fragPos) {
 
     float shadow = 0.0;
     float bias = 0.15;
-    int samples = 20;
+    int samples = 1;
     // float viewDistance = length(ViewPos - fragPos);
     // float diskRadius = (1.0 + (viewDistance / light.farPlane)) / 20.0;
     float diskRadius = 0.02;

@@ -6,6 +6,7 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 
+#include <glm/vec3.hpp>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@ class Render3DComponent {
   public:
     float scale;
     std::string model;
+    glm::vec3 rotation = glm::vec3(0.0f);
     ModelInstance instance = NoModelInstance;
 
     Render3DComponent() {}

@@ -1,4 +1,12 @@
 function main(app)
+    app:loadModel3D("man", "./assets/models/box/Man1.obj",
+                    "./assets/models/box/diffuse-map.png",
+                    "./assets/models/box/specular-map.png",
+                    "./assets/models/box/normal-map.png");
+
+
+    app:loadModel3D_v2("man2", "./assets/models/man/Man3.fbx");
+
     app:loadModel3D("box", "./assets/models/box/box.obj",
                     "./assets/models/box/diffuse-map.png",
                     "./assets/models/box/specular-map.png",
@@ -17,12 +25,16 @@ function main(app)
                   "./assets/models/skybox/back.jpg");
 
     local player = app:createEntity("player");
-    player:addLocationComponent(Core.LocationComponent(10.0, 0.0, 0.0));
+    local location = Core.LocationComponent(10.0, 2.0, 0.0);
+    player:addLocationComponent(location);
     player:addVelocityComponent(Core.VelocityComponent());
-    player:addRender3DComponent(Core.Render3DComponent("box", 0.5));
-    player:addCollisionComponent(Core.CollisionComponent(1.0, 1.0, 1.0));
+    local render = Core.Render3DComponent("man2", 0.5);
+    render.rotation.x = -1.57;
+    render.rotation.z = 1.57;
+    player:addRender3DComponent(render);
+    player:addCollisionComponent(Core.CollisionComponent(1.0, 2.0, 1.0));
     player:addPhysicsComponent(Core.PhysicsComponent(0.01));
-    player:addCameraComponent(Core.CameraComponent(-5.0, 1.0, 0.0));
+    player:addCameraComponent(Core.CameraComponent(-8.0, 2.0, 0.0));
     player:addBehaviourComponent(Core.BehaviourComponent("./assets/entities/player.lua"));
 
     local light = app:createEntity("light");
@@ -38,12 +50,12 @@ function main(app)
     floor:addStaticCollisionComponent(Core.StaticCollisionComponent(40.0, 40.0, 40.0));
 
     local box = app:createEntity("box");
-    box:addLocationComponent(Core.LocationComponent(11.0, 1.0, -2.0));
-    box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1.0));
-    box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+    box:addLocationComponent(Core.LocationComponent(11.0, 0.5, -10.0));
+    box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.5));
+    box:addStaticCollisionComponent(Core.StaticCollisionComponent(1.0, 1.0, 1.0));
 
     local cottage = app:createEntity("cottage");
-    cottage:addLocationComponent(Core.LocationComponent(13.0, 0.0, 2.0));
-    cottage:addStaticRender3DComponent(Core.StaticRender3DComponent("cottage", 0.1));
-    cottage:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+    cottage:addLocationComponent(Core.LocationComponent(20.0, 0.0, 2.0));
+    cottage:addStaticRender3DComponent(Core.StaticRender3DComponent("cottage", 0.5));
+    cottage:addStaticCollisionComponent(Core.StaticCollisionComponent(10.0, 10.0, 10.0));
 end

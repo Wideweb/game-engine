@@ -27,6 +27,8 @@ class LuaLayer {
     void loadModel3D(std::string name, std::string obj, std::string diffuseMap,
                      std::string specularMap, std::string normalMap);
 
+    void loadModel3D_v2(std::string name, std::string path);
+
     void static add(lua_State *state);
 };
 

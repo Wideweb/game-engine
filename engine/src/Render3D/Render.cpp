@@ -1,5 +1,6 @@
 #include "glad/glad.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 
@@ -205,7 +206,7 @@ void Render::draw(Scene &scene, const ModelManager &models,
             cubeMap->setPosition(lightObj.position);
             cubeMap->bind(*m_CubeShadowShader);
 
-            drawSceneStaticObjects(*m_CubeShadowShader, scene, models, 1);
+            drawSceneObjects(*m_CubeShadowShader, scene, models, 1);
 
             index++;
         }
@@ -340,8 +341,45 @@ void Render::drawSceneStaticObjects(Shader &shader, Scene &scene,
 void Render::drawSceneObjects(Shader &shader, Scene &scene,
                               const ModelManager &models,
                               unsigned int textureShift) {
+
     for (auto &pair : scene.getObjects()) {
-        for (const auto &mesh : models.GetModel(pair.first)->meshes) {
+        const auto &model = models.GetModel(pair.first);
+        model->frame++;
+
+        for (size_t i = 0; i < model->bones.size(); i++) {
+            auto &bone = model->bones[i];
+            glm::vec3 position =
+                model->animation[i]
+                    .keyFrames[(model->frame / 4) %
+                               model->animation[i].keyFrames.size()]
+                    .position;
+            glm::quat rotation =
+                model->animation[i]
+                    .keyFrames[(model->frame / 4) %
+                               model->animation[i].keyFrames.size()]
+                    .rotation;
+
+            glm::mat4 positionMatrix = glm::translate(position);
+            glm::mat4 rotationMatrix = glm::toMat4(rotation);
+
+            glm::mat4 transform = positionMatrix * rotationMatrix;
+
+            if (bone.hasParent) {
+                bone.globalTransformation =
+                    model->bones[bone.parentId].globalTransformation *
+                    transform;
+
+                bone.transform = bone.globalTransformation * bone.offset;
+            } else {
+                bone.globalTransformation = transform;
+                bone.transform = bone.globalTransformation * bone.offset;
+            }
+
+            shader.setMatrix4("Bones[" + std::to_string(i) + "]",
+                              glm::value_ptr(bone.transform));
+        }
+
+        for (const auto &mesh : model->meshes) {
             auto &instances = pair.second;
             if (instances.resize) {
                 mesh.setInstances(instances.GetData());

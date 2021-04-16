@@ -9,15 +9,26 @@
 
 namespace Engine {
 
+#pragma pack(push, 1)
+struct VertexBoneData {
+    unsigned int ids[4];
+    float weights[4];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal = glm::vec3(0.0f);
     glm::vec2 textCoord = glm::vec3(0.0f);
+    VertexBoneData bones;
+    unsigned int bonesNumber;
 
     Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 textCoord)
         : position(std::move(position)), normal(std::move(normal)),
-          textCoord(std::move(textCoord)) {}
+          textCoord(std::move(textCoord)), bonesNumber(0) {}
 };
+#pragma pack(pop)
 
 struct Material {
     std::shared_ptr<Texture> diffuseMap;
@@ -48,10 +59,10 @@ class Mesh {
     void draw(Shader &shader, size_t instanceCount,
               unsigned int textureShift) const;
 
+    void setUp();
+
   private:
     GLuint VAO, VBO, EBO, instanceVBO;
-
-    void setUp();
 };
 
 } // namespace Engine

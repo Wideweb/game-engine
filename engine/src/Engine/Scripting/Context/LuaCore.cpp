@@ -32,6 +32,7 @@ void LuaCore::add(lua_State *state) {
         .beginClass<LocationComponent>("LocationComponent")
         .addConstructor<void (*)(float, float, float)>()
         .addProperty("position", &LocationComponent::position)
+        .addProperty("rotation", &LocationComponent::rotation)
         .endClass()
         .endNamespace();
 
@@ -49,6 +50,7 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<Render3DComponent>("Render3DComponent")
         .addConstructor<void (*)(std::string, float)>()
+        .addProperty("rotation", &Render3DComponent::rotation)
         .endClass()
         .endNamespace();
 

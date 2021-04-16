@@ -87,6 +87,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
 find_package(glm REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm)
 
+find_package(assimp REQUIRED)
+target_include_directories(${PROJECT_NAME} PRIVATE ${ASSIMP_LIBRARY_DIRS})
+target_link_libraries (${PROJECT_NAME} PRIVATE ${ASSIMP_LIBRARIES})
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui)
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
 

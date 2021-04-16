@@ -5,11 +5,11 @@ function update(entity)
     velocity = entity:getVelocityComponent();
 
     if Input.isKeyPressed(Input.Key.W) then
-        velocity.speed = 0.05;
+        velocity.speed = 0.08;
     end
 
     if Input.isKeyPressed(Input.Key.S) then
-        velocity.speed = -0.05;
+        velocity.speed = -0.08;
     end
 
     if Input.isKeyPressed(Input.Key.D) then
@@ -21,6 +21,6 @@ function update(entity)
     end
 
     if Input.isKeyPressed(Input.Key.Space) then
-        velocity.velocity.y = 0.03;
+        velocity.velocity.y = 0.2;
     end
 end
