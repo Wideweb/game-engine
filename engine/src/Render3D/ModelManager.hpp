@@ -2,6 +2,7 @@
 
 #include <map>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include "Model.hpp"
@@ -22,6 +23,16 @@ class ModelManager {
         assert(it != m_NameToModel.end() && "no model.");
 
         return it->second;
+    }
+
+    template <typename TModel,
+              typename = std::enable_if_t<std::is_base_of_v<Model, TModel>>>
+    std::shared_ptr<TModel> GetModel(const std::string &name) const {
+        const auto &it = m_NameToModel.find(name);
+
+        assert(it != m_NameToModel.end() && "no model.");
+
+        return std::static_pointer_cast<TModel>(it->second);
     }
 
   private:

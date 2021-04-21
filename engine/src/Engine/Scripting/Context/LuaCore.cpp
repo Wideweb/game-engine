@@ -8,6 +8,7 @@
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
+#include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -58,6 +59,14 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<StaticRender3DComponent>("StaticRender3DComponent")
         .addConstructor<void (*)(std::string, float)>()
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<SkeletComponent>("SkeletComponent")
+        .addConstructor<void (*)(std::string)>()
+        .addProperty("animation", &SkeletComponent::animation)
         .endClass()
         .endNamespace();
 

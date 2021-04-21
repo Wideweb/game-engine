@@ -45,9 +45,9 @@ class Render {
     void clear();
 
   private:
-    void drawSceneStaticObjects(Shader &shader, Scene &scene,
-                                const ModelManager &models,
-                                unsigned int textureShift);
+    // void drawSceneStaticObjects(Shader &shader, Scene &scene,
+    //                             const ModelManager &models,
+    //                             unsigned int textureShift);
     void drawSceneObjects(Shader &shader, Scene &scene,
                           const ModelManager &models,
                           unsigned int textureShift);

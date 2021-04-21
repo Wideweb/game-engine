@@ -4,6 +4,9 @@
 #include <iostream>
 #include <utility>
 
+#include "InstancedMesh.hpp"
+#include "InstancedModel.hpp"
+#include "Material.hpp"
 #include "ModelLoader.hpp"
 #include "TextureLoader.hpp"
 
@@ -11,8 +14,8 @@ namespace Engine {
 
 AssimpModel::AssimpModel() {}
 
-std::shared_ptr<Model> AssimpModel::load(std::string path) {
-    m_Model = std::make_shared<Model>();
+std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
+    m_Model = std::make_shared<SkinnedModel>();
 
     Assimp::Importer import;
     const aiScene *scene =
@@ -27,55 +30,59 @@ std::shared_ptr<Model> AssimpModel::load(std::string path) {
 
     loadNode(scene->mRootNode, scene);
 
-    for (unsigned int i = 0; i < m_Model->bones.size(); i++) {
-        for (unsigned int j = i; j < m_Model->bones.size(); j++) {
-            Bone &thisBone = m_Model->bones[i];
-            Bone &thatBone = m_Model->bones[j];
+    for (unsigned int i = 0; i < m_Skelet.joints.size(); i++) {
+        for (unsigned int j = i; j < m_Skelet.joints.size(); j++) {
+            Joint &thisJoint = m_Skelet.joints[i];
+            Joint &thatJoint = m_Skelet.joints[j];
 
-            if (!thisBone.hasParent && thatBone.hasParent) {
-                continue;
-            }
+            if (thisJoint.parentId > thatJoint.parentId) {
+                m_JointIndex[thisJoint.name] = j;
+                m_JointIndex[thatJoint.name] = i;
 
-            if ((thisBone.hasParent && !thatBone.hasParent) ||
-                (thisBone.parentId > thatBone.parentId)) {
-                m_BoneIndex[thisBone.name] = j;
-                m_BoneIndex[thatBone.name] = j;
-
-                std::swap(thisBone, thatBone);
+                std::swap(thisJoint, thatJoint);
             }
         }
     }
 
     buildSkelet(scene->mRootNode, scene);
 
-    m_Model->animation.resize(m_Model->bones.size());
+    for (unsigned j = 0; j < scene->mNumAnimations; j++) {
+        aiAnimation *animationSrc = scene->mAnimations[j];
+        auto &animation = m_Skelet.animations[animationSrc->mName.data];
+        animation.joints.resize(m_Skelet.joints.size());
+        animation.duration = static_cast<float>(animationSrc->mDuration);
+        animation.ticksPerSecond =
+            animationSrc->mTicksPerSecond != 0.0
+                ? static_cast<float>(animationSrc->mTicksPerSecond)
+                : 25.0f;
 
-    aiAnimation *animationSrc = scene->mAnimations[0];
+        for (unsigned int i = 0; i < animationSrc->mNumChannels; i++) {
+            aiNodeAnim *nodeAnimation = animationSrc->mChannels[i];
+            std::string nodeName = nodeAnimation->mNodeName.data;
+            if (m_JointIndex.find(nodeName) == m_JointIndex.end()) {
+                continue;
+            }
 
-    for (unsigned int i = 0; i < animationSrc->mNumChannels; i++) {
-        aiNodeAnim *nodeAnimation = animationSrc->mChannels[i];
-        std::string nodeName = nodeAnimation->mNodeName.data;
-        if (m_BoneIndex.find(nodeName) == m_BoneIndex.end()) {
-            continue;
-        }
+            auto &jointAnimation = animation.joints[m_JointIndex[nodeName]];
 
-        BoneAnimation &boneAnimation =
-            m_Model->animation[m_BoneIndex[nodeName]];
+            for (unsigned int j = 0; j < nodeAnimation->mNumPositionKeys; j++) {
+                JointAnimationKeyFrame frame;
 
-        for (unsigned int j = 0; j < nodeAnimation->mNumPositionKeys; j++) {
-            BoneAnimationKeyFrame frame;
+                frame.timeStamp =
+                    static_cast<float>(nodeAnimation->mRotationKeys[j].mTime);
+                frame.position =
+                    aiVector3DToGlm(nodeAnimation->mPositionKeys[j].mValue);
+                frame.rotation =
+                    aiQuaternionDToGlm(nodeAnimation->mRotationKeys[j].mValue);
 
-            frame.timeStamp = nodeAnimation->mRotationKeys[j].mTime;
-            frame.position =
-                aiVector3DToGlm(nodeAnimation->mPositionKeys[j].mValue);
-            frame.rotation =
-                aiQuaternionDToGlm(nodeAnimation->mRotationKeys[j].mValue);
-
-            boneAnimation.keyFrames.push_back(frame);
+                jointAnimation.keyFrames.push_back(frame);
+            }
         }
     }
 
+    m_Model->skelet = std::move(m_Skelet);
     m_Model->setUp();
+
     return m_Model;
 }
 
@@ -83,15 +90,15 @@ void AssimpModel::loadNode(aiNode *node, const aiScene *scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         m_Model->meshes.push_back(loadMesh(mesh, scene));
-        loadBones(mesh);
+        loadSkelet(mesh);
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         loadNode(node->mChildren[i], scene);
     }
 }
 
-Mesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
-    std::vector<Vertex> vertices;
+SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
+    std::vector<SkinnedMesh::Vertex> vertices;
     std::vector<unsigned int> indices;
     Material material;
 
@@ -153,7 +160,7 @@ Mesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
     m_MeshIndex[mesh->mName.data] = m_ActiveMeshes;
     m_ActiveMeshes++;
 
-    return Mesh(vertices, indices, material);
+    return SkinnedMesh(vertices, indices, material);
 }
 
 Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc,
@@ -168,80 +175,79 @@ Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc,
     return nullptr;
 }
 
-void AssimpModel::loadBones(aiMesh *mesh) {
+void AssimpModel::loadSkelet(aiMesh *mesh) {
     for (unsigned int i = 0; i < mesh->mNumBones; i++) {
-        aiBone *bone = mesh->mBones[i];
-        std::string boneName = bone->mName.data;
+        aiBone *joint = mesh->mBones[i];
+        std::string jointName = joint->mName.data;
 
         unsigned int index = 0;
-        const auto &boneIndexIt = m_BoneIndex.find(boneName);
-        if (boneIndexIt == m_BoneIndex.end()) {
-            index = static_cast<unsigned int>(m_Model->bones.size());
-            m_Model->bones.emplace_back();
+        const auto &jointIndexIt = m_JointIndex.find(jointName);
+        if (jointIndexIt == m_JointIndex.end()) {
+            index = static_cast<unsigned int>(m_Skelet.joints.size());
+            m_Skelet.joints.emplace_back();
         } else {
-            index = boneIndexIt->second;
+            index = jointIndexIt->second;
         }
 
-        m_BoneIndex[boneName] = index;
-        m_Model->bones[index].offset = aiMatrix4x4ToGlm(bone->mOffsetMatrix);
-        m_Model->bones[index].hasParent = false;
-        m_Model->bones[index].name = boneName;
+        m_JointIndex[jointName] = index;
+        m_Skelet.joints[index].offset = aiMatrix4x4ToGlm(joint->mOffsetMatrix);
+        m_Skelet.joints[index].parentId = -1;
+        m_Skelet.joints[index].name = jointName;
     }
 }
 
 void AssimpModel::buildSkelet(aiNode *node, const aiScene *scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        bindMeshToBone(mesh, scene);
+        bindMeshToSkelet(mesh, scene);
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         buildSkelet(node->mChildren[i], scene);
     }
 }
 
-void AssimpModel::bindMeshToBone(aiMesh *meshSrc, const aiScene *scene) {
+void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc, const aiScene *scene) {
     unsigned int meshIndex = m_MeshIndex[meshSrc->mName.data];
     auto &mesh = m_Model->meshes[meshIndex];
     unsigned int meshBaseVertex = m_MeshBaseVertex[meshIndex];
 
     for (unsigned int i = 0; i < meshSrc->mNumBones; i++) {
-        aiBone *bone = meshSrc->mBones[i];
-        std::string boneName = bone->mName.data;
-        unsigned int index = m_BoneIndex.find(boneName)->second;
+        aiBone *joint = meshSrc->mBones[i];
+        std::string jointName = joint->mName.data;
+        unsigned int index = m_JointIndex.find(jointName)->second;
 
-        aiNode *node = scene->mRootNode->FindNode(boneName.c_str());
+        aiNode *node = scene->mRootNode->FindNode(jointName.c_str());
 
-        if (node->mParent &&
-            m_BoneIndex.find(node->mParent->mName.data) != m_BoneIndex.end()) {
-            m_Model->bones[index].parentId =
-                m_BoneIndex[node->mParent->mName.data];
-            m_Model->bones[index].hasParent = true;
+        if (node->mParent && m_JointIndex.find(node->mParent->mName.data) !=
+                                 m_JointIndex.end()) {
+            m_Skelet.joints[index].parentId =
+                static_cast<int>(m_JointIndex[node->mParent->mName.data]);
         }
 
-        for (unsigned int j = 0; j < bone->mNumWeights; j++) {
+        for (unsigned int j = 0; j < joint->mNumWeights; j++) {
             unsigned int vertexId =
-                bone->mWeights[j].mVertexId - meshBaseVertex;
+                joint->mWeights[j].mVertexId - meshBaseVertex;
 
             if (vertexId < 0 || vertexId >= mesh.vertices.size()) {
                 continue;
             }
 
             auto &vertex = mesh.vertices[vertexId];
-            float weight = bone->mWeights[j].mWeight;
+            float weight = joint->mWeights[j].mWeight;
 
-            if (vertex.bonesNumber >= 4) {
+            if (vertex.jointsNumber >= 4) {
                 continue;
             }
 
-            vertex.bones.ids[vertex.bonesNumber] = index;
-            vertex.bones.weights[vertex.bonesNumber] = weight;
-            vertex.bonesNumber++;
+            vertex.joints.ids[vertex.jointsNumber] = index;
+            vertex.joints.weights[vertex.jointsNumber] = weight;
+            vertex.jointsNumber++;
         }
     }
 }
 
 std::shared_ptr<Model> ModelLoader::loadModel(const std::string &path) {
-    return AssimpModel().load(path);
+    return std::static_pointer_cast<Model>(AssimpModel().load(path));
 }
 
 std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
@@ -256,7 +262,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
     std::vector<glm::vec3> pVertices;
     std::vector<glm::vec3> nVertices;
     std::vector<glm::vec2> tVertices;
-    std::vector<Vertex> vertices;
+    std::vector<InstancedMesh::Vertex> vertices;
     std::vector<GLuint> indices;
     Material material;
 
@@ -297,8 +303,8 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
     material.specularMap.reset(TextureLoader::loadTexture(toSpecularMap));
     material.normalMap.reset(TextureLoader::loadTexture(toNormalMap));
 
-    Mesh mesh(vertices, indices, material);
-    auto model = std::shared_ptr<Model>(new Model({mesh}));
+    InstancedMesh mesh(vertices, indices, material);
+    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
     model->setUp();
     return model;
 }

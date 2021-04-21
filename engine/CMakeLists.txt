@@ -21,6 +21,7 @@ set(SOURCE_EXE
     src/Engine/ECS/Systems/MoveSystem.cpp
     src/Engine/ECS/Systems/Light3DSystem.cpp
     src/Engine/ECS/Systems/Render3DSystem.cpp
+    src/Engine/ECS/Systems/SkeletSystem.cpp
     src/Engine/ECS/Systems/StaticRender3DSystem.cpp
     src/Engine/ECS/Systems/PhysicsSystem.cpp
     src/Engine/ECS/Systems/CollisionSystem.cpp
@@ -36,8 +37,10 @@ set(SOURCE_EXE
     src/Engine/Scripting/Scripts/EntryScript.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
-    src/Render3D/Mesh.cpp
-    src/Render3D/Model.cpp
+    src/Render3D/Domain/InstancedMesh.cpp
+    src/Render3D/Domain/InstancedModel.cpp
+    src/Render3D/Domain/SkinnedMesh.cpp
+    src/Render3D/Domain/SkinnedModel.cpp
     src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/Render.cpp
@@ -68,6 +71,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Domain
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine

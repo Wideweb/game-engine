@@ -22,6 +22,12 @@ void Scene::updateObject(const std::string &model, glm::mat4 position,
     m_Objects[model].Update(instance, std::move(position));
 }
 
+void Scene::updateObject(const std::string &model,
+                         std::vector<glm::mat4> joints,
+                         ModelInstance instance) {
+    m_Objects[model].Update(instance, std::move(joints));
+}
+
 void Scene::addLight(const Light &light, glm::vec3 position) {
     m_Lights[m_ActiveLights].light = light;
     m_Lights[m_ActiveLights].position = std::move(position);

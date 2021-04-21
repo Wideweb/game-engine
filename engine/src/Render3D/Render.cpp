@@ -214,7 +214,7 @@ void Render::draw(Scene &scene, const ModelManager &models,
         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_Width, m_Height);
         // glCullFace(GL_BACK);
-        m_Bake = true;
+        m_Bake = false;
     }
 
     /////////////////////////////////////////////////////////////
@@ -319,24 +319,25 @@ void Render::draw(Scene &scene, const ModelManager &models,
     }
 }
 
-void Render::drawSceneStaticObjects(Shader &shader, Scene &scene,
-                                    const ModelManager &models,
-                                    unsigned int textureShift) {
-    for (auto &pair : scene.getObjects()) {
-        for (const auto &mesh : models.GetModel(pair.first)->meshes) {
-            auto &instances = pair.second;
-            if (instances.resize) {
-                mesh.setInstances(instances.GetData());
+// void Render::drawSceneStaticObjects(Shader &shader, Scene &scene,
+//                                     const ModelManager &models,
+//                                     unsigned int textureShift) {
+//     for (auto &pair : scene.getObjects()) {
+//         for (const auto &mesh : models.GetModel(pair.first)->meshes) {
+//             auto &instances = pair.second;
+//             if (instances.resize) {
+//                 mesh.setInstances(instances.GetData());
 
-                instances.resize = false;
-                instances.update = false;
-            }
+//                 instances.resize = false;
+//                 instances.update = false;
+//             }
 
-            mesh.draw(shader, instances.GetData().size() - instances.staticEnd,
-                      textureShift);
-        }
-    }
-}
+//             mesh.draw(shader, instances.GetData().size() -
+//             instances.staticEnd,
+//                       textureShift);
+//         }
+//     }
+// }
 
 void Render::drawSceneObjects(Shader &shader, Scene &scene,
                               const ModelManager &models,
@@ -344,55 +345,8 @@ void Render::drawSceneObjects(Shader &shader, Scene &scene,
 
     for (auto &pair : scene.getObjects()) {
         const auto &model = models.GetModel(pair.first);
-        model->frame++;
-
-        for (size_t i = 0; i < model->bones.size(); i++) {
-            auto &bone = model->bones[i];
-            glm::vec3 position =
-                model->animation[i]
-                    .keyFrames[(model->frame / 4) %
-                               model->animation[i].keyFrames.size()]
-                    .position;
-            glm::quat rotation =
-                model->animation[i]
-                    .keyFrames[(model->frame / 4) %
-                               model->animation[i].keyFrames.size()]
-                    .rotation;
-
-            glm::mat4 positionMatrix = glm::translate(position);
-            glm::mat4 rotationMatrix = glm::toMat4(rotation);
-
-            glm::mat4 transform = positionMatrix * rotationMatrix;
-
-            if (bone.hasParent) {
-                bone.globalTransformation =
-                    model->bones[bone.parentId].globalTransformation *
-                    transform;
-
-                bone.transform = bone.globalTransformation * bone.offset;
-            } else {
-                bone.globalTransformation = transform;
-                bone.transform = bone.globalTransformation * bone.offset;
-            }
-
-            shader.setMatrix4("Bones[" + std::to_string(i) + "]",
-                              glm::value_ptr(bone.transform));
-        }
-
-        for (const auto &mesh : model->meshes) {
-            auto &instances = pair.second;
-            if (instances.resize) {
-                mesh.setInstances(instances.GetData());
-            } else if (instances.update) {
-                mesh.updateInstances(instances.from, instances.to,
-                                     instances.GetData());
-            }
-
-            mesh.draw(shader, instances.GetData().size(), textureShift);
-
-            instances.resize = false;
-            instances.update = false;
-        }
+        auto &instances = pair.second;
+        model->draw(shader, instances, textureShift);
     }
 }
 

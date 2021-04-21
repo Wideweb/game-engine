@@ -42,6 +42,8 @@ class Scene {
     ModelInstance addObject(const std::string &model, glm::mat4 position);
     void updateObject(const std::string &model, glm::mat4 position,
                       ModelInstance instance);
+    void updateObject(const std::string &model, std::vector<glm::mat4> joints,
+                      ModelInstance instance);
     void addLight(const Light &light, glm::vec3 position);
 
     ObjectsRange getObjects();

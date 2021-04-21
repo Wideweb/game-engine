@@ -1,16 +1,27 @@
-#include "Model.hpp"
+#include "SkinnedModel.hpp"
 
 namespace Engine {
 
-Model::Model() {}
+SkinnedModel::SkinnedModel() {}
 
-Model::Model(const std::vector<Mesh> &meshes) : meshes(meshes) {}
+SkinnedModel::SkinnedModel(const std::vector<SkinnedMesh> &meshes)
+    : meshes(meshes) {}
 
-Model::~Model() {}
-
-void Model::setUp() {
+void SkinnedModel::setUp() {
     for (auto &mesh : meshes) {
         mesh.setUp();
+    }
+}
+
+void SkinnedModel::draw(Shader &shader, ModelInstanceManager &instances,
+                        unsigned int textureShift) {
+    for (const auto &mesh : meshes) {
+        for (size_t i = 0; i < instances.size(); i++) {
+            auto position = instances.GetPositions()[i];
+            auto joints = instances.GetJoints()[i];
+
+            mesh.draw(shader, position, joints, textureShift);
+        }
     }
 }
 

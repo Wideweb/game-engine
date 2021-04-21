@@ -1,23 +1,23 @@
 #version 330 core
 
-const int MAX_BONES = 100;
+const int MAX_JOINTS = 100;
 
-layout(location = 0) in vec3 VertexPosition;
-layout(location = 3) in ivec4 VertexBones;
-layout(location = 4) in vec4 VertexBoneWeights;
-layout(location = 5) in int VertexBonesNumber;
-layout(location = 6) in mat4 Model;
+layout(location = 0) in mat4 Model;
+layout(location = 4) in vec3 VertexPosition;
+layout(location = 7) in ivec4 VertexJoints;
+layout(location = 8) in vec4 VertexJointWeights;
+layout(location = 9) in int VertexJointsNumber;
 
-uniform mat4 Bones[MAX_BONES];
+uniform mat4 Joints[MAX_JOINTS];
 
 mat4 getVertexTransform() {
-    if (VertexBonesNumber <= 0) {
+    if (VertexJointsNumber <= 0) {
         return mat4(1.0);
     }
 
-    mat4 transform = Bones[VertexBones[0]] * VertexBoneWeights[0];
-    for (int i = 1; i < VertexBonesNumber; i++) {
-        transform += Bones[VertexBones[i]] * VertexBoneWeights[i];
+    mat4 transform = Joints[VertexJoints[0]] * VertexJointWeights[0];
+    for (int i = 1; i < VertexJointsNumber; i++) {
+        transform += Joints[VertexJoints[i]] * VertexJointWeights[i];
     }
 
     return transform;

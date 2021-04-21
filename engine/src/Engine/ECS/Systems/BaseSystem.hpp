@@ -12,6 +12,8 @@ class BaseSystem : public System {
     std::string m_Layer;
 
   protected:
+    ModelManager &getModels() const { return Application::get().getModels(); }
+
     Layer &getLayer() const { return Application::get().getLayer(m_Layer); }
 
     Coordinator &getCoordinator() const { return getLayer().getCoordinator(); }

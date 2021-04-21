@@ -15,6 +15,9 @@
 #include <glm/vec3.hpp>
 
 #include "Model.hpp"
+#include "Skelet.hpp"
+#include "SkinnedMesh.hpp"
+#include "SkinnedModel.hpp"
 #include "Skybox.hpp"
 
 namespace Engine {
@@ -65,23 +68,24 @@ inline glm::quat aiQuaternionDToGlm(const aiQuaternion &from) {
 
 class AssimpModel {
   private:
-    std::shared_ptr<Model> m_Model;
+    std::shared_ptr<SkinnedModel> m_Model;
+    Skelet m_Skelet;
     std::string m_Directory;
-    std::unordered_map<std::string, unsigned int> m_BoneIndex;
+    std::unordered_map<std::string, unsigned int> m_JointIndex;
     std::unordered_map<std::string, unsigned int> m_MeshIndex;
     unsigned int m_ActiveMeshes = 0;
     std::vector<unsigned int> m_MeshBaseVertex;
 
   public:
     AssimpModel();
-    std::shared_ptr<Model> load(std::string path);
+    std::shared_ptr<SkinnedModel> load(std::string path);
 
   private:
     void loadNode(aiNode *node, const aiScene *scene);
-    Mesh loadMesh(aiMesh *mesh, const aiScene *scene);
-    void loadBones(aiMesh *mesh);
+    SkinnedMesh loadMesh(aiMesh *mesh, const aiScene *scene);
+    void loadSkelet(aiMesh *mesh);
     void buildSkelet(aiNode *node, const aiScene *scene);
-    void bindMeshToBone(aiMesh *mesh, const aiScene *scene);
+    void bindMeshToSkelet(aiMesh *mesh, const aiScene *scene);
     Texture *loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type);
 };
 

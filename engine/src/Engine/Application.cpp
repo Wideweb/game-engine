@@ -20,7 +20,7 @@ Application::Application() {
 
     m_Render = std::make_unique<Render>(960 * 2, 540 * 2);
 
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 1.0f),
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 0.0f),
                                         glm::vec3(0.0f, 1.0f, 0.0f),
                                         glm::vec3(0.0, 0.0f, -1.0f));
     m_Camera->setSize(960, 540);

@@ -15,6 +15,7 @@
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
+#include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -27,6 +28,7 @@
 #include "MoveSystem.hpp"
 #include "PhysicsSystem.hpp"
 #include "Render3DSystem.hpp"
+#include "SkeletSystem.hpp"
 #include "StaticCollisionSystem.hpp"
 #include "StaticRender3DSystem.hpp"
 
@@ -38,6 +40,7 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<LocationComponent>();
     m_Coordinator.RegisterComponent<StaticRender3DComponent>();
     m_Coordinator.RegisterComponent<Render3DComponent>();
+    m_Coordinator.RegisterComponent<SkeletComponent>();
     m_Coordinator.RegisterComponent<StaticCollisionComponent>();
     m_Coordinator.RegisterComponent<CollisionComponent>();
     m_Coordinator.RegisterComponent<Light3DComponent>();
@@ -101,6 +104,14 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
         signature.set(m_Coordinator.GetComponentType<Render3DComponent>());
 
         m_Coordinator.RegisterSystem<Render3DSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<SkeletComponent>());
+        signature.set(m_Coordinator.GetComponentType<Render3DComponent>());
+
+        m_Coordinator.RegisterSystem<SkeletSystem>(signature, m_Name);
     }
 
     {

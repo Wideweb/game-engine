@@ -14,8 +14,8 @@ void CameraSystem::Update(ComponentManager &components) const {
         auto &location = components.GetComponent<LocationComponent>(entity);
         auto &offset = components.GetComponent<CameraComponent>(entity).offset;
 
-        camera.setRotation(location.rotation);
         camera.setPosition(location.position);
+        camera.setRotation(location.rotation);
         camera.move(offset);
     }
 }

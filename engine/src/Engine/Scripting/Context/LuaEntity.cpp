@@ -8,6 +8,7 @@
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
+#include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -41,6 +42,8 @@ void LuaEntity::add(lua_State *state) {
                      &LuaEntity::addComponent<CameraComponent>)
         .addFunction("addBehaviourComponent",
                      &LuaEntity::addComponent<BehaviourComponent>)
+        .addFunction("addSkeletComponent",
+                     &LuaEntity::addComponent<SkeletComponent>)
         .endClass();
 }
 
