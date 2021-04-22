@@ -30,6 +30,25 @@ void SkeletSystem::Update(ComponentManager &components) const {
             auto &joint = skelet.joints[i];
             auto &frames = animation.joints[i].keyFrames;
 
+            if (frames.empty()) {
+                glm::mat4 transform = glm::mat4(1);
+
+                if (joint.parentId > 0) {
+                    auto &parent =
+                        skelet
+                            .joints[static_cast<unsigned int>(joint.parentId)];
+                    joint.globalTransformation =
+                        parent.globalTransformation * transform;
+
+                    transforms[i] = joint.globalTransformation * joint.offset;
+                } else {
+                    joint.globalTransformation = transform;
+                    transforms[i] = joint.globalTransformation * joint.offset;
+                }
+
+                continue;
+            }
+
             float timeInTicks = Application::get().getTime().getTotalSeconds() *
                                 animation.ticksPerSecond;
             float animationTime = fmod(timeInTicks, animation.duration);
@@ -48,10 +67,14 @@ void SkeletSystem::Update(ComponentManager &components) const {
             glm::quat rotation = glm::slerp(frames[prevFrame].rotation,
                                             frames[frame].rotation, factor);
 
+            glm::vec3 scale =
+                glm::mix(frames[prevFrame].scale, frames[frame].scale, factor);
+
             glm::mat4 positionMatrix = glm::translate(position);
             glm::mat4 rotationMatrix = glm::toMat4(rotation);
+            glm::mat4 scaleMatrix = glm::scale(scale);
 
-            glm::mat4 transform = positionMatrix * rotationMatrix;
+            glm::mat4 transform = positionMatrix * rotationMatrix * scaleMatrix;
 
             if (joint.parentId > 0) {
                 auto &parent =

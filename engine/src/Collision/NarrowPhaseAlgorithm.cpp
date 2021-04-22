@@ -7,9 +7,9 @@
 
 namespace Engine {
 
-glm::vec3
-NarrowPhaseAlgorithm::Collide(const std::vector<glm::vec3> &vertices1,
-                              const std::vector<glm::vec3> &vertices2) const {
+glm::vec3 NarrowPhaseAlgorithm::Collide(const std::vector<glm::vec3> &vertices1,
+                                        const std::vector<glm::vec3> &vertices2,
+                                        const glm::vec3 &offset1) const {
     glm::vec3 mtv;
     float minOverlap = std::numeric_limits<float>::max();
 
@@ -35,7 +35,7 @@ NarrowPhaseAlgorithm::Collide(const std::vector<glm::vec3> &vertices1,
         scalars2.clear();
 
         for (auto corner : vertices1) {
-            scalars1.push_back(glm::dot(axis[i], corner));
+            scalars1.push_back(glm::dot(axis[i], corner + offset1));
         }
 
         for (auto corner : vertices2) {

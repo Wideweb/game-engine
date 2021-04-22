@@ -5,7 +5,7 @@ function main(app)
                     "./assets/models/box/normal-map.png");
 
 
-    app:loadModel3D_v2("man2", "./assets/models/man/Man7.fbx");
+    app:loadModel3D_v2("man2", "./assets/models/man/Man8.fbx");
 
     app:loadModel3D("box", "./assets/models/box/box.obj",
                     "./assets/models/box/diffuse-map.png",

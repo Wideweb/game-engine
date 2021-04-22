@@ -33,11 +33,14 @@ template <typename T> class CollisionDetection {
         std::vector<CollisionResult<T>> result;
         result.reserve(overlaps.size());
 
+        glm::vec3 offset = glm::vec3(0.0f);
+
         for (const auto &overlapedShape : overlaps) {
-            glm::vec3 mtv =
-                m_NarrowPhase.Collide(vertices, overlapedShape.vertices);
+            glm::vec3 mtv = m_NarrowPhase.Collide(
+                vertices, overlapedShape.vertices, offset);
             if (!Math::isEqual(mtv.x + mtv.y + mtv.z, 0.0f)) {
                 result.emplace_back(overlapedShape.id, mtv);
+                offset += mtv;
             }
         }
 

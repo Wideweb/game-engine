@@ -74,6 +74,8 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
                     aiVector3DToGlm(nodeAnimation->mPositionKeys[j].mValue);
                 frame.rotation =
                     aiQuaternionDToGlm(nodeAnimation->mRotationKeys[j].mValue);
+                frame.scale =
+                    aiVector3DToGlm(nodeAnimation->mScalingKeys[j].mValue);
 
                 jointAnimation.keyFrames.push_back(frame);
             }
@@ -218,8 +220,9 @@ void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc, const aiScene *scene) {
 
         aiNode *node = scene->mRootNode->FindNode(jointName.c_str());
 
-        if (node->mParent && m_JointIndex.find(node->mParent->mName.data) !=
-                                 m_JointIndex.end()) {
+        if (node && node->mParent &&
+            m_JointIndex.find(node->mParent->mName.data) !=
+                m_JointIndex.end()) {
             m_Skelet.joints[index].parentId =
                 static_cast<int>(m_JointIndex[node->mParent->mName.data]);
         }
