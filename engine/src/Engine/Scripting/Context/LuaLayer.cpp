@@ -11,6 +11,7 @@ void LuaLayer::add(lua_State *state) {
         .beginClass<LuaLayer>("Layer")
         .addFunction("loadModel3D", &LuaLayer::loadModel3D)
         .addFunction("loadModel3D_v2", &LuaLayer::loadModel3D_v2)
+        .addFunction("loadTerrain", &LuaLayer::loadTerrain)
         .addFunction("setSkybox", &LuaLayer::setSkybox)
         .addFunction("createEntity", &LuaLayer::createEntity)
         .addFunction("getEntity", &LuaLayer::getEntity)
@@ -44,6 +45,11 @@ void LuaLayer::loadModel3D(std::string name, std::string obj,
 
 void LuaLayer::loadModel3D_v2(std::string name, std::string path) {
     auto model = ModelLoader::loadModel(path);
+    Application::get().getModels().RegisterModel(name, model);
+}
+
+void LuaLayer::loadTerrain(std::string name, std::string path, unsigned int width, unsigned int height, float maxHeight) {
+    auto model = ModelLoader::loadTerrain(path, width, height, maxHeight);
     Application::get().getModels().RegisterModel(name, model);
 }
 

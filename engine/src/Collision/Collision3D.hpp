@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CollisionDetection.hpp"
+#include "CollisionShape.hpp"
 #include "Grid.hpp"
 
 #include <memory>
@@ -15,8 +16,17 @@ template <typename T> class Collision3D {
         m_Grid = std::make_unique<Grid<T>>(gridBox);
     }
 
+    void AddTerrain(T id, const std::vector<glm::vec3> &vertices,
+                    unsigned int width, unsigned int height) {
+        CollisionShape<T> shape(id, vertices, CollisionShapeType::Terrain);
+        shape.width = width;
+        shape.height = height;
+        m_Grid->AddShape(shape);
+    }
+
     void AddShape(T id, const std::vector<glm::vec3> &vertices) {
-        m_Grid->AddShape(id, vertices);
+        CollisionShape<T> shape(id, vertices, CollisionShapeType::Object);
+        m_Grid->AddShape(shape);
     }
 
     void UpdateShape(T id, const std::vector<glm::vec3> &vertices) {

@@ -10,6 +10,16 @@
 #include "ModelLoader.hpp"
 #include "TextureLoader.hpp"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wcast-qual"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wimplicit-int-conversion"
+#include "stb_image.hpp"
+#pragma GCC diagnostic pop
+
 namespace Engine {
 
 AssimpModel::AssimpModel() {}
@@ -18,8 +28,9 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
     m_Model = std::make_shared<SkinnedModel>();
 
     Assimp::Importer import;
-    const aiScene *scene =
-        import.ReadFile(path, aiProcess_Triangulate | aiProcess_SortByPType);
+    const aiScene *scene = import.ReadFile(
+        path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                  aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode) {
@@ -28,23 +39,33 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
     }
     m_Directory = path.substr(0, path.find_last_of('/'));
 
+    m_GlobalInverseTransform =
+        aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
+
     loadNode(scene->mRootNode, scene);
 
-    for (unsigned int i = 0; i < m_Skelet.joints.size(); i++) {
-        for (unsigned int j = i; j < m_Skelet.joints.size(); j++) {
-            Joint &thisJoint = m_Skelet.joints[i];
-            Joint &thatJoint = m_Skelet.joints[j];
+    for (auto const &[name, index] : m_JointIndex) {
+        aiNode *node = scene->mRootNode->FindNode(name.c_str());
 
-            if (thisJoint.parentId > thatJoint.parentId) {
-                m_JointIndex[thisJoint.name] = j;
-                m_JointIndex[thatJoint.name] = i;
-
-                std::swap(thisJoint, thatJoint);
-            }
+        if (!node || !node->mParent) {
+            continue;
         }
+
+        auto parentIt = m_JointIndex.end();
+        while (node->mParent && parentIt == m_JointIndex.end()) {
+            parentIt = m_JointIndex.find(node->mParent->mName.data);
+            node = node->mParent;
+        }
+
+        if (parentIt == m_JointIndex.end()) {
+            continue;
+        }
+
+        m_Skelet.joints[index].parentId = static_cast<int>(parentIt->second);
     }
 
-    buildSkelet(scene->mRootNode, scene);
+    sortJoints();
+    bindSkelet(scene->mRootNode, scene);
 
     for (unsigned j = 0; j < scene->mNumAnimations; j++) {
         aiAnimation *animationSrc = scene->mAnimations[j];
@@ -92,7 +113,6 @@ void AssimpModel::loadNode(aiNode *node, const aiScene *scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         m_Model->meshes.push_back(loadMesh(mesh, scene));
-        loadSkelet(mesh);
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         loadNode(node->mChildren[i], scene);
@@ -152,10 +172,15 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
             TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
     }
 
+    for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+        addJoint(mesh->mBones[i]);
+    }
+
     if (m_ActiveMeshes == 0) {
         m_MeshBaseVertex.push_back(0);
     } else {
-        size_t base = m_Model->meshes[m_ActiveMeshes - 1].vertices.size();
+        size_t base = m_MeshBaseVertex[m_MeshBaseVertex.size() - 1] +
+                      m_Model->meshes[m_ActiveMeshes - 1].vertices.size();
         m_MeshBaseVertex.push_back(static_cast<unsigned int>(base));
     }
 
@@ -177,38 +202,74 @@ Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc,
     return nullptr;
 }
 
-void AssimpModel::loadSkelet(aiMesh *mesh) {
-    for (unsigned int i = 0; i < mesh->mNumBones; i++) {
-        aiBone *joint = mesh->mBones[i];
-        std::string jointName = joint->mName.data;
+void AssimpModel::addJoint(aiBone *joint) {
+    std::string name = joint->mName.data;
+    unsigned int index = 0;
+    const auto &jointIndexIt = m_JointIndex.find(name);
+    if (jointIndexIt == m_JointIndex.end()) {
+        index = static_cast<unsigned int>(m_Skelet.joints.size());
+        m_Skelet.joints.emplace_back();
+    } else {
+        index = jointIndexIt->second;
+    }
 
-        unsigned int index = 0;
-        const auto &jointIndexIt = m_JointIndex.find(jointName);
-        if (jointIndexIt == m_JointIndex.end()) {
-            index = static_cast<unsigned int>(m_Skelet.joints.size());
-            m_Skelet.joints.emplace_back();
-        } else {
-            index = jointIndexIt->second;
+    m_JointIndex[name] = index;
+    m_Skelet.joints[index].offset = aiMatrix4x4ToGlm(joint->mOffsetMatrix);
+    m_Skelet.joints[index].parentId = -1;
+    m_Skelet.joints[index].name = name;
+}
+
+void AssimpModel::sortJoints() {
+    if (m_Skelet.joints.empty()) {
+        return;
+    }
+
+    std::vector<Joint> sortedJoints;
+    std::unordered_map<std::string, unsigned int> sortedJointIndex;
+
+    for (unsigned int i = 0; i < m_Skelet.joints.size(); i++) {
+        if (m_Skelet.joints[i].parentId == -1) {
+            sortedJointIndex[m_Skelet.joints[i].name] =
+                static_cast<unsigned int>(sortedJoints.size());
+            sortedJoints.push_back(m_Skelet.joints[i]);
         }
+    }
 
-        m_JointIndex[jointName] = index;
-        m_Skelet.joints[index].offset = aiMatrix4x4ToGlm(joint->mOffsetMatrix);
-        m_Skelet.joints[index].parentId = -1;
-        m_Skelet.joints[index].name = jointName;
+    for (unsigned int i = 0; i < m_Skelet.joints.size(); i++) {
+        int oldParentId = static_cast<int>(m_JointIndex[sortedJoints[i].name]);
+        int newParentId = static_cast<int>(i);
+
+        for (unsigned int j = 0; j < m_Skelet.joints.size(); j++) {
+            if (m_Skelet.joints[j].parentId == oldParentId) {
+                Joint joint = m_Skelet.joints[j];
+                joint.parentId = newParentId;
+
+                sortedJointIndex[joint.name] =
+                    static_cast<unsigned int>(sortedJoints.size());
+                sortedJoints.push_back(joint);
+            }
+        }
+    }
+
+    m_Skelet.joints = std::move(sortedJoints);
+    m_JointIndex = std::move(sortedJointIndex);
+
+    for (size_t i = 0; i < m_Skelet.joints.size(); i++) {
+        std::cout << m_Skelet.joints[i].name << std::endl;
     }
 }
 
-void AssimpModel::buildSkelet(aiNode *node, const aiScene *scene) {
+void AssimpModel::bindSkelet(aiNode *node, const aiScene *scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        bindMeshToSkelet(mesh, scene);
+        bindMeshToSkelet(mesh);
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
-        buildSkelet(node->mChildren[i], scene);
+        bindSkelet(node->mChildren[i], scene);
     }
 }
 
-void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc, const aiScene *scene) {
+void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc) {
     unsigned int meshIndex = m_MeshIndex[meshSrc->mName.data];
     auto &mesh = m_Model->meshes[meshIndex];
     unsigned int meshBaseVertex = m_MeshBaseVertex[meshIndex];
@@ -217,15 +278,6 @@ void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc, const aiScene *scene) {
         aiBone *joint = meshSrc->mBones[i];
         std::string jointName = joint->mName.data;
         unsigned int index = m_JointIndex.find(jointName)->second;
-
-        aiNode *node = scene->mRootNode->FindNode(jointName.c_str());
-
-        if (node && node->mParent &&
-            m_JointIndex.find(node->mParent->mName.data) !=
-                m_JointIndex.end()) {
-            m_Skelet.joints[index].parentId =
-                static_cast<int>(m_JointIndex[node->mParent->mName.data]);
-        }
 
         for (unsigned int j = 0; j < joint->mNumWeights; j++) {
             unsigned int vertexId =
@@ -238,7 +290,7 @@ void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc, const aiScene *scene) {
             auto &vertex = mesh.vertices[vertexId];
             float weight = joint->mWeights[j].mWeight;
 
-            if (vertex.jointsNumber >= 4) {
+            if (vertex.jointsNumber >= 8) {
                 continue;
             }
 
@@ -363,6 +415,76 @@ ModelLoader::loadSkybox(const std::vector<std::string> &faces) {
     auto cubemapTexture =
         std::shared_ptr<Texture>(TextureLoader::loadCubemap(faces));
     return std::make_shared<Skybox>(vertices, cubemapTexture);
+}
+
+std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path,
+                                                unsigned int terrainWidth,
+                                                unsigned int terrainHeight,
+                                                float maxHeight) {
+    struct StbiPixel {
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+        unsigned char a;
+    };
+
+    int width, height, nrChannels;
+    unsigned char *heightMapSrc =
+        stbi_load(path.data(), &width, &height, &nrChannels, 0);
+    StbiPixel *heightMap = reinterpret_cast<StbiPixel *>(heightMapSrc);
+
+    std::vector<InstancedMesh::Vertex> vertices;
+    std::vector<GLuint> indices;
+    Material material;
+
+    const unsigned int uWidth = static_cast<unsigned int>(width);
+    const unsigned int uHeight = static_cast<unsigned int>(height);
+
+    const float rateHeight = uHeight * 1.0f / terrainHeight;
+    const float rateWidth = uWidth * 1.0f / terrainWidth;
+
+    for (unsigned int i = 0; i < terrainHeight; i++) {
+        for (unsigned int j = 0; j < terrainWidth; j++) {
+            float x = static_cast<float>(j);
+            float z = static_cast<float>(i);
+
+            glm::vec3 position = glm::vec3(x, 0.0f, z);
+            glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec2 textCoord = glm::vec2(j, i);
+
+            auto height = heightMap[static_cast<unsigned int>(
+                i * rateHeight * uWidth + j * rateWidth)];
+
+            position.y =
+                (height.r + height.g + height.b) / 3.0f / 255.0f * maxHeight;
+
+            vertices.emplace_back(position, normal, textCoord);
+        }
+    }
+
+    for (unsigned int i = 0; i < terrainHeight - 1; i++) {
+        for (unsigned int j = 0; j < terrainWidth - 1; j++) {
+            indices.push_back((i + 1) * terrainWidth + j);
+            indices.push_back(i * terrainWidth + j + 1);
+            indices.push_back(i * terrainWidth + j);
+
+            indices.push_back((i + 1) * terrainWidth + j);
+            indices.push_back((i + 1) * terrainWidth + j + 1);
+            indices.push_back(i * terrainWidth + j + 1);
+        }
+    }
+
+    material.diffuseMap.reset(
+        TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
+    material.specularMap.reset(
+        TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
+    material.normalMap.reset(
+        TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
+
+    InstancedMesh mesh(vertices, indices, material);
+    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
+    model->setUp();
+    return model;
 }
 
 } // namespace Engine

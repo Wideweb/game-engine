@@ -29,6 +29,9 @@ class LuaLayer {
 
     void loadModel3D_v2(std::string name, std::string path);
 
+    void loadTerrain(std::string name, std::string path, unsigned int width,
+                     unsigned int height, float maxHeight);
+
     void static add(lua_State *state);
 };
 

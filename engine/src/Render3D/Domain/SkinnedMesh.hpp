@@ -13,8 +13,8 @@ class SkinnedMesh {
   public:
 #pragma pack(push, 1)
     struct VertexJointData {
-        unsigned int ids[4];
-        float weights[4];
+        unsigned int ids[8];
+        float weights[8];
     };
 #pragma pack(pop)
 

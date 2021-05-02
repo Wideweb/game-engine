@@ -14,6 +14,7 @@
 #pragma GCC diagnostic pop
 
 #include <cassert>
+#include <iostream>
 #include <vector>
 
 namespace Engine {
@@ -25,6 +26,10 @@ Texture *TextureLoader::loadTexture(const std::string &path) {
         stbi_load(path.data(), &width, &height, &nrChannels, 0);
 
     assert(data && "file not found.");
+
+    if (!data) {
+        std::cout << path << " - file not found." << std::endl;
+    }
 
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -43,6 +48,57 @@ Texture *TextureLoader::loadTexture(const std::string &path) {
                  GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
                  data);       // Specifies a pointer to the image data in memory
     // clang-format on
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    stbi_image_free(data);
+
+    return new Texture(textureID);
+}
+
+Texture *TextureLoader::loadTextureRGB(const std::string &path) {
+    GLuint textureID;
+    int width, height, nrChannels;
+    std::cout << path << " stbi_load START" << std::endl;
+    unsigned char *data =
+        stbi_load(path.data(), &width, &height, &nrChannels, 0);
+    std::cout << path << " stbi_load END" << std::endl;
+
+    std::cout << width << "width" << std::endl;
+    std::cout << height << "height" << std::endl;
+
+    assert(data && "file not found.");
+
+    if (!data) {
+        std::cout << path << " - file not found." << std::endl;
+    }
+
+    std::cout << path << "BUFFER START" << std::endl;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    std::cout << path << "BUFFER END" << std::endl;
+
+    GLint mipmapLevel = 0;
+    GLint border = 0;
+
+    std::cout << path << "BUFFER LOAD START" << std::endl;
+    // clang-format off
+    glTexImage2D(GL_TEXTURE_2D,    // Specifies the target texture of the active texture unit
+                 mipmapLevel,      // Specifies the level-of-detail number. Level 0 is the base image level
+                 GL_RGB,           // Specifies the internal format of the texture
+                 static_cast<GLsizei>(width),
+                 static_cast<GLsizei>(height),
+                 border,           // Specifies the width of the border. Must be 0. For GLES 2.0
+                 GL_RGB,          // Specifies the format of the texel data. Must match internalformat
+                 GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
+                 data);       // Specifies a pointer to the image data in memory
+    // clang-format on
+    std::cout << path << "BUFFER LOAD END" << std::endl;
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

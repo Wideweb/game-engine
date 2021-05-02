@@ -50,7 +50,7 @@ void SkeletSystem::Update(ComponentManager &components) const {
             }
 
             float timeInTicks = Application::get().getTime().getTotalSeconds() *
-                                animation.ticksPerSecond;
+                                animation.ticksPerSecond / 1.0f;
             float animationTime = fmod(timeInTicks, animation.duration);
 
             size_t frame = getFrame(frames, animationTime);

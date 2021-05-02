@@ -69,9 +69,9 @@ float shadowCalculation(TLight light, vec3 fragPos) {
 
 vec3 lightCalculation(TLight light, TMaterial material, vec3 normal,
                       vec3 fragPos, vec3 viewDir) {
-    float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance +
-                               light.quadratic * (distance * distance));
+    // float distance = length(light.position - fragPos);
+    // float attenuation = 1.0 / (light.constant + light.linear * distance +
+    //                            light.quadratic * (distance * distance));
 
     vec3 ambient = light.ambient * material.diffuse;
 
@@ -84,9 +84,9 @@ vec3 lightCalculation(TLight light, TMaterial material, vec3 normal,
     float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * material.specular;
 
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
+    // ambient *= attenuation;
+    // diffuse *= attenuation;
+    // specular *= attenuation;
 
     // float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     float shadow = shadowCalculation(light, fragPos);
@@ -98,12 +98,12 @@ vec3 lightCalculation(TLight light, TMaterial material, vec3 normal,
 void main() {
     vec3 fragPos = texture(gPosition, TexCoord).rgb;
     vec3 normal = texture(gNormal, TexCoord).rgb;
-    vec3 diffuse = texture(gColor, TexCoord).rgb;
+    vec3 color = texture(gColor, TexCoord).rgb;
     vec3 specular = texture(gSpecular, TexCoord).rgb;
     float shininess = texture(gSpecular, TexCoord).a;
     vec3 viewDir = normalize(ViewPos - fragPos);
 
-    TMaterial material = TMaterial(diffuse, specular, shininess);
+    TMaterial material = TMaterial(color.rgb, specular, shininess);
 
     vec3 result = vec3(0);
     for (int i = 0; i < LightsNumber; i++)

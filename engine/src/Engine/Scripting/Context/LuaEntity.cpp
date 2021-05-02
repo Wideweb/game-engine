@@ -11,6 +11,7 @@
 #include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
+#include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
 namespace Engine {
@@ -32,6 +33,8 @@ void LuaEntity::add(lua_State *state) {
                      &LuaEntity::addComponent<StaticRender3DComponent>)
         .addFunction("addCollisionComponent",
                      &LuaEntity::addComponent<CollisionComponent>)
+        .addFunction("addTerrainCollisionComponent",
+                     &LuaEntity::addComponent<TerrainCollisionComponent>)
         .addFunction("addStaticCollisionComponent",
                      &LuaEntity::addComponent<StaticCollisionComponent>)
         .addFunction("addLight3DComponent",

@@ -18,7 +18,9 @@ Application::Application() {
 
     m_Input = std::unique_ptr<Input>(Input::create());
 
+    std::cout << "INIT RENDER START" << std::endl;
     m_Render = std::make_unique<Render>(960 * 2, 540 * 2);
+    std::cout << "INIT RENDER END" << std::endl;
 
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 0.0f),
                                         glm::vec3(0.0f, 1.0f, 0.0f),
@@ -42,6 +44,7 @@ glm::vec2 Application::getScreenFix() {
 }
 
 void Application::run() {
+    std::cout << "RUN" << std::endl;
     m_Render->setClearColor(0.0f, 0.1f, 0.1f, 1.0f);
     m_Time.tick();
 

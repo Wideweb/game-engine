@@ -41,6 +41,8 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
@@ -104,8 +106,9 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     }
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
     glDepthMask(GL_TRUE);
+
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 }
 

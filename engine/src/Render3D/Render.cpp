@@ -69,6 +69,16 @@ Render::Render(int width, int height) : m_Width(width), m_Height(height) {
     glGenFramebuffers(1, &m_GBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
 
+    // буфер для цвета
+    glGenTextures(1, &m_GColor);
+    glBindTexture(GL_TEXTURE_2D, m_GColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA,
+                 GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           m_GColor, 0);
+
     // буфер позиций
     glGenTextures(1, &m_GPosition);
     glBindTexture(GL_TEXTURE_2D, m_GPosition);
@@ -76,7 +86,7 @@ Render::Render(int width, int height) : m_Width(width), m_Height(height) {
                  GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
                            m_GPosition, 0);
 
     // буфер нормалей
@@ -86,18 +96,8 @@ Render::Render(int width, int height) : m_Width(width), m_Height(height) {
                  GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
-                           m_GNormal, 0);
-
-    // буфер для цвета
-    glGenTextures(1, &m_GColor);
-    glBindTexture(GL_TEXTURE_2D, m_GColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB,
-                 GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D,
-                           m_GColor, 0);
+                           m_GNormal, 0);
 
     // буфер для отражение
     glGenTextures(1, &m_GSpecular);
@@ -161,6 +161,52 @@ Render::Render(int width, int height) : m_Width(width), m_Height(height) {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// Water /////////////////////////////
+    /////////////////////////////////////////////////////////////
+    std::cout << "INIT WATER START" << std::endl;
+
+    vertexSrc = File::read("./shaders/water-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/water-fragment-shader.glsl");
+    m_WaterShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+
+    std::cout << "waterDUDV START" << std::endl;
+    m_WaterDudvMap.reset(
+        TextureLoader::loadTextureRGB("./shaders/waterDUDV.png"));
+    std::cout << "waterDUDV END" << std::endl;
+
+    m_WaterNormalMap.reset(
+        TextureLoader::loadTextureRGB("./shaders/waterNormalMap.png"));
+
+    // clang-format off
+    float waterVertices[] = {
+        -1.0f,  0.0f, -1.0f, 0.0f, 1.0f,
+        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        1.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+    };
+
+    std::cout << "BUFFER START" << std::endl;
+    // clang-format on
+    glGenVertexArrays(1, &m_WaterVAO);
+    glGenBuffers(1, &m_WaterVBO);
+    glBindVertexArray(m_WaterVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_WaterVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(waterVertices), &waterVertices,
+                 GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                          reinterpret_cast<void *>(0));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                          reinterpret_cast<void *>(3 * sizeof(float)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    std::cout << "BUFFER END" << std::endl;
+
+    std::cout << "INIT WATER END" << std::endl;
 }
 
 void Render::setClearColor(float r, float g, float b, float a) {
@@ -169,8 +215,8 @@ void Render::setClearColor(float r, float g, float b, float a) {
 
 void Render::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
-void Render::draw(Scene &scene, const ModelManager &models,
-                  const Camera &camera) {
+void Render::draw(Scene &scene, const ModelManager &models, Camera &camera) {
+    glm::vec3 viewPos = camera.positionVec();
     glm::mat4 view = camera.viewMatrix();
     glm::mat4 projection = camera.projectionMatrix();
 
@@ -214,7 +260,7 @@ void Render::draw(Scene &scene, const ModelManager &models,
         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_Width, m_Height);
         // glCullFace(GL_BACK);
-        m_Bake = false;
+        m_Bake = true;
     }
 
     /////////////////////////////////////////////////////////////
@@ -226,6 +272,7 @@ void Render::draw(Scene &scene, const ModelManager &models,
     m_GBufferShader->bind();
     m_GBufferShader->setMatrix4("View", glm::value_ptr(view));
     m_GBufferShader->setMatrix4("Projection", glm::value_ptr(projection));
+    m_GBufferShader->setFloat("ClipY", -9999);
 
     drawSceneObjects(*m_GBufferShader, scene, models, 0);
 
@@ -236,7 +283,7 @@ void Render::draw(Scene &scene, const ModelManager &models,
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_DeferredShader->bind();
-    m_DeferredShader->setFloat3("ViewPos", camera.positionVec());
+    m_DeferredShader->setFloat3("ViewPos", viewPos);
     // m_Shader->setMatrix4("LightSpaceMatrix",
     // glm::value_ptr(lightSpaceMatrix));
 
@@ -305,11 +352,16 @@ void Render::draw(Scene &scene, const ModelManager &models,
     //////////////////////// SKY BOX ////////////////////////////
     /////////////////////////////////////////////////////////////
     if (scene.getSkybox()) {
+        m_SkyboxRotation += 0.01f;
+
         glDepthFunc(GL_LEQUAL);
         m_SkyboxShader->bind();
 
         auto fixedView = glm::mat4(glm::mat3(view));
+        auto model = glm::rotate(glm::radians(m_SkyboxRotation),
+                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
+        m_SkyboxShader->setMatrix4("Model", glm::value_ptr(model));
         m_SkyboxShader->setMatrix4("View", glm::value_ptr(fixedView));
         m_SkyboxShader->setMatrix4("Projection", glm::value_ptr(projection));
 
@@ -317,6 +369,85 @@ void Render::draw(Scene &scene, const ModelManager &models,
 
         glDepthFunc(GL_LESS);
     }
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// Water //////////////////////////////
+    /////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
+    camera.inversePitch();
+
+    m_GBufferShader->bind();
+    m_GBufferShader->setMatrix4("View", glm::value_ptr(camera.viewMatrix()));
+    m_GBufferShader->setMatrix4("Projection", glm::value_ptr(projection));
+    m_GBufferShader->setFloat("ClipY", 0);
+
+    drawSceneObjects(*m_GBufferShader, scene, models, 0);
+
+    if (scene.getSkybox()) {
+        glDepthFunc(GL_LEQUAL);
+        m_SkyboxShader->bind();
+
+        auto fixedView = glm::mat4(glm::mat3(camera.viewMatrix()));
+        auto model = glm::rotate(glm::radians(m_SkyboxRotation),
+                                 glm::vec3(0.0f, 1.0f, 0.0f));
+
+        m_SkyboxShader->setMatrix4("Model", glm::value_ptr(model));
+        m_SkyboxShader->setMatrix4("View", glm::value_ptr(fixedView));
+        m_SkyboxShader->setMatrix4("Projection", glm::value_ptr(projection));
+
+        scene.getSkybox()->draw(*m_SkyboxShader);
+
+        glDepthFunc(GL_LESS);
+    }
+
+    camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
+    camera.inversePitch();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    m_WaterShader->bind();
+
+    glm::mat4 model(1);
+    model = glm::translate(model, glm::vec3(glm::vec3(10.0, 0.0, 10.0)));
+    model = glm::scale(model, glm::vec3(10.0));
+
+    m_WaterShader->setFloat3("ViewPos", viewPos);
+    m_WaterShader->setMatrix4("View", glm::value_ptr(view));
+    m_WaterShader->setMatrix4("Projection", glm::value_ptr(projection));
+    m_WaterShader->setMatrix4("Model", glm::value_ptr(model));
+
+    m_WaterShader->setFloat("moveFactor", m_WaterMoveFactor);
+    m_WaterMoveFactor += 0.001f;
+
+    m_WaterShader->setFloat3("lightDir", scene.getLights().begin()->position);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_GColor);
+    m_WaterShader->setInt("colorMap", 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_GDepth);
+    m_WaterShader->setInt("depthMap", 1);
+
+    glActiveTexture(GL_TEXTURE2);
+    m_WaterDudvMap->bind();
+    m_WaterShader->setInt("dudvMap", 2);
+
+    glActiveTexture(GL_TEXTURE3);
+    m_WaterNormalMap->bind();
+    m_WaterShader->setInt("normalMap", 3);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindVertexArray(m_WaterVBO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+
+    glDisable(GL_BLEND);
 }
 
 // void Render::drawSceneStaticObjects(Shader &shader, Scene &scene,

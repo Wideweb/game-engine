@@ -74,11 +74,17 @@ void SkinnedMesh::setUp() {
     glVertexAttribIPointer(7, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
     glEnableVertexAttribArray(7);
 
-    glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float) + 4 * sizeof(int)));
+    glVertexAttribIPointer(8, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float) + 4 * sizeof(int)));
     glEnableVertexAttribArray(8);
 
-    glVertexAttribIPointer(9, 1, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(12 * sizeof(float) + 4 * sizeof(int)));
+    glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float) + 8 * sizeof(int)));
     glEnableVertexAttribArray(9);
+
+    glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(12 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(10);
+
+    glVertexAttribIPointer(11, 1, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(16 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(11);
     // clang-format on
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -108,6 +114,7 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position,
 
     shader.setFloat("Material.shininess", material.shininess);
 
+    shader.setInt("JointsNumber", static_cast<int>(joints.size()));
     for (size_t i = 0; i < joints.size(); i++) {
         shader.setMatrix4("Joints[" + std::to_string(i) + "]",
                           glm::value_ptr(joints[i]));
@@ -115,8 +122,13 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position,
 
     glBindVertexArray(VAO);
 
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()),
-                   GL_UNSIGNED_INT, 0);
+    if (indices.size() > 0) {
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()),
+                       GL_UNSIGNED_INT, 0);
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
+    }
+
     glBindVertexArray(0);
 }
 

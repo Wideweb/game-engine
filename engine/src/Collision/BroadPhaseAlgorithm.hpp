@@ -17,7 +17,7 @@ template <typename T> class BroadPhaseAlgorithm {
         overlaps.reserve(shapes.size());
 
         for (size_t i = 0; i < shapes.size(); i++) {
-            if (AABBOverlap::test(AABB(vertices), AABB(shapes[i].vertices))) {
+            if (AABBOverlap::test(AABB(vertices), shapes[i].box)) {
                 overlaps.push_back(shapes[i]);
             }
         }

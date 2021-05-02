@@ -11,6 +11,7 @@
 #include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
+#include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include <glm/vec3.hpp>
@@ -74,6 +75,13 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<CollisionComponent>("CollisionComponent")
         .addConstructor<void (*)(float, float, float)>()
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<TerrainCollisionComponent>("TerrainCollisionComponent")
+        .addConstructor<void (*)(unsigned int, unsigned int)>()
         .endClass()
         .endNamespace();
 

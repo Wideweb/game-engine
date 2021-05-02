@@ -16,7 +16,9 @@ namespace Engine {
 class Render {
   private:
     std::unique_ptr<Shader> m_Shader;
+
     std::unique_ptr<Shader> m_SkyboxShader;
+    float m_SkyboxRotation = 0.0f;
 
     // std::unique_ptr<Shader> m_ShadowShader;
     // unsigned int m_DepthMapFBO;
@@ -34,13 +36,19 @@ class Render {
 
     unsigned int m_QuadVAO, m_QuadVBO;
 
+    std::unique_ptr<Shader> m_WaterShader;
+    unsigned int m_WaterVAO, m_WaterVBO;
+    std::shared_ptr<Texture> m_WaterDudvMap;
+    std::shared_ptr<Texture> m_WaterNormalMap;
+    float m_WaterMoveFactor = 0.0f;
+
     int m_Width;
     int m_Height;
 
   public:
     Render(int width, int height);
 
-    void draw(Scene &scene, const ModelManager &models, const Camera &camera);
+    void draw(Scene &scene, const ModelManager &models, Camera &camera);
     void setClearColor(float r, float g, float b, float a);
     void clear();
 

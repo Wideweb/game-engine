@@ -18,6 +18,7 @@
 #include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
+#include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include "AISystem.hpp"
@@ -31,6 +32,7 @@
 #include "SkeletSystem.hpp"
 #include "StaticCollisionSystem.hpp"
 #include "StaticRender3DSystem.hpp"
+#include "TerrainCollisionSystem.hpp"
 
 namespace Engine {
 
@@ -42,6 +44,7 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<Render3DComponent>();
     m_Coordinator.RegisterComponent<SkeletComponent>();
     m_Coordinator.RegisterComponent<StaticCollisionComponent>();
+    m_Coordinator.RegisterComponent<TerrainCollisionComponent>();
     m_Coordinator.RegisterComponent<CollisionComponent>();
     m_Coordinator.RegisterComponent<Light3DComponent>();
     m_Coordinator.RegisterComponent<AIComponent>();
@@ -71,6 +74,17 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
 
         m_Coordinator.RegisterSystem<StaticCollisionSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(
+            m_Coordinator.GetComponentType<TerrainCollisionComponent>());
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+        signature.set(
+            m_Coordinator.GetComponentType<StaticRender3DComponent>());
+
+        m_Coordinator.RegisterSystem<TerrainCollisionSystem>(signature, m_Name);
     }
 
     {

@@ -27,6 +27,7 @@ class Camera {
     void setProjection(Projection mode);
     void setPosition(glm::vec3 position);
     void setRotation(glm::vec3 direction);
+    void inversePitch();
 
   private:
     uint32_t width;

@@ -25,6 +25,7 @@ set(SOURCE_EXE
     src/Engine/ECS/Systems/StaticRender3DSystem.cpp
     src/Engine/ECS/Systems/PhysicsSystem.cpp
     src/Engine/ECS/Systems/CollisionSystem.cpp
+    src/Engine/ECS/Systems/TerrainCollisionSystem.cpp
     src/Engine/ECS/Systems/StaticCollisionSystem.cpp
     src/Engine/ECS/Systems/AISystem.cpp
     src/Engine/ECS/Systems/CameraSystem.cpp

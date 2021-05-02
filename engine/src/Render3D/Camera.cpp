@@ -61,4 +61,6 @@ void Camera::move(const glm::vec3 &offset) {
     position += glm::normalize(glm::cross(front, up)) * offset.z;
 }
 
+void Camera::inversePitch() { rotate(glm::vec3(rotation.x * -2.0, 0.0, 0.0)); }
+
 } // namespace Engine

@@ -25,14 +25,12 @@ template <typename T> class Grid {
         SplitNode(0, Axis::X);
     }
 
-    void AddShape(T id, const std::vector<glm::vec3> &vertcies) {
-        CollisionShape<T> shape(id, vertcies);
-
+    void AddShape(CollisionShape<T> shape) {
         auto nodes = FindNodes(shape.box);
         for (auto index : nodes) {
-            m_Nodes[index].shapes.insert(id);
+            m_Nodes[index].shapes.insert(shape.id);
         }
-        m_Shapes[id] = std::move(shape);
+        m_Shapes[shape.id] = std::move(shape);
 
         ++m_ActiveShapes;
     }

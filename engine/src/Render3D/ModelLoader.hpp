@@ -75,6 +75,7 @@ class AssimpModel {
     std::unordered_map<std::string, unsigned int> m_MeshIndex;
     unsigned int m_ActiveMeshes = 0;
     std::vector<unsigned int> m_MeshBaseVertex;
+    glm::mat4 m_GlobalInverseTransform;
 
   public:
     AssimpModel();
@@ -83,9 +84,10 @@ class AssimpModel {
   private:
     void loadNode(aiNode *node, const aiScene *scene);
     SkinnedMesh loadMesh(aiMesh *mesh, const aiScene *scene);
-    void loadSkelet(aiMesh *mesh);
-    void buildSkelet(aiNode *node, const aiScene *scene);
-    void bindMeshToSkelet(aiMesh *mesh, const aiScene *scene);
+    void addJoint(aiBone *joint);
+    void sortJoints();
+    void bindSkelet(aiNode *node, const aiScene *scene);
+    void bindMeshToSkelet(aiMesh *mesh);
     Texture *loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type);
 };
 
@@ -100,6 +102,11 @@ class ModelLoader {
 
     static std::shared_ptr<Skybox>
     loadSkybox(const std::vector<std::string> &faces);
+
+    static std::shared_ptr<Model> loadTerrain(const std::string &path,
+                                              unsigned int terrainWidth,
+                                              unsigned int terrainHeight,
+                                              float maxHeight);
 };
 
 } // namespace Engine
