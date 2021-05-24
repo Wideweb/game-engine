@@ -2,9 +2,6 @@
 
 #include "Entity.hpp"
 #include "ModelInstanceManager.hpp"
-#include "Render.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
 
 #include <glm/vec3.hpp>
 #include <string>
@@ -21,8 +18,7 @@ class Render3DComponent {
     ModelInstance instance = NoModelInstance;
 
     Render3DComponent() {}
-    Render3DComponent(std::string model, float scale)
-        : scale(scale), model(std::move(model)) {}
+    Render3DComponent(std::string model, float scale) : scale(scale), model(std::move(model)) {}
 };
 
 } // namespace Engine

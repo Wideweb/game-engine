@@ -1,10 +1,6 @@
 #pragma once
 
-#include "Entity.hpp"
 #include "ModelInstanceManager.hpp"
-#include "Render.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
 
 #include <string>
 #include <vector>
@@ -18,8 +14,7 @@ class StaticRender3DComponent {
     ModelInstance instance = NoModelInstance;
 
     StaticRender3DComponent() {}
-    StaticRender3DComponent(std::string model, float scale)
-        : scale(scale), model(std::move(model)) {}
+    StaticRender3DComponent(std::string model, float scale) : scale(scale), model(std::move(model)) {}
 };
 
 } // namespace Engine

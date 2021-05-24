@@ -19,7 +19,8 @@ set(SOURCE_EXE
     src/Engine/Layer.cpp
     src/Engine/TextureManager.cpp
     src/Engine/ECS/Systems/MoveSystem.cpp
-    src/Engine/ECS/Systems/Light3DSystem.cpp
+    src/Engine/ECS/Systems/DirectedLightSystem.cpp
+    src/Engine/ECS/Systems/SpotLightSystem.cpp
     src/Engine/ECS/Systems/Render3DSystem.cpp
     src/Engine/ECS/Systems/SkeletSystem.cpp
     src/Engine/ECS/Systems/StaticRender3DSystem.cpp
@@ -38,13 +39,21 @@ set(SOURCE_EXE
     src/Engine/Scripting/Scripts/EntryScript.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
-    src/Render3D/Domain/InstancedMesh.cpp
-    src/Render3D/Domain/InstancedModel.cpp
-    src/Render3D/Domain/SkinnedMesh.cpp
-    src/Render3D/Domain/SkinnedModel.cpp
+    src/Render3D/Models/InstancedMesh.cpp
+    src/Render3D/Models/InstancedModel.cpp
+    src/Render3D/Models/SkinnedMesh.cpp
+    src/Render3D/Models/SkinnedModel.cpp
+    src/Render3D/Renderers/MasterRenderer.cpp
+    src/Render3D/Renderers/QuadRenderer.cpp
+    src/Render3D/Renderers/ModelRenderer.cpp
+    src/Render3D/Renderers/SkyboxRenderer.cpp
+    src/Render3D/Renderers/DirectedLightRenderer.cpp
+    src/Render3D/Renderers/SpotLightRenderer.cpp
+    src/Render3D/Renderers/WaterRenderer.cpp
+    src/Render3D/Renderers/FlareRenderer.cpp
+    src/Render3D/Renderers/GRenderer.cpp
     src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
-    src/Render3D/Render.cpp
     src/Render3D/Scene.cpp
     src/Render3D/Shader.cpp
     src/Render3D/Texture.cpp
@@ -72,7 +81,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D
-                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Domain
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Models
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Renderers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine

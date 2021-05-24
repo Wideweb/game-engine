@@ -11,11 +11,12 @@
 #include "BehaviourComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
-#include "Light3DComponent.hpp"
+#include "DirectedLightComponent.hpp"
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
+#include "SpotLightComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
@@ -25,11 +26,12 @@
 #include "BehaviourSystem.hpp"
 #include "CameraSystem.hpp"
 #include "CollisionSystem.hpp"
-#include "Light3DSystem.hpp"
+#include "DirectedLightSystem.hpp"
 #include "MoveSystem.hpp"
 #include "PhysicsSystem.hpp"
 #include "Render3DSystem.hpp"
 #include "SkeletSystem.hpp"
+#include "SpotLightSystem.hpp"
 #include "StaticCollisionSystem.hpp"
 #include "StaticRender3DSystem.hpp"
 #include "TerrainCollisionSystem.hpp"
@@ -46,7 +48,8 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<StaticCollisionComponent>();
     m_Coordinator.RegisterComponent<TerrainCollisionComponent>();
     m_Coordinator.RegisterComponent<CollisionComponent>();
-    m_Coordinator.RegisterComponent<Light3DComponent>();
+    m_Coordinator.RegisterComponent<DirectedLightComponent>();
+    m_Coordinator.RegisterComponent<SpotLightComponent>();
     m_Coordinator.RegisterComponent<AIComponent>();
     m_Coordinator.RegisterComponent<CameraComponent>();
     m_Coordinator.RegisterComponent<BehaviourComponent>();
@@ -69,8 +72,7 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
 
     {
         Signature signature;
-        signature.set(
-            m_Coordinator.GetComponentType<StaticCollisionComponent>());
+        signature.set(m_Coordinator.GetComponentType<StaticCollisionComponent>());
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
 
         m_Coordinator.RegisterSystem<StaticCollisionSystem>(signature, m_Name);
@@ -78,11 +80,9 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
 
     {
         Signature signature;
-        signature.set(
-            m_Coordinator.GetComponentType<TerrainCollisionComponent>());
+        signature.set(m_Coordinator.GetComponentType<TerrainCollisionComponent>());
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
-        signature.set(
-            m_Coordinator.GetComponentType<StaticRender3DComponent>());
+        signature.set(m_Coordinator.GetComponentType<StaticRender3DComponent>());
 
         m_Coordinator.RegisterSystem<TerrainCollisionSystem>(signature, m_Name);
     }
@@ -106,8 +106,7 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     {
         Signature signature;
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
-        signature.set(
-            m_Coordinator.GetComponentType<StaticRender3DComponent>());
+        signature.set(m_Coordinator.GetComponentType<StaticRender3DComponent>());
 
         m_Coordinator.RegisterSystem<StaticRender3DSystem>(signature, m_Name);
     }
@@ -130,10 +129,17 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
 
     {
         Signature signature;
-        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
-        signature.set(m_Coordinator.GetComponentType<Light3DComponent>());
+        signature.set(m_Coordinator.GetComponentType<DirectedLightComponent>());
 
-        m_Coordinator.RegisterSystem<Light3DSystem>(signature, m_Name);
+        m_Coordinator.RegisterSystem<DirectedLightSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<SpotLightComponent>());
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+
+        m_Coordinator.RegisterSystem<SpotLightSystem>(signature, m_Name);
     }
 
     {

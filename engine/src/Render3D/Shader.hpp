@@ -15,8 +15,7 @@ class Shader {
 
   public:
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc);
-    Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
-           const std::string &geometrySrc);
+    Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
     ~Shader();
 
     void bind() const;
@@ -25,18 +24,15 @@ class Shader {
     void setInt(const std::string &name, int value);
     void setFloat(const std::string &name, float value);
     void setFloat2(const std::string &name, float value1, float value2);
-    void setFloat3(const std::string &name, float value, float value2,
-                   float value3);
+    void setFloat3(const std::string &name, float value, float value2, float value3);
     void setFloat3(const std::string &name, glm::vec3 value);
-    void setMatrix4(const std::string &name, const float *matrix);
-    void setMatrix2x3(const std::string &name,
-                      const std::vector<float> &matrix);
+    void setMatrix4(const std::string &name, const glm::mat4 &matrix);
+    void setMatrix2x3(const std::string &name, const std::vector<float> &matrix);
     void setMatrix2(const std::string &name, const std::vector<float> &matrix);
 
   private:
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc);
-    void compile(const std::string &vertexSrc, const std::string &fragmentSrc,
-                 const std::string &geometrySrc);
+    void compile(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
     GLuint compileShader(GLenum type, const std::string &source);
     GLint getUniformLocation(const std::string &name);
 };

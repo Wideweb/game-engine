@@ -11,22 +11,20 @@ Application *Application::s_Instance = nullptr;
 
 Application::Application() {
     m_Window = std::unique_ptr<Window>(Window::create({960, 540}));
-    m_Window->setMouseEventCallback(
-        std::bind(&Application::onMouseEvent, this, std::placeholders::_1));
-    m_Window->setWindowEventCallback(
-        std::bind(&Application::onWindowEvent, this, std::placeholders::_1));
+    m_Window->setMouseEventCallback(std::bind(&Application::onMouseEvent, this, std::placeholders::_1));
+    m_Window->setWindowEventCallback(std::bind(&Application::onWindowEvent, this, std::placeholders::_1));
 
     m_Input = std::unique_ptr<Input>(Input::create());
 
     std::cout << "INIT RENDER START" << std::endl;
-    m_Render = std::make_unique<Render>(960 * 2, 540 * 2);
+    m_Render = std::make_unique<MasterRenderer>(960 * 2, 540 * 2);
     std::cout << "INIT RENDER END" << std::endl;
 
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 0.0f),
-                                        glm::vec3(0.0f, 1.0f, 0.0f),
-                                        glm::vec3(0.0, 0.0f, -1.0f));
+    m_Camera =
+        std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0, 0.0f, -1.0f));
     m_Camera->setSize(960, 540);
     m_Camera->setPerspective(glm::radians(45.0f), 0.01f, 100.0f);
+    m_Camera->setOrthogonal(0.01f, 100.0f);
     m_Camera->setProjection(Camera::Projection::PERSPECTIVE);
 
     m_Texture = std::unique_ptr<TextureManager>(new TextureManager());
@@ -39,8 +37,7 @@ Application::Application() {
 }
 
 glm::vec2 Application::getScreenFix() {
-    return glm::vec2(960.0f / m_Window->getWidth(),
-                     540.0f / m_Window->getHeight());
+    return glm::vec2(960.0f / m_Window->getWidth(), 540.0f / m_Window->getHeight());
 }
 
 void Application::run() {
@@ -63,7 +60,7 @@ void Application::run() {
                 break;
             }
 
-            m_Render->draw(layer->getScene(), m_Models, *m_Camera);
+            m_Render->draw(*m_Camera, layer->getScene(), m_Models);
         }
 
         m_Window->swapBuffers();

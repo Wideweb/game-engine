@@ -1,16 +1,16 @@
 function main(app)
     app:loadModel3D_v2("frog", "./assets/models/man/Man8.fbx");
-    app:loadModel3D_v2("beer", "./assets/models/man/Beer.fbx");
+    app:loadModel3D_v2("beer", "./assets/models/Duck/Duck.fbx");
 
     app:loadModel3D("box", "./assets/models/box/box.obj",
                     "./assets/models/box/diffuse-map.png",
                     "./assets/models/box/specular-map.png",
                     "./assets/models/box/normal-map.png");
 
-    app:loadModel3D("cottage", "./assets/models/cottage/cottage.obj",
-                    "./assets/models/cottage/cottage_diffuse.png",
-                    "./assets/models/cottage/cottage_specular.png",
-                    "./assets/models/cottage/cottage_normal.png");
+    -- app:loadModel3D("cottage", "./assets/models/cottage/cottage.obj",
+    --                 "./assets/models/cottage/cottage_diffuse.png",
+    --                 "./assets/models/cottage/cottage_specular.png",
+    --                 "./assets/models/cottage/cottage_normal.png");
 
     app:setSkybox("./assets/models/skybox-2/right.png",
                   "./assets/models/skybox-2/left.png",
@@ -48,43 +48,40 @@ function main(app)
     for i = 3, 5 do
         local box = app:createEntity("beer" .. i);
         box:addLocationComponent(Core.LocationComponent(20.0, 4.0, i * 2));
-        box:addStaticRender3DComponent(Core.StaticRender3DComponent("beer", 1));
+        box:addStaticRender3DComponent(Core.StaticRender3DComponent("beer", 10));
     end
 
     local light = app:createEntity("light");
-    local lightProps = Core.Light();
-    lightProps.quadratic = 0;
-    lightProps.linear = 0;
-    light:addLocationComponent(Core.LocationComponent(0.0, 20.0, 0.0));
-    light:addLight3DComponent(Core.Light3DComponent(lightProps));
+    local lightProps = Core.DirectedLight();
+    light:addDirectedLightComponent(Core.DirectedLightComponent(lightProps));
 
     for j = 0, 1 do
 
         for i = 0, 10 do
             local box = app:createEntity("box0" .. i);
             box:addLocationComponent(Core.LocationComponent(0.0, j * -2.0, i * 2));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1));
+            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
             box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
         end
 
         for i = 0, 10 do
             local box = app:createEntity("box1" .. i);
             box:addLocationComponent(Core.LocationComponent(i * 2, j * -2.0, 20.0));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1));
+            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
             box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
         end
 
         for i = 0, 10 do
             local box = app:createEntity("box2" .. i);
-            box:addLocationComponent(Core.LocationComponent(20, j * -2.0, 20.0 - i * 2));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1));
+            box:addLocationComponent(Core.LocationComponent(20, j * -2.01, 20.0 - i * 2));
+            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
             box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
         end
 
         for i = 0, 10 do
             local box = app:createEntity("box3" .. i);
             box:addLocationComponent(Core.LocationComponent(20.0 - i * 2, j * -2.0, 0.0));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1));
+            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
             box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
         end
 
@@ -93,14 +90,14 @@ function main(app)
     for i = 1, 3 do
         local box = app:createEntity("box4" .. i);
         box:addLocationComponent(Core.LocationComponent(10, 2 * i, 20.0));
-        box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1));
+        box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
         box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
     end
 
     for i = 1, 5 do
         local box = app:createEntity("box5" .. i);
         box:addLocationComponent(Core.LocationComponent(14, 2 * i, 20.0));
-        box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 1));
+        box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
         box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
     end
 end

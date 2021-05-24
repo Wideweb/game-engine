@@ -28,19 +28,16 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
     m_Model = std::make_shared<SkinnedModel>();
 
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(
-        path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                  aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
+    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                                     aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
-        !scene->mRootNode) {
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
         return m_Model;
     }
     m_Directory = path.substr(0, path.find_last_of('/'));
 
-    m_GlobalInverseTransform =
-        aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
+    m_GlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
 
     loadNode(scene->mRootNode, scene);
 
@@ -73,9 +70,7 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
         animation.joints.resize(m_Skelet.joints.size());
         animation.duration = static_cast<float>(animationSrc->mDuration);
         animation.ticksPerSecond =
-            animationSrc->mTicksPerSecond != 0.0
-                ? static_cast<float>(animationSrc->mTicksPerSecond)
-                : 25.0f;
+            animationSrc->mTicksPerSecond != 0.0 ? static_cast<float>(animationSrc->mTicksPerSecond) : 25.0f;
 
         for (unsigned int i = 0; i < animationSrc->mNumChannels; i++) {
             aiNodeAnim *nodeAnimation = animationSrc->mChannels[i];
@@ -89,14 +84,10 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
             for (unsigned int j = 0; j < nodeAnimation->mNumPositionKeys; j++) {
                 JointAnimationKeyFrame frame;
 
-                frame.timeStamp =
-                    static_cast<float>(nodeAnimation->mRotationKeys[j].mTime);
-                frame.position =
-                    aiVector3DToGlm(nodeAnimation->mPositionKeys[j].mValue);
-                frame.rotation =
-                    aiQuaternionDToGlm(nodeAnimation->mRotationKeys[j].mValue);
-                frame.scale =
-                    aiVector3DToGlm(nodeAnimation->mScalingKeys[j].mValue);
+                frame.timeStamp = static_cast<float>(nodeAnimation->mRotationKeys[j].mTime);
+                frame.position = aiVector3DToGlm(nodeAnimation->mPositionKeys[j].mValue);
+                frame.rotation = aiQuaternionDToGlm(nodeAnimation->mRotationKeys[j].mValue);
+                frame.scale = aiVector3DToGlm(nodeAnimation->mScalingKeys[j].mValue);
 
                 jointAnimation.keyFrames.push_back(frame);
             }
@@ -164,12 +155,9 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
         // material.normalMap.reset(
         //     loadMaterialTexture(materialSrc, aiTextureType_NORMALS));
 
-        material.diffuseMap.reset(
-            TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
-        material.specularMap.reset(
-            TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
-        material.normalMap.reset(
-            TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
+        material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
+        material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
+        material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
     }
 
     for (unsigned int i = 0; i < mesh->mNumBones; i++) {
@@ -179,8 +167,8 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
     if (m_ActiveMeshes == 0) {
         m_MeshBaseVertex.push_back(0);
     } else {
-        size_t base = m_MeshBaseVertex[m_MeshBaseVertex.size() - 1] +
-                      m_Model->meshes[m_ActiveMeshes - 1].vertices.size();
+        size_t base =
+            m_MeshBaseVertex[m_MeshBaseVertex.size() - 1] + m_Model->meshes[m_ActiveMeshes - 1].vertices.size();
         m_MeshBaseVertex.push_back(static_cast<unsigned int>(base));
     }
 
@@ -190,14 +178,12 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
     return SkinnedMesh(vertices, indices, material);
 }
 
-Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc,
-                                          aiTextureType type) {
+Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type) {
 
     for (unsigned int i = 0; i < materialSrc->GetTextureCount(type); i++) {
         aiString str;
         materialSrc->GetTexture(type, i, &str);
-        return TextureLoader::loadTexture(m_Directory +
-                                          std::string(str.C_Str()));
+        return TextureLoader::loadTexture(m_Directory + std::string(str.C_Str()));
     }
     return nullptr;
 }
@@ -229,8 +215,7 @@ void AssimpModel::sortJoints() {
 
     for (unsigned int i = 0; i < m_Skelet.joints.size(); i++) {
         if (m_Skelet.joints[i].parentId == -1) {
-            sortedJointIndex[m_Skelet.joints[i].name] =
-                static_cast<unsigned int>(sortedJoints.size());
+            sortedJointIndex[m_Skelet.joints[i].name] = static_cast<unsigned int>(sortedJoints.size());
             sortedJoints.push_back(m_Skelet.joints[i]);
         }
     }
@@ -244,8 +229,7 @@ void AssimpModel::sortJoints() {
                 Joint joint = m_Skelet.joints[j];
                 joint.parentId = newParentId;
 
-                sortedJointIndex[joint.name] =
-                    static_cast<unsigned int>(sortedJoints.size());
+                sortedJointIndex[joint.name] = static_cast<unsigned int>(sortedJoints.size());
                 sortedJoints.push_back(joint);
             }
         }
@@ -254,9 +238,9 @@ void AssimpModel::sortJoints() {
     m_Skelet.joints = std::move(sortedJoints);
     m_JointIndex = std::move(sortedJointIndex);
 
-    for (size_t i = 0; i < m_Skelet.joints.size(); i++) {
-        std::cout << m_Skelet.joints[i].name << std::endl;
-    }
+    // for (size_t i = 0; i < m_Skelet.joints.size(); i++) {
+    //     std::cout << m_Skelet.joints[i].name << std::endl;
+    // }
 }
 
 void AssimpModel::bindSkelet(aiNode *node, const aiScene *scene) {
@@ -280,8 +264,7 @@ void AssimpModel::bindMeshToSkelet(aiMesh *meshSrc) {
         unsigned int index = m_JointIndex.find(jointName)->second;
 
         for (unsigned int j = 0; j < joint->mNumWeights; j++) {
-            unsigned int vertexId =
-                joint->mWeights[j].mVertexId - meshBaseVertex;
+            unsigned int vertexId = joint->mWeights[j].mVertexId - meshBaseVertex;
 
             if (vertexId < 0 || vertexId >= mesh.vertices.size()) {
                 continue;
@@ -305,10 +288,8 @@ std::shared_ptr<Model> ModelLoader::loadModel(const std::string &path) {
     return std::static_pointer_cast<Model>(AssimpModel().load(path));
 }
 
-std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
-                                         const std::string &toDiffuseMap,
-                                         const std::string &toSpecularMap,
-                                         const std::string &toNormalMap) {
+std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::string &toDiffuseMap,
+                                         const std::string &toSpecularMap, const std::string &toNormalMap) {
     std::ifstream in(toObj, std::ios::in | std::ios::binary);
     std::stringstream dto;
     std::string line;
@@ -339,14 +320,11 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
             char divider;
             size_t p, t, n;
             in >> p >> divider >> t >> divider >> n;
-            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1],
-                                  tVertices[t - 1]);
+            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1]);
             in >> p >> divider >> t >> divider >> n;
-            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1],
-                                  tVertices[t - 1]);
+            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1]);
             in >> p >> divider >> t >> divider >> n;
-            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1],
-                                  tVertices[t - 1]);
+            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1]);
         } else {
             std::getline(in, line);
         }
@@ -364,8 +342,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj,
     return model;
 }
 
-std::shared_ptr<Skybox>
-ModelLoader::loadSkybox(const std::vector<std::string> &faces) {
+std::shared_ptr<Skybox> ModelLoader::loadSkybox(const std::vector<std::string> &faces) {
     // clang-format off
     std::vector<SkyboxVertex> vertices = {
         SkyboxVertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
@@ -412,15 +389,12 @@ ModelLoader::loadSkybox(const std::vector<std::string> &faces) {
     };
     // clang-format on
 
-    auto cubemapTexture =
-        std::shared_ptr<Texture>(TextureLoader::loadCubemap(faces));
+    auto cubemapTexture = std::shared_ptr<Texture>(TextureLoader::loadCubemap(faces));
     return std::make_shared<Skybox>(vertices, cubemapTexture);
 }
 
-std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path,
-                                                unsigned int terrainWidth,
-                                                unsigned int terrainHeight,
-                                                float maxHeight) {
+std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path, unsigned int terrainWidth,
+                                                unsigned int terrainHeight, float maxHeight) {
     struct StbiPixel {
         unsigned char r;
         unsigned char g;
@@ -429,8 +403,7 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path,
     };
 
     int width, height, nrChannels;
-    unsigned char *heightMapSrc =
-        stbi_load(path.data(), &width, &height, &nrChannels, 0);
+    unsigned char *heightMapSrc = stbi_load(path.data(), &width, &height, &nrChannels, 0);
     StbiPixel *heightMap = reinterpret_cast<StbiPixel *>(heightMapSrc);
 
     std::vector<InstancedMesh::Vertex> vertices;
@@ -452,11 +425,9 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path,
             glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
             glm::vec2 textCoord = glm::vec2(j, i);
 
-            auto height = heightMap[static_cast<unsigned int>(
-                i * rateHeight * uWidth + j * rateWidth)];
+            auto height = heightMap[static_cast<unsigned int>(i * rateHeight * uWidth + j * rateWidth)];
 
-            position.y =
-                (height.r + height.g + height.b) / 3.0f / 255.0f * maxHeight;
+            position.y = (height.r + height.g + height.b) / 3.0f / 255.0f * maxHeight;
 
             vertices.emplace_back(position, normal, textCoord);
         }
@@ -474,12 +445,9 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path,
         }
     }
 
-    material.diffuseMap.reset(
-        TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
-    material.specularMap.reset(
-        TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
-    material.normalMap.reset(
-        TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
+    material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
+    material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
+    material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
 
     InstancedMesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));

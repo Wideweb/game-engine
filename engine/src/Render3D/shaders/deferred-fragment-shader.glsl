@@ -12,8 +12,11 @@ struct TLight {
     float linear;
     float quadratic;
 
-    samplerCube depthMap;
-    float farPlane;
+    mat4 spaceMatrix;
+
+    // samplerCube depthMap;
+    sampler2D depthMap;
+    // float farPlane;
 };
 
 struct TMaterial {
@@ -36,42 +39,54 @@ uniform sampler2D gDepth;
 uniform TLight Lights[NR_LIGHTS];
 uniform int LightsNumber;
 
-vec3 sampleOffsetDirections[20] =
-    vec3[](vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
-           vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-           vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
-           vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
-           vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1));
+// vec3 sampleOffsetDirections[20] =
+//     vec3[](vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+//            vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1,
+//            -1), vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1,
+//            0), vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0,
+//            -1), vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1,
+//            -1));
+
+// float shadowCalculation(TLight light, vec3 fragPos) {
+//     vec3 fragToLight = fragPos - light.position;
+//     float currentDepth = length(fragToLight);
+
+//     float shadow = 0.0;
+//     float bias = 0.15;
+//     int samples = 1;
+//     // float viewDistance = length(ViewPos - fragPos);
+//     // float diskRadius = (1.0 + (viewDistance / light.farPlane)) / 20.0;
+//     float diskRadius = 0.02;
+//     for (int i = 0; i < samples; ++i) {
+//         float closestDepth =
+//             texture(light.depthMap,
+//                     fragToLight + sampleOffsetDirections[i] * diskRadius)
+//                 .r;
+//         closestDepth *= light.farPlane;
+//         if (currentDepth - bias > closestDepth)
+//             shadow += 1.0;
+//     }
+//     shadow /= float(samples);
+
+//     return shadow;
+// }
 
 float shadowCalculation(TLight light, vec3 fragPos) {
-    vec3 fragToLight = fragPos - light.position;
-    float currentDepth = length(fragToLight);
-
-    float shadow = 0.0;
-    float bias = 0.15;
-    int samples = 1;
-    // float viewDistance = length(ViewPos - fragPos);
-    // float diskRadius = (1.0 + (viewDistance / light.farPlane)) / 20.0;
-    float diskRadius = 0.02;
-    for (int i = 0; i < samples; ++i) {
-        float closestDepth =
-            texture(light.depthMap,
-                    fragToLight + sampleOffsetDirections[i] * diskRadius)
-                .r;
-        closestDepth *= light.farPlane;
-        if (currentDepth - bias > closestDepth)
-            shadow += 1.0;
-    }
-    shadow /= float(samples);
+    vec4 fragPosInLightSpace = light.spaceMatrix * vec4(fragPos, 1.0);
+    vec3 coords = fragPosInLightSpace.xyz / fragPosInLightSpace.w;
+    coords = coords * 0.5 + 0.5;
+    float closestDepth = texture(light.depthMap, coords.xy).r;
+    float currentDepth = coords.z;
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
 
     return shadow;
 }
 
 vec3 lightCalculation(TLight light, TMaterial material, vec3 normal,
                       vec3 fragPos, vec3 viewDir) {
-    // float distance = length(light.position - fragPos);
-    // float attenuation = 1.0 / (light.constant + light.linear * distance +
-    //                            light.quadratic * (distance * distance));
+    float distance = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance +
+                               light.quadratic * (distance * distance));
 
     vec3 ambient = light.ambient * material.diffuse;
 
@@ -84,9 +99,9 @@ vec3 lightCalculation(TLight light, TMaterial material, vec3 normal,
     float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * material.specular;
 
-    // ambient *= attenuation;
-    // diffuse *= attenuation;
-    // specular *= attenuation;
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
 
     // float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     float shadow = shadowCalculation(light, fragPos);

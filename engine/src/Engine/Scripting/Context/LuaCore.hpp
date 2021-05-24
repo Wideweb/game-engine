@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ScriptContext.hpp"
+
 #include "lua.hpp"
 #include <LuaBridge/LuaBridge.h>
 

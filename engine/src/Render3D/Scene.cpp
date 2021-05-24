@@ -2,14 +2,11 @@
 
 namespace Engine {
 
-void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) {
-    m_Skybox = skybox;
-}
+void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) { m_Skybox = skybox; }
 
 std::shared_ptr<Skybox> Scene::getSkybox() { return m_Skybox; }
 
-ModelInstance Scene::addStaticObject(const std::string &model,
-                                     glm::mat4 position) {
+ModelInstance Scene::addStaticObject(const std::string &model, glm::mat4 position) {
     return m_Objects[model].Create(std::move(position), true);
 }
 
@@ -17,31 +14,36 @@ ModelInstance Scene::addObject(const std::string &model, glm::mat4 position) {
     return m_Objects[model].Create(std::move(position), false);
 }
 
-void Scene::updateObject(const std::string &model, glm::mat4 position,
-                         ModelInstance instance) {
+void Scene::updateObject(const std::string &model, glm::mat4 position, ModelInstance instance) {
     m_Objects[model].Update(instance, std::move(position));
 }
 
-void Scene::updateObject(const std::string &model,
-                         std::vector<glm::mat4> joints,
-                         ModelInstance instance) {
+void Scene::updateObject(const std::string &model, std::vector<glm::mat4> joints, ModelInstance instance) {
     m_Objects[model].Update(instance, std::move(joints));
 }
 
-void Scene::addLight(const Light &light, glm::vec3 position) {
-    m_Lights[m_ActiveLights].light = light;
-    m_Lights[m_ActiveLights].position = std::move(position);
+void Scene::setDirectedLight(const DirectedLight &light) {
+    m_DirectedLight = light;
+    m_HasDirectedLight = true;
+}
+
+bool Scene::hasDirectedLight() { return m_HasDirectedLight; }
+
+DirectedLight &Scene::getDirectedLight() { return m_DirectedLight; }
+
+void Scene::addSpotLight(const SpotLight &light, glm::vec3 position) {
+    m_SpotLights[m_ActiveLights].light = light;
+    m_SpotLights[m_ActiveLights].position = std::move(position);
     ++m_ActiveLights;
 }
 
-Scene::ObjectsRange Scene::getObjects() {
-    return {m_Objects.begin(), m_Objects.end()};
-}
+Scene::ObjectsRange Scene::getObjects() { return {m_Objects.begin(), m_Objects.end()}; }
 
-Scene::LightsRange Scene::getLights() {
-    return {m_Lights.cbegin(), m_Lights.cbegin() + m_ActiveLights};
-}
+Scene::LightsRange Scene::getSpotLights() { return {m_SpotLights.cbegin(), m_SpotLights.cbegin() + m_ActiveLights}; }
 
-void Scene::clear() { m_ActiveLights = 0; }
+void Scene::clear() {
+    m_ActiveLights = 0;
+    m_HasDirectedLight = false;
+}
 
 } // namespace Engine

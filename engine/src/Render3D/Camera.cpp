@@ -21,6 +21,8 @@ glm::mat4 Camera::projectionMatrix() const {
     return mode == Projection::PERSPECTIVE ? perspective : orthogonal;
 }
 
+glm::mat4 Camera::orthogonalMatrix() const { return orthogonal; }
+
 glm::vec3 Camera::positionVec() const { return position; }
 
 glm::vec3 Camera::upVec() const { return up; }
@@ -62,5 +64,9 @@ void Camera::move(const glm::vec3 &offset) {
 }
 
 void Camera::inversePitch() { rotate(glm::vec3(rotation.x * -2.0, 0.0, 0.0)); }
+
+glm::vec3 Camera::frontVec() const { return front; }
+
+glm::vec3 Camera::rotationVec() const { return rotation; }
 
 } // namespace Engine

@@ -4,8 +4,8 @@
 #include "EventHandler.hpp"
 #include "Input.hpp"
 #include "Layer.hpp"
+#include "MasterRenderer.hpp"
 #include "ModelManager.hpp"
-#include "Render.hpp"
 #include "SoundMixer.hpp"
 #include "TextureManager.hpp"
 #include "Time.hpp"
@@ -26,14 +26,13 @@ class Application {
 
     std::unique_ptr<Window> m_Window;
     std::unique_ptr<Input> m_Input;
-    std::unique_ptr<Render> m_Render;
+    std::unique_ptr<MasterRenderer> m_Render;
     std::unique_ptr<Camera> m_Camera;
     std::unique_ptr<TextureManager> m_Texture;
     std::unique_ptr<EventHandler> m_EventHandler;
     std::unique_ptr<SoundMixer> m_Sound;
     std::list<std::shared_ptr<Layer>> m_LayerStack;
-    std::unordered_map<std::string, std::list<std::shared_ptr<Layer>>::iterator>
-        m_NameToLayer;
+    std::unordered_map<std::string, std::list<std::shared_ptr<Layer>>::iterator> m_NameToLayer;
     Time m_Time;
     ModelManager m_Models;
 
@@ -72,7 +71,7 @@ class Application {
     Window &getWindow() { return *m_Window; }
     SoundMixer &getSound() { return *m_Sound; }
     Input &getInput() { return *m_Input; }
-    Render &getRender() { return *m_Render; }
+    MasterRenderer &getRender() { return *m_Render; }
     Camera &getCamera() { return *m_Camera; }
     Time &getTime() { return m_Time; }
     TextureManager &getTextures() { return *m_Texture; }

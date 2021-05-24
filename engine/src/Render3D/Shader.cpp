@@ -1,3 +1,4 @@
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
 
@@ -5,12 +6,9 @@
 
 namespace Engine {
 
-Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc) {
-    compile(vertexSrc, fragmentSrc);
-}
+Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc) { compile(vertexSrc, fragmentSrc); }
 
-Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
-               const std::string &geometrySrc) {
+Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc) {
     compile(vertexSrc, fragmentSrc, geometrySrc);
 }
 
@@ -23,8 +21,7 @@ void Shader::bind() const {
 
 void Shader::unbind() const { glUseProgram(0); }
 
-void Shader::compile(const std::string &vertexSrc,
-                     const std::string &fragmentSrc) {
+void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSrc) {
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSrc);
     if (vertexShader == 0) {
@@ -70,9 +67,7 @@ void Shader::compile(const std::string &vertexSrc,
     m_Program = programId;
 }
 
-void Shader::compile(const std::string &vertexSrc,
-                     const std::string &fragmentSrc,
-                     const std::string &geometrySrc) {
+void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc) {
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSrc);
     if (vertexShader == 0) {
@@ -168,8 +163,7 @@ void Shader::setFloat2(const std::string &name, float value1, float value2) {
     // std::cout << glGetError() << std::endl;
 }
 
-void Shader::setFloat3(const std::string &name, float value1, float value2,
-                       float value3) {
+void Shader::setFloat3(const std::string &name, float value1, float value2, float value3) {
     GLint location = getUniformLocation(name);
     glUniform3f(location, value1, value2, value3);
     // std::cout << glGetError() << std::endl;
@@ -181,20 +175,18 @@ void Shader::setFloat3(const std::string &name, glm::vec3 value) {
     // std::cout << glGetError() << std::endl;
 }
 
-void Shader::setMatrix4(const std::string &name, const float *matrix) {
+void Shader::setMatrix4(const std::string &name, const glm::mat4 &matrix) {
     GLint location = getUniformLocation(name);
-    glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     // std::cout << glGetError() << std::endl;
 }
 
-void Shader::setMatrix2x3(const std::string &name,
-                          const std::vector<float> &matrix) {
+void Shader::setMatrix2x3(const std::string &name, const std::vector<float> &matrix) {
     GLint location = getUniformLocation(name);
     glUniformMatrix2x3fv(location, 1, GL_FALSE, matrix.data());
 }
 
-void Shader::setMatrix2(const std::string &name,
-                        const std::vector<float> &matrix) {
+void Shader::setMatrix2(const std::string &name, const std::vector<float> &matrix) {
     GLint location = getUniformLocation(name);
     glUniformMatrix2fv(location, 1, GL_FALSE, matrix.data());
 }

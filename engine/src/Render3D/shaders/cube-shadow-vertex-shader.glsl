@@ -1,36 +1,55 @@
 #version 330 core
 
-const int MAX_JOINTS = 100;
+/////////////////////////////////////////////////////////////
+/////////////////////// DECLARATION /////////////////////////
+/////////////////////////////////////////////////////////////
+mat4 getVertexTransform();
 
-layout(location = 0) in mat4 Model;
-layout(location = 4) in vec3 VertexPosition;
-layout(location = 7) in ivec4 VertexJoints0;
-layout(location = 8) in ivec4 VertexJoints1;
-layout(location = 9) in vec4 VertexJointWeights0;
-layout(location = 10) in vec4 VertexJointWeights1;
-layout(location = 11) in int VertexJointsNumber;
+/////////////////////////////////////////////////////////////
+//////////////////////// DEFINES ////////////////////////////
+/////////////////////////////////////////////////////////////
+const int c_maxJoints = 100;
 
-uniform mat4 Joints[MAX_JOINTS];
-uniform int JointsNumber;
+/////////////////////////////////////////////////////////////
+//////////////////////// ATTRIBUTES /////////////////////////
+/////////////////////////////////////////////////////////////
+layout(location = 0) in mat4 a_model;
+layout(location = 4) in vec3 a_vertexPosition;
+layout(location = 5) in vec3 a_vertexNormal;
+layout(location = 6) in vec2 a_vertexTextureCoord;
+layout(location = 7) in ivec4 a_vertexJoints0;
+layout(location = 8) in ivec4 a_vertexJoints1;
+layout(location = 9) in vec4 a_vertexJointWeights0;
+layout(location = 10) in vec4 a_vertexJointWeights1;
+layout(location = 11) in int a_vertexJointsNumber;
+
+/////////////////////////////////////////////////////////////
+//////////////////////// UNIFORMS ///////////////////////////
+/////////////////////////////////////////////////////////////
+uniform mat4 u_joints[c_maxJoints];
+uniform int u_jointsNumber;
+
+/////////////////////////////////////////////////////////////
+////////////////////////// MAIN /////////////////////////////
+/////////////////////////////////////////////////////////////
+void main() {
+    mat4 transform = getVertexTransform();
+    gl_Position = a_model * transform * vec4(a_vertexPosition, 1.0f);
+}
 
 mat4 getVertexTransform() {
-    if (VertexJointsNumber <= 0 || JointsNumber <= 0) {
+    if (a_vertexJointsNumber <= 0 || u_jointsNumber <= 0) {
         return mat4(1.0);
     }
 
-    mat4 transform = Joints[VertexJoints0[0]] * VertexJointWeights0[0];
-    for (int i = 1; i < VertexJointsNumber && i < 4; i++) {
-        transform += Joints[VertexJoints0[i]] * VertexJointWeights0[i];
+    mat4 transform = u_joints[a_vertexJoints0[0]] * a_vertexJointWeights0[0];
+    for (int i = 1; i < a_vertexJointsNumber && i < 4; i++) {
+        transform += u_joints[a_vertexJoints0[i]] * a_vertexJointWeights0[i];
     }
 
-    for (int i = 4; i < VertexJointsNumber && i < 8; i++) {
-        transform += Joints[VertexJoints1[i]] * VertexJointWeights1[i];
+    for (int i = 4; i < a_vertexJointsNumber && i < 8; i++) {
+        transform += u_joints[a_vertexJoints1[i]] * a_vertexJointWeights1[i];
     }
 
     return transform;
-}
-
-void main() {
-    mat4 transform = getVertexTransform();
-    gl_Position = Model * transform * vec4(VertexPosition, 1.0f);
 }

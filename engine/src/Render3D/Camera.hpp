@@ -18,8 +18,11 @@ class Camera {
 
     glm::mat4 viewMatrix() const;
     glm::mat4 projectionMatrix() const;
+    glm::mat4 orthogonalMatrix() const;
     glm::vec3 positionVec() const;
     glm::vec3 upVec() const;
+    glm::vec3 frontVec() const;
+    glm::vec3 rotationVec() const;
 
     void setSize(uint32_t width, uint32_t height);
     void setPerspective(float fieldOfView, float zNear, float zFar);

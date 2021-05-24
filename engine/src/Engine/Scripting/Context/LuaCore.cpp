@@ -4,11 +4,12 @@
 #include "BehaviourComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
-#include "Light3DComponent.hpp"
+#include "DirectedLightComponent.hpp"
 #include "LocationComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
+#include "SpotLightComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
@@ -94,21 +95,42 @@ void LuaCore::add(lua_State *state) {
 
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
-        .beginClass<Light>("Light")
+        .beginClass<DirectedLight>("DirectedLight")
         .addConstructor<void (*)(void)>()
-        .addProperty("ambient", &Light::ambient)
-        .addProperty("diffuse", &Light::diffuse)
-        .addProperty("specular", &Light::specular)
-        .addProperty("constant", &Light::constant)
-        .addProperty("linear", &Light::linear)
-        .addProperty("quadratic", &Light::quadratic)
+        .addProperty("direction", &DirectedLight::direction)
+        .addProperty("ambient", &DirectedLight::ambient)
+        .addProperty("diffuse", &DirectedLight::diffuse)
+        .addProperty("specular", &DirectedLight::specular)
+        .addProperty("nearPlane", &DirectedLight::nearPlane)
+        .addProperty("farPlane", &DirectedLight::farPlane)
         .endClass()
         .endNamespace();
 
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
-        .beginClass<Light3DComponent>("Light3DComponent")
-        .addConstructor<void (*)(Light)>()
+        .beginClass<DirectedLightComponent>("DirectedLightComponent")
+        .addConstructor<void (*)(DirectedLight)>()
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<SpotLight>("SpotLight")
+        .addConstructor<void (*)(void)>()
+        .addProperty("ambient", &SpotLight::ambient)
+        .addProperty("diffuse", &SpotLight::diffuse)
+        .addProperty("specular", &SpotLight::specular)
+        .addProperty("constant", &SpotLight::constant)
+        .addProperty("linear", &SpotLight::linear)
+        .addProperty("quadratic", &SpotLight::quadratic)
+        .addProperty("farPlane", &SpotLight::farPlane)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<SpotLightComponent>("SpotLightComponent")
+        .addConstructor<void (*)(SpotLight)>()
         .endClass()
         .endNamespace();
 

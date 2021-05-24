@@ -1,7 +1,6 @@
 #include "CubeMap.hpp"
 
 #include "TextureLoader.hpp"
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
 #include "glad/glad.h"
@@ -15,8 +14,7 @@ CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
     float aspect = width / height;
     float near = 1.0f;
 
-    m_Projection =
-        glm::perspective(glm::radians(90.0f), aspect, near, farPlane);
+    m_Projection = glm::perspective(glm::radians(90.0f), aspect, near, farPlane);
 
     updateTransforms();
 }
@@ -24,14 +22,10 @@ CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
 CubeMap::~CubeMap() {}
 
 void CubeMap::bind(Shader &shader) {
-    glActiveTexture(GL_TEXTURE0);
-    m_CubeMapTexture->bind();
-
-    shader.setFloat("FarPlane", m_FarPlane);
-    shader.setFloat3("CubePosition", m_Position);
+    shader.setFloat("u_farPlane", m_FarPlane);
+    shader.setFloat3("u_cubePosition", m_Position);
     for (unsigned int i = 0; i < 6; ++i) {
-        shader.setMatrix4("CubeMatrices[" + std::to_string(i) + "]",
-                          glm::value_ptr(m_Transforms[i]));
+        shader.setMatrix4("u_cubeMatrices[" + std::to_string(i) + "]", m_Transforms[i]);
     }
 }
 
@@ -42,29 +36,17 @@ void CubeMap::setPosition(const glm::vec3 &position) {
 
 void CubeMap::updateTransforms() {
     m_Transforms[0] =
-        m_Projection * glm::lookAt(m_Position,
-                                   m_Position + glm::vec3(1.0, 0.0, 0.0),
-                                   glm::vec3(0.0, -1.0, 0.0));
+        m_Projection * glm::lookAt(m_Position, m_Position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
     m_Transforms[1] =
-        m_Projection * glm::lookAt(m_Position,
-                                   m_Position + glm::vec3(-1.0, 0.0, 0.0),
-                                   glm::vec3(0.0, -1.0, 0.0));
+        m_Projection * glm::lookAt(m_Position, m_Position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
     m_Transforms[2] =
-        m_Projection * glm::lookAt(m_Position,
-                                   m_Position + glm::vec3(0.0, 1.0, 0.0),
-                                   glm::vec3(0.0, 0.0, 1.0));
+        m_Projection * glm::lookAt(m_Position, m_Position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0));
     m_Transforms[3] =
-        m_Projection * glm::lookAt(m_Position,
-                                   m_Position + glm::vec3(0.0, -1.0, 0.0),
-                                   glm::vec3(0.0, 0.0, -1.0));
+        m_Projection * glm::lookAt(m_Position, m_Position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0));
     m_Transforms[4] =
-        m_Projection * glm::lookAt(m_Position,
-                                   m_Position + glm::vec3(0.0, 0.0, 1.0),
-                                   glm::vec3(0.0, -1.0, 0.0));
+        m_Projection * glm::lookAt(m_Position, m_Position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0));
     m_Transforms[5] =
-        m_Projection * glm::lookAt(m_Position,
-                                   m_Position + glm::vec3(0.0, 0.0, -1.0),
-                                   glm::vec3(0.0, -1.0, 0.0));
+        m_Projection * glm::lookAt(m_Position, m_Position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0));
 }
 
 } // namespace Engine

@@ -1,36 +1,55 @@
 #version 330 core
-layout(location = 0) out vec4 gColor;
-layout(location = 1) out vec3 gPosition;
-layout(location = 2) out vec3 gNormal;
-layout(location = 3) out vec4 gSpecular;
 
-struct TMaterial {
+/////////////////////////////////////////////////////////////
+/////////////////////// DECLARATION /////////////////////////
+/////////////////////////////////////////////////////////////
+struct Material {
     sampler2D diffuse;
     sampler2D specular;
     sampler2D normal;
     float shininess;
 };
 
-in vec2 TexCoord;
-in vec3 FragPos;
-in vec3 Normal;
-in float Visibility;
+/////////////////////////////////////////////////////////////
+//////////////////////// DEFINES ////////////////////////////
+/////////////////////////////////////////////////////////////
+const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 
-uniform TMaterial Material;
-uniform float ClipY;
+/////////////////////////////////////////////////////////////
+//////////////////////// UNIFORMS ///////////////////////////
+/////////////////////////////////////////////////////////////
+uniform Material u_material;
+uniform float u_clipY;
 
-const vec3 fogColor = vec3(0.55, 0.69, 0.73);
+/////////////////////////////////////////////////////////////
+///////////////////////// VARYING ///////////////////////////
+/////////////////////////////////////////////////////////////
+in vec2 v_texCoord;
+in vec3 v_fragPos;
+in vec3 v_normal;
+in float v_visibility;
 
+/////////////////////////////////////////////////////////////
+//////////////////////////// OUT ////////////////////////////
+/////////////////////////////////////////////////////////////
+layout(location = 0) out vec4 o_gColor;
+layout(location = 1) out vec3 o_gPosition;
+layout(location = 2) out vec3 o_gNormal;
+layout(location = 3) out vec4 o_gSpecular;
+
+/////////////////////////////////////////////////////////////
+////////////////////////// MAIN /////////////////////////////
+/////////////////////////////////////////////////////////////
 void main() {
-    if (FragPos.y < ClipY) {
+    if (v_fragPos.y < u_clipY) {
         discard;
     }
 
-    gPosition = FragPos;
-    gNormal = normalize(Normal);
-    gSpecular.rgb = texture(Material.specular, TexCoord).rgb;
-    gSpecular.a = Material.shininess;
+    o_gPosition = v_fragPos;
+    o_gNormal = normalize(v_normal);
+    o_gSpecular.rgb = texture(u_material.specular, v_texCoord).rgb;
+    o_gSpecular.a = u_material.shininess;
 
-    gColor = texture(Material.diffuse, TexCoord);
-    // gColor = mix(vec4(fogColor, 1.0), gColor, Visibility);
+    o_gColor = texture(u_material.diffuse, v_texCoord);
+    o_gColor = mix(vec4(c_fogColor, 1.0), o_gColor, v_visibility);
 }
