@@ -16,6 +16,7 @@ class Render3DComponent {
     std::string model;
     glm::vec3 rotation = glm::vec3(0.0f);
     ModelInstance instance = NoModelInstance;
+    bool updated = false;
 
     Render3DComponent() {}
     Render3DComponent(std::string model, float scale) : scale(scale), model(std::move(model)) {}

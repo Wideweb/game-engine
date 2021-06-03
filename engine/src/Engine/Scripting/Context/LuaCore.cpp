@@ -36,6 +36,7 @@ void LuaCore::add(lua_State *state) {
         .addConstructor<void (*)(float, float, float)>()
         .addProperty("position", &LocationComponent::position)
         .addProperty("rotation", &LocationComponent::rotation)
+        .addProperty("parent", &LocationComponent::parent)
         .endClass()
         .endNamespace();
 
@@ -66,9 +67,16 @@ void LuaCore::add(lua_State *state) {
 
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
+        .beginClass<SkeletState>("SkeletState")
+        .addFunction("play", &SkeletState::play)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
         .beginClass<SkeletComponent>("SkeletComponent")
         .addConstructor<void (*)(std::string)>()
-        .addProperty("animation", &SkeletComponent::animation)
+        .addProperty("state", &SkeletComponent::state)
         .endClass()
         .endNamespace();
 
@@ -76,6 +84,7 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<CollisionComponent>("CollisionComponent")
         .addConstructor<void (*)(float, float, float)>()
+        .addProperty("tag", &CollisionComponent::tag)
         .endClass()
         .endNamespace();
 
@@ -90,6 +99,7 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<StaticCollisionComponent>("StaticCollisionComponent")
         .addConstructor<void (*)(float, float, float)>()
+        .addProperty("tag", &StaticCollisionComponent::tag)
         .endClass()
         .endNamespace();
 

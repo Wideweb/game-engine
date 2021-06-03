@@ -1,6 +1,5 @@
 function main(app)
     app:loadModel3D_v2("frog", "./assets/models/man/Man8.fbx");
-    app:loadModel3D_v2("beer", "./assets/models/Duck/Duck.fbx");
 
     app:loadModel3D("box", "./assets/models/box/box.obj",
                     "./assets/models/box/diffuse-map.png",
@@ -23,14 +22,14 @@ function main(app)
     local location = Core.LocationComponent(0.0, 2.0, 0.0);
     player:addLocationComponent(location);
     player:addVelocityComponent(Core.VelocityComponent());
-    local render = Core.Render3DComponent("frog", 0.5);
+    local render = Core.Render3DComponent("frog", 0.25);
     render.rotation.y = -1.57;
     player:addRender3DComponent(render);
-    player:addCollisionComponent(Core.CollisionComponent(1.0, 1.0, 1.0));
+    player:addCollisionComponent(Core.CollisionComponent(0.5, 0.65, 0.5));
     player:addPhysicsComponent(Core.PhysicsComponent(0.01));
-    player:addCameraComponent(Core.CameraComponent(-6.0, 1.5, 0.0));
+    player:addCameraComponent(Core.CameraComponent(-4.0, 1.0, 0.0));
     player:addBehaviourComponent(Core.BehaviourComponent("./assets/entities/player.lua"));
-    player:addSkeletComponent(Core.SkeletComponent("Armature|Run"));
+    player:addSkeletComponent(Core.SkeletComponent("Armature|Idle"));
 
     app:loadTerrain("terrain", "./assets/heightmap.png", 50, 50, 5.0);
     local terrain = app:createEntity("terrain");
@@ -45,12 +44,6 @@ function main(app)
     render.rotation.y = 1.57;
     frog:addRender3DComponent(render);
 
-    for i = 3, 5 do
-        local box = app:createEntity("beer" .. i);
-        box:addLocationComponent(Core.LocationComponent(20.0, 4.0, i * 2));
-        box:addStaticRender3DComponent(Core.StaticRender3DComponent("beer", 10));
-    end
-
     local light = app:createEntity("light");
     local lightProps = Core.DirectedLight();
     light:addDirectedLightComponent(Core.DirectedLightComponent(lightProps));
@@ -60,29 +53,37 @@ function main(app)
         for i = 0, 10 do
             local box = app:createEntity("box0" .. i);
             box:addLocationComponent(Core.LocationComponent(0.0, j * -2.0, i * 2));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
-            box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+            box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
+            local collision = Core.StaticCollisionComponent(2.0, 2.0, 2.0);
+            collision.tag = "platform";
+            box:addStaticCollisionComponent(collision);
         end
 
         for i = 0, 10 do
             local box = app:createEntity("box1" .. i);
             box:addLocationComponent(Core.LocationComponent(i * 2, j * -2.0, 20.0));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
-            box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+            box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
+            local collision = Core.StaticCollisionComponent(2.0, 2.0, 2.0);
+            collision.tag = "platform";
+            box:addStaticCollisionComponent(collision);
         end
 
         for i = 0, 10 do
             local box = app:createEntity("box2" .. i);
             box:addLocationComponent(Core.LocationComponent(20, j * -2.01, 20.0 - i * 2));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
-            box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+            box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
+            local collision = Core.StaticCollisionComponent(2.0, 2.0, 2.0);
+            collision.tag = "platform";
+            box:addStaticCollisionComponent(collision);
         end
 
         for i = 0, 10 do
             local box = app:createEntity("box3" .. i);
             box:addLocationComponent(Core.LocationComponent(20.0 - i * 2, j * -2.0, 0.0));
-            box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
-            box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+            box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
+            local collision = Core.StaticCollisionComponent(2.0, 2.0, 2.0);
+            collision.tag = "platform";
+            box:addStaticCollisionComponent(collision);
         end
 
     end
@@ -90,14 +91,14 @@ function main(app)
     for i = 1, 3 do
         local box = app:createEntity("box4" .. i);
         box:addLocationComponent(Core.LocationComponent(10, 2 * i, 20.0));
-        box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
+        box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
         box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
     end
 
     for i = 1, 5 do
         local box = app:createEntity("box5" .. i);
         box:addLocationComponent(Core.LocationComponent(14, 2 * i, 20.0));
-        box:addStaticRender3DComponent(Core.StaticRender3DComponent("box", 0.9));
+        box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
         box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
     end
 end

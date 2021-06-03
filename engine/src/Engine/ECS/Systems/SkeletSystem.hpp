@@ -11,8 +11,7 @@ class SkeletSystem : public BaseSystem {
     virtual void Update(ComponentManager &components) const override;
 
   private:
-    size_t getFrame(const std::vector<JointAnimationKeyFrame> &frames,
-                    float time) const;
+    size_t getFrame(const std::vector<JointAnimationKeyFrame> &frames, double time) const;
 };
 
 } // namespace Engine

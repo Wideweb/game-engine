@@ -29,14 +29,17 @@ void CollisionSystem::Update(ComponentManager &components) const {
         glm::vec3 move(location.position);
         move = move + glm::vec3(location.front) * glm::vec3(velocity.speed);
 
-        std::transform(collision.vertices.begin(), collision.vertices.end(),
-                       std::back_inserter(vertices),
+        std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),
                        [&](const glm::vec3 &v) { return v + move; });
 
         auto results = collision3D.Detect(vertices);
 
+        collision.entities.clear();
         for (const auto &result : results) {
-            collision.entities.insert(result.id);
+
+            if (glm::dot(result.mtv, glm::vec3(0.0f, 1.0f, 0.0f)) > 0.0f) {
+                collision.entities.insert(result.id);
+            }
 
             location.position += result.mtv;
             velocity.speed = 0;

@@ -26,6 +26,7 @@ class GRenderer {
     GRenderer(Viewport &viewport, ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer);
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models);
+    void resize();
 
     unsigned int gPosition() { return m_GPosition; }
     unsigned int gNormal() { return m_GNormal; }

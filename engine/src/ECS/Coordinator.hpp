@@ -17,13 +17,9 @@ class Coordinator {
         m_SystemManager = std::make_unique<SystemManager>();
     }
 
-    Entity CreateEntity(const std::string &name) {
-        return m_EntityManager->CreateEntity(name);
-    }
+    Entity CreateEntity(const std::string &name) { return m_EntityManager->CreateEntity(name); }
 
-    Entity GetEntity(const std::string &name) const {
-        return m_EntityManager->GetEntity(name);
-    }
+    Entity GetEntity(const std::string &name) const { return m_EntityManager->GetEntity(name); }
 
     void DestroyEntity(Entity entity) {
         m_SystemManager->RemoveEntity(entity);
@@ -31,9 +27,7 @@ class Coordinator {
         m_EntityManager->DestroyEntity(entity);
     }
 
-    template <typename T> void RegisterComponent() {
-        m_ComponentManager->RegisterComponent<T>();
-    }
+    template <typename T> void RegisterComponent() { m_ComponentManager->RegisterComponent<T>(); }
 
     template <typename T> void AddComponent(Entity entity, T component) {
         m_ComponentManager->AddComponent<T>(entity, component);
@@ -55,23 +49,18 @@ class Coordinator {
         m_SystemManager->EntitySignatureChanged(entity, signature);
     }
 
-    template <typename T> T &GetComponent(Entity entity) {
-        return m_ComponentManager->GetComponent<T>(entity);
-    }
+    template <typename T> T &GetComponent(Entity entity) { return m_ComponentManager->GetComponent<T>(entity); }
 
-    template <typename T> ComponentType GetComponentType() {
-        return m_ComponentManager->GetComponentType<T>();
-    }
+    template <typename T> bool HasComponent(Entity entity) { return m_ComponentManager->HasComponent<T>(entity); }
 
-    template <typename T>
-    const std::weak_ptr<ComponentArray<T>> GetComponentArray() {
+    template <typename T> ComponentType GetComponentType() { return m_ComponentManager->GetComponentType<T>(); }
+
+    template <typename T> const std::weak_ptr<ComponentArray<T>> GetComponentArray() {
         m_ComponentManager->GetComponentArray<T>();
     }
 
-    template <typename T, class... TArgs>
-    void RegisterSystem(Signature signature, TArgs &&...args) {
-        m_SystemManager->RegisterSystem<T>(signature,
-                                           std::forward<TArgs>(args)...);
+    template <typename T, class... TArgs> void RegisterSystem(Signature signature, TArgs &&...args) {
+        m_SystemManager->RegisterSystem<T>(signature, std::forward<TArgs>(args)...);
     }
 
     void UpdateSystems() { m_SystemManager->Update(*m_ComponentManager); }

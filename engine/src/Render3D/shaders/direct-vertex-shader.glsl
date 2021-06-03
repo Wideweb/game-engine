@@ -9,7 +9,7 @@ mat4 getVertexTransform();
 //////////////////////// DEFINES ////////////////////////////
 /////////////////////////////////////////////////////////////
 const int c_maxJoints = 100;
-const float c_density = 0.07;
+const float c_density = 0.03;
 const float c_gradient = 5.0;
 
 /////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ void main() {
 
     v_texCoord = vec2(a_vertexTextureCoord.x, 1.0 - a_vertexTextureCoord.y);
     v_fragPos = vec3(worldPosition);
-    v_normal = mat3(transpose(inverse(modelMatrix))) * a_vertexNormal;
+    v_normal = normalize(mat3(transpose(inverse(modelMatrix))) * a_vertexNormal);
 
     vec4 positionRelativeToCamera = u_view * worldPosition;
     gl_Position = u_projection * positionRelativeToCamera;

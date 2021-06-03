@@ -24,7 +24,7 @@ class Camera {
     glm::vec3 frontVec() const;
     glm::vec3 rotationVec() const;
 
-    void setSize(uint32_t width, uint32_t height);
+    void setSize(int width, int height);
     void setPerspective(float fieldOfView, float zNear, float zFar);
     void setOrthogonal(float zNear, float zFar);
     void setProjection(Projection mode);
@@ -33,8 +33,8 @@ class Camera {
     void inversePitch();
 
   private:
-    uint32_t width;
-    uint32_t height;
+    int width;
+    int height;
 
     glm::vec3 position;
     glm::vec3 up;

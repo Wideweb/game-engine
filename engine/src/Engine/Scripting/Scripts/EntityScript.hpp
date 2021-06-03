@@ -16,12 +16,14 @@ class EntityScript : public ScriptBase {
     LuaEntity m_Entity;
     luabridge::LuaRef m_InitRef = nullptr;
     luabridge::LuaRef m_UpdateRef = nullptr;
+    luabridge::LuaRef m_CollideRef = nullptr;
 
   public:
     EntityScript(std::string path, LuaEntity entity);
 
     void init();
     void update();
+    void collide(const LuaEntity &entity);
 };
 
 } // namespace Engine

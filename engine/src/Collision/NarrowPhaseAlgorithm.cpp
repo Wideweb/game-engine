@@ -8,17 +8,22 @@
 namespace Engine {
 
 glm::vec3 NarrowPhaseAlgorithm::Collide(const std::vector<glm::vec3> &vertices1,
-                                        const std::vector<glm::vec3> &vertices2,
-                                        const glm::vec3 &offset1) const {
+                                        const std::vector<glm::vec3> &vertices2, const glm::vec3 &offset1) const {
     glm::vec3 mtv;
     float minOverlap = std::numeric_limits<float>::max();
 
     std::vector<glm::vec3> axis;
-    axis.reserve(15);
+    axis.reserve(6);
 
-    axis.push_back(glm::normalize(vertices1[4] - vertices1[0]));
-    axis.push_back(glm::normalize(vertices1[3] - vertices1[0]));
-    axis.push_back(glm::normalize(vertices1[1] - vertices1[0]));
+    if (vertices1.size() == 8) {
+        axis.push_back(glm::normalize(vertices1[4] - vertices1[0]));
+        axis.push_back(glm::normalize(vertices1[3] - vertices1[0]));
+        axis.push_back(glm::normalize(vertices1[1] - vertices1[0]));
+    }
+
+    if (vertices1.size() == 2) {
+        axis.push_back(glm::normalize(vertices1[1] - vertices1[0]));
+    }
 
     axis.push_back(glm::normalize(vertices2[4] - vertices2[0]));
     axis.push_back(glm::normalize(vertices2[3] - vertices2[0]));

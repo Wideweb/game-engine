@@ -41,6 +41,7 @@ class MasterRenderer {
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models);
     void setClearColor(float r, float g, float b, float a);
+    void setViewport(int width, int height);
     void clear();
 };
 

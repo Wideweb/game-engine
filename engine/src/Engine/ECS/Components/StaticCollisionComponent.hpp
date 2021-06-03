@@ -10,6 +10,10 @@ namespace Engine {
 class StaticCollisionComponent {
   public:
     std::vector<glm::vec3> vertices;
+    std::string tag;
+
+    bool added = false;
+    bool updated = false;
 
     StaticCollisionComponent() : StaticCollisionComponent(0.0f, 0.0f, 0.0f) {}
     StaticCollisionComponent(glm::vec3 box) : StaticCollisionComponent(box.x, box.y, box.z) {}

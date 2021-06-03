@@ -32,6 +32,8 @@ template <typename T> class ComponentArray : public IComponentArray {
         return m_Components[it->second];
     }
 
+    bool Has(Entity entity) { return m_EntityToIndex.find(entity) != m_EntityToIndex.end(); }
+
     void Remove(Entity entity) {
         if (m_EntityToIndex.find(entity) == m_EntityToIndex.end()) {
             return;

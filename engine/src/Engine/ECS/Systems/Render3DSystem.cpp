@@ -26,19 +26,17 @@ void Render3DSystem::Update(ComponentManager &components) const {
 
         glm::mat4 model(1);
         model = glm::translate(model, location.position);
-        model = glm::rotate(model, location.rotation.x,
-                            glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::rotate(model, location.rotation.y,
-                            glm::vec3(0.0f, -1.0f, 0.0f));
-        model = glm::rotate(model, location.rotation.z,
-                            glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, location.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, location.rotation.y, glm::vec3(0.0f, -1.0f, 0.0f));
+        model = glm::rotate(model, location.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(render.scale));
 
         if (render.instance == NoModelInstance) {
             render.instance = scene.addObject(render.model, model * fix);
-        } else if (location.updated) {
+        } else if (location.updated || render.updated) {
             scene.updateObject(render.model, model * fix, render.instance);
             location.updated = false;
+            render.updated = false;
         }
     }
 }

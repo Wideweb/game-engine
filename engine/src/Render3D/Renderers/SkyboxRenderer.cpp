@@ -16,7 +16,7 @@ SkyboxRenderer::SkyboxRenderer() {
 
 void SkyboxRenderer::draw(Camera &camera, Scene &scene) {
     if (scene.getSkybox()) {
-        // m_SkyboxRotation += 0.01f;
+        m_SkyboxRotation += 0.01f;
 
         glDepthFunc(GL_LEQUAL);
         m_SkyboxShader->bind();

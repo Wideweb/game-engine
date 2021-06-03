@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 
 #include <glm/vec3.hpp>
+#include <string>
 #include <unordered_set>
 
 namespace Engine {
@@ -21,10 +22,10 @@ class CollisionComponent {
   public:
     std::vector<glm::vec3> vertices;
     std::unordered_set<Entity> entities;
+    std::string tag;
 
     CollisionComponent() : CollisionComponent(0.0f, 0.0f, 0.0f) {}
-    CollisionComponent(glm::vec3 box)
-        : CollisionComponent(box.x, box.y, box.z) {}
+    CollisionComponent(glm::vec3 box) : CollisionComponent(box.x, box.y, box.z) {}
     CollisionComponent(float width, float height, float depth) {
         float wHalf = width / 2;
         float hHalf = height / 2;

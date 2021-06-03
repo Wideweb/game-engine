@@ -47,6 +47,12 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
 void MasterRenderer::setClearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }
 
+void MasterRenderer::setViewport(int width, int height) {
+    m_Viewport.width = width;
+    m_Viewport.height = height;
+    m_GRenderer->resize();
+}
+
 void MasterRenderer::clear() {
     m_SpotLightRenderer->clear();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

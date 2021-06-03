@@ -24,9 +24,9 @@ class ComponentManager {
         GetComponentArray<T>()->Add(entity, component);
     }
 
-    template <typename T> T &GetComponent(Entity entity) {
-        return GetComponentArray<T>()->Get(entity);
-    }
+    template <typename T> T &GetComponent(Entity entity) { return GetComponentArray<T>()->Get(entity); }
+
+    template <typename T> bool HasComponent(Entity entity) { return GetComponentArray<T>()->Has(entity); }
 
     template <typename T> ComponentType GetComponentType() {
         const auto *key = &typeid(T);
@@ -34,9 +34,7 @@ class ComponentManager {
         return m_ComponentType[key];
     }
 
-    template <typename T> void RemoveComponent(Entity entity) {
-        GetComponentArray<T>()->Remove(entity);
-    }
+    template <typename T> void RemoveComponent(Entity entity) { GetComponentArray<T>()->Remove(entity); }
 
     void RemoveEntityComponents(Entity entity) {
         for (auto const &pair : m_Components) {
@@ -44,16 +42,14 @@ class ComponentManager {
         }
     }
 
-    template <typename T>
-    std::shared_ptr<ComponentArray<T>> GetComponentArray() {
+    template <typename T> std::shared_ptr<ComponentArray<T>> GetComponentArray() {
         const auto *key = &typeid(T);
 
         return std::static_pointer_cast<ComponentArray<T>>(m_Components[key]);
     }
 
   private:
-    std::unordered_map<const std::type_info *, std::shared_ptr<IComponentArray>>
-        m_Components;
+    std::unordered_map<const std::type_info *, std::shared_ptr<IComponentArray>> m_Components;
     std::unordered_map<const std::type_info *, ComponentType> m_ComponentType;
 
     ComponentType m_NextComponentType = 0;

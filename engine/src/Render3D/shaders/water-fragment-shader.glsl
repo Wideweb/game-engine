@@ -6,6 +6,7 @@
 const float c_waveStrength = 0.02;
 const float c_near = 0.01;
 const float c_far = 100.0;
+const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
@@ -23,6 +24,7 @@ uniform vec3 u_lightDir;
 in vec4 v_clipSpace;
 in vec2 v_texCoord;
 in vec3 v_viewDir;
+in float v_visibility;
 
 /////////////////////////////////////////////////////////////
 /////////////////////////// OUT /////////////////////////////
@@ -71,4 +73,6 @@ void main() {
 
     o_fragColor = reflectColor + vec4(specularColor, 0.0);
     o_fragColor.a = min(o_fragColor.a, clamp(waterDepth / 5.0, 0.0, 1.0));
+
+    o_fragColor = mix(vec4(c_fogColor, 1.0), o_fragColor, v_visibility);
 }

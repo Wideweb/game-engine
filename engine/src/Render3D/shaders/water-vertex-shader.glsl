@@ -1,6 +1,12 @@
 #version 330 core
 
 /////////////////////////////////////////////////////////////
+//////////////////////// DEFINES ////////////////////////////
+/////////////////////////////////////////////////////////////
+const float c_density = 0.03;
+const float c_gradient = 5.0;
+
+/////////////////////////////////////////////////////////////
 //////////////////////// ATTRIBUTES /////////////////////////
 /////////////////////////////////////////////////////////////
 layout(location = 0) in vec3 a_vertexPosition;
@@ -20,11 +26,18 @@ uniform vec3 u_viewPos;
 out vec4 v_clipSpace;
 out vec2 v_texCoord;
 out vec3 v_viewDir;
+out float v_visibility;
 
 void main() {
     vec4 worldPos = u_model * vec4(a_vertexPosition, 1.0);
-    v_clipSpace = u_projection * u_view * worldPos;
+    vec4 positionRelativeToCamera = u_view * worldPos;
+
+    v_clipSpace = u_projection * positionRelativeToCamera;
     v_texCoord = a_vertexTextureCoord;
     v_viewDir = u_viewPos - worldPos.xyz;
     gl_Position = v_clipSpace;
+
+    float distanceToCamera = length(positionRelativeToCamera.xyz);
+    v_visibility = exp(-pow(distanceToCamera * c_density, c_gradient));
+    v_visibility = clamp(v_visibility, 0.0, 1.0);
 }

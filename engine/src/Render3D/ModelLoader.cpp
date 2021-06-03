@@ -116,15 +116,8 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
     Material material;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        glm::vec3 position;
-        position.x = mesh->mVertices[i].x;
-        position.y = mesh->mVertices[i].y;
-        position.z = mesh->mVertices[i].z;
-
-        glm::vec3 normal;
-        normal.x = mesh->mNormals[i].x;
-        normal.y = mesh->mNormals[i].y;
-        normal.z = mesh->mNormals[i].z;
+        glm::vec3 position = aiVector3DToGlm(mesh->mVertices[i]);
+        glm::vec3 normal = aiVector3DToGlm(mesh->mNormals[i]);
 
         glm::vec2 textCoord;
         if (mesh->mTextureCoords[0]) {

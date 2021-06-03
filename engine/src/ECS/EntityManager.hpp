@@ -15,11 +15,10 @@ namespace Engine {
 
 class EntityManager {
   public:
-    using EntityRange =
-        IteratorRange<std::array<Entity, c_MaxEntities>::const_iterator>;
+    using EntityRange = IteratorRange<std::array<Entity, c_MaxEntities>::const_iterator>;
 
     EntityManager() {
-        for (Entity i = 0; i < c_MaxEntities; i++) {
+        for (Entity i = 1; i < c_MaxEntities; i++) {
             m_Entities.push(i);
         }
     }
@@ -55,9 +54,7 @@ class EntityManager {
         return it->second;
     }
 
-    void SetSignature(Entity entity, Signature signature) {
-        m_Signatures[entity] = signature;
-    }
+    void SetSignature(Entity entity, Signature signature) { m_Signatures[entity] = signature; }
 
     Signature GetSignature(Entity entity) { return m_Signatures[entity]; }
 

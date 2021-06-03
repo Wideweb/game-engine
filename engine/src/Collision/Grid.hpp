@@ -35,7 +35,7 @@ template <typename T> class Grid {
         ++m_ActiveShapes;
     }
 
-    void UpdateShape(T id, const std::vector<glm::vec3> &vertcies) {
+    void UpdateShape(T id, const std::vector<glm::vec3> &vertices) {
         auto &shape = m_Shapes[id];
 
         auto nodes = FindNodes(shape.box);
@@ -44,7 +44,8 @@ template <typename T> class Grid {
         }
 
         --m_ActiveShapes;
-        AddShape(id, vertcies);
+
+        AddShape({id, vertices, shape.type});
     }
 
     void DestroyShape(T id) {
@@ -58,16 +59,14 @@ template <typename T> class Grid {
         --m_ActiveShapes;
     }
 
-    std::vector<CollisionShape<T>>
-    FindNeighbors(const std::vector<glm::vec3> &vertcies) const {
+    std::vector<CollisionShape<T>> FindNeighbors(const std::vector<glm::vec3> &vertcies) const {
         AABB box(vertcies);
 
         auto nodes = FindNodes(box);
 
         std::set<T> shapes;
         for (auto index : nodes) {
-            shapes.insert(m_Nodes[index].shapes.begin(),
-                          m_Nodes[index].shapes.end());
+            shapes.insert(m_Nodes[index].shapes.begin(), m_Nodes[index].shapes.end());
         }
 
         std::vector<CollisionShape<T>> neighbors;
@@ -127,8 +126,7 @@ template <typename T> class Grid {
         return nodes;
     }
 
-    void FindNodes(size_t index, const AABB &box,
-                   std::vector<size_t> &nodes) const {
+    void FindNodes(size_t index, const AABB &box, std::vector<size_t> &nodes) const {
         if (!AABBOverlap::test(m_Nodes[index].box, box)) {
             return;
         }

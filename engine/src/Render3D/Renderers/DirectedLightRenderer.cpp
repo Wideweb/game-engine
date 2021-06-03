@@ -35,7 +35,7 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
 
     float farHalf = light.farPlane / 2.0f;
 
-    glm::vec3 position = camera.positionVec() + glm::vec3(0.0f, farHalf, 0.0f);
+    glm::vec3 position = camera.positionVec() - light.direction * farHalf;
 
     glm::mat4 lightProjection = glm::ortho(-farHalf, farHalf, -farHalf, farHalf, light.nearPlane, light.farPlane);
     glm::mat4 lightView = glm::lookAt(position, position + light.direction, glm::vec3(0.0f, 0.0f, 1.0f));

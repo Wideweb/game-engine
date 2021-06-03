@@ -16,6 +16,11 @@ void MoveSystem::Update(ComponentManager &components) const {
         location.position += location.front * velocity.speed;
         location.position += velocity.velocity;
 
+        // if (location.parent != c_NoEntity) {
+        //     auto &otherLocation = components.GetComponent<LocationComponent>(location.parent);
+        //     location.rotation = otherLocation.rotation;
+        // }
+
         location.updated = true;
     }
 }

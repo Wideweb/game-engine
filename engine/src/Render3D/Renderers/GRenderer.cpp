@@ -84,4 +84,27 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void GRenderer::resize() {
+    // буфер для цвета
+    glBindTexture(GL_TEXTURE_2D, m_GColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Viewport.width, m_Viewport.height, 0, GL_RGBA, GL_FLOAT, NULL);
+
+    // буфер позиций
+    glBindTexture(GL_TEXTURE_2D, m_GPosition);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_Viewport.width, m_Viewport.height, 0, GL_RGB, GL_FLOAT, NULL);
+
+    // буфер нормалей
+    glBindTexture(GL_TEXTURE_2D, m_GNormal);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_Viewport.width, m_Viewport.height, 0, GL_RGB, GL_FLOAT, NULL);
+
+    // буфер для отражение
+    glBindTexture(GL_TEXTURE_2D, m_GSpecular);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Viewport.width, m_Viewport.height, 0, GL_RGBA, GL_FLOAT, NULL);
+
+    // буфер для глубины
+    glBindTexture(GL_TEXTURE_2D, m_GDepth);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_Viewport.width, m_Viewport.height, 0, GL_DEPTH_COMPONENT,
+                 GL_FLOAT, NULL);
+}
+
 } // namespace Engine

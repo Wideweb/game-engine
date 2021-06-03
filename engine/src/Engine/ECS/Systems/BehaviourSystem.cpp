@@ -2,8 +2,8 @@
 
 #include "Application.hpp"
 #include "BehaviourComponent.hpp"
+#include "CollisionComponent.hpp"
 #include "EntityScript.hpp"
-#include "LuaEntity.hpp"
 
 #include <memory>
 
@@ -19,12 +19,21 @@ void BehaviourSystem::Update(ComponentManager &components) const {
         auto script = scripts.get<EntityScript>(entity);
         if (script != nullptr) {
             script->update();
+
+            if (components.HasComponent<CollisionComponent>(entity)) {
+                auto &collision = components.GetComponent<CollisionComponent>(entity);
+                for (auto otherEntity : collision.entities) {
+                    m_LuaEntity.setLayer(&layer);
+                    m_LuaEntity.setEntity(otherEntity);
+                    script->collide(m_LuaEntity);
+                }
+            }
+
             continue;
         }
 
         LuaEntity luaEntity{entity, &layer};
-        scripts.add(entity, std::make_shared<EntityScript>(behaviour.script,
-                                                           luaEntity));
+        scripts.add(entity, std::make_shared<EntityScript>(behaviour.script, luaEntity));
     }
 }
 

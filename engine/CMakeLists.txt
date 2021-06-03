@@ -18,6 +18,7 @@ set(SOURCE_EXE
     src/Engine/Application.cpp
     src/Engine/Layer.cpp
     src/Engine/TextureManager.cpp
+    src/Engine/MousePicker.cpp
     src/Engine/ECS/Systems/MoveSystem.cpp
     src/Engine/ECS/Systems/DirectedLightSystem.cpp
     src/Engine/ECS/Systems/SpotLightSystem.cpp

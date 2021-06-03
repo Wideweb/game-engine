@@ -23,8 +23,7 @@ Application::Application() {
     m_Camera =
         std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0, 0.0f, -1.0f));
     m_Camera->setSize(960, 540);
-    m_Camera->setPerspective(glm::radians(45.0f), 0.01f, 100.0f);
-    m_Camera->setOrthogonal(0.01f, 100.0f);
+    m_Camera->setPerspective(glm::radians(45.0f), 0.1f, 50.0f);
     m_Camera->setProjection(Camera::Projection::PERSPECTIVE);
 
     m_Texture = std::unique_ptr<TextureManager>(new TextureManager());
@@ -33,11 +32,9 @@ Application::Application() {
 
     m_Sound = std::unique_ptr<SoundMixer>(SoundMixer::create());
 
-    s_Instance = this;
-}
+    m_MousePicker = std::make_unique<MousePicker>(*m_Input, *m_Window, *m_Camera);
 
-glm::vec2 Application::getScreenFix() {
-    return glm::vec2(960.0f / m_Window->getWidth(), 540.0f / m_Window->getHeight());
+    s_Instance = this;
 }
 
 void Application::run() {
@@ -50,6 +47,7 @@ void Application::run() {
 
         m_Window->readInput();
         m_Input->update();
+        m_MousePicker->update();
 
         m_Render->clear();
         for (auto layer : m_LayerStack) {
@@ -80,7 +78,8 @@ void Application::onMouseEvent(MouseEvent &e) {
 
 void Application::onWindowEvent(WindowEvent &e) {
     if (e.type == EventType::WindowResized) {
-        // m_Render->setViewport(m_Window->getWidth(), m_Window->getHeight());
+        m_Render->setViewport(m_Window->getWidth() * 2, m_Window->getHeight() * 2);
+        m_Camera->setSize(m_Window->getWidth(), m_Window->getHeight());
     }
 
     for (auto layer : m_LayerStack) {

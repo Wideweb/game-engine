@@ -6,8 +6,7 @@
 
 namespace Engine {
 
-EntityScript::EntityScript(std::string path, LuaEntity entity)
-    : m_Entity(entity) {
+EntityScript::EntityScript(std::string path, LuaEntity entity) : m_Entity(entity) {
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
@@ -51,10 +50,14 @@ EntityScript::EntityScript(std::string path, LuaEntity entity)
     }
 
     m_UpdateRef = updateRef;
+
+    m_CollideRef = luabridge::getGlobal(L, "collide");
 }
 
 void EntityScript::init() { m_InitRef(m_Entity); }
 
 void EntityScript::update() { m_UpdateRef(m_Entity); }
+
+void EntityScript::collide(const LuaEntity &entity) { m_CollideRef(m_Entity, entity); }
 
 } // namespace Engine

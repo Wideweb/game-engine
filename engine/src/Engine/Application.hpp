@@ -6,6 +6,7 @@
 #include "Layer.hpp"
 #include "MasterRenderer.hpp"
 #include "ModelManager.hpp"
+#include "MousePicker.hpp"
 #include "SoundMixer.hpp"
 #include "TextureManager.hpp"
 #include "Time.hpp"
@@ -31,6 +32,7 @@ class Application {
     std::unique_ptr<TextureManager> m_Texture;
     std::unique_ptr<EventHandler> m_EventHandler;
     std::unique_ptr<SoundMixer> m_Sound;
+    std::unique_ptr<MousePicker> m_MousePicker;
     std::list<std::shared_ptr<Layer>> m_LayerStack;
     std::unordered_map<std::string, std::list<std::shared_ptr<Layer>>::iterator> m_NameToLayer;
     Time m_Time;
@@ -71,6 +73,7 @@ class Application {
     Window &getWindow() { return *m_Window; }
     SoundMixer &getSound() { return *m_Sound; }
     Input &getInput() { return *m_Input; }
+    MousePicker &getMousePicker() { return *m_MousePicker; }
     MasterRenderer &getRender() { return *m_Render; }
     Camera &getCamera() { return *m_Camera; }
     Time &getTime() { return m_Time; }
@@ -78,7 +81,6 @@ class Application {
     ModelManager &getModels() { return m_Models; }
     EventHandler &getEventHandler() { return *m_EventHandler; }
     Layer &getLayer(const std::string &label) { return **m_NameToLayer[label]; }
-    glm::vec2 getScreenFix();
 
     static Application &get() { return *s_Instance; }
 };

@@ -4,7 +4,7 @@
 //////////////////////// DEFINES ////////////////////////////
 /////////////////////////////////////////////////////////////
 const float c_lowerLimit = 0.0;
-const float c_upperLimit = 0.3;
+const float c_upperLimit = 1.0;
 
 const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 
