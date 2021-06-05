@@ -5,6 +5,7 @@
 #include "glad/glad.h"
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace Engine {
 
@@ -15,6 +16,8 @@ class Shader {
 
   public:
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc);
+    Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
+           std::vector<std::string> transformFeedbackVaryings);
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
     ~Shader();
 
@@ -31,7 +34,8 @@ class Shader {
     void setMatrix2(const std::string &name, const std::vector<float> &matrix);
 
   private:
-    void compile(const std::string &vertexSrc, const std::string &fragmentSrc);
+    void compile(const std::string &vertexSrc, const std::string &fragmentSrc,
+                 std::vector<std::string> transformFeedbackVaryings);
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
     GLuint compileShader(GLenum type, const std::string &source);
     GLint getUniformLocation(const std::string &name);

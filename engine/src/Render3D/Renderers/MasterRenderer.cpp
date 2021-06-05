@@ -19,6 +19,7 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
     m_SpotLightRenderer = std::make_unique<SpotLightRenderer>(m_Viewport, *m_ModelRenderer);
     m_WaterRenderer = std::make_unique<WaterRenderer>(*m_GRenderer);
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
+    m_ParticlesRenderer = std::make_unique<ParticlesRenderer>();
 }
 
 void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
@@ -40,6 +41,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     }
 
     m_ModelRenderer->draw(*m_Shader, scene, models, 1);
+    m_ParticlesRenderer->draw(camera);
     m_SkyboxRenderer->draw(camera, scene);
 
     m_WaterRenderer->draw(camera, scene, models);

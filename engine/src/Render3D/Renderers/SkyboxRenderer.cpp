@@ -18,6 +18,9 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene) {
     if (scene.getSkybox()) {
         m_SkyboxRotation += 0.01f;
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glDepthFunc(GL_LEQUAL);
         m_SkyboxShader->bind();
 
@@ -30,6 +33,7 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene) {
 
         scene.getSkybox()->draw(*m_SkyboxShader);
 
+        glDisable(GL_BLEND);
         glDepthFunc(GL_LESS);
     }
 }

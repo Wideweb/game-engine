@@ -12,6 +12,7 @@
 #include "FlareRenderer.hpp"
 #include "GRenderer.hpp"
 #include "ModelRenderer.hpp"
+#include "ParticlesRenderer.hpp"
 #include "QuadRenderer.hpp"
 #include "SkyboxRenderer.hpp"
 #include "SpotLightRenderer.hpp"
@@ -33,6 +34,7 @@ class MasterRenderer {
     std::unique_ptr<WaterRenderer> m_WaterRenderer;
     std::unique_ptr<FlareRenderer> m_FlareRenderer;
     std::unique_ptr<GRenderer> m_GRenderer;
+    std::unique_ptr<ParticlesRenderer> m_ParticlesRenderer;
 
     Viewport m_Viewport;
 

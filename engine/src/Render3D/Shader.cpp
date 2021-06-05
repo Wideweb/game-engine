@@ -6,7 +6,14 @@
 
 namespace Engine {
 
-Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc) { compile(vertexSrc, fragmentSrc); }
+Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
+               std::vector<std::string> transformFeedbackVaryings) {
+    compile(vertexSrc, fragmentSrc, transformFeedbackVaryings);
+}
+
+Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc) {
+    compile(vertexSrc, fragmentSrc, std::vector<std::string>{});
+}
 
 Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc) {
     compile(vertexSrc, fragmentSrc, geometrySrc);
@@ -21,7 +28,8 @@ void Shader::bind() const {
 
 void Shader::unbind() const { glUseProgram(0); }
 
-void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSrc) {
+void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSrc,
+                     std::vector<std::string> transformFeedbackVaryings) {
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSrc);
     if (vertexShader == 0) {
@@ -37,6 +45,15 @@ void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSr
     if (programId == 0) {
         std::cerr << "failed to create gl program";
         return;
+    }
+
+    if (!transformFeedbackVaryings.empty()) {
+        std::vector<char *> names;
+        std::transform(transformFeedbackVaryings.begin(), transformFeedbackVaryings.end(), std::back_inserter(names),
+                       [](std::string &name) { return name.data(); });
+
+        glTransformFeedbackVaryings(programId, static_cast<GLsizei>(names.size()), names.data(),
+                                    GL_INTERLEAVED_ATTRIBS);
     }
 
     glAttachShader(programId, vertexShader);

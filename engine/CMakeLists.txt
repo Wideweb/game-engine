@@ -53,6 +53,7 @@ set(SOURCE_EXE
     src/Render3D/Renderers/WaterRenderer.cpp
     src/Render3D/Renderers/FlareRenderer.cpp
     src/Render3D/Renderers/GRenderer.cpp
+    src/Render3D/Renderers/ParticlesRenderer.cpp
     src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/Scene.cpp
