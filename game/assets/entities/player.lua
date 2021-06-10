@@ -44,8 +44,8 @@ function update(entity)
 end
 
 function collide(entity, other)
-    local otherCollision = other:getStaticCollisionComponent();
-    if (otherCollision.tag == "platform") then
+    local tag = other:getTagComponent().tag;
+    if (tag == "platform") then
         local location = entity:getLocationComponent();
         location.parent = other:getId();
         canJump = true;

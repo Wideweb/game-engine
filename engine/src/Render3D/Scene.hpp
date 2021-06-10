@@ -11,23 +11,35 @@
 #include "IteratorRange.hpp"
 #include "Model.hpp"
 #include "ModelInstanceManager.hpp"
+#include "Particles.hpp"
 #include "Skybox.hpp"
 #include "SpotLight.hpp"
 #include "Texture.hpp"
 
 namespace Engine {
 
+using ParticlesEmitterInstance = uint32_t;
+constexpr ParticlesEmitterInstance NoParticlesEmitterInstance = 0;
+
 constexpr uint32_t c_MaxSceneObjects = 500;
 constexpr uint32_t c_MaxSceneLights = 4;
+constexpr uint32_t c_MaxParticleEmitters = 10;
 
 struct SceneSpotLight {
     SpotLight light;
     glm::vec3 position;
 };
 
+struct SceneParticles {
+    Particles particles;
+    glm::mat4 position;
+};
+
 class Scene {
   public:
     ~Scene() = default;
+
+    using ParticlesRange = IteratorRange<std::array<SceneParticles, c_MaxParticleEmitters>::const_iterator>;
 
     using ObjectsRange = IteratorRange<std::unordered_map<std::string, ModelInstanceManager>::iterator>;
 
@@ -50,6 +62,10 @@ class Scene {
     void addSpotLight(const SpotLight &light, glm::vec3 position);
     LightsRange getSpotLights();
 
+    ParticlesEmitterInstance addParticlesEmitter(ParticlesConfiguration config, glm::mat4 position);
+    void updateParticlesEmitter(ParticlesEmitterInstance instance, glm::mat4 position, double deltaTime);
+    ParticlesRange getParticleEmitters();
+
     void clear();
 
   private:
@@ -61,6 +77,9 @@ class Scene {
 
     uint32_t m_ActiveLights = 0;
     bool m_HasDirectedLight = false;
+
+    uint32_t m_ActiveParticleEmitters = 0;
+    std::array<SceneParticles, c_MaxParticleEmitters> m_ParticleEmitters;
 };
 
 } // namespace Engine

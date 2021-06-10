@@ -32,6 +32,7 @@ set(SOURCE_EXE
     src/Engine/ECS/Systems/AISystem.cpp
     src/Engine/ECS/Systems/CameraSystem.cpp
     src/Engine/ECS/Systems/BehaviourSystem.cpp
+    src/Engine/ECS/Systems/ParticlesSystem.cpp
     src/Engine/Scripting/Context/LuaCore.cpp
     src/Engine/Scripting/Context/LuaEntity.cpp
     src/Engine/Scripting/Context/LuaInput.cpp
@@ -44,6 +45,7 @@ set(SOURCE_EXE
     src/Render3D/Models/InstancedModel.cpp
     src/Render3D/Models/SkinnedMesh.cpp
     src/Render3D/Models/SkinnedModel.cpp
+    src/Render3D/Models/Particles.cpp
     src/Render3D/Renderers/MasterRenderer.cpp
     src/Render3D/Renderers/QuadRenderer.cpp
     src/Render3D/Renderers/ModelRenderer.cpp

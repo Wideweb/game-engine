@@ -6,6 +6,7 @@
 #include "ModelManager.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 #include "Viewport.hpp"
 
 #include "DirectedLightRenderer.hpp"
@@ -14,6 +15,7 @@
 #include "ModelRenderer.hpp"
 #include "ParticlesRenderer.hpp"
 #include "QuadRenderer.hpp"
+#include "RendererState.hpp"
 #include "SkyboxRenderer.hpp"
 #include "SpotLightRenderer.hpp"
 #include "WaterRenderer.hpp"
@@ -24,7 +26,7 @@ namespace Engine {
 
 class MasterRenderer {
   private:
-    std::unique_ptr<Shader> m_Shader;
+    std::unique_ptr<Shader> m_Shader, m_HdrShader, m_BlurShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -37,6 +39,13 @@ class MasterRenderer {
     std::unique_ptr<ParticlesRenderer> m_ParticlesRenderer;
 
     Viewport m_Viewport;
+    RendererState m_State;
+
+    std::shared_ptr<Texture> m_ColorBuffer[2];
+    unsigned int m_HdrFBO, m_DepthRBO;
+
+    unsigned int m_PingpongFBO[2];
+    std::shared_ptr<Texture> m_PingpongColorBuffer[2];
 
   public:
     MasterRenderer(int width, int height);

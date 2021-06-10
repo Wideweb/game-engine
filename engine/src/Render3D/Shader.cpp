@@ -192,6 +192,12 @@ void Shader::setFloat3(const std::string &name, glm::vec3 value) {
     // std::cout << glGetError() << std::endl;
 }
 
+void Shader::setFloat4(const std::string &name, glm::vec4 value) {
+    GLint location = getUniformLocation(name);
+    glUniform4f(location, value.x, value.y, value.z, value.w);
+    // std::cout << glGetError() << std::endl;
+}
+
 void Shader::setMatrix4(const std::string &name, const glm::mat4 &matrix) {
     GLint location = getUniformLocation(name);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));

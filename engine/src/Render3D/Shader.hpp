@@ -29,6 +29,7 @@ class Shader {
     void setFloat2(const std::string &name, float value1, float value2);
     void setFloat3(const std::string &name, float value, float value2, float value3);
     void setFloat3(const std::string &name, glm::vec3 value);
+    void setFloat4(const std::string &name, glm::vec4 value);
     void setMatrix4(const std::string &name, const glm::mat4 &matrix);
     void setMatrix2x3(const std::string &name, const std::vector<float> &matrix);
     void setMatrix2(const std::string &name, const std::vector<float> &matrix);

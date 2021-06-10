@@ -20,17 +20,15 @@ void TerrainCollisionSystem::Update(ComponentManager &components) const {
     std::vector<Entity> entitis(m_Entities.begin(), m_Entities.end());
 
     for (const auto &entity : entitis) {
+        auto &terrain = components.GetComponent<TerrainCollisionComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
         auto &render = components.GetComponent<StaticRender3DComponent>(entity);
-        auto &terrain =
-            components.GetComponent<TerrainCollisionComponent>(entity);
         auto renderModel = models.GetModel<InstancedModel>(render.model);
 
         std::vector<glm::vec3> vertices;
         for (auto &mesh : renderModel->meshes) {
             for (auto &vertex : mesh.vertices) {
-                vertices.push_back(vertex.position * render.scale +
-                                   location.position);
+                vertices.push_back(vertex.position * render.scale + location.position);
             }
         }
 

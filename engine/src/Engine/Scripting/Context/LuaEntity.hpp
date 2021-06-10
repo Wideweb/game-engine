@@ -24,6 +24,8 @@ class LuaEntity {
 
     template <typename T> T &getComponent() { return m_Layer->getCoordinator().GetComponent<T>(m_Entity); }
 
+    template <typename T> bool hasComponent() { return m_Layer->getCoordinator().HasComponent<T>(m_Entity); }
+
     Entity getId() { return m_Entity; }
 
     void setEntity(Entity entity) { m_Entity = entity; }

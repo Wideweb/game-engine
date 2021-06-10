@@ -6,12 +6,14 @@
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
 #include "LocationComponent.hpp"
+#include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "SpotLightComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
+#include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -27,6 +29,14 @@ void LuaCore::add(lua_State *state) {
         .addProperty("x", &glm::vec3::x)
         .addProperty("y", &glm::vec3::y)
         .addProperty("z", &glm::vec3::z)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<TagComponent>("TagComponent")
+        .addConstructor<void (*)(std::string)>()
+        .addProperty("tag", &TagComponent::tag)
         .endClass()
         .endNamespace();
 
@@ -99,7 +109,6 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<StaticCollisionComponent>("StaticCollisionComponent")
         .addConstructor<void (*)(float, float, float)>()
-        .addProperty("tag", &StaticCollisionComponent::tag)
         .endClass()
         .endNamespace();
 
@@ -162,6 +171,33 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<BehaviourComponent>("BehaviourComponent")
         .addConstructor<void (*)(std::string)>()
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<ParticlesConfiguration>("ParticlesConfiguration")
+        .addConstructor<void (*)(void)>()
+        .addProperty("count", &ParticlesConfiguration::count)
+        .addProperty("rate", &ParticlesConfiguration::rate)
+        .addProperty("sizeFrom", &ParticlesConfiguration::sizeFrom)
+        .addProperty("sizeTo", &ParticlesConfiguration::sizeTo)
+        .addProperty("lifeTime", &ParticlesConfiguration::lifeTime)
+        .addProperty("spawnRadius", &ParticlesConfiguration::spawnRadius)
+        .addProperty("velocityMin", &ParticlesConfiguration::velocityMin)
+        .addProperty("velocityMax", &ParticlesConfiguration::velocityMax)
+        .addProperty("velocityPolarAngle", &ParticlesConfiguration::velocityPolarAngle)
+        .addProperty("velocityAzimuthalAngle", &ParticlesConfiguration::velocityAzimuthalAngle)
+        .addProperty("colorFrom", &ParticlesConfiguration::colorFrom)
+        .addProperty("colorTo", &ParticlesConfiguration::colorTo)
+        .addProperty("gravity", &ParticlesConfiguration::gravity)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<ParticlesComponent>("ParticlesComponent")
+        .addConstructor<void (*)(ParticlesConfiguration)>()
         .endClass()
         .endNamespace();
 }

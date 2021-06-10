@@ -69,7 +69,7 @@ GRenderer::GRenderer(Viewport &viewport, ModelRenderer &modelRenderer, SkyboxRen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
+void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state) {
     glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -78,10 +78,13 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
     m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
     m_Shader->setFloat("u_clipY", 0);
 
-    m_ModelRenderer.draw(*m_Shader, scene, models, 0);
+    RendererState rs;
+    rs.activeTextures = 0;
+    rs.fbo = m_GBuffer;
+    m_ModelRenderer.draw(*m_Shader, scene, models, rs);
     m_SkyboxRenderer.draw(camera, scene);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
 }
 
 void GRenderer::resize() {

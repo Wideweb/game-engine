@@ -27,28 +27,28 @@ class AppLayer : public Engine::Layer {
     }
 
     virtual void onUpdate() override {
-        auto ray = Engine::Application::get().getMousePicker().ray();
-        auto pos = Engine::Application::get().getCamera().positionVec();
-        auto result = m_Collision.Raycast(pos, ray, 100.0f);
+        // auto ray = Engine::Application::get().getMousePicker().ray();
+        // auto pos = Engine::Application::get().getCamera().positionVec();
+        // auto result = m_Collision.Raycast(pos, ray, 100.0f);
 
-        if (!result.empty()) {
-            Engine::Entity entityId = result[0].id;
-            if (m_Coordinator.HasComponent<Engine::Render3DComponent>(entityId)) {
-                auto &render = m_Coordinator.GetComponent<Engine::Render3DComponent>(entityId);
-                auto &collision = m_Coordinator.GetComponent<Engine::StaticCollisionComponent>(entityId);
+        // if (!result.empty()) {
+        //     Engine::Entity entityId = result[0].id;
+        //     if (m_Coordinator.HasComponent<Engine::Render3DComponent>(entityId)) {
+        //         auto &render = m_Coordinator.GetComponent<Engine::Render3DComponent>(entityId);
+        //         auto &collision = m_Coordinator.GetComponent<Engine::StaticCollisionComponent>(entityId);
 
-                glm::mat4 revertModel = glm::inverse(glm::scale(glm::vec3(render.scale)));
+        //         glm::mat4 revertModel = glm::inverse(glm::scale(glm::vec3(render.scale)));
 
-                render.scale += 0.01f;
-                render.updated = true;
+        //         render.scale += 0.01f;
+        //         render.updated = true;
 
-                glm::mat4 model = glm::scale(glm::vec3(render.scale));
-                for (auto &vertex : collision.vertices) {
-                    vertex = glm::vec3(model * revertModel * glm::vec4(vertex, 1.0));
-                }
-                collision.updated = true;
-            }
-        }
+        //         glm::mat4 model = glm::scale(glm::vec3(render.scale));
+        //         for (auto &vertex : collision.vertices) {
+        //             vertex = glm::vec3(model * revertModel * glm::vec4(vertex, 1.0));
+        //         }
+        //         collision.updated = true;
+        //     }
+        // }
 
         auto writeTime = std::filesystem::last_write_time("main.lua");
         if (m_ScriptLastWriteTime != writeTime) {

@@ -28,7 +28,7 @@ DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &
 }
 
 void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene,
-                                  const ModelManager &models) {
+                                  const ModelManager &models, RendererState &state) {
     glBindFramebuffer(GL_FRAMEBUFFER, m_DepthMapFBO);
     glViewport(0, 0, 1024, 1024);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -44,9 +44,12 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
     m_DepthShader->setMatrix4("u_view", lightView);
     m_DepthShader->setMatrix4("u_projection", lightProjection);
 
-    m_ModelRenderer.draw(*m_DepthShader, scene, models, 0);
+    RendererState rs;
+    rs.activeTextures = 0;
+    rs.fbo = m_DepthMapFBO;
+    m_ModelRenderer.draw(*m_DepthShader, scene, models, rs);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
     glViewport(0, 0, m_ViewPort.width, m_ViewPort.height);
 
     shader.bind();
@@ -56,9 +59,10 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
     shader.setFloat3("u_directedLight.specular", light.specular);
     shader.setMatrix4("u_directedLight.spaceMatrix", lightProjection * lightView);
 
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE0 + state.activeTextures);
     m_DepthMap->bind();
-    shader.setInt("u_directedLight.shadowMap", 0);
+    shader.setInt("u_directedLight.shadowMap", static_cast<int>(state.activeTextures));
+    ++state.activeTextures;
 }
 
 } // namespace Engine

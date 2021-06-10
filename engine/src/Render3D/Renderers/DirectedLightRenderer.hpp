@@ -4,6 +4,7 @@
 #include "DirectedLight.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
+#include "RendererState.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
@@ -25,7 +26,8 @@ class DirectedLightRenderer {
   public:
     DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRender);
 
-    void apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene, const ModelManager &models);
+    void apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene, const ModelManager &models,
+               RendererState &state);
 };
 
 } // namespace Engine

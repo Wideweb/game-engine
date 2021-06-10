@@ -41,11 +41,11 @@ WaterRenderer::WaterRenderer(GRenderer &gRenderer) : m_GRenderer(gRenderer) {
     glBindVertexArray(0);
 }
 
-void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
+void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state) {
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     camera.inversePitch();
 
-    m_GRenderer.draw(camera, scene, models);
+    m_GRenderer.draw(camera, scene, models, state);
 
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     camera.inversePitch();
@@ -84,6 +84,8 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
 
     glBindVertexArray(m_WaterVBO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

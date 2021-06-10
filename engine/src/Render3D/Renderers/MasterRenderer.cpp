@@ -1,8 +1,11 @@
 #include "MasterRenderer.hpp"
 
 #include "File.hpp"
+#include "TextureLoader.hpp"
 
 #include "glad/glad.h"
+
+#include <iostream>
 
 namespace Engine {
 
@@ -10,6 +13,45 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
     auto vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/direct-fragment-shader.glsl");
     m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+
+    vertexSrc = File::read("./shaders/hdr-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/hdr-fragment-shader.glsl");
+    m_HdrShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+
+    glGenFramebuffers(1, &m_HdrFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_HdrFBO);
+
+    m_ColorBuffer[0].reset(TextureLoader::createRGBA16Buffer(width, height));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorBuffer[0]->getId(), 0);
+
+    m_ColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width, height));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_ColorBuffer[1]->getId(), 0);
+
+    unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, attachments);
+
+    glGenRenderbuffers(1, &m_DepthRBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRBO);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    vertexSrc = File::read("./shaders/blur-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/blur-fragment-shader.glsl");
+    m_BlurShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+
+    glGenFramebuffers(2, m_PingpongFBO);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[0]);
+    m_PingpongColorBuffer[0].reset(TextureLoader::createRGBA16Buffer(width, height));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingpongColorBuffer[0]->getId(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[1]);
+    m_PingpongColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width, height));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingpongColorBuffer[1]->getId(), 0);
 
     m_QuadRenderer = std::make_unique<QuadRenderer>();
     m_ModelRenderer = std::make_unique<ModelRenderer>();
@@ -23,6 +65,9 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
 }
 
 void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
+    m_State.fbo = m_HdrFBO;
+    glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+
     m_Shader->bind();
     m_Shader->setFloat3("u_viewPos", camera.positionVec());
     m_Shader->setMatrix4("u_view", camera.viewMatrix());
@@ -33,18 +78,58 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
     if (scene.hasDirectedLight()) {
         m_Shader->setInt("u_hasDirectedLight", 1);
-        m_DirectedLightRenderer->apply(camera, scene.getDirectedLight(), *m_Shader, scene, models);
+        m_DirectedLightRenderer->apply(camera, scene.getDirectedLight(), *m_Shader, scene, models, m_State);
     }
 
     for (const auto &obj : scene.getSpotLights()) {
-        m_SpotLightRenderer->apply(obj.light, obj.position, *m_Shader, scene, models);
+        m_SpotLightRenderer->apply(obj.light, obj.position, *m_Shader, scene, models, m_State);
     }
 
-    m_ModelRenderer->draw(*m_Shader, scene, models, 1);
-    m_ParticlesRenderer->draw(camera);
     m_SkyboxRenderer->draw(camera, scene);
 
-    m_WaterRenderer->draw(camera, scene, models);
+    for (const auto &obj : scene.getParticleEmitters()) {
+        m_ParticlesRenderer->draw(obj.particles, obj.position, camera);
+    }
+
+    m_ModelRenderer->draw(*m_Shader, scene, models, m_State);
+    // m_WaterRenderer->draw(camera, scene, models, m_State);
+
+    m_State.fbo = 0;
+    glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+
+    // BLUR
+    bool horizontal = true, firstIteration = true;
+    int amount = 10;
+    m_BlurShader->bind();
+    glActiveTexture(GL_TEXTURE0);
+    m_BlurShader->setInt("u_colorBuffer", 0);
+    for (unsigned int i = 0; i < amount; i++) {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[horizontal]);
+        m_BlurShader->setInt("u_horizontal", horizontal);
+        if (firstIteration) {
+            m_ColorBuffer[1]->bind();
+            firstIteration = false;
+
+        } else {
+            m_PingpongColorBuffer[!horizontal]->bind();
+        }
+        m_QuadRenderer->draw();
+        horizontal = !horizontal;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // BLUR END
+
+    m_HdrShader->bind();
+    glActiveTexture(GL_TEXTURE0);
+    m_ColorBuffer[0]->bind();
+    m_HdrShader->setInt("u_hdrBuffer", 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    m_PingpongColorBuffer[horizontal]->bind();
+    m_HdrShader->setInt("u_blurBuffer", 1);
+
+    m_HdrShader->setFloat("u_exposure", 1.0f);
+    m_QuadRenderer->draw();
 }
 
 void MasterRenderer::setClearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }
@@ -57,6 +142,11 @@ void MasterRenderer::setViewport(int width, int height) {
 
 void MasterRenderer::clear() {
     m_SpotLightRenderer->clear();
+    m_State.activeTextures = 0;
+    m_State.fbo = 0;
+    glBindFramebuffer(GL_FRAMEBUFFER, m_HdrFBO);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

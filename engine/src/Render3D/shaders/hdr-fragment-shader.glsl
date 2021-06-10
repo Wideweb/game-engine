@@ -3,27 +3,33 @@
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
-uniform sampler2D u_colorMap;
+uniform sampler2D u_hdrBuffer;
+uniform sampler2D u_blurBuffer;
+uniform float u_exposure;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
 /////////////////////////////////////////////////////////////
-in vec4 v_color;
+in vec2 v_texCoord;
 
 /////////////////////////////////////////////////////////////
 /////////////////////////// OUT /////////////////////////////
 /////////////////////////////////////////////////////////////
-layout(location = 0) out vec4 o_fragColor;
-layout(location = 1) out vec4 o_brightColor;
+out vec4 o_fragColor;
 
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////
 /////////////////////////////////////////////////////////////
 void main() {
-    o_fragColor = v_color;
-    float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > 1.0)
-        o_brightColor = vec4(o_fragColor.rgb, 1.0);
-    else
-        o_brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+    const float gamma = 2.2;
+    vec3 hdrColor = texture(u_hdrBuffer, v_texCoord).rgb;
+    vec3 blurColor = texture(u_blurBuffer, v_texCoord).rgb;
+    hdrColor += blurColor;
+    // reinhard
+    // vec3 result = hdrColor / (hdrColor + vec3(1.0));
+    // exposure
+    vec3 result = vec3(1.0) - exp(-hdrColor * u_exposure);
+    // also gamma correct while we're at it
+    result = pow(result, vec3(1.0 / gamma));
+    o_fragColor = vec4(result, 1.0);
 }

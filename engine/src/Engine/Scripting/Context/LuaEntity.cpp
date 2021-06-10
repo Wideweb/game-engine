@@ -6,12 +6,14 @@
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
 #include "LocationComponent.hpp"
+#include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "SpotLightComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
+#include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -20,6 +22,8 @@ namespace Engine {
 void LuaEntity::add(lua_State *state) {
     luabridge::getGlobalNamespace(state)
         .beginClass<LuaEntity>("Entity")
+        .addFunction("addTagComponent", &LuaEntity::addComponent<TagComponent>)
+        .addFunction("getTagComponent", &LuaEntity::getComponent<TagComponent>)
         .addFunction("getLocationComponent", &LuaEntity::getComponent<LocationComponent>)
         .addFunction("addLocationComponent", &LuaEntity::addComponent<LocationComponent>)
         .addFunction("getVelocityComponent", &LuaEntity::getComponent<VelocityComponent>)
@@ -31,6 +35,7 @@ void LuaEntity::add(lua_State *state) {
         .addFunction("addTerrainCollisionComponent", &LuaEntity::addComponent<TerrainCollisionComponent>)
         .addFunction("getStaticCollisionComponent", &LuaEntity::getComponent<StaticCollisionComponent>)
         .addFunction("addStaticCollisionComponent", &LuaEntity::addComponent<StaticCollisionComponent>)
+        .addFunction("hasStaticCollisionComponent", &LuaEntity::hasComponent<StaticCollisionComponent>)
         .addFunction("addDirectedLightComponent", &LuaEntity::addComponent<DirectedLightComponent>)
         .addFunction("addSpotLightComponent", &LuaEntity::addComponent<SpotLightComponent>)
         .addFunction("addPhysicsComponent", &LuaEntity::addComponent<PhysicsComponent>)
@@ -38,6 +43,7 @@ void LuaEntity::add(lua_State *state) {
         .addFunction("addBehaviourComponent", &LuaEntity::addComponent<BehaviourComponent>)
         .addFunction("getSkeletComponent", &LuaEntity::getComponent<SkeletComponent>)
         .addFunction("addSkeletComponent", &LuaEntity::addComponent<SkeletComponent>)
+        .addFunction("addParticlesComponent", &LuaEntity::addComponent<ParticlesComponent>)
         .addFunction("getId", &LuaEntity::getId)
         .endClass();
 }

@@ -41,6 +41,22 @@ Scene::ObjectsRange Scene::getObjects() { return {m_Objects.begin(), m_Objects.e
 
 Scene::LightsRange Scene::getSpotLights() { return {m_SpotLights.cbegin(), m_SpotLights.cbegin() + m_ActiveLights}; }
 
+ParticlesEmitterInstance Scene::addParticlesEmitter(ParticlesConfiguration config, glm::mat4 position) {
+    m_ParticleEmitters[m_ActiveParticleEmitters].particles.setUp(config);
+    m_ParticleEmitters[m_ActiveParticleEmitters].position = position;
+    ++m_ActiveParticleEmitters;
+    return m_ActiveParticleEmitters;
+}
+
+void Scene::updateParticlesEmitter(ParticlesEmitterInstance instance, glm::mat4 position, double deltaTime) {
+    m_ParticleEmitters[instance - 1].position = position;
+    m_ParticleEmitters[instance - 1].particles.update(deltaTime);
+}
+
+Scene::ParticlesRange Scene::getParticleEmitters() {
+    return {m_ParticleEmitters.cbegin(), m_ParticleEmitters.cbegin() + m_ActiveParticleEmitters};
+}
+
 void Scene::clear() {
     m_ActiveLights = 0;
     m_HasDirectedLight = false;

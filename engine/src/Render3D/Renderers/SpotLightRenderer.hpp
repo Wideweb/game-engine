@@ -3,6 +3,7 @@
 #include "CubeMap.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
+#include "RendererState.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "SpotLight.hpp"
@@ -28,7 +29,7 @@ class SpotLightRenderer {
     SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer);
 
     void apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
-               const ModelManager &models);
+               const ModelManager &models, RendererState &state);
     void clear();
 };
 

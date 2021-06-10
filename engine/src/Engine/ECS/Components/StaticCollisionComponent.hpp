@@ -10,7 +10,6 @@ namespace Engine {
 class StaticCollisionComponent {
   public:
     std::vector<glm::vec3> vertices;
-    std::string tag;
 
     bool added = false;
     bool updated = false;

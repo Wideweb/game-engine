@@ -13,12 +13,14 @@
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
 #include "LocationComponent.hpp"
+#include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "SpotLightComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "StaticRender3DComponent.hpp"
+#include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -28,6 +30,7 @@
 #include "CollisionSystem.hpp"
 #include "DirectedLightSystem.hpp"
 #include "MoveSystem.hpp"
+#include "ParticlesSystem.hpp"
 #include "PhysicsSystem.hpp"
 #include "Render3DSystem.hpp"
 #include "SkeletSystem.hpp"
@@ -53,6 +56,8 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<AIComponent>();
     m_Coordinator.RegisterComponent<CameraComponent>();
     m_Coordinator.RegisterComponent<BehaviourComponent>();
+    m_Coordinator.RegisterComponent<ParticlesComponent>();
+    m_Coordinator.RegisterComponent<TagComponent>();
 
     {
         Signature signature;
@@ -155,6 +160,14 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
         signature.set(m_Coordinator.GetComponentType<BehaviourComponent>());
 
         m_Coordinator.RegisterSystem<BehaviourSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<ParticlesComponent>());
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+
+        m_Coordinator.RegisterSystem<ParticlesSystem>(signature, m_Name);
     }
 }
 

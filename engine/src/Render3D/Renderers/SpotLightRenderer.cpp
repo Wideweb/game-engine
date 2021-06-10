@@ -1,5 +1,7 @@
 #include "SpotLightRenderer.hpp"
 
+#include "File.hpp"
+
 #include "glad/glad.h"
 #include <glm/glm.hpp>
 
@@ -23,9 +25,9 @@ SpotLightRenderer::SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRen
 }
 
 void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
-                              const ModelManager &models) {
-    glViewport(0, 0, 1024, 1024);
+                              const ModelManager &models, RendererState &state) {
     glBindFramebuffer(GL_FRAMEBUFFER, m_DepthCubeMapFBO);
+    glViewport(0, 0, 1024, 1024);
 
     auto &cubeMap = m_SadowCubeMaps[m_ActiveLights];
 
@@ -36,14 +38,16 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
     cubeMap->setPosition(position);
     cubeMap->bind(*m_CubeShadowShader);
 
-    m_ModelRenderer.draw(*m_CubeShadowShader, scene, models, 1);
+    RendererState rs;
+    rs.activeTextures = 1;
+    rs.fbo = m_DepthCubeMapFBO;
+    m_ModelRenderer.draw(*m_CubeShadowShader, scene, models, rs);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
     glViewport(0, 0, m_Viewport.width, m_Viewport.height);
     // glCullFace(GL_BACK);
 
     std::string lightRef = "u_spotLights[" + std::to_string(m_ActiveLights) + "]";
-    unsigned int textureIndex = m_ActiveLights + 1;
 
     shader.bind();
     shader.setFloat3(lightRef + ".position", position);
@@ -54,9 +58,11 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
     shader.setFloat(lightRef + ".linear", light.linear);
     shader.setFloat(lightRef + ".quadratic", light.quadratic);
 
-    glActiveTexture(GL_TEXTURE0 + textureIndex);
+    glActiveTexture(GL_TEXTURE0 + state.activeTextures);
     m_SadowCubeMaps[m_ActiveLights]->texture().bind();
-    shader.setInt(lightRef + ".shadowMap", static_cast<int>(textureIndex));
+    shader.setInt(lightRef + ".shadowMap", static_cast<int>(state.activeTextures));
+    ++state.activeTextures;
+
     shader.setFloat(lightRef + ".farPlane", m_SadowCubeMaps[m_ActiveLights]->farPlane());
 
     m_ActiveLights++;
