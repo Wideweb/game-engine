@@ -2,8 +2,9 @@
 
 #include "ScriptContext.hpp"
 
-#include "lua.hpp"
-#include <LuaBridge/LuaBridge.h>
+#include <lua.hpp>
+
+#include "LuaBridge/LuaBridge.h"
 
 #include <string>
 

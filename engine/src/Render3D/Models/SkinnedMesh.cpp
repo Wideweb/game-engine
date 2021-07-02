@@ -8,8 +8,8 @@ namespace Engine {
 SkinnedMesh::SkinnedMesh() {}
 SkinnedMesh::~SkinnedMesh() {}
 
-SkinnedMesh::SkinnedMesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices, const Material &material)
-    : vertices(vertices), indices(indices), material(material) {}
+SkinnedMesh::SkinnedMesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices)
+    : vertices(vertices), indices(indices) {}
 
 SkinnedMesh::SkinnedMesh(const SkinnedMesh &mesh) {
     VAO = mesh.VAO;
@@ -36,6 +36,10 @@ void SkinnedMesh::setUp() {
 
     // clang-format off
     GLsizei vec4Size = sizeof(glm::vec4);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// MODEL ////////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(0); 
 
@@ -59,29 +63,71 @@ void SkinnedMesh::setUp() {
                  static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()),
                  vertices.data(), GL_STATIC_DRAW);
 
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// POSITION //////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(4);
 
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// NORMAL ///////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(3 * sizeof(float)));
     glEnableVertexAttribArray(5);
 
+    /////////////////////////////////////////////////////////////
+    ////////////////////// TEXTURE COORD ////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(6 * sizeof(float)));
     glEnableVertexAttribArray(6);
 
-    glVertexAttribIPointer(7, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// TANGENT ///////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
     glEnableVertexAttribArray(7);
 
-    glVertexAttribIPointer(8, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float) + 4 * sizeof(int)));
+    /////////////////////////////////////////////////////////////
+    //////////////////////// BITANGENT //////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(11 * sizeof(float)));
     glEnableVertexAttribArray(8);
 
-    glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float) + 8 * sizeof(int)));
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// COLOR ////////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
     glEnableVertexAttribArray(9);
 
-    glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(12 * sizeof(float) + 8 * sizeof(int)));
+    /////////////////////////////////////////////////////////////
+    //////////////////////// JOINTS - 0 /////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribIPointer(10, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float)));
     glEnableVertexAttribArray(10);
 
-    glVertexAttribIPointer(11, 1, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(16 * sizeof(float) + 8 * sizeof(int)));
+    /////////////////////////////////////////////////////////////
+    //////////////////////// JOINTS - 1 /////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribIPointer(11, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float) + 4 * sizeof(int)));
     glEnableVertexAttribArray(11);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////// JOINT WEIGHT - 0 /////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(12);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////// JOINT WEIGHT - 1 /////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(13, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(21 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(13);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////// JOINTS NUMBER /////////.//////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribIPointer(14, 1, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(25 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(14);
     // clang-format on
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -96,19 +142,25 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vec
                  GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glActiveTexture(GL_TEXTURE0 + textureShift);
-    material.diffuseMap->bind();
-    shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
+    if (hasMaterial) {
+        shader.setInt("u_hasMaterial", 1);
 
-    glActiveTexture(GL_TEXTURE1 + textureShift);
-    material.specularMap->bind();
-    shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
+        glActiveTexture(GL_TEXTURE0 + textureShift);
+        material.diffuseMap->bind();
+        // shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
 
-    glActiveTexture(GL_TEXTURE2 + textureShift);
-    material.normalMap->bind();
-    shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
+        glActiveTexture(GL_TEXTURE1 + textureShift);
+        material.specularMap->bind();
+        // shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
 
-    shader.setFloat("u_material.shininess", material.shininess);
+        glActiveTexture(GL_TEXTURE2 + textureShift);
+        material.normalMap->bind();
+        // shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
+
+        shader.setFloat("u_material.shininess", material.shininess);
+    } else {
+        shader.setInt("u_hasMaterial", 0);
+    }
 
     shader.setInt("u_jointsNumber", static_cast<int>(joints.size()));
     for (size_t i = 0; i < joints.size(); i++) {

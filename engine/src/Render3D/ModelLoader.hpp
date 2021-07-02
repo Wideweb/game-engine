@@ -55,6 +55,17 @@ inline glm::vec3 aiVector3DToGlm(const aiVector3D &from) {
     return to;
 }
 
+inline glm::vec4 aiColorToGlm(const aiColor4D &from) {
+    glm::vec4 to;
+
+    to.r = static_cast<GLfloat>(from.r);
+    to.g = static_cast<GLfloat>(from.g);
+    to.b = static_cast<GLfloat>(from.b);
+    to.a = static_cast<GLfloat>(from.a);
+
+    return to;
+}
+
 inline glm::quat aiQuaternionDToGlm(const aiQuaternion &from) {
     glm::quat to;
 
@@ -79,7 +90,7 @@ class AssimpModel {
 
   public:
     AssimpModel();
-    std::shared_ptr<SkinnedModel> load(std::string path);
+    std::shared_ptr<Model> load(std::string path);
 
   private:
     void loadNode(aiNode *node, const aiScene *scene);
@@ -95,18 +106,13 @@ class ModelLoader {
   public:
     static std::shared_ptr<Model> loadModel(const std::string &path);
 
-    static std::shared_ptr<Model> load(const std::string &toObj,
-                                       const std::string &toDiffuseMap,
-                                       const std::string &toSpecularMap,
-                                       const std::string &toNormalMap);
+    static std::shared_ptr<Model> load(const std::string &toObj, const std::string &toDiffuseMap,
+                                       const std::string &toSpecularMap, const std::string &toNormalMap);
 
-    static std::shared_ptr<Skybox>
-    loadSkybox(const std::vector<std::string> &faces);
+    static std::shared_ptr<Skybox> loadSkybox(const std::vector<std::string> &faces);
 
-    static std::shared_ptr<Model> loadTerrain(const std::string &path,
-                                              unsigned int terrainWidth,
-                                              unsigned int terrainHeight,
-                                              float maxHeight);
+    static std::shared_ptr<Model> loadTerrain(const std::string &path, unsigned int terrainWidth,
+                                              unsigned int terrainHeight, float maxHeight);
 };
 
 } // namespace Engine

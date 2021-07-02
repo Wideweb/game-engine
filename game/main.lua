@@ -1,10 +1,7 @@
 function main(app)
     app:loadModel3D_v2("frog", "./assets/models/man/Man8.fbx");
 
-    app:loadModel3D("box", "./assets/models/box/box.obj",
-                    "./assets/models/box/diffuse-map.png",
-                    "./assets/models/box/specular-map.png",
-                    "./assets/models/box/normal-map.png");
+    app:loadModel3D_v2("box", "./assets/models/box/box.fbx");
 
     -- app:loadModel3D("cottage", "./assets/models/cottage/cottage.obj",
     --                 "./assets/models/cottage/cottage_diffuse.png",
@@ -50,6 +47,7 @@ function main(app)
     lightProps.ambient = Core.vec3(0.1, 0.1, 0.1);
     lightProps.diffuse = Core.vec3(0.3, 0.3, 0.3);
     lightProps.specular = Core.vec3(10.3, 10.3, 10.3);
+    lightProps.farPlane = 30;
     light:addDirectedLightComponent(Core.DirectedLightComponent(lightProps));
 
     local fire = app:createEntity("fire");

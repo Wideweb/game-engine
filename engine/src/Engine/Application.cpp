@@ -9,15 +9,16 @@ namespace Engine {
 
 Application *Application::s_Instance = nullptr;
 
-Application::Application() {
-    m_Window = std::unique_ptr<Window>(Window::create({960, 540}));
+Application::Application(ApplicationSettings settings) {
+    WindowProps windowProps{.width = 960, .height = 540, .antialiasing = settings.antialiasing};
+    m_Window = std::unique_ptr<Window>(Window::create(windowProps));
     m_Window->setMouseEventCallback(std::bind(&Application::onMouseEvent, this, std::placeholders::_1));
     m_Window->setWindowEventCallback(std::bind(&Application::onWindowEvent, this, std::placeholders::_1));
 
     m_Input = std::unique_ptr<Input>(Input::create());
 
     std::cout << "INIT RENDER START" << std::endl;
-    m_Render = std::make_unique<MasterRenderer>(960 * 2, 540 * 2);
+    m_Render = std::make_unique<MasterRenderer>(960, 540);
     std::cout << "INIT RENDER END" << std::endl;
 
     m_Camera =
@@ -58,7 +59,7 @@ void Application::run() {
                 break;
             }
 
-            m_Render->draw(*m_Camera, layer->getScene(), m_Models);
+            m_Render->draw(*m_Camera, layer->getScene(), m_Models, layer->renderSettings);
         }
 
         m_Window->swapBuffers();

@@ -11,6 +11,9 @@
 namespace Engine {
 
 class Render3DComponent {
+  private:
+    bool m_Overlay;
+
   public:
     float scale;
     std::string model;
@@ -19,7 +22,10 @@ class Render3DComponent {
     bool updated = false;
 
     Render3DComponent() {}
-    Render3DComponent(std::string model, float scale) : scale(scale), model(std::move(model)) {}
+    Render3DComponent(std::string model, float scale, bool overlay = false)
+        : scale(scale), model(std::move(model)), m_Overlay(overlay) {}
+
+    bool overlay() const { return m_Overlay; }
 };
 
 } // namespace Engine

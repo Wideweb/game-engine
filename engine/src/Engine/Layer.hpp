@@ -3,6 +3,7 @@
 #include "Collision3D.hpp"
 #include "Coordinator.hpp"
 #include "Layer.hpp"
+#include "MasterRenderer.hpp"
 #include "Scene.hpp"
 #include "ScriptManager.hpp"
 #include "Window.hpp"
@@ -22,6 +23,8 @@ class Layer {
     bool m_Active = false;
 
   public:
+    RenderSettings renderSettings;
+
     explicit Layer(std::string name);
     virtual ~Layer() = default;
 

@@ -5,9 +5,14 @@ project(EngineApp VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_PREFIX_PATH})
+
 set(SOURCE_EXE 
     vendor/glad/glad.c
     src/main.cpp
+    src/AppLayer.cpp
+    src/EditToolsLayer.cpp
     src/Core/Time.cpp
     src/Core/File.cpp
     src/Core/Math.cpp
@@ -49,6 +54,7 @@ set(SOURCE_EXE
     src/Render3D/Renderers/MasterRenderer.cpp
     src/Render3D/Renderers/QuadRenderer.cpp
     src/Render3D/Renderers/ModelRenderer.cpp
+    src/Render3D/Renderers/OverlayRenderer.cpp
     src/Render3D/Renderers/SkyboxRenderer.cpp
     src/Render3D/Renderers/DirectedLightRenderer.cpp
     src/Render3D/Renderers/SpotLightRenderer.cpp
@@ -74,7 +80,8 @@ add_executable(${PROJECT_NAME} ${SOURCE_EXE})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree/Tasks
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree/TaskDecorators
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Animation
@@ -98,23 +105,40 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/AI
                                          ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
 
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+                "${CMAKE_BINARY_DIR}/conan.cmake"
+                EXPECTED_HASH SHA256=396e16d0f5eabdc6a14afddbcfff62a54a7ee75c6da23f32f7a31bc85db23484
+                TLS_VERIFY ON)
+endif()
+
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+conan_cmake_configure(REQUIRES sdl/2.0.14 assimp/5.0.1 glm/0.9.9.8 lua/5.4.1
+                      GENERATORS cmake_find_package)
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conan-center
+                    SETTINGS ${settings})
 
 find_package(SDL2 REQUIRED)
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 
 find_package(glm REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
 
 find_package(assimp REQUIRED)
-target_include_directories(${PROJECT_NAME} PRIVATE ${ASSIMP_LIBRARY_DIRS})
-target_link_libraries (${PROJECT_NAME} PRIVATE ${ASSIMP_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE assimp::assimp)
+
+find_package(lua REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE lua::lua)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui)
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
-
-target_include_directories(${PROJECT_NAME} PRIVATE /usr/local/include)
-target_link_libraries(${PROJECT_NAME} PRIVATE /usr/local/lib/liblua.a)
 
 # target_link_libraries(${PROJECT_NAME} PRIVATE -lprofiler)
 # target_link_libraries(${PROJECT_NAME} PRIVATE -ltcmalloc)

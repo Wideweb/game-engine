@@ -2,10 +2,11 @@
 
 #include "ScriptContext.hpp"
 
-#include "lua.hpp"
-#include <LuaBridge/LuaBridge.h>
+#include <lua.hpp>
 #include <memory>
 #include <type_traits>
+
+#include "LuaBridge/LuaBridge.h"
 
 namespace Engine {
 
@@ -14,18 +15,14 @@ class ScriptBase {
     virtual ~ScriptBase() {}
 };
 
-template <typename TContext,
-          typename =
-              std::enable_if_t<std::is_base_of_v<ScriptContext, TContext>>>
+template <typename TContext, typename = std::enable_if_t<std::is_base_of_v<ScriptContext, TContext>>>
 class Script : public ScriptBase {
   private:
     std::shared_ptr<TContext> m_Context;
     luabridge::LuaRef m_EntryRef = nullptr;
 
   public:
-    Script(std::string path, std::string entry,
-           std::shared_ptr<TContext> context)
-        : m_Context(context) {
+    Script(std::string path, std::string entry, std::shared_ptr<TContext> context) : m_Context(context) {
         lua_State *L = m_Context->getState();
 
         if (luaL_loadfile(L, path.c_str())) {

@@ -64,6 +64,7 @@ const vec3 c_sampleOffsetDirections[20] = vec3[](
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
+uniform int u_hasMaterial;
 uniform int u_hasDirectedLight;
 uniform DirectedLight u_directedLight;
 uniform SpotLight u_spotLights[c_maxSpotLights];
@@ -74,10 +75,12 @@ uniform vec3 u_viewPos;
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
 /////////////////////////////////////////////////////////////
+in vec3 v_color;
+in vec3 v_normal;
 in vec2 v_texCoord;
 in vec3 v_fragPos;
-in vec3 v_normal;
 in float v_visibility;
+in mat3 v_TBN;
 
 /////////////////////////////////////////////////////////////
 /////////////////////////// OUT /////////////////////////////
@@ -91,10 +94,17 @@ layout(location = 1) out vec4 o_brightColor;
 void main() {
     vec3 viewDir = normalize(u_viewPos - v_fragPos);
 
-    vec3 diffuse = texture(u_material.diffuse, v_texCoord).rgb;
-    vec3 specular = texture(u_material.specular, v_texCoord).rgb;
+    FragmentMaterial material = FragmentMaterial(v_color, v_color, v_normal, 128.0);
+    if (u_hasMaterial > 0) {
+        vec3 diffuse = texture(u_material.diffuse, v_texCoord).rgb;
+        vec3 specular = texture(u_material.specular, v_texCoord).rgb;
 
-    FragmentMaterial material = FragmentMaterial(diffuse, specular, v_normal, u_material.shininess);
+        vec3 normal = texture(u_material.normal, v_texCoord).rgb;
+        normal = normalize(normal * 2.0 - 1.0);
+        normal = normalize(v_TBN * normal);
+
+        material = FragmentMaterial(diffuse, specular, normal, u_material.shininess);
+    }
 
     vec3 result = vec3(0);
 
@@ -194,6 +204,10 @@ float directedLightShadowCalculation(DirectedLight light, vec3 fragPos, float bi
 
     // float closestDepth = texture(light.shadowMap, coords.xy).r;
     // float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+    if (currentDepth > 1.0) {
+        return 0.0;
+    }
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(light.shadowMap, 0);

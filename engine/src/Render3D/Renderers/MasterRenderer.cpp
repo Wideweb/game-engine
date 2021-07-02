@@ -55,6 +55,7 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
 
     m_QuadRenderer = std::make_unique<QuadRenderer>();
     m_ModelRenderer = std::make_unique<ModelRenderer>();
+    m_OverlayRenderer = std::make_unique<OverlayRenderer>();
     m_SkyboxRenderer = std::make_unique<SkyboxRenderer>();
     m_GRenderer = std::make_unique<GRenderer>(m_Viewport, *m_ModelRenderer, *m_SkyboxRenderer);
     m_DirectedLightRenderer = std::make_unique<DirectedLightRenderer>(m_Viewport, *m_ModelRenderer);
@@ -64,9 +65,11 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
     m_ParticlesRenderer = std::make_unique<ParticlesRenderer>();
 }
 
-void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
-    m_State.fbo = m_HdrFBO;
-    glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings) {
+    if (settings.hdr) {
+        m_State.fbo = m_HdrFBO;
+        glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+    }
 
     m_Shader->bind();
     m_Shader->setFloat3("u_viewPos", camera.positionVec());
@@ -94,42 +97,47 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     m_ModelRenderer->draw(*m_Shader, scene, models, m_State);
     // m_WaterRenderer->draw(camera, scene, models, m_State);
 
-    m_State.fbo = 0;
-    glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+    if (settings.hdr) {
+        m_State.fbo = 0;
+        glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
 
-    // BLUR
-    bool horizontal = true, firstIteration = true;
-    int amount = 10;
-    m_BlurShader->bind();
-    glActiveTexture(GL_TEXTURE0);
-    m_BlurShader->setInt("u_colorBuffer", 0);
-    for (unsigned int i = 0; i < amount; i++) {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[horizontal]);
-        m_BlurShader->setInt("u_horizontal", horizontal);
-        if (firstIteration) {
-            m_ColorBuffer[1]->bind();
-            firstIteration = false;
+        bool horizontal = true, firstIteration = true;
+        if (settings.bloom) {
+            int amount = 5;
+            m_BlurShader->bind();
+            glActiveTexture(GL_TEXTURE0);
+            m_BlurShader->setInt("u_colorBuffer", 0);
+            for (unsigned int i = 0; i < amount; i++) {
+                glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[horizontal]);
+                m_BlurShader->setInt("u_horizontal", horizontal);
+                if (firstIteration) {
+                    m_ColorBuffer[1]->bind();
+                    firstIteration = false;
 
-        } else {
-            m_PingpongColorBuffer[!horizontal]->bind();
+                } else {
+                    m_PingpongColorBuffer[!horizontal]->bind();
+                }
+                m_QuadRenderer->draw();
+                horizontal = !horizontal;
+            }
+            m_State.fbo = 0;
+            glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
         }
+
+        m_HdrShader->bind();
+        glActiveTexture(GL_TEXTURE0);
+        m_ColorBuffer[0]->bind();
+        m_HdrShader->setInt("u_hdrBuffer", 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        m_PingpongColorBuffer[horizontal]->bind();
+        m_HdrShader->setInt("u_blurBuffer", 1);
+
+        m_HdrShader->setFloat("u_exposure", 1.0f);
         m_QuadRenderer->draw();
-        horizontal = !horizontal;
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // BLUR END
 
-    m_HdrShader->bind();
-    glActiveTexture(GL_TEXTURE0);
-    m_ColorBuffer[0]->bind();
-    m_HdrShader->setInt("u_hdrBuffer", 0);
-
-    glActiveTexture(GL_TEXTURE1);
-    m_PingpongColorBuffer[horizontal]->bind();
-    m_HdrShader->setInt("u_blurBuffer", 1);
-
-    m_HdrShader->setFloat("u_exposure", 1.0f);
-    m_QuadRenderer->draw();
+    m_OverlayRenderer->draw(camera, scene, models);
 }
 
 void MasterRenderer::setClearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }

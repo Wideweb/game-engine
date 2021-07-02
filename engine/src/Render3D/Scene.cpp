@@ -6,6 +6,16 @@ void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) { m_Skybox = skybox;
 
 std::shared_ptr<Skybox> Scene::getSkybox() { return m_Skybox; }
 
+ModelInstance Scene::addOverlayObject(const std::string &model, glm::mat4 position) {
+    return m_OverlayObjects[model].Create(std::move(position), false);
+}
+
+void Scene::updateOverlayObject(const std::string &model, glm::mat4 position, ModelInstance instance) {
+    m_OverlayObjects[model].Update(instance, std::move(position));
+}
+
+Scene::ObjectsRange Scene::getOverlayObjects() { return {m_OverlayObjects.begin(), m_OverlayObjects.end()}; }
+
 ModelInstance Scene::addStaticObject(const std::string &model, glm::mat4 position) {
     return m_Objects[model].Create(std::move(position), true);
 }

@@ -8,7 +8,9 @@
 #include <glm/geometric.hpp>
 #include <glm/vec2.hpp>
 
+#include <algorithm>
 #include <cmath>
+#include <map>
 
 namespace Engine {
 
@@ -107,8 +109,7 @@ template <typename T> class CollisionDetection {
 
         std::vector<CollisionShape<T>> overlaps = m_BroadPhase.ComputeOverlaps({p0, p1}, shapes);
 
-        std::vector<CollisionResult<T>> result;
-        result.reserve(overlaps.size());
+        std::map<float, CollisionResult<T>> distanceToObject;
 
         for (const auto &overlapedShape : overlaps) {
             if (overlapedShape.type == CollisionShapeType::Terrain) {
@@ -116,8 +117,17 @@ template <typename T> class CollisionDetection {
             }
 
             if (AABBOverlap::testSegment(origin, origin + direction * distance, overlapedShape.box)) {
-                result.emplace_back(overlapedShape.id);
+                glm::vec3 center = (overlapedShape.box.min + overlapedShape.box.max) / 2.0f;
+                float distance = glm::dot((origin - center), (origin - center));
+                distanceToObject[distance] = {overlapedShape.id};
             }
+        }
+
+        std::vector<CollisionResult<T>> result;
+        result.reserve(distanceToObject.size());
+
+        for (auto const &it : distanceToObject) {
+            result.push_back(it.second);
         }
 
         return result;

@@ -16,7 +16,7 @@ DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &
     auto fragmentSrc = File::read("./shaders/depth-fragment-shader.glsl");
     m_DepthShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
 
-    m_DepthMap.reset(TextureLoader::createDepthBuffer(1024, 1024));
+    m_DepthMap.reset(TextureLoader::createDepthBuffer(2048, 2048));
 
     glGenFramebuffers(1, &m_DepthMapFBO);
 
@@ -30,12 +30,12 @@ DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &
 void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene,
                                   const ModelManager &models, RendererState &state) {
     glBindFramebuffer(GL_FRAMEBUFFER, m_DepthMapFBO);
-    glViewport(0, 0, 1024, 1024);
+    glViewport(0, 0, 2048, 2048);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     float farHalf = light.farPlane / 2.0f;
 
-    glm::vec3 position = camera.positionVec() - light.direction * farHalf;
+    glm::vec3 position = camera.positionVec() - light.direction * farHalf + camera.frontVec() * farHalf;
 
     glm::mat4 lightProjection = glm::ortho(-farHalf, farHalf, -farHalf, farHalf, light.nearPlane, light.farPlane);
     glm::mat4 lightView = glm::lookAt(position, position + light.direction, glm::vec3(0.0f, 0.0f, 1.0f));

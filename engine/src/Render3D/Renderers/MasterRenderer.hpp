@@ -13,6 +13,7 @@
 #include "FlareRenderer.hpp"
 #include "GRenderer.hpp"
 #include "ModelRenderer.hpp"
+#include "OverlayRenderer.hpp"
 #include "ParticlesRenderer.hpp"
 #include "QuadRenderer.hpp"
 #include "RendererState.hpp"
@@ -24,12 +25,18 @@
 
 namespace Engine {
 
+struct RenderSettings {
+    bool hdr = true;
+    bool bloom = true;
+};
+
 class MasterRenderer {
   private:
     std::unique_ptr<Shader> m_Shader, m_HdrShader, m_BlurShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
+    std::unique_ptr<OverlayRenderer> m_OverlayRenderer;
     std::unique_ptr<SkyboxRenderer> m_SkyboxRenderer;
     std::unique_ptr<DirectedLightRenderer> m_DirectedLightRenderer;
     std::unique_ptr<SpotLightRenderer> m_SpotLightRenderer;
@@ -50,7 +57,7 @@ class MasterRenderer {
   public:
     MasterRenderer(int width, int height);
 
-    void draw(Camera &camera, Scene &scene, const ModelManager &models);
+    void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings);
     void setClearColor(float r, float g, float b, float a);
     void setViewport(int width, int height);
     void clear();

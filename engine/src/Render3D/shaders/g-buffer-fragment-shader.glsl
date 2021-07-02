@@ -18,15 +18,18 @@ const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
+uniform int u_hasMaterial;
 uniform Material u_material;
 uniform float u_clipY;
 
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
+in vec3 v_color;
+in vec3 v_normal;
 in vec2 v_texCoord;
 in vec3 v_fragPos;
-in vec3 v_normal;
+in mat3 v_TBN;
 in float v_visibility;
 
 /////////////////////////////////////////////////////////////
@@ -45,11 +48,21 @@ void main() {
         discard;
     }
 
-    o_gPosition = v_fragPos;
-    o_gNormal = normalize(v_normal);
-    o_gSpecular.rgb = texture(u_material.specular, v_texCoord).rgb;
-    o_gSpecular.a = u_material.shininess;
+    vec3 color = v_color;
+    vec3 normal = v_normal;
+    float shininess = 128.0;
 
-    o_gColor = texture(u_material.diffuse, v_texCoord);
-    o_gColor = mix(vec4(c_fogColor, 1.0), o_gColor, v_visibility);
+    if (u_hasMaterial > 0) {
+        normal = texture(u_material.normal, v_texCoord).rgb;
+        normal = normalize(normal * 2.0 - 1.0);
+        normal = normalize(v_TBN * normal);
+
+        color = texture(u_material.specular, v_texCoord).rgb;
+        shininess = u_material.shininess;
+    }
+
+    o_gPosition = v_fragPos;
+    o_gNormal = normal;
+    o_gSpecular.rgb = color;
+    o_gSpecular.a = shininess;
 }

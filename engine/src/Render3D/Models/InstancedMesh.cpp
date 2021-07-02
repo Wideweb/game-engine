@@ -10,7 +10,7 @@ InstancedMesh::~InstancedMesh() {}
 
 InstancedMesh::InstancedMesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
                              const Material &material)
-    : vertices(vertices), indices(indices), material(material) {}
+    : vertices(vertices), indices(indices), material(material), hasMaterial(true) {}
 
 InstancedMesh::InstancedMesh(const InstancedMesh &mesh) {
     VAO = mesh.VAO;
@@ -21,6 +21,7 @@ InstancedMesh::InstancedMesh(const InstancedMesh &mesh) {
     vertices = mesh.vertices;
     indices = mesh.indices;
     material = mesh.material;
+    hasMaterial = mesh.hasMaterial;
 }
 
 void InstancedMesh::setUp() {
@@ -37,6 +38,10 @@ void InstancedMesh::setUp() {
 
     // clang-format off
     GLsizei vec4Size = sizeof(glm::vec4);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// MODEL ////////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(0); 
 
@@ -60,14 +65,41 @@ void InstancedMesh::setUp() {
                  static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()),
                  vertices.data(), GL_STATIC_DRAW);
     
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// POSITION //////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(4);
 
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// NORMAL ///////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(3 * sizeof(float)));
     glEnableVertexAttribArray(5);
 
+    /////////////////////////////////////////////////////////////
+    ////////////////////// TEXTURE COORD ////////////////////////
+    /////////////////////////////////////////////////////////////
     glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(6 * sizeof(float)));
     glEnableVertexAttribArray(6);
+
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// TANGENT ///////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
+    glEnableVertexAttribArray(7);
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// BITANGENT //////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(11 * sizeof(float)));
+    glEnableVertexAttribArray(8);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// COLOR ////////////////////////////
+    /////////////////////////////////////////////////////////////
+    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
+    glEnableVertexAttribArray(9);
     // clang-format on
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -91,18 +123,24 @@ void InstancedMesh::updateInstances(size_t from, size_t to, const std::vector<gl
 
 void InstancedMesh::draw(Shader &shader, size_t instanceCount, unsigned int textureShift = 0) const {
     glActiveTexture(GL_TEXTURE0 + textureShift);
-    material.diffuseMap->bind();
-    shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
 
-    glActiveTexture(GL_TEXTURE1 + textureShift);
-    material.specularMap->bind();
-    shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
+    if (hasMaterial) {
+        shader.setInt("u_hasMaterial", 1);
+        material.diffuseMap->bind();
+        // shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
 
-    glActiveTexture(GL_TEXTURE2 + textureShift);
-    material.normalMap->bind();
-    shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
+        glActiveTexture(GL_TEXTURE1 + textureShift);
+        material.specularMap->bind();
+        // shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
 
-    shader.setFloat("u_material.shininess", material.shininess);
+        glActiveTexture(GL_TEXTURE2 + textureShift);
+        material.normalMap->bind();
+        // shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
+
+        shader.setFloat("u_material.shininess", material.shininess);
+    } else {
+        shader.setInt("u_hasMaterial", 0);
+    }
 
     glBindVertexArray(VAO);
 

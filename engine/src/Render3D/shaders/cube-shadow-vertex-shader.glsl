@@ -15,13 +15,11 @@ const int c_maxJoints = 100;
 /////////////////////////////////////////////////////////////
 layout(location = 0) in mat4 a_model;
 layout(location = 4) in vec3 a_vertexPosition;
-layout(location = 5) in vec3 a_vertexNormal;
-layout(location = 6) in vec2 a_vertexTextureCoord;
-layout(location = 7) in ivec4 a_vertexJoints0;
-layout(location = 8) in ivec4 a_vertexJoints1;
-layout(location = 9) in vec4 a_vertexJointWeights0;
-layout(location = 10) in vec4 a_vertexJointWeights1;
-layout(location = 11) in int a_vertexJointsNumber;
+layout(location = 10) in ivec4 a_vertexJoints0;
+layout(location = 11) in ivec4 a_vertexJoints1;
+layout(location = 12) in vec4 a_vertexJointWeights0;
+layout(location = 13) in vec4 a_vertexJointWeights1;
+layout(location = 14) in int a_vertexJointsNumber;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////

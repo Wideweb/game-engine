@@ -3,8 +3,9 @@
 #include "Layer.hpp"
 #include "LuaEntity.hpp"
 
-#include "lua.hpp"
-#include <LuaBridge/LuaBridge.h>
+#include <lua.hpp>
+
+#include "LuaBridge/LuaBridge.h"
 
 #include <string>
 
@@ -21,16 +22,15 @@ class LuaLayer {
 
     LuaEntity getEntity(std::string name);
 
-    void setSkybox(std::string right, std::string left, std::string top,
-                   std::string bottom, std::string front, std::string back);
+    void setSkybox(std::string right, std::string left, std::string top, std::string bottom, std::string front,
+                   std::string back);
 
-    void loadModel3D(std::string name, std::string obj, std::string diffuseMap,
-                     std::string specularMap, std::string normalMap);
+    void loadModel3D(std::string name, std::string obj, std::string diffuseMap, std::string specularMap,
+                     std::string normalMap);
 
     void loadModel3D_v2(std::string name, std::string path);
 
-    void loadTerrain(std::string name, std::string path, unsigned int width,
-                     unsigned int height, float maxHeight);
+    void loadTerrain(std::string name, std::string path, unsigned int width, unsigned int height, float maxHeight);
 
     void static add(lua_State *state);
 };

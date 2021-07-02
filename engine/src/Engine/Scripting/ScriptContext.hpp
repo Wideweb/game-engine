@@ -1,7 +1,8 @@
 #pragma once
 
-#include "lua.hpp"
-#include <LuaBridge/LuaBridge.h>
+#include <lua.hpp>
+
+#include "LuaBridge/LuaBridge.h"
 
 namespace Engine {
 

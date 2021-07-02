@@ -2,7 +2,7 @@
 
 #include "Window.hpp"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 namespace Engine {
 
@@ -23,11 +23,9 @@ class SDLWindow : public Window {
 
     virtual void getDrawableSize(int &width, int &height) const override;
 
-    virtual void
-    setMouseEventCallback(const EventCallbackFn<MouseEvent> &callback) override;
+    virtual void setMouseEventCallback(const EventCallbackFn<MouseEvent> &callback) override;
 
-    virtual void setWindowEventCallback(
-        const EventCallbackFn<WindowEvent> &callback) override;
+    virtual void setWindowEventCallback(const EventCallbackFn<WindowEvent> &callback) override;
 
     virtual void readInput() override;
     virtual void swapBuffers() override;

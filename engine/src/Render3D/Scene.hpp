@@ -43,12 +43,18 @@ class Scene {
 
     using ObjectsRange = IteratorRange<std::unordered_map<std::string, ModelInstanceManager>::iterator>;
 
+    using OverlayObjectsRange = IteratorRange<std::unordered_map<std::string, ModelInstanceManager>::iterator>;
+
     using LightsRange = IteratorRange<std::array<SceneSpotLight, c_MaxSceneLights>::const_iterator>;
 
     void setSkybox(const std::shared_ptr<Skybox> skybox);
     std::shared_ptr<Skybox> getSkybox();
 
     ModelInstance addStaticObject(const std::string &model, glm::mat4 position);
+
+    ModelInstance addOverlayObject(const std::string &model, glm::mat4 position);
+    void updateOverlayObject(const std::string &model, glm::mat4 position, ModelInstance instance);
+    ObjectsRange getOverlayObjects();
 
     ModelInstance addObject(const std::string &model, glm::mat4 position);
     void updateObject(const std::string &model, glm::mat4 position, ModelInstance instance);
@@ -70,6 +76,7 @@ class Scene {
 
   private:
     std::unordered_map<std::string, ModelInstanceManager> m_Objects;
+    std::unordered_map<std::string, ModelInstanceManager> m_OverlayObjects;
 
     DirectedLight m_DirectedLight;
     std::array<SceneSpotLight, c_MaxSceneLights> m_SpotLights;

@@ -24,12 +24,12 @@ namespace Engine {
 
 AssimpModel::AssimpModel() {}
 
-std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
+std::shared_ptr<Model> AssimpModel::load(std::string path) {
     m_Model = std::make_shared<SkinnedModel>();
 
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                                                     aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
+    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_OptimizeMeshes |
+                                                     aiProcess_OptimizeGraph | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -94,10 +94,38 @@ std::shared_ptr<SkinnedModel> AssimpModel::load(std::string path) {
         }
     }
 
-    m_Model->skelet = std::move(m_Skelet);
-    m_Model->setUp();
+    if (!m_Skelet.joints.empty()) {
+        m_Model->skelet = std::move(m_Skelet);
+        m_Model->setUp();
+        return m_Model;
+    }
 
-    return m_Model;
+    auto model = std::make_shared<InstancedModel>();
+    model->meshes.resize(m_Model->meshes.size());
+    for (size_t i = 0; i < m_Model->meshes.size(); i++) {
+        auto &mesh = model->meshes[i];
+        auto &meshSrc = m_Model->meshes[i];
+
+        mesh.hasMaterial = meshSrc.hasMaterial;
+        mesh.indices = meshSrc.indices;
+        mesh.material = meshSrc.material;
+
+        mesh.vertices.resize(meshSrc.vertices.size());
+        for (size_t j = 0; j < meshSrc.vertices.size(); j++) {
+            auto &vertex = mesh.vertices[j];
+            auto &vertexSrc = meshSrc.vertices[j];
+
+            vertex.position = vertexSrc.position;
+            vertex.normal = vertexSrc.normal;
+            vertex.textCoord = vertexSrc.textCoord;
+            vertex.tangent = vertexSrc.tangent;
+            vertex.bitangent = vertexSrc.bitangent;
+            vertex.color = vertexSrc.color;
+        }
+    }
+
+    model->setUp();
+    return model;
 }
 
 void AssimpModel::loadNode(aiNode *node, const aiScene *scene) {
@@ -110,35 +138,48 @@ void AssimpModel::loadNode(aiNode *node, const aiScene *scene) {
     }
 }
 
-SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
+SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
     std::vector<SkinnedMesh::Vertex> vertices;
     std::vector<unsigned int> indices;
-    Material material;
+    SkinnedMesh mesh;
 
-    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        glm::vec3 position = aiVector3DToGlm(mesh->mVertices[i]);
-        glm::vec3 normal = aiVector3DToGlm(mesh->mNormals[i]);
+    for (unsigned int i = 0; i < meshSrc->mNumVertices; i++) {
+        glm::vec3 position = aiVector3DToGlm(meshSrc->mVertices[i]);
+        glm::vec3 normal = aiVector3DToGlm(meshSrc->mNormals[i]);
+        glm::vec3 tangent = aiVector3DToGlm(meshSrc->mTangents[i]);
+        glm::vec3 bitangent = aiVector3DToGlm(meshSrc->mBitangents[i]);
+        glm::vec3 color = glm::vec3(0.0f);
 
-        glm::vec2 textCoord;
-        if (mesh->mTextureCoords[0]) {
-            textCoord.x = mesh->mTextureCoords[0][i].x;
-            textCoord.y = mesh->mTextureCoords[0][i].y;
+        if (meshSrc->mColors[0] != nullptr) {
+            color = glm::vec3(aiColorToGlm(meshSrc->mColors[0][i]));
         }
 
-        vertices.emplace_back(position, normal, textCoord);
-    }
+        glm::vec2 textCoord;
+        if (meshSrc->mTextureCoords[0]) {
+            textCoord.x = meshSrc->mTextureCoords[0][i].x;
+            textCoord.y = meshSrc->mTextureCoords[0][i].y;
+        }
 
-    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
-        aiFace face = mesh->mFaces[i];
+        vertices.emplace_back(position, normal, textCoord, tangent, bitangent, color);
+    }
+    mesh.vertices = vertices;
+
+    for (unsigned int i = 0; i < meshSrc->mNumFaces; i++) {
+        aiFace face = meshSrc->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
             indices.push_back(face.mIndices[j]);
         }
     }
+    mesh.indices = indices;
 
-    if (mesh->mMaterialIndex >= 0) {
-        aiMaterial *materialSrc = scene->mMaterials[mesh->mMaterialIndex];
+    if (meshSrc->mMaterialIndex >= 0) {
+        aiMaterial *materialSrc = scene->mMaterials[meshSrc->mMaterialIndex];
 
         if (materialSrc->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+            mesh.material.diffuseMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/diffuse-map.jpeg"));
+            mesh.material.specularMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/specular-map.jpeg"));
+            mesh.material.normalMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/normal-map.jpeg"));
+            mesh.hasMaterial = true;
         }
 
         // material.diffuseMap.reset(
@@ -147,14 +188,10 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
         //     loadMaterialTexture(materialSrc, aiTextureType_SPECULAR));
         // material.normalMap.reset(
         //     loadMaterialTexture(materialSrc, aiTextureType_NORMALS));
-
-        material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
-        material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
-        material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
     }
 
-    for (unsigned int i = 0; i < mesh->mNumBones; i++) {
-        addJoint(mesh->mBones[i]);
+    for (unsigned int i = 0; i < meshSrc->mNumBones; i++) {
+        addJoint(meshSrc->mBones[i]);
     }
 
     if (m_ActiveMeshes == 0) {
@@ -165,10 +202,10 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *mesh, const aiScene *scene) {
         m_MeshBaseVertex.push_back(static_cast<unsigned int>(base));
     }
 
-    m_MeshIndex[mesh->mName.data] = m_ActiveMeshes;
+    m_MeshIndex[meshSrc->mName.data] = m_ActiveMeshes;
     m_ActiveMeshes++;
 
-    return SkinnedMesh(vertices, indices, material);
+    return mesh;
 }
 
 Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type) {
@@ -313,11 +350,14 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::st
             char divider;
             size_t p, t, n;
             in >> p >> divider >> t >> divider >> n;
-            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1]);
+            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1], glm::vec3(1.0f, 0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f));
             in >> p >> divider >> t >> divider >> n;
-            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1]);
+            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1], glm::vec3(1.0f, 0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f));
             in >> p >> divider >> t >> divider >> n;
-            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1]);
+            vertices.emplace_back(pVertices[p - 1], nVertices[n - 1], tVertices[t - 1], glm::vec3(1.0f, 0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f));
         } else {
             std::getline(in, line);
         }
@@ -415,32 +455,111 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path, unsigne
             float z = static_cast<float>(i);
 
             glm::vec3 position = glm::vec3(x, 0.0f, z);
-            glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 normal = glm::vec3(0.0f);
             glm::vec2 textCoord = glm::vec2(j, i);
+            glm::vec3 tangent = glm::vec3(0.0f);
+            glm::vec3 bitangent = glm::vec3(0.0f);
+            glm::vec3 color = glm::vec3(0.5f);
 
             auto height = heightMap[static_cast<unsigned int>(i * rateHeight * uWidth + j * rateWidth)];
 
             position.y = (height.r + height.g + height.b) / 3.0f / 255.0f * maxHeight;
 
-            vertices.emplace_back(position, normal, textCoord);
+            vertices.emplace_back(position, normal, textCoord, tangent, bitangent, color);
         }
     }
 
     for (unsigned int i = 0; i < terrainHeight - 1; i++) {
         for (unsigned int j = 0; j < terrainWidth - 1; j++) {
-            indices.push_back((i + 1) * terrainWidth + j);
-            indices.push_back(i * terrainWidth + j + 1);
-            indices.push_back(i * terrainWidth + j);
+            unsigned int v1 = (i + 1) * terrainWidth + j;
+            unsigned int v2 = i * terrainWidth + j + 1;
+            unsigned int v3 = i * terrainWidth + j;
 
-            indices.push_back((i + 1) * terrainWidth + j);
-            indices.push_back((i + 1) * terrainWidth + j + 1);
-            indices.push_back(i * terrainWidth + j + 1);
+            glm::vec3 edge1 = vertices[v2].position - vertices[v1].position;
+            glm::vec3 edge2 = vertices[v3].position - vertices[v1].position;
+            glm::vec2 deltaUV1 = vertices[v2].textCoord - vertices[v1].textCoord;
+            glm::vec2 deltaUV2 = vertices[v3].textCoord - vertices[v1].textCoord;
+
+            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+            glm::vec3 tangent;
+            tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+            tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+            tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+            tangent = glm::normalize(tangent);
+
+            glm::vec3 bitangent;
+            bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+            bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+            bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+            bitangent = glm::normalize(bitangent);
+
+            glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+
+            vertices[v1].tangent += tangent;
+            vertices[v2].tangent += tangent;
+            vertices[v3].tangent += tangent;
+
+            vertices[v1].bitangent += bitangent;
+            vertices[v2].bitangent += bitangent;
+            vertices[v3].bitangent += bitangent;
+
+            vertices[v1].normal += normal;
+            vertices[v2].normal += normal;
+            vertices[v3].normal += normal;
+
+            indices.push_back(v1);
+            indices.push_back(v2);
+            indices.push_back(v3);
+
+            v1 = (i + 1) * terrainWidth + j;
+            v2 = (i + 1) * terrainWidth + j + 1;
+            v3 = i * terrainWidth + j + 1;
+
+            edge1 = vertices[v2].position - vertices[v1].position;
+            edge2 = vertices[v3].position - vertices[v1].position;
+            deltaUV1 = vertices[v2].textCoord - vertices[v1].textCoord;
+            deltaUV2 = vertices[v3].textCoord - vertices[v1].textCoord;
+
+            tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+            tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+            tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+            tangent = glm::normalize(tangent);
+
+            bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+            bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+            bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+            bitangent = glm::normalize(bitangent);
+
+            normal = glm::normalize(glm::cross(edge1, edge2));
+
+            vertices[v1].tangent += tangent;
+            vertices[v2].tangent += tangent;
+            vertices[v3].tangent += tangent;
+
+            vertices[v1].bitangent += bitangent;
+            vertices[v2].bitangent += bitangent;
+            vertices[v3].bitangent += bitangent;
+
+            vertices[v1].normal += normal;
+            vertices[v2].normal += normal;
+            vertices[v3].normal += normal;
+
+            indices.push_back(v1);
+            indices.push_back(v2);
+            indices.push_back(v3);
         }
     }
 
-    material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.png"));
-    material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.png"));
-    material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.png"));
+    for (unsigned int i = 0; i < vertices.size(); i++) {
+        vertices[i].tangent = glm::normalize(vertices[i].tangent);
+        vertices[i].bitangent = glm::normalize(vertices[i].bitangent);
+        vertices[i].normal = glm::normalize(vertices[i].normal);
+    }
+
+    material.diffuseMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/diffuse-map.jpeg"));
+    material.specularMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/specular-map.jpeg"));
+    material.normalMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/normal-map.jpeg"));
 
     InstancedMesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));

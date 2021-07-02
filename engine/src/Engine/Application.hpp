@@ -21,6 +21,13 @@
 
 namespace Engine {
 
+struct ApplicationSettings {
+    bool edit = false;
+    bool hdr = false;
+    bool antialiasing = false;
+    bool width = false;
+};
+
 class Application {
   private:
     static Application *s_Instance;
@@ -41,7 +48,7 @@ class Application {
     bool m_Running = true;
 
   public:
-    Application();
+    Application(ApplicationSettings settings);
     virtual ~Application();
 
     void onMouseEvent(MouseEvent &e);
@@ -51,11 +58,12 @@ class Application {
     void run();
     void stop();
 
-    template <typename T> void addLayer(const std::string &label) {
+    template <typename T> T &addLayer(const std::string &label) {
         auto layer = std::make_shared<T>(label);
         m_LayerStack.push_back(layer);
         m_NameToLayer[label] = std::prev(m_LayerStack.end());
         layer->attach();
+        return *layer;
     }
 
     void removeLayer(const std::string &label) {
@@ -66,6 +74,7 @@ class Application {
     }
 
     template <typename T> void reloadLayer(const std::string &label) {
+        auto renderSettings = (*m_NameToLayer[label])->renderSettings;
         removeLayer(label);
         addLayer<T>(label);
     }
@@ -85,6 +94,6 @@ class Application {
     static Application &get() { return *s_Instance; }
 };
 
-Application *createApplication();
+Application *createApplication(ApplicationSettings);
 
 } // namespace Engine

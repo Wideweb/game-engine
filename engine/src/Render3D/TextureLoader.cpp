@@ -219,4 +219,18 @@ Texture *TextureLoader::createRGB16Buffer(int width, int height) {
     return new Texture(textureID, Texture::TextureType::SIMPLE);
 }
 
+Texture *TextureLoader::createRGB8IBuffer(int width, int height) {
+    GLuint textureID;
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8I, width, height, 0, GL_RGB, GL_INT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    return new Texture(textureID, Texture::TextureType::SIMPLE);
+}
+
 } // namespace Engine

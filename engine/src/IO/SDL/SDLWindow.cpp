@@ -27,10 +27,8 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     SDL_VERSION(&compiled)
     SDL_GetVersion(&linked);
 
-    if (SDL_COMPILEDVERSION !=
-        SDL_VERSIONNUM(linked.major, linked.minor, linked.patch)) {
-        cerr << "warning: SDL2 compiled and linked version mismatch: "
-             << compiled << " " << linked << endl;
+    if (SDL_COMPILEDVERSION != SDL_VERSIONNUM(linked.major, linked.minor, linked.patch)) {
+        cerr << "warning: SDL2 compiled and linked version mismatch: " << compiled << " " << linked << endl;
     }
 
     const int init_result = SDL_Init(SDL_INIT_EVERYTHING);
@@ -41,14 +39,16 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
+    if (props.antialiasing) {
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+    }
 
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-    m_Window = SDL_CreateWindow(
-        "title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, props.width,
-        props.height, ::SDL_WINDOW_OPENGL | ::SDL_WINDOW_RESIZABLE);
+    m_Window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, props.width, props.height,
+                                ::SDL_WINDOW_OPENGL | ::SDL_WINDOW_RESIZABLE);
 
     if (m_Window == nullptr) {
         const char *err_message = SDL_GetError();
@@ -78,8 +78,7 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major_ver);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor_ver);
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
-                        SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
@@ -87,15 +86,12 @@ SDLWindow::SDLWindow(const WindowProps &props) {
     m_Context = SDL_GL_CreateContext(reinterpret_cast<SDL_Window *>(m_Window));
 
     if (m_Context == nullptr) {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                            SDL_GL_CONTEXT_PROFILE_CORE);
-        m_Context =
-            SDL_GL_CreateContext(reinterpret_cast<SDL_Window *>(m_Window));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        m_Context = SDL_GL_CreateContext(reinterpret_cast<SDL_Window *>(m_Window));
     }
     assert(m_Context != nullptr);
 
-    int result =
-        SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_ver);
+    int result = SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_ver);
     assert(result == 0);
 
     result = SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &gl_minor_ver);
@@ -118,13 +114,9 @@ int SDLWindow::getWidth() const { return m_Props.width; }
 
 int SDLWindow::getHeight() const { return m_Props.height; }
 
-void SDLWindow::setMouseEventCallback(
-    const EventCallbackFn<MouseEvent> &callback) {
-    m_mouseEventCallback = callback;
-}
+void SDLWindow::setMouseEventCallback(const EventCallbackFn<MouseEvent> &callback) { m_mouseEventCallback = callback; }
 
-void SDLWindow::setWindowEventCallback(
-    const EventCallbackFn<WindowEvent> &callback) {
+void SDLWindow::setWindowEventCallback(const EventCallbackFn<WindowEvent> &callback) {
     m_windowEventCallback = callback;
 }
 
@@ -138,8 +130,7 @@ void SDLWindow::readInput() {
         if (e.type == SDL_QUIT) {
             WindowEvent event(EventType::WindowClosed);
             m_windowEventCallback(event);
-        } else if (e.type == SDL_WINDOWEVENT &&
-                   e.window.event == SDL_WINDOWEVENT_RESIZED) {
+        } else if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED) {
 
             SDL_GetWindowSize(m_Window, &m_Props.width, &m_Props.height);
 
@@ -147,12 +138,13 @@ void SDLWindow::readInput() {
             m_windowEventCallback(event);
             break;
         } else if (e.type == SDL_MOUSEMOTION) {
-            MouseEvent event(e.motion.x, m_Props.height - e.motion.y,
-                             EventType::MouseMoved);
+            MouseEvent event(e.motion.x, m_Props.height - e.motion.y, EventType::MouseMoved);
             m_mouseEventCallback(event);
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            MouseEvent event(e.motion.x, m_Props.height - e.motion.y,
-                             EventType::MouseDown);
+            MouseEvent event(e.motion.x, m_Props.height - e.motion.y, EventType::MouseDown);
+            m_mouseEventCallback(event);
+        } else if (e.type == SDL_MOUSEBUTTONUP) {
+            MouseEvent event(e.motion.x, m_Props.height - e.motion.y, EventType::MouseUp);
             m_mouseEventCallback(event);
         } else if (e.type == SDL_TEXTINPUT) {
             WindowEvent event(EventType::TextInput, e.text.text);
@@ -165,9 +157,7 @@ void SDLWindow::swapBuffers() { SDL_GL_SwapWindow(m_Window); }
 
 void *SDLWindow::getNaviteWindow() const { return m_Window; }
 
-void SDLWindow::getDrawableSize(int &width, int &height) const {
-    SDL_GL_GetDrawableSize(m_Window, &width, &height);
-}
+void SDLWindow::getDrawableSize(int &width, int &height) const { SDL_GL_GetDrawableSize(m_Window, &width, &height); }
 
 void SDLWindow::shutDown() {
     SDL_GL_DeleteContext(m_Context);

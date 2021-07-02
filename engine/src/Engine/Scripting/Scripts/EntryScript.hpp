@@ -3,8 +3,9 @@
 #include "LuaLayer.hpp"
 #include "Script.hpp"
 
-#include "lua.hpp"
-#include <LuaBridge/LuaBridge.h>
+#include <lua.hpp>
+
+#include "LuaBridge/LuaBridge.h"
 
 #include <memory>
 #include <string>

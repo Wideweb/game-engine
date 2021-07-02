@@ -2,7 +2,7 @@
 
 #include "SoundBuffer.hpp"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <string>
 
 namespace Engine {
@@ -18,8 +18,7 @@ class SDLSoundBuffer : public SoundBuffer {
     bool m_Looped = false;
 
   public:
-    SDLSoundBuffer(const std::string &path, SDL_AudioDeviceID device,
-                   SDL_AudioSpec deviceSpec);
+    SDLSoundBuffer(const std::string &path, SDL_AudioDeviceID device, SDL_AudioSpec deviceSpec);
     virtual ~SDLSoundBuffer();
 
     virtual void play(const Properties, float volume) override;

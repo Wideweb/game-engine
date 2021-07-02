@@ -3,7 +3,7 @@
 #include "SDLSoundBuffer.hpp"
 #include "SoundMixer.hpp"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -17,15 +17,13 @@ class SDLSoundMixer : public SoundMixer {
     SDL_AudioSpec m_DeviceSpec;
 
     std::vector<std::shared_ptr<SDLSoundBuffer>> m_Sounds;
-    std::unordered_map<std::string, std::shared_ptr<SDLSoundBuffer>>
-        m_SoundsMap;
+    std::unordered_map<std::string, std::shared_ptr<SDLSoundBuffer>> m_SoundsMap;
 
   public:
     SDLSoundMixer();
 
     virtual void add(const std::string &name, const std::string &path) override;
-    virtual void play(const std::string &name, float volume,
-                      SoundBuffer::Properties properties) override;
+    virtual void play(const std::string &name, float volume, SoundBuffer::Properties properties) override;
     virtual void stop(const std::string &name) override;
     virtual void stop() override;
     virtual void clear() override;

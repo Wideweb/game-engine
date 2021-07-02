@@ -33,6 +33,7 @@ void StaticCollisionSystem::Update(ComponentManager &components) const {
 
         if (!collision.added) {
             collision3D.AddShape(entity, vertices);
+            collision.added = true;
         } else {
             collision3D.UpdateShape(entity, vertices);
         }

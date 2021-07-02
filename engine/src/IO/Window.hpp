@@ -5,14 +5,7 @@
 
 namespace Engine {
 
-enum class EventType {
-    None = 0,
-    MouseMoved,
-    MouseDown,
-    WindowResized,
-    WindowClosed,
-    TextInput
-};
+enum class EventType { None = 0, MouseMoved, MouseDown, MouseUp, WindowResized, WindowClosed, TextInput };
 
 struct MouseEvent {
     float x;
@@ -28,13 +21,13 @@ struct WindowEvent {
     std::string text;
 
     WindowEvent(EventType type) : type(type) {}
-    WindowEvent(EventType type, std::string text)
-        : type(type), text(std::move(text)) {}
+    WindowEvent(EventType type, std::string text) : type(type), text(std::move(text)) {}
 };
 
 struct WindowProps {
     int width;
     int height;
+    bool antialiasing;
 };
 
 class Window {
@@ -48,10 +41,8 @@ class Window {
 
     virtual void getDrawableSize(int &width, int &height) const = 0;
 
-    virtual void
-    setMouseEventCallback(const EventCallbackFn<MouseEvent> &callback) = 0;
-    virtual void
-    setWindowEventCallback(const EventCallbackFn<WindowEvent> &callback) = 0;
+    virtual void setMouseEventCallback(const EventCallbackFn<MouseEvent> &callback) = 0;
+    virtual void setWindowEventCallback(const EventCallbackFn<WindowEvent> &callback) = 0;
 
     virtual void readInput() = 0;
     virtual void swapBuffers() = 0;
