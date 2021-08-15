@@ -10,10 +10,10 @@ function update(entity)
     local rotate = false;
 
     if Input.isKeyPressed(Input.Key.W) then
-        velocity.speed = 0.05;
+        velocity.speed = 2.5;
         run = true;
     elseif Input.isKeyPressed(Input.Key.S) then
-        velocity.speed = -0.05;
+        velocity.speed = -2.5;
         run = true;
     else
         velocity.speed = 0;
@@ -21,10 +21,10 @@ function update(entity)
     end
 
     if Input.isKeyPressed(Input.Key.D) then
-        velocity.rotation.y = 0.03;
+        velocity.rotation.y = -0.03;
         rotate = true;
     elseif Input.isKeyPressed(Input.Key.A) then
-        velocity.rotation.y = -0.03;
+        velocity.rotation.y = 0.03;
         rotate = true;
     else
         velocity.rotation.y = 0;
@@ -32,7 +32,7 @@ function update(entity)
     end
 
     if (Input.isKeyPressed(Input.Key.Space) and canJump) then
-        velocity.velocity.y = 0.2;
+        velocity.velocity.y = 2.0;
         canJump = false;
     end
 

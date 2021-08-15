@@ -4,8 +4,7 @@ namespace Engine {
 
 SkinnedModel::SkinnedModel() {}
 
-SkinnedModel::SkinnedModel(const std::vector<SkinnedMesh> &meshes)
-    : meshes(meshes) {}
+SkinnedModel::SkinnedModel(const std::vector<SkinnedMesh> &meshes) : meshes(meshes) {}
 
 void SkinnedModel::setUp() {
     for (auto &mesh : meshes) {
@@ -13,14 +12,20 @@ void SkinnedModel::setUp() {
     }
 }
 
-void SkinnedModel::draw(Shader &shader, ModelInstanceManager &instances,
-                        unsigned int textureShift) {
+void SkinnedModel::update() {
+    for (auto &mesh : meshes) {
+        mesh.update();
+    }
+}
+
+void SkinnedModel::draw(Shader &shader, ModelInstanceManager &instances, unsigned int textureShift) {
     for (const auto &mesh : meshes) {
         for (size_t i = 0; i < instances.size(); i++) {
             auto position = instances.GetPositions()[i];
             auto joints = instances.GetJoints()[i];
+            auto id = instances.GetIds()[i];
 
-            mesh.draw(shader, position, joints, textureShift);
+            mesh.draw(shader, position, joints, textureShift, id);
         }
     }
 }

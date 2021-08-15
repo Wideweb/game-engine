@@ -44,6 +44,8 @@ class Camera {
     Projection mode;
     glm::mat4 orthogonal;
     glm::mat4 perspective;
+
+    float fieldOfView, zNear, zFar;
 };
 
 } // namespace Engine

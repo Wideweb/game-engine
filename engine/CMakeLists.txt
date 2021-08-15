@@ -10,9 +10,10 @@ set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 
 set(SOURCE_EXE 
     vendor/glad/glad.c
+    vendor/imgui_impl_opengl3.cpp
+    vendor/imgui_impl_sdl.cpp
     src/main.cpp
     src/AppLayer.cpp
-    src/EditToolsLayer.cpp
     src/Core/Time.cpp
     src/Core/File.cpp
     src/Core/Math.cpp
@@ -44,6 +45,19 @@ set(SOURCE_EXE
     src/Engine/Scripting/Context/LuaLayer.cpp
     src/Engine/Scripting/Scripts/EntityScript.cpp
     src/Engine/Scripting/Scripts/EntryScript.cpp
+    src/Engine/EditTools/ImguiImpl.cpp
+    src/Engine/EditTools/EditToolsLayer.cpp
+    src/Engine/EditTools/Components/BaseView.cpp
+    src/Engine/EditTools/Components/TransformPanel.cpp
+    src/Engine/EditTools/Components/TransformControls.cpp
+    src/Engine/EditTools/Components/DirectedLightPanel.cpp
+    src/Engine/EditTools/Components/ParticlesPanel.cpp
+    src/Engine/EditTools/Components/SceneHierarchyPanel.cpp
+    src/Engine/EditTools/Components/ContentBrowserPanel.cpp
+    src/Engine/EditTools/Components/MaterialPanel.cpp
+    src/Engine/EditTools/Components/BehaviourPanel.cpp
+    src/Engine/EditTools/Components/CameraDirector.cpp
+    src/Engine/EditTools/Components/GamePanel.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
     src/Render3D/Models/InstancedMesh.cpp
@@ -62,6 +76,7 @@ set(SOURCE_EXE
     src/Render3D/Renderers/FlareRenderer.cpp
     src/Render3D/Renderers/GRenderer.cpp
     src/Render3D/Renderers/ParticlesRenderer.cpp
+    src/Render3D/Renderers/Renderer2D.cpp
     src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/Scene.cpp
@@ -74,7 +89,7 @@ set(SOURCE_EXE
     src/Sound/SoundMixer.cpp
     src/Sound/SDL/SDLSoundBuffer.cpp
     src/Sound/SDL/SDLSoundMixer.cpp    
-)	
+)
 
 add_executable(${PROJECT_NAME} ${SOURCE_EXE})
 
@@ -103,6 +118,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/ECS/Components
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/ECS/Systems
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/AI
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/EditTools
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/EditTools/Components
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/EditTools/Models
                                          ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
 
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")

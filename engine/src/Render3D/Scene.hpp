@@ -50,13 +50,15 @@ class Scene {
     void setSkybox(const std::shared_ptr<Skybox> skybox);
     std::shared_ptr<Skybox> getSkybox();
 
-    ModelInstance addStaticObject(const std::string &model, glm::mat4 position);
+    ModelInstance addStaticObject(const std::string &model, glm::mat4 position, uint32_t id);
 
-    ModelInstance addOverlayObject(const std::string &model, glm::mat4 position);
+    ModelInstance addOverlayObject(const std::string &model, glm::mat4 position, uint32_t id);
+    void removeOverlayObject(const std::string &model, ModelInstance instance);
     void updateOverlayObject(const std::string &model, glm::mat4 position, ModelInstance instance);
     ObjectsRange getOverlayObjects();
 
-    ModelInstance addObject(const std::string &model, glm::mat4 position);
+    ModelInstance addObject(const std::string &model, glm::mat4 position, uint32_t id);
+    void removeObject(const std::string &model, ModelInstance instance);
     void updateObject(const std::string &model, glm::mat4 position, ModelInstance instance);
     void updateObject(const std::string &model, std::vector<glm::mat4> joints, ModelInstance instance);
     ObjectsRange getObjects();
@@ -69,7 +71,9 @@ class Scene {
     LightsRange getSpotLights();
 
     ParticlesEmitterInstance addParticlesEmitter(ParticlesConfiguration config, glm::mat4 position);
-    void updateParticlesEmitter(ParticlesEmitterInstance instance, glm::mat4 position, double deltaTime);
+    void removeParticlesEmitter(ModelInstance instance);
+    void updateParticlesEmitter(ParticlesEmitterInstance instance, const ParticlesConfiguration &config,
+                                glm::mat4 position, double deltaTime);
     ParticlesRange getParticleEmitters();
 
     void clear();

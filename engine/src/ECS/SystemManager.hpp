@@ -20,6 +20,12 @@ class SystemManager {
         }
     }
 
+    void Attach(ComponentManager &components) const {
+        for (const auto &system : m_Systems) {
+            system->Attach(components);
+        }
+    }
+
     void RemoveEntity(Entity entity) {
         for (auto const &system : m_Systems) {
             system->m_Entities.erase(entity);

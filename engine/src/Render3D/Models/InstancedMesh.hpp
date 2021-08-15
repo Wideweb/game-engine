@@ -40,15 +40,17 @@ class InstancedMesh {
     InstancedMesh();
     ~InstancedMesh();
 
-    void setInstances(const std::vector<glm::mat4> &positions) const;
-    void updateInstances(size_t from, size_t to, const std::vector<glm::mat4> &positions) const;
+    void setInstances(const std::vector<glm::mat4> &positions, const std::vector<uint32_t> &ids) const;
+    void updateInstances(size_t from, size_t to, const std::vector<glm::mat4> &positions,
+                         const std::vector<uint32_t> &ids) const;
 
     void draw(Shader &shader, size_t instanceCount, unsigned int textureShift) const;
 
     void setUp();
+    void update();
 
   private:
-    GLuint VAO, VBO, EBO, instanceVBO;
+    GLuint VAO, VBO, EBO, instanceVBO, idVBO;
 };
 
 } // namespace Engine

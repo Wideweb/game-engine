@@ -12,6 +12,7 @@ class System {
     std::set<Entity> m_Entities;
 
     virtual ~System() = default;
+    virtual void Attach(ComponentManager &components) const {};
     virtual void Update(ComponentManager &components) const = 0;
 };
 

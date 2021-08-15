@@ -1,9 +1,5 @@
 #pragma once
 
-#include "ModelManager.hpp"
-#include "Scene.hpp"
-#include "Shader.hpp"
-
 namespace Engine {
 
 class QuadRenderer {

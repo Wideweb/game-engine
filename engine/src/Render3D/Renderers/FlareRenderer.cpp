@@ -56,7 +56,7 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
 
         m_LensShader->bind();
 
-        m_LensShader->setFloat("alpha", brightness);
+        m_LensShader->setFloat("u_alpha", brightness);
 
         for (unsigned int i = 0; i < m_LensFlares.size(); i++) {
             glm::vec2 flarePos = glm::vec2(sunScreenPos / sunScreenPos.w) + sunToCenter * (0.4f * i);
@@ -66,11 +66,11 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
                 glm::scale(flareModel, glm::vec3(m_LensFlareSize[i],
                                                  m_LensFlareSize[i] * m_Viewport.width / m_Viewport.height, 0.0f));
 
-            m_LensShader->setMatrix4("Model", flareModel);
+            m_LensShader->setMatrix4("u_model", flareModel);
 
             glActiveTexture(GL_TEXTURE0);
             m_LensFlares[i]->bind();
-            m_LensShader->setInt("colorMap", 0);
+            m_LensShader->setInt("u_colorMap", 0);
 
             m_QuadRenderer.draw();
         }

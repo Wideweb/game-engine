@@ -13,7 +13,7 @@ struct ParticlesConfiguration {
     glm::vec3 colorFrom = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 colorTo = glm::vec3(1.0f, 1.0f, 1.0f);
     glm::vec3 gravity = glm::vec3(0.0, -0.5, 0.0);
-    size_t count = 1000;
+    int count = 1000;
     float rate = 0.002f;
     float sizeFrom = 100.0f;
     float sizeTo = 0.0f;
@@ -25,7 +25,15 @@ struct ParticlesConfiguration {
     float velocityAzimuthalAngle = 6.28f;
     bool looped = true;
 
-    ParticlesConfiguration() {}
+    bool operator==(const ParticlesConfiguration &other) {
+        return colorFrom == other.colorFrom && colorTo == other.colorTo && gravity == other.gravity &&
+               count == other.count && rate == other.rate && sizeFrom == other.sizeFrom && sizeTo == other.sizeTo &&
+               lifeTime == other.lifeTime && spawnRadius == other.spawnRadius && velocityMin == other.velocityMin &&
+               velocityMax == other.velocityMax && velocityPolarAngle == other.velocityPolarAngle &&
+               velocityAzimuthalAngle == other.velocityAzimuthalAngle && looped == other.looped;
+    }
+
+    bool operator!=(const ParticlesConfiguration &other) { return !(*this == other); }
 };
 
 class Particles {
@@ -43,19 +51,17 @@ class Particles {
     Particles();
     ~Particles();
 
-    Particles(const Particles &particles);
-    Particles &operator=(const Particles &particles);
-
-    Particles(Particles &&) = delete;
-    Particles &operator=(Particles &&) = delete;
-
     void draw(Shader &shader) const;
 
     void setUp(ParticlesConfiguration config);
+    void clear();
     void update(double deltaTime);
+
+    ParticlesConfiguration config();
 
   private:
     ParticlesConfiguration m_Config;
+    bool m_Initialized = false;
 
     GLuint m_Feedback[2];
     GLuint m_VBO[2];

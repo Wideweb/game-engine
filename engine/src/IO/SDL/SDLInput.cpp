@@ -20,6 +20,10 @@ static SDL_Scancode getSDLScancode(KeyCode code) {
         return SDL_SCANCODE_W;
     case KeyCode::F:
         return SDL_SCANCODE_F;
+    case KeyCode::Q:
+        return SDL_SCANCODE_Q;
+    case KeyCode::E:
+        return SDL_SCANCODE_E;
     case KeyCode::Escape:
         return SDL_SCANCODE_ESCAPE;
     default:

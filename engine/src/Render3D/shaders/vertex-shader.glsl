@@ -16,7 +16,7 @@ out vec3 Normal;
 
 void main() {
     gl_Position = Projection * View * Model * vec4(VertexPosition, 1.0);
-    TexCoord = vec2(VertexTextureCoord.x, 1.0 - VertexTextureCoord.y);
+    TexCoord = vec2(VertexTextureCoord.x, VertexTextureCoord.y);
     FragPos = vec3(Model * vec4(VertexPosition, 1.0));
     Normal = mat3(transpose(inverse(Model))) * VertexNormal;
     // FragPosLightSpace = LightSpaceMatrix * vec4(FragPos, 1.0);

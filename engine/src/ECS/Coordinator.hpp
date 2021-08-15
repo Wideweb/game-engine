@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 #include "ComponentManager.hpp"
@@ -26,6 +27,10 @@ class Coordinator {
         m_ComponentManager->RemoveEntityComponents(entity);
         m_EntityManager->DestroyEntity(entity);
     }
+
+    std::vector<Entity> GetEntities() { return m_EntityManager->GetEntities(); }
+
+    const std::string &GetEntityName(Entity entity) { return m_EntityManager->GetName(entity); }
 
     template <typename T> void RegisterComponent() { m_ComponentManager->RegisterComponent<T>(); }
 
@@ -55,8 +60,8 @@ class Coordinator {
 
     template <typename T> ComponentType GetComponentType() { return m_ComponentManager->GetComponentType<T>(); }
 
-    template <typename T> const std::weak_ptr<ComponentArray<T>> GetComponentArray() {
-        m_ComponentManager->GetComponentArray<T>();
+    template <typename T> const std::shared_ptr<ComponentArray<T>> GetComponentArray() {
+        return m_ComponentManager->GetComponentArray<T>();
     }
 
     template <typename T, class... TArgs> void RegisterSystem(Signature signature, TArgs &&...args) {
@@ -64,6 +69,8 @@ class Coordinator {
     }
 
     void UpdateSystems() { m_SystemManager->Update(*m_ComponentManager); }
+
+    void AttachSystems() { m_SystemManager->Attach(*m_ComponentManager); }
 
     void Clear() {
         auto entitites = m_EntityManager->GetEntities();

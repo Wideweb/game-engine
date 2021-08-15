@@ -23,11 +23,12 @@ void CollisionSystem::Update(ComponentManager &components) const {
         auto &collision = components.GetComponent<CollisionComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
         auto &velocity = components.GetComponent<VelocityComponent>(entity);
+        float deltaTime = static_cast<float>(Application::get().getTime().getDeltaSeconds());
 
         vertices.clear();
 
         glm::vec3 move(location.position);
-        move = move + glm::vec3(location.front) * glm::vec3(velocity.speed);
+        move = move + glm::vec3(location.front) * glm::vec3(velocity.speed) * deltaTime;
 
         std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),
                        [&](const glm::vec3 &v) { return v + move; });

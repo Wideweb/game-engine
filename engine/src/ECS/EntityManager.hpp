@@ -2,8 +2,8 @@
 
 #include <array>
 #include <cassert>
+#include <deque>
 #include <numeric>
-#include <queue>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -18,32 +18,39 @@ class EntityManager {
     using EntityRange = IteratorRange<std::array<Entity, c_MaxEntities>::const_iterator>;
 
     EntityManager() {
-        for (Entity i = 1; i < c_MaxEntities; i++) {
-            m_Entities.push(i);
+        for (Entity i = 0; i < c_MaxEntities; i++) {
+            m_Entities[i] = i + 1;
+            m_EntityToIndex[i + 1] = i;
         }
     }
 
     Entity CreateEntity(const std::string &name) {
         assert(m_ActiveEntities < c_MaxEntities && "Too many entities");
 
-        Entity id = m_Entities.front();
-        m_Entities.pop();
+        Entity id = m_Entities[m_ActiveEntities];
 
         m_NameToEntity[name] = id;
         m_EntityToName[id] = name;
+        m_EntityToIndex[id] = m_ActiveEntities;
 
         ++m_ActiveEntities;
         return id;
     }
 
     void DestroyEntity(Entity entity) {
+        size_t index = m_EntityToIndex[entity];
         const auto &name = m_EntityToName[entity];
 
         m_EntityToName.erase(entity);
         m_NameToEntity.erase(name);
+        m_EntityToIndex.erase(entity);
 
-        m_Entities.push(entity);
         --m_ActiveEntities;
+
+        Entity last = m_Entities[m_ActiveEntities];
+        m_Entities[index] = last;
+        m_EntityToIndex[last] = index;
+        m_Entities[m_ActiveEntities] = index;
     }
 
     Entity GetEntity(const std::string &name) const {
@@ -58,18 +65,16 @@ class EntityManager {
 
     Signature GetSignature(Entity entity) { return m_Signatures[entity]; }
 
-    std::vector<Entity> GetEntities() {
-        std::vector<Entity> entitites;
-        entitites.resize(m_ActiveEntities);
-        std::iota(entitites.begin(), entitites.end(), 0);
-        return entitites;
-    }
+    std::vector<Entity> GetEntities() { return {m_Entities.begin(), m_Entities.begin() + m_ActiveEntities}; }
+
+    const std::string &GetName(Entity entity) { return m_EntityToName.at(entity); }
 
   private:
-    std::queue<Entity> m_Entities;
+    std::array<Entity, c_MaxEntities> m_Entities;
     std::array<Signature, c_MaxEntities> m_Signatures;
     std::unordered_map<std::string, Entity> m_NameToEntity;
     std::unordered_map<Entity, std::string> m_EntityToName;
+    std::unordered_map<Entity, size_t> m_EntityToIndex;
 
     uint32_t m_ActiveEntities = 0;
 };

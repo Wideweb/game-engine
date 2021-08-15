@@ -176,9 +176,9 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
         aiMaterial *materialSrc = scene->mMaterials[meshSrc->mMaterialIndex];
 
         if (materialSrc->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-            mesh.material.diffuseMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/diffuse-map.jpeg"));
-            mesh.material.specularMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/specular-map.jpeg"));
-            mesh.material.normalMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/normal-map.jpeg"));
+            mesh.material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.jpeg"));
+            mesh.material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg"));
+            mesh.material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg"));
             mesh.hasMaterial = true;
         }
 
@@ -557,9 +557,9 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path, unsigne
         vertices[i].normal = glm::normalize(vertices[i].normal);
     }
 
-    material.diffuseMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/diffuse-map.jpeg"));
-    material.specularMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/specular-map.jpeg"));
-    material.normalMap.reset(TextureLoader::loadTextureRGB("./assets/models/box/normal-map.jpeg"));
+    material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.jpeg"));
+    material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg"));
+    material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg"));
 
     InstancedMesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));

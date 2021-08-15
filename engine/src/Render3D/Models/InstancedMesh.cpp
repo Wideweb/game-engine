@@ -33,73 +33,86 @@ void InstancedMesh::setUp() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * static_cast<GLuint>(indices.size()), indices.data(),
                  GL_STATIC_DRAW);
 
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-
     // clang-format off
     GLsizei vec4Size = sizeof(glm::vec4);
 
     /////////////////////////////////////////////////////////////
-    ////////////////////////// MODEL ////////////////////////////
+    //////////////////////////// ID /////////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
+    glGenBuffers(1, &idVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+    
+    glVertexAttribIPointer(0, 1, GL_INT, sizeof(uint32_t), reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(0); 
 
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
+    glVertexAttribDivisor(0, 1);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// MODEL ////////////////////////////
+    /////////////////////////////////////////////////////////////
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(1); 
 
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
     glEnableVertexAttribArray(2); 
 
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
-    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
+    glEnableVertexAttribArray(3); 
 
-    glVertexAttribDivisor(0, 1);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
+    glEnableVertexAttribArray(4);
+
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
 
+    /////////////////////////////////////////////////////////////
+    
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER,
                  static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()),
                  vertices.data(), GL_STATIC_DRAW);
-    
+
     /////////////////////////////////////////////////////////////
     ///////////////////////// POSITION //////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0));
-    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0));
+    glEnableVertexAttribArray(5);
 
     /////////////////////////////////////////////////////////////
     ////////////////////////// NORMAL ///////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(3 * sizeof(float)));
-    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(3 * sizeof(float)));
+    glEnableVertexAttribArray(6);
 
     /////////////////////////////////////////////////////////////
     ////////////////////// TEXTURE COORD ////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(6 * sizeof(float)));
-    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(6 * sizeof(float)));
+    glEnableVertexAttribArray(7);
 
     /////////////////////////////////////////////////////////////
     ///////////////////////// TANGENT ///////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
-    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
+    glEnableVertexAttribArray(8);
 
     /////////////////////////////////////////////////////////////
     //////////////////////// BITANGENT //////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(11 * sizeof(float)));
-    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(11 * sizeof(float)));
+    glEnableVertexAttribArray(9);
 
     /////////////////////////////////////////////////////////////
     ////////////////////////// COLOR ////////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
-    glEnableVertexAttribArray(9);
+    glVertexAttribPointer(10, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
+    glEnableVertexAttribArray(10);
     // clang-format on
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -107,17 +120,33 @@ void InstancedMesh::setUp() {
     glBindVertexArray(0);
 }
 
-void InstancedMesh::setInstances(const std::vector<glm::mat4> &positions) const {
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4) * positions.size()), positions.data(),
-                 GL_DYNAMIC_DRAW);
+void InstancedMesh::update() {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()), vertices.data(),
+                 GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void InstancedMesh::updateInstances(size_t from, size_t to, const std::vector<glm::mat4> &positions) const {
+void InstancedMesh::setInstances(const std::vector<glm::mat4> &positions, const std::vector<uint32_t> &ids) const {
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4) * positions.size()), positions.data(),
+                 GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t) * ids.size()), ids.data(), GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void InstancedMesh::updateInstances(size_t from, size_t to, const std::vector<glm::mat4> &positions,
+                                    const std::vector<uint32_t> &ids) const {
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4) * from),
                     static_cast<GLsizeiptr>(sizeof(glm::mat4) * (to - from + 1)), positions.data() + from);
+
+    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t) * from),
+                    static_cast<GLsizeiptr>(sizeof(uint32_t) * (to - from + 1)), ids.data() + from);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 

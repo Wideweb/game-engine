@@ -10,24 +10,7 @@ namespace Engine {
 Particles::Particles() {}
 Particles::~Particles() {}
 
-Particles::Particles(const Particles &particles) {
-    m_Config = particles.m_Config;
-
-    m_Feedback[0] = particles.m_Feedback[0];
-    m_Feedback[1] = particles.m_Feedback[1];
-
-    m_VBO[0] = particles.m_VBO[0];
-    m_VBO[1] = particles.m_VBO[1];
-
-    m_VAO[0] = particles.m_VAO[0];
-    m_VAO[1] = particles.m_VAO[1];
-
-    m_DrawBuf = particles.m_DrawBuf;
-    m_DeltaTime = particles.m_DeltaTime;
-    m_Time = particles.m_Time;
-}
-
-Particles &Particles::operator=(const Particles &) { return *this; }
+ParticlesConfiguration Particles::config() { return m_Config; }
 
 void Particles::setUp(ParticlesConfiguration config) {
     m_Config = config;
@@ -70,10 +53,14 @@ void Particles::setUp(ParticlesConfiguration config) {
     }
 
     for (unsigned int i = 0; i < 2; i++) {
-        glGenVertexArrays(1, &m_VAO[i]);
+        if (!m_Initialized) {
+            glGenVertexArrays(1, &m_VAO[i]);
+        }
         glBindVertexArray(m_VAO[i]);
 
-        glGenBuffers(1, &m_VBO[i]);
+        if (!m_Initialized) {
+            glGenBuffers(1, &m_VBO[i]);
+        }
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO[i]);
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Particle) * particles.size()), particles.data(),
                      GL_STATIC_DRAW);
@@ -94,7 +81,9 @@ void Particles::setUp(ParticlesConfiguration config) {
         glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void *>(12 * sizeof(float)));
     }
 
-    glGenTransformFeedbacks(2, m_Feedback);
+    if (!m_Initialized) {
+        glGenTransformFeedbacks(2, m_Feedback);
+    }
 
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_Feedback[0]);
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_VBO[0]);
@@ -110,11 +99,20 @@ void Particles::setUp(ParticlesConfiguration config) {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    m_Initialized = true;
 }
 
 void Particles::update(double deltaTime) {
     m_DeltaTime = deltaTime;
     m_Time += deltaTime;
+}
+
+void Particles::clear() {
+    glDeleteVertexArrays(2, m_VAO);
+    glDeleteBuffers(2, m_VBO);
+    glDeleteTransformFeedbacks(2, m_Feedback);
+    m_Initialized = false;
 }
 
 void Particles::draw(Shader &shader) const {

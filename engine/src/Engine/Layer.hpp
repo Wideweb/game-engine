@@ -32,6 +32,7 @@ class Layer {
 
     void attach();
     void update();
+    void draw();
     void detach();
 
     std::string &getName() { return m_Name; }
@@ -42,8 +43,9 @@ class Layer {
     ScriptManager &getScripts() { return m_Scripts; }
 
     virtual void onAttach() {}
-    virtual void onDetach() {}
     virtual void onUpdate() {}
+    virtual void onDraw() {}
+    virtual void onDetach() {}
 
     virtual void onMouseEvent(MouseEvent &) {}
     virtual void onWindowEvent(WindowEvent &) {}

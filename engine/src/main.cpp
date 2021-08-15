@@ -9,7 +9,7 @@ class GameApp : public Engine::Application {
         addLayer<AppLayer>("game_area").renderSettings.hdr = settings.hdr;
 
         if (settings.edit) {
-            addLayer<EditToolsLayer>("edit_tools").renderSettings.hdr = false;
+            addLayer<Engine::EditToolsLayer>("edit_tools").renderSettings.hdr = false;
         }
     }
 

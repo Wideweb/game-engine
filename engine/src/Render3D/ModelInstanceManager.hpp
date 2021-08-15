@@ -17,9 +17,10 @@ class ModelInstanceManager {
     size_t to = 0;
     size_t staticEnd = 0;
 
-    ModelInstance Create(glm::mat4 position, bool isStatic) {
+    ModelInstance Create(glm::mat4 position, bool isStatic, uint32_t id) {
         m_InstancesPositions.push_back(std::move(position));
         m_InstancesJoints.emplace_back();
+        m_InstancesId.push_back(id);
 
         if (isStatic) {
             staticEnd = m_InstancesPositions.size() - 1;
@@ -58,18 +59,29 @@ class ModelInstanceManager {
         update = true;
     }
 
-    const std::vector<glm::mat4> &GetPositions() {
-        return m_InstancesPositions;
+    void Remove(ModelInstance instance) {
+        size_t index = instance - 1;
+
+        m_InstancesPositions[index] = m_InstancesPositions[m_InstancesPositions.size() - 1];
+        m_InstancesJoints[index] = m_InstancesJoints[m_InstancesJoints.size() - 1];
+        m_InstancesId[index] = m_InstancesId[m_InstancesId.size() - 1];
+
+        m_InstancesPositions.pop_back();
+        m_InstancesJoints.pop_back();
+
+        resize = true;
     }
-    const std::vector<std::vector<glm::mat4>> &GetJoints() {
-        return m_InstancesJoints;
-    }
+
+    const std::vector<glm::mat4> &GetPositions() { return m_InstancesPositions; }
+    const std::vector<std::vector<glm::mat4>> &GetJoints() { return m_InstancesJoints; }
+    const std::vector<uint32_t> &GetIds() { return m_InstancesId; }
 
     size_t size() { return m_InstancesPositions.size(); }
 
   private:
     std::vector<glm::mat4> m_InstancesPositions;
     std::vector<std::vector<glm::mat4>> m_InstancesJoints;
+    std::vector<uint32_t> m_InstancesId;
 };
 
 } // namespace Engine

@@ -173,12 +173,17 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
 
 void Layer::attach() {
     onAttach();
+    m_Coordinator.AttachSystems();
     m_Active = true;
 }
 
 void Layer::update() {
     m_Coordinator.UpdateSystems();
     onUpdate();
+}
+
+void Layer::draw() {
+    onDraw();
 }
 
 void Layer::detach() {

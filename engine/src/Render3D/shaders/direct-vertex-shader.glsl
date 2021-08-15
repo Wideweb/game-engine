@@ -15,18 +15,19 @@ const float c_gradient = 5.0;
 /////////////////////////////////////////////////////////////
 //////////////////////// ATTRIBUTES /////////////////////////
 /////////////////////////////////////////////////////////////
-layout(location = 0) in mat4 a_model;
-layout(location = 4) in vec3 a_vertexPosition;
-layout(location = 5) in vec3 a_vertexNormal;
-layout(location = 6) in vec2 a_vertexTextureCoord;
-layout(location = 7) in vec3 a_vertexTangent;
-layout(location = 8) in vec3 a_vertexBitangent;
-layout(location = 9) in vec3 a_vertexColor;
-layout(location = 10) in ivec4 a_vertexJoints0;
-layout(location = 11) in ivec4 a_vertexJoints1;
-layout(location = 12) in vec4 a_vertexJointWeights0;
-layout(location = 13) in vec4 a_vertexJointWeights1;
-layout(location = 14) in int a_vertexJointsNumber;
+layout(location = 0) in int a_id;
+layout(location = 1) in mat4 a_model;
+layout(location = 5) in vec3 a_vertexPosition;
+layout(location = 6) in vec3 a_vertexNormal;
+layout(location = 7) in vec2 a_vertexTextureCoord;
+layout(location = 8) in vec3 a_vertexTangent;
+layout(location = 9) in vec3 a_vertexBitangent;
+layout(location = 10) in vec3 a_vertexColor;
+layout(location = 11) in ivec4 a_vertexJoints0;
+layout(location = 12) in ivec4 a_vertexJoints1;
+layout(location = 13) in vec4 a_vertexJointWeights0;
+layout(location = 14) in vec4 a_vertexJointWeights1;
+layout(location = 15) in int a_vertexJointsNumber;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
@@ -39,6 +40,7 @@ uniform int u_jointsNumber;
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
+flat out int v_id;
 out vec3 v_color;
 out vec3 v_normal;
 out vec2 v_texCoord;
@@ -50,11 +52,13 @@ out mat3 v_TBN;
 ////////////////////////// MAIN /////////////////////////////
 /////////////////////////////////////////////////////////////
 void main() {
+    v_id = a_id;
+
     mat4 modelMatrix = a_model * getVertexTransform();
     vec4 worldPosition = modelMatrix * vec4(a_vertexPosition, 1.0);
 
     v_color = a_vertexColor;
-    v_texCoord = vec2(a_vertexTextureCoord.x, 1.0 - a_vertexTextureCoord.y);
+    v_texCoord = vec2(a_vertexTextureCoord.x, a_vertexTextureCoord.y);
     v_fragPos = vec3(worldPosition);
     v_normal = normalize(mat3(transpose(inverse(modelMatrix))) * a_vertexNormal);
 

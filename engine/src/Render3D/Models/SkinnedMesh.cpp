@@ -31,31 +31,44 @@ void SkinnedMesh::setUp() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * static_cast<GLuint>(indices.size()), indices.data(),
                  GL_STATIC_DRAW);
 
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-
     // clang-format off
     GLsizei vec4Size = sizeof(glm::vec4);
 
     /////////////////////////////////////////////////////////////
-    ////////////////////////// MODEL ////////////////////////////
+    //////////////////////////// ID /////////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
+    glGenBuffers(1, &idVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+    
+    glVertexAttribIPointer(0, 1, GL_INT, sizeof(uint32_t), reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(0); 
 
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
+    glVertexAttribDivisor(0, 1);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// MODEL ////////////////////////////
+    /////////////////////////////////////////////////////////////
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(1); 
 
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
     glEnableVertexAttribArray(2); 
 
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
-    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
+    glEnableVertexAttribArray(3); 
 
-    glVertexAttribDivisor(0, 1);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
+    glEnableVertexAttribArray(4);
+
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+
+    /////////////////////////////////////////////////////////////
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -66,68 +79,68 @@ void SkinnedMesh::setUp() {
     /////////////////////////////////////////////////////////////
     ///////////////////////// POSITION //////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0));
-    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(0));
+    glEnableVertexAttribArray(5);
 
     /////////////////////////////////////////////////////////////
     ////////////////////////// NORMAL ///////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(3 * sizeof(float)));
-    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(3 * sizeof(float)));
+    glEnableVertexAttribArray(6);
 
     /////////////////////////////////////////////////////////////
     ////////////////////// TEXTURE COORD ////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(6 * sizeof(float)));
-    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(6 * sizeof(float)));
+    glEnableVertexAttribArray(7);
 
     /////////////////////////////////////////////////////////////
     ///////////////////////// TANGENT ///////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
-    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(8 * sizeof(float)));
+    glEnableVertexAttribArray(8);
 
     /////////////////////////////////////////////////////////////
     //////////////////////// BITANGENT //////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(11 * sizeof(float)));
-    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(11 * sizeof(float)));
+    glEnableVertexAttribArray(9);
 
     /////////////////////////////////////////////////////////////
     ////////////////////////// COLOR ////////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
-    glEnableVertexAttribArray(9);
+    glVertexAttribPointer(10, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
+    glEnableVertexAttribArray(10);
 
     /////////////////////////////////////////////////////////////
     //////////////////////// JOINTS - 0 /////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribIPointer(10, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float)));
-    glEnableVertexAttribArray(10);
+    glVertexAttribIPointer(11, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float)));
+    glEnableVertexAttribArray(11);
 
     /////////////////////////////////////////////////////////////
     //////////////////////// JOINTS - 1 /////////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribIPointer(11, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float) + 4 * sizeof(int)));
-    glEnableVertexAttribArray(11);
+    glVertexAttribIPointer(12, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float) + 4 * sizeof(int)));
+    glEnableVertexAttribArray(12);
 
     /////////////////////////////////////////////////////////////
     ////////////////////// JOINT WEIGHT - 0 /////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float) + 8 * sizeof(int)));
-    glEnableVertexAttribArray(12);
+    glVertexAttribPointer(13, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(17 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(13);
 
     /////////////////////////////////////////////////////////////
     ////////////////////// JOINT WEIGHT - 1 /////////////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribPointer(13, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(21 * sizeof(float) + 8 * sizeof(int)));
-    glEnableVertexAttribArray(13);
+    glVertexAttribPointer(14, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(21 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(14);
 
     /////////////////////////////////////////////////////////////
     ////////////////////// JOINTS NUMBER /////////.//////////////
     /////////////////////////////////////////////////////////////
-    glVertexAttribIPointer(14, 1, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(25 * sizeof(float) + 8 * sizeof(int)));
-    glEnableVertexAttribArray(14);
+    glVertexAttribIPointer(15, 1, GL_INT, sizeof(Vertex), reinterpret_cast<void *>(25 * sizeof(float) + 8 * sizeof(int)));
+    glEnableVertexAttribArray(15);
     // clang-format on
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -135,11 +148,21 @@ void SkinnedMesh::setUp() {
     glBindVertexArray(0);
 }
 
+void SkinnedMesh::update() {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()), vertices.data(),
+                 GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints,
-                       unsigned int textureShift) const {
+                       unsigned int textureShift, uint32_t id) const {
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4)), glm::value_ptr(position),
                  GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t)), &id, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     if (hasMaterial) {

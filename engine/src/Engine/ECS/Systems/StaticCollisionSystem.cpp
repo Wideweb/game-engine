@@ -3,13 +3,18 @@
 #include "LocationComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 
+#include <glm/gtx/quaternion.hpp>
 #include <glm/vec2.hpp>
 #include <vector>
 
 namespace Engine {
 
+void StaticCollisionSystem::Attach(ComponentManager &components) const {
+    components.GetComponentArray<StaticCollisionComponent>()->beforeRemove$.addEventCallback(
+        [this](Entity entity) { getCollision().DestroyShape(entity); });
+}
+
 void StaticCollisionSystem::Update(ComponentManager &components) const {
-    // auto &coordinator = getCoordinator();
     auto &collision3D = getCollision();
 
     std::vector<glm::vec3> vertices;
@@ -29,7 +34,7 @@ void StaticCollisionSystem::Update(ComponentManager &components) const {
         vertices.clear();
 
         std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),
-                       [&](const glm::vec3 &v) { return v + location.position; });
+                       [&](const glm::vec3 &v) { return glm::quat(location.rotation) * v + location.position; });
 
         if (!collision.added) {
             collision3D.AddShape(entity, vertices);

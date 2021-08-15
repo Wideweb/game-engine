@@ -17,6 +17,7 @@ class SkinnedModel : public Model {
     SkinnedModel(const std::vector<SkinnedMesh> &meshes);
 
     void setUp() override;
+    void update() override;
 
     void draw(Shader &shader, ModelInstanceManager &instances,
               unsigned int textureShift) override;

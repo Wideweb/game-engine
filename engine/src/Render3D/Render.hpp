@@ -296,8 +296,8 @@ class WaterRender {
         std::string fragmentSrc = File::read("./shaders/water-fragment-shader.glsl");
         m_WaterShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
 
-        m_WaterDudvMap.reset(TextureLoader::loadTextureRGB("./shaders/waterDUDV.png"));
-        m_WaterNormalMap.reset(TextureLoader::loadTextureRGB("./shaders/waterNormalMap.png"));
+        m_WaterDudvMap.reset(TextureLoader::loadTexture("./shaders/waterDUDV.png"));
+        m_WaterNormalMap.reset(TextureLoader::loadTexture("./shaders/waterNormalMap.png"));
 
         // clang-format off
         float waterVertices[] = {

@@ -14,7 +14,7 @@ class Texture {
     Texture(GLuint id, TextureType type = TextureType::SIMPLE);
     ~Texture();
 
-    void bind();
+    void bind() const;
     void unbind();
 
     uint32_t getId() { return m_TextureID; }

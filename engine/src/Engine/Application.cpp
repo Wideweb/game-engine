@@ -50,7 +50,6 @@ void Application::run() {
         m_Input->update();
         m_MousePicker->update();
 
-        m_Render->clear();
         for (auto layer : m_LayerStack) {
             layer->getScene().clear();
             layer->update();
@@ -58,8 +57,12 @@ void Application::run() {
             if (!layer->isActive()) {
                 break;
             }
+        }
 
+        m_Render->clear();
+        for (auto layer : m_LayerStack) {
             m_Render->draw(*m_Camera, layer->getScene(), m_Models, layer->renderSettings);
+            layer->draw();
         }
 
         m_Window->swapBuffers();
@@ -79,7 +82,7 @@ void Application::onMouseEvent(MouseEvent &e) {
 
 void Application::onWindowEvent(WindowEvent &e) {
     if (e.type == EventType::WindowResized) {
-        m_Render->setViewport(m_Window->getWidth() * 2, m_Window->getHeight() * 2);
+        m_Render->setViewport(m_Window->getWidth(), m_Window->getHeight());
         m_Camera->setSize(m_Window->getWidth(), m_Window->getHeight());
     }
 

@@ -1,13 +1,27 @@
 #include "Render3DSystem.hpp"
 
 #include "Application.hpp"
+#include "Entity.hpp"
 #include "ModelInstanceManager.hpp"
-#include "cmath"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "cmath"
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
 
 namespace Engine {
+
+void Render3DSystem::Attach(ComponentManager &components) const {
+    components.GetComponentArray<Render3DComponent>()->beforeRemove$.addEventCallback([this](Entity entity) {
+        auto &scene = getScene();
+        auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
+
+        if (render.overlay()) {
+            scene.removeOverlayObject(render.model, render.instance);
+        } else {
+            scene.removeObject(render.model, render.instance);
+        }
+    });
+}
 
 void Render3DSystem::Update(ComponentManager &components) const {
     auto &scene = getScene();
@@ -20,9 +34,9 @@ void Render3DSystem::Update(ComponentManager &components) const {
             auto transform = GetTransform(render, location);
 
             if (render.overlay()) {
-                render.instance = scene.addOverlayObject(render.model, transform);
+                render.instance = scene.addOverlayObject(render.model, transform, entity);
             } else {
-                render.instance = scene.addObject(render.model, transform);
+                render.instance = scene.addObject(render.model, transform, entity);
             }
 
         } else if (location.updated || render.updated) {
@@ -41,19 +55,12 @@ void Render3DSystem::Update(ComponentManager &components) const {
 }
 
 glm::mat4x4 Render3DSystem::GetTransform(const Render3DComponent &render, const LocationComponent location) const {
-    glm::mat4 modelTransform(1);
-    modelTransform = glm::rotate(modelTransform, render.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    modelTransform = glm::rotate(modelTransform, render.rotation.y, glm::vec3(0.0f, -1.0f, 0.0f));
-    modelTransform = glm::rotate(modelTransform, render.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
     glm::mat4 worldTransform(1);
     worldTransform = glm::translate(worldTransform, location.position);
-    worldTransform = glm::rotate(worldTransform, location.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    worldTransform = glm::rotate(worldTransform, location.rotation.y, glm::vec3(0.0f, -1.0f, 0.0f));
-    worldTransform = glm::rotate(worldTransform, location.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+    worldTransform = worldTransform * glm::toMat4(glm::quat(location.rotation) * glm::quat(render.rotation));
     worldTransform = glm::scale(worldTransform, glm::vec3(render.scale));
 
-    return worldTransform * modelTransform;
+    return worldTransform;
 }
 
 } // namespace Engine

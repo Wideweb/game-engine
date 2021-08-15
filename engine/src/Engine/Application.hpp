@@ -15,6 +15,7 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -26,6 +27,10 @@ struct ApplicationSettings {
     bool hdr = false;
     bool antialiasing = false;
     bool width = false;
+};
+
+struct ApplicationError : public std::invalid_argument {
+    using std::invalid_argument::invalid_argument;
 };
 
 class Application {

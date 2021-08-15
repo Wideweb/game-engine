@@ -49,12 +49,13 @@ class SkinnedMesh {
     ~SkinnedMesh();
 
     void draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints,
-              unsigned int textureShift) const;
+              unsigned int textureShift, uint32_t id) const;
 
     void setUp();
+    void update();
 
   private:
-    GLuint VAO, VBO, EBO, instanceVBO;
+    GLuint VAO, VBO, EBO, instanceVBO, idVBO;
 };
 
 } // namespace Engine

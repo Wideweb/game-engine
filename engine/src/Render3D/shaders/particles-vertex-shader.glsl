@@ -71,17 +71,20 @@ void update() {
     }
 
     float age = u_time - a_startTime;
+    float deltaTime = u_deltaTime;
+
     if (age > u_lifetime) {
+        deltaTime = age - u_lifetime;
+
         v_position = vec3(u_model * vec4(a_startPosition, 1.0));
         v_velocity = a_startVelocity;
-        v_startTime = u_time;
-        return;
+        v_startTime = u_time - deltaTime;
     }
 
-    vec3 velocity = a_velocity + u_gravity * u_deltaTime;
+    vec3 velocity = v_velocity + u_gravity * deltaTime;
 
     v_velocity = velocity;
-    v_position += velocity * u_deltaTime;
+    v_position += velocity * deltaTime;
 }
 
 void render() {

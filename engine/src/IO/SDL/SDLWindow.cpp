@@ -114,11 +114,17 @@ int SDLWindow::getWidth() const { return m_Props.width; }
 
 int SDLWindow::getHeight() const { return m_Props.height; }
 
-void SDLWindow::setMouseEventCallback(const EventCallbackFn<MouseEvent> &callback) { m_mouseEventCallback = callback; }
+glm::vec2 SDLWindow::getSize() const { return glm::vec2(m_Props.width, m_Props.height); };
 
-void SDLWindow::setWindowEventCallback(const EventCallbackFn<WindowEvent> &callback) {
+void SDLWindow::setMouseEventCallback(const EventCallbackFn<MouseEvent &> &callback) {
+    m_mouseEventCallback = callback;
+}
+
+void SDLWindow::setWindowEventCallback(const EventCallbackFn<WindowEvent &> &callback) {
     m_windowEventCallback = callback;
 }
+
+void SDLWindow::setNativeEventCallback(const EventCallbackFn<void *> &callback) { m_nativeEventCallback = callback; }
 
 void SDLWindow::readInput() {
     {
@@ -150,12 +156,17 @@ void SDLWindow::readInput() {
             WindowEvent event(EventType::TextInput, e.text.text);
             m_windowEventCallback(event);
         }
+        if (m_nativeEventCallback) {
+            m_nativeEventCallback(&e);
+        }
     }
 }
 
 void SDLWindow::swapBuffers() { SDL_GL_SwapWindow(m_Window); }
 
 void *SDLWindow::getNaviteWindow() const { return m_Window; }
+
+void *SDLWindow::getContext() const { return m_Context; }
 
 void SDLWindow::getDrawableSize(int &width, int &height) const { SDL_GL_GetDrawableSize(m_Window, &width, &height); }
 

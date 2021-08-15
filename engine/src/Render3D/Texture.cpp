@@ -17,7 +17,7 @@ static GLenum getGLTextureType(Texture::TextureType type) {
 
 Texture::Texture(GLuint id, TextureType type) : m_TextureID(id), m_Type(type) {}
 
-void Texture::bind() { glBindTexture(getGLTextureType(m_Type), m_TextureID); }
+void Texture::bind() const { glBindTexture(getGLTextureType(m_Type), m_TextureID); }
 
 void Texture::unbind() { glBindTexture(getGLTextureType(m_Type), 0); }
 

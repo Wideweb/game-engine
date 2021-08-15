@@ -15,9 +15,9 @@ class InstancedModel : public Model {
     InstancedModel(const std::vector<InstancedMesh> &meshes);
 
     void setUp() override;
+    void update() override;
 
-    void draw(Shader &shader, ModelInstanceManager &instances,
-              unsigned int textureShift) override;
+    void draw(Shader &shader, ModelInstanceManager &instances, unsigned int textureShift) override;
 };
 
 } // namespace Engine

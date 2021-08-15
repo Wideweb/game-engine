@@ -2,6 +2,7 @@
 #include "LuaCore.hpp"
 #include "LuaInput.hpp"
 
+#include <iostream>
 #include <stdexcept>
 
 namespace Engine {
@@ -54,10 +55,28 @@ EntityScript::EntityScript(std::string path, LuaEntity entity) : m_Entity(entity
     m_CollideRef = luabridge::getGlobal(L, "collide");
 }
 
-void EntityScript::init() { m_InitRef(m_Entity); }
+void EntityScript::init() {
+    try {
+        m_InitRef(m_Entity);
+    } catch (const std::string &message) {
+        throw std::invalid_argument("EntityScript::init: " + message);
+    }
+}
 
-void EntityScript::update() { m_UpdateRef(m_Entity); }
+void EntityScript::update() {
+    try {
+        m_UpdateRef(m_Entity);
+    } catch (const std::string &message) {
+        throw std::invalid_argument("EntityScript::update: " + message);
+    }
+}
 
-void EntityScript::collide(const LuaEntity &entity) { m_CollideRef(m_Entity, entity); }
+void EntityScript::collide(const LuaEntity &entity) {
+    try {
+        m_CollideRef(m_Entity, entity);
+    } catch (const std::string &message) {
+        throw std::invalid_argument("EntityScript::collide: " + message);
+    }
+}
 
 } // namespace Engine

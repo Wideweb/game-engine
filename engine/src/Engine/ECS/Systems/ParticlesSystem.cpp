@@ -3,7 +3,19 @@
 #include "LocationComponent.hpp"
 #include "ParticlesComponent.hpp"
 
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
+
 namespace Engine {
+
+void ParticlesSystem::Attach(ComponentManager &components) const {
+    components.GetComponentArray<ParticlesComponent>()->beforeRemove$.addEventCallback([this](Entity entity) {
+        auto &scene = getScene();
+        auto &particles = getCoordinator().GetComponent<ParticlesComponent>(entity);
+
+        scene.removeParticlesEmitter(particles.instance);
+    });
+}
 
 void ParticlesSystem::Update(ComponentManager &components) const {
     auto &scene = getScene();
@@ -14,14 +26,13 @@ void ParticlesSystem::Update(ComponentManager &components) const {
 
         glm::mat4 model(1);
         model = glm::translate(model, location.position);
-        model = glm::rotate(model, location.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::rotate(model, location.rotation.y, glm::vec3(0.0f, -1.0f, 0.0f));
-        model = glm::rotate(model, location.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = model * glm::toMat4(glm::quat(location.rotation));
 
         if (particles.instance == NoParticlesEmitterInstance) {
             particles.instance = scene.addParticlesEmitter(particles.emitter, model);
         } else {
-            scene.updateParticlesEmitter(particles.instance, model, Application::get().getTime().getDeltaSeconds());
+            scene.updateParticlesEmitter(particles.instance, particles.emitter, model,
+                                         Application::get().getTime().getDeltaSeconds());
         }
     }
 }
