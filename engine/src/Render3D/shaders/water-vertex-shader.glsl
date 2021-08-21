@@ -18,14 +18,13 @@ layout(location = 1) in vec2 a_vertexTextureCoord;
 uniform mat4 u_view;
 uniform mat4 u_projection;
 uniform mat4 u_model;
-uniform vec3 u_viewPos;
 
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
 out vec4 v_clipSpace;
+out vec3 v_fragPos;
 out vec2 v_texCoord;
-out vec3 v_viewDir;
 out float v_visibility;
 
 void main() {
@@ -34,7 +33,7 @@ void main() {
 
     v_clipSpace = u_projection * positionRelativeToCamera;
     v_texCoord = a_vertexTextureCoord;
-    v_viewDir = u_viewPos - worldPos.xyz;
+    v_fragPos = vec3(worldPos);
     gl_Position = v_clipSpace;
 
     float distanceToCamera = length(positionRelativeToCamera.xyz);

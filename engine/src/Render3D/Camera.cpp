@@ -23,6 +23,8 @@ glm::vec3 Camera::positionVec() const { return position; }
 
 glm::vec3 Camera::upVec() const { return up; }
 
+glm::vec2 Camera::size() const { return {this->width, this->height}; }
+
 void Camera::setSize(int width, int height) {
     this->width = width;
     this->height = height;

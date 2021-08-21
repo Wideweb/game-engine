@@ -23,6 +23,7 @@ class Camera {
     glm::vec3 upVec() const;
     glm::vec3 frontVec() const;
     glm::vec3 rotationVec() const;
+    glm::vec2 size() const;
 
     void setSize(int width, int height);
     void setPerspective(float fieldOfView, float zNear, float zFar);

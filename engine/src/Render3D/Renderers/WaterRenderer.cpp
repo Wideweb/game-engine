@@ -5,6 +5,7 @@
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -19,12 +20,12 @@ WaterRenderer::WaterRenderer(GRenderer &gRenderer) : m_GRenderer(gRenderer) {
     m_WaterNormalMap.reset(TextureLoader::loadTexture("./shaders/waterNormalMap.png"));
 
     // clang-format off
-        float waterVertices[] = {
-            -1.0f,  0.0f, -1.0f, 0.0f, 1.0f,
-            -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            1.0f,  0.0f, -1.0f, 1.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        };
+    float waterVertices[] = {
+        -1.0f,  0.0f, -1.0f, 0.0f, 1.0f,
+        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        1.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+    };
 
     // clang-format on
     glGenVertexArrays(1, &m_WaterVAO);
@@ -53,18 +54,20 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_WaterShader->bind();
 
     glm::mat4 model(1);
-    model = glm::translate(model, glm::vec3(glm::vec3(10.0, 0.0, 10.0)));
+    model = glm::translate(model, glm::vec3(glm::vec3(0.0, 0.0, 0.0)));
     model = glm::scale(model, glm::vec3(10.0));
 
     m_WaterShader->setFloat3("u_viewPos", camera.positionVec());
     m_WaterShader->setMatrix4("u_view", camera.viewMatrix());
     m_WaterShader->setMatrix4("u_projection", camera.projectionMatrix());
     m_WaterShader->setMatrix4("u_model", model);
+    m_WaterShader->setMatrix4("u_noramlFix", glm::rotate(-1.57f, glm::vec3(1.0f, 0.0f, 0.0f)));
 
     m_WaterShader->setFloat("u_moveFactor", m_WaterMoveFactor);
     m_WaterMoveFactor += 0.001f;
 
-    m_WaterShader->setFloat3("u_lightDir", scene.getDirectedLight().direction);
+    glm::vec3 lightDir = glm::quat(scene.getDirectedLight().direction) * glm::vec3(0.0f, -1.0f, 0.0f);
+    m_WaterShader->setFloat3("u_lightDir", lightDir);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_GRenderer.gColor());

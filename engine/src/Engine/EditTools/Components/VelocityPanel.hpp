@@ -7,17 +7,16 @@
 
 namespace Engine {
 
-class TransformPanel : public BaseView {
+class VelocityPanel : public BaseView {
   private:
     GameObjectModel &m_Model;
 
-    glm::vec3 m_Position = glm::vec3(0.0f);
+    glm::vec3 m_Velocity = glm::vec3(0.0f);
     glm::vec3 m_Rotation = glm::vec3(0.0f);
-    glm::vec3 m_LocalRotation = glm::vec3(0.0f);
-    float m_Scale = 0;
+    float m_Speed = 0.0f;
 
   public:
-    TransformPanel(GameObjectModel &model);
+    VelocityPanel(GameObjectModel &model);
 
     void onAttach() override;
     void onUpdate() override;

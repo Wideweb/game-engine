@@ -9,7 +9,8 @@ TransformPanel::TransformPanel(GameObjectModel &model) : m_Model(model) {}
 void TransformPanel::onAttach() {
     m_Model.positionChange$.addEventCallback([this](glm::vec3 position) { m_Position = position; });
     m_Model.rotationChange$.addEventCallback([this](glm::vec3 rotation) { m_Rotation = rotation; });
-    m_Model.scaleChange$.addEventCallback([this](float scale) { m_Scale = scale; });
+    m_Model.localRotationChange$.addEventCallback([this](glm::vec3 rotation) { m_LocalRotation = rotation; });
+    m_Model.scaleChange$.addEventCallback([this](float scale, float prev) { m_Scale = scale; });
 }
 
 void TransformPanel::onUpdate() {
@@ -19,6 +20,10 @@ void TransformPanel::onUpdate() {
 
     if (m_Rotation != m_Model.rotation()) {
         m_Model.rotation(m_Rotation);
+    }
+
+    if (m_LocalRotation != m_Model.localRotation()) {
+        m_Model.localRotation(m_LocalRotation);
     }
 
     if (m_Scale != m_Model.scale()) {
@@ -44,6 +49,13 @@ void TransformPanel::onDraw(int x, int y) {
         ImGui::InputFloat("x1", &m_Rotation.x, 0.1f, 0.01f);
         ImGui::InputFloat("y1", &m_Rotation.y, 0.1f, 0.01f);
         ImGui::InputFloat("z1", &m_Rotation.z, 0.1f, 0.01f);
+    }
+
+    {
+        ImGui::Text("Local Rotation: ");
+        ImGui::InputFloat("lx", &m_LocalRotation.x, 0.1f, 0.01f);
+        ImGui::InputFloat("ly", &m_LocalRotation.y, 0.1f, 0.01f);
+        ImGui::InputFloat("lz", &m_LocalRotation.z, 0.1f, 0.01f);
     }
 
     {

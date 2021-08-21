@@ -5,6 +5,7 @@
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -34,11 +35,12 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
     glClear(GL_DEPTH_BUFFER_BIT);
 
     float farHalf = light.farPlane / 2.0f;
+    glm::vec3 direction = glm::quat(light.direction) * glm::vec3(0.0f, -1.0f, 0.0f);
 
-    glm::vec3 position = camera.positionVec() - light.direction * farHalf + camera.frontVec() * farHalf;
+    glm::vec3 position = camera.positionVec() - direction * farHalf + camera.frontVec() * farHalf;
 
     glm::mat4 lightProjection = glm::ortho(-farHalf, farHalf, -farHalf, farHalf, light.nearPlane, light.farPlane);
-    glm::mat4 lightView = glm::lookAt(position, position + light.direction, glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 0.0f, 1.0f));
 
     m_DepthShader->bind();
     m_DepthShader->setMatrix4("u_view", lightView);
@@ -53,7 +55,7 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
     glViewport(0, 0, m_ViewPort.width, m_ViewPort.height);
 
     shader.bind();
-    shader.setFloat3("u_directedLight.direction", light.direction);
+    shader.setFloat3("u_directedLight.direction", direction);
     shader.setFloat3("u_directedLight.ambient", light.ambient);
     shader.setFloat3("u_directedLight.diffuse", light.diffuse);
     shader.setFloat3("u_directedLight.specular", light.specular);

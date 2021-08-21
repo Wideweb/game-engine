@@ -73,18 +73,14 @@ void GamePanel::onUpdate() {
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ViewportSize.x, m_ViewportSize.y);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-        auto &render = Application::get().getRender();
-        auto &camera = Application::get().getCamera();
-
-        render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
-        render.clear();
-        camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
-
         m_PrevViewportSize = m_ViewportSize;
     }
 }
 
 void GamePanel::onDraw(int x, int y) {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+    ImGui::Begin("Game");
+
     auto &render = Application::get().getRender();
     auto &camera = Application::get().getCamera();
     auto &models = Application::get().getModels();
@@ -94,7 +90,9 @@ void GamePanel::onDraw(int x, int y) {
 
     glm::vec3 lastCameraPos = camera.positionVec();
     glm::vec3 lastCameraRotation = camera.rotationVec();
+    glm::vec2 lastCameraSize = camera.size();
     unsigned int lastFBO = render.getFBO();
+    auto lastViewport = render.getViewport();
 
     auto cameraArray = coordinator.GetComponentArray<CameraComponent>();
     Entity entity = cameraArray->entities()[0];
@@ -105,27 +103,28 @@ void GamePanel::onDraw(int x, int y) {
     camera.setRotation(entityLocation.rotation + entityCamera.rotation);
 
     render.setFBO(m_FBO);
+    render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
+    camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
     render.clear();
     render.draw(camera, scene, models, renderSettings);
     render.setFBO(lastFBO);
+    render.setViewport(lastViewport.width, lastViewport.height);
 
     camera.setPosition(lastCameraPos);
     camera.setRotation(lastCameraRotation);
+    camera.setSize(lastCameraSize.x, lastCameraSize.y);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-    ImGui::Begin("Game");
-
-    auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-    auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
-    auto viewportOffset = ImGui::GetWindowPos();
-    glm::vec2 min = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
-    glm::vec2 max = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
+    // auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+    // auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+    // auto viewportOffset = ImGui::GetWindowPos();
+    // glm::vec2 min = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
+    // glm::vec2 max = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
 
     // m_BlockEvents = !ImGui::IsWindowHovered();
 
     ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
     m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
-    Application::get().getMousePicker().setRect(min, min + m_ViewportSize);
+    // Application::get().getMousePicker().setRect(min, min + m_ViewportSize);
 
     ImGui::Image(reinterpret_cast<void *>(m_GColor), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1},
                  ImVec2{1, 0});

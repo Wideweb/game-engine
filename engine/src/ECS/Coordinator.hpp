@@ -22,6 +22,8 @@ class Coordinator {
 
     Entity GetEntity(const std::string &name) const { return m_EntityManager->GetEntity(name); }
 
+    Entity HasEntity(const std::string &name) const { return m_EntityManager->HasEntity(name); }
+
     void DestroyEntity(Entity entity) {
         m_SystemManager->RemoveEntity(entity);
         m_ComponentManager->RemoveEntityComponents(entity);

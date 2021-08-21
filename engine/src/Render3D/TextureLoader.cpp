@@ -70,6 +70,34 @@ Texture *TextureLoader::loadTexture(const std::string &path) {
     return new Texture(textureID);
 }
 
+Texture *TextureLoader::placeholder() {
+    GLuint textureID;
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    unsigned char data[3] = {0, 0, 0};
+
+    // clang-format off
+    glTexImage2D(GL_TEXTURE_2D,    // Specifies the target texture of the active texture unit
+                 0,      // Specifies the level-of-detail number. Level 0 is the base image level
+                 GL_RGB8,   // Specifies the internal format of the texture
+                 static_cast<GLsizei>(1),
+                 static_cast<GLsizei>(1),
+                 0,           // Specifies the width of the border. Must be 0. For GLES 2.0
+                 GL_RGB,       // Specifies the format of the texel data. Must match internalformat
+                 GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
+                 data);            // Specifies a pointer to the image data in memory
+    // clang-format on
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return new Texture(textureID);
+}
+
 Texture *TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
     GLuint textureID;
     GLint mipmapLevel = 0;

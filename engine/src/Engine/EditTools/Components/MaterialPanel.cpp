@@ -33,12 +33,32 @@ void MaterialPanel::onDraw(int x, int y) {
         ImGui::InputFloat("shininess", &m_Shininess, 0.1f, 0.01f);
         ImGui::InputFloat("specular", &m_Specular, 0.1f, 0.01f);
 
-        ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+        ImGui::Button("Diffuse map", ImVec2(100.0f, 0.0f));
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
                 std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setTexture(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
+                m_Model.setDiffuseMap(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        ImGui::Button("Specular map", ImVec2(100.0f, 0.0f));
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                const char *path = static_cast<const char *>(payload->Data);
+                std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                m_Model.setSpecualMap(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        ImGui::Button("Noraml map", ImVec2(100.0f, 0.0f));
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                const char *path = static_cast<const char *>(payload->Data);
+                std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                m_Model.setNormalMap(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
             }
             ImGui::EndDragDropTarget();
         }

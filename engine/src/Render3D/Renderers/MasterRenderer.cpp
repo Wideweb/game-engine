@@ -96,7 +96,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     }
 
     m_ModelRenderer->draw(*m_Shader, scene, models, m_State);
-    // m_WaterRenderer->draw(camera, scene, models, m_State);
+    m_WaterRenderer->draw(camera, scene, models, m_State);
 
     if (settings.hdr) {
         m_State.fbo = m_FBO;

@@ -16,7 +16,7 @@ void MoveSystem::Update(ComponentManager &components) const {
         auto &location = components.GetComponent<LocationComponent>(entity);
         float deltaTime = static_cast<float>(Application::get().getTime().getDeltaSeconds());
 
-        location.rotation += velocity.rotation;
+        location.rotation += velocity.rotation * deltaTime;
         location.front = glm::quat(location.rotation) * glm::vec3(0.0f, 0.0f, -1.0f);
         location.position += location.front * velocity.speed * deltaTime;
         location.position += velocity.velocity * deltaTime;

@@ -18,6 +18,8 @@ void EditToolsLayer::onAttach() {
     Application::get().getCamera().setPosition(glm::vec3(8.0f, 6.0f, 8.0f));
     Application::get().getCamera().setRotation(glm::vec3(glm::radians(-25.0f), glm::radians(45.0f), 0.0f));
 
+    Application::get().getTextures().add("engine_placeholder", TextureLoader::placeholder());
+
     auto &eventHandler = Application::get().getEventHandler();
     eventHandler.add<ApplicationError>([this](const ApplicationError &e) {
         m_Logs += e.what();
@@ -34,13 +36,25 @@ void EditToolsLayer::onAttach() {
     m_SceneHierarchyPanel->onAttach();
     m_SceneHierarchyPanel->show();
 
-    m_TransformControls = std::make_unique<TransformControls>(m_GameObject);
-    m_TransformControls->onAttach();
-    m_TransformControls->hide();
-
     m_TransformPanel = std::make_unique<TransformPanel>(m_GameObject);
     m_TransformPanel->onAttach();
     m_TransformPanel->hide();
+
+    m_TransformControlsPosition = std::make_unique<TransformControlsPosition>(m_GameObject);
+    m_TransformControlsPosition->onAttach();
+    m_TransformControlsPosition->hide();
+
+    m_TransformControlsRotation = std::make_unique<TransformControlsRotation>(m_GameObject);
+    m_TransformControlsRotation->onAttach();
+    m_TransformControlsRotation->hide();
+
+    m_TransformControlsScale = std::make_unique<TransformControlsScale>(m_GameObject);
+    m_TransformControlsScale->onAttach();
+    m_TransformControlsScale->hide();
+
+    m_VelocityPanel = std::make_unique<VelocityPanel>(m_GameObject);
+    m_VelocityPanel->onAttach();
+    m_VelocityPanel->hide();
 
     m_ParticlesPanel = std::make_unique<ParticlesPanel>(m_GameObject);
     m_ParticlesPanel->onAttach();
@@ -61,6 +75,9 @@ void EditToolsLayer::onAttach() {
 
     m_GamePanel = std::make_unique<GamePanel>();
     m_GamePanel->onAttach();
+
+    m_DirectedLightDirector = std::make_unique<DirectedLightDirector>(m_GameObject);
+    m_DirectedLightDirector->onAttach();
 }
 
 void EditToolsLayer::onUpdate() {
@@ -72,13 +89,35 @@ void EditToolsLayer::onUpdate() {
     }
 
     if (m_GameObject.isActive()) {
-        m_TransformControls->show();
         m_TransformPanel->show();
         m_BehaviourPanel->show();
     } else {
-        m_TransformControls->hide();
         m_TransformPanel->hide();
         m_BehaviourPanel->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasPosition()) {
+        m_TransformControlsPosition->show();
+    } else {
+        m_TransformControlsPosition->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasRotation()) {
+        m_TransformControlsRotation->show();
+    } else {
+        m_TransformControlsRotation->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasScale()) {
+        m_TransformControlsScale->show();
+    } else {
+        m_TransformControlsScale->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasVelocity()) {
+        m_VelocityPanel->show();
+    } else {
+        m_VelocityPanel->hide();
     }
 
     if (m_GameObject.isActive() && m_GameObject.hasMaterial()) {
@@ -93,12 +132,24 @@ void EditToolsLayer::onUpdate() {
         m_ParticlesPanel->hide();
     }
 
-    if (m_TransformControls->isVisible()) {
-        m_TransformControls->onUpdate();
+    if (m_TransformControlsPosition->isVisible()) {
+        m_TransformControlsPosition->onUpdate();
+    }
+
+    if (m_TransformControlsRotation->isVisible()) {
+        m_TransformControlsRotation->onUpdate();
+    }
+
+    if (m_TransformControlsScale->isVisible()) {
+        m_TransformControlsScale->onUpdate();
     }
 
     if (m_TransformPanel->isVisible()) {
         m_TransformPanel->onUpdate();
+    }
+
+    if (m_VelocityPanel->isVisible()) {
+        m_VelocityPanel->onUpdate();
     }
 
     if (m_MaterialPanel->isVisible()) {
@@ -109,21 +160,27 @@ void EditToolsLayer::onUpdate() {
         m_ParticlesPanel->onUpdate();
     }
 
-    if (m_DirectedLightModel.isActive()) {
-        m_DirectedLightPanel->show();
-        m_DirectedLightPanel->onUpdate();
-    } else {
-        m_DirectedLightPanel->hide();
-    }
+    // if (m_DirectedLightModel.isActive()) {
+    //     m_DirectedLightPanel->show();
+    //     m_DirectedLightPanel->onUpdate();
+    // } else {
+    //     m_DirectedLightPanel->hide();
+    // }
 
     if (Application::get().getTime().poused()) {
         m_CameraDirector->show();
+        m_DirectedLightDirector->show();
     } else {
         m_CameraDirector->hide();
+        m_DirectedLightDirector->hide();
     }
 
     if (m_CameraDirector->isVisible()) {
         m_CameraDirector->onUpdate();
+    }
+
+    if (m_DirectedLightDirector->isVisible()) {
+        m_DirectedLightDirector->onUpdate();
     }
 
     if (Application::get().getTime().poused()) {
@@ -183,6 +240,7 @@ void EditToolsLayer::onDraw() {
 
     m_GamePanel->onDraw(0, 0);
     m_CameraDirector->onDraw(0, 0);
+    m_DirectedLightDirector->onDraw(0, 0);
 
     if (m_ContentBrowserPanel->isVisible()) {
         m_ContentBrowserPanel->onDraw(0, 0);
@@ -192,12 +250,24 @@ void EditToolsLayer::onDraw() {
         m_SceneHierarchyPanel->onDraw(0, 0);
     }
 
-    if (m_TransformControls->isVisible()) {
-        m_TransformControls->onDraw(0, 0);
+    if (m_TransformControlsPosition->isVisible()) {
+        m_TransformControlsPosition->onDraw(0, 0);
+    }
+
+    if (m_TransformControlsRotation->isVisible()) {
+        m_TransformControlsRotation->onDraw(0, 0);
+    }
+
+    if (m_TransformControlsScale->isVisible()) {
+        m_TransformControlsScale->onDraw(0, 0);
     }
 
     if (m_TransformPanel->isVisible()) {
         m_TransformPanel->onDraw(0, 250);
+    }
+
+    if (m_VelocityPanel->isVisible()) {
+        m_VelocityPanel->onDraw(0, 0);
     }
 
     if (m_BehaviourPanel->isVisible()) {
@@ -222,8 +292,12 @@ void EditToolsLayer::onDraw() {
 void EditToolsLayer::onDetach() {
     m_GamePanel->onDetach();
     m_CameraDirector->onDetach();
-    m_TransformControls->onDetach();
+    m_DirectedLightDirector->onDetach();
+    m_TransformControlsPosition->onDetach();
+    m_TransformControlsRotation->onDetach();
+    m_TransformControlsScale->onDetach();
     m_TransformPanel->onDetach();
+    m_VelocityPanel->onDetach();
     m_ParticlesPanel->onDetach();
     m_DirectedLightPanel->onDetach();
     m_MaterialPanel->onDetach();
@@ -237,8 +311,25 @@ void EditToolsLayer::onMouseEvent(MouseEvent &event) {
         return;
     }
 
-    if (m_TransformControls->isVisible()) {
-        m_TransformControls->onMouseEvent(event);
+    if (m_TransformControlsPosition->isVisible()) {
+        m_TransformControlsPosition->onMouseEvent(event);
+        if (event.handled) {
+            return;
+        }
+    }
+
+    if (m_TransformControlsRotation->isVisible()) {
+        m_TransformControlsRotation->onMouseEvent(event);
+        if (event.handled) {
+            return;
+        }
+    }
+
+    if (m_TransformControlsScale->isVisible()) {
+        m_TransformControlsScale->onMouseEvent(event);
+        if (event.handled) {
+            return;
+        }
     }
 
     if (event.type == EventType::MouseDown) {
@@ -269,8 +360,15 @@ void EditToolsLayer::handleSelection() {
     if (!editToolsEntities.empty()) {
         Entity entity = editToolsEntities[0].id;
 
-        if (m_TransformControls->isVisible()) {
-            m_TransformControls->handleSelection(entity);
+        if (m_TransformControlsPosition->isVisible() && m_TransformControlsPosition->handleSelection(entity)) {
+            return;
+        }
+
+        if (m_TransformControlsRotation->isVisible() && m_TransformControlsRotation->handleSelection(entity)) {
+            return;
+        }
+
+        if (m_TransformControlsScale->isVisible() && m_TransformControlsScale->handleSelection(entity)) {
             return;
         }
     }

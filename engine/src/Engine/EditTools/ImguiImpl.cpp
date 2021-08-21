@@ -14,6 +14,7 @@
 #include "Mesh2D.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
+#include "TagComponent.hpp"
 #include "TextureLoader.hpp"
 
 namespace Engine {
@@ -273,10 +274,17 @@ void ImguiImpl::Begin() {
                 models.RegisterModel(path, ModelLoader::loadModel(modelSrc));
             }
 
-            std::string name = std::string("entity") + std::to_string(coordinator().GetEntities().size());
+            std::string name;
+            size_t index = coordinator().GetEntities().size();
+            do {
+                name = std::string("entity") + std::to_string(index);
+                index++;
+            } while (coordinator().HasEntity(name));
             auto entity = coordinator().CreateEntity(name);
+
             coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
             coordinator().AddComponent<Render3DComponent>(entity, Render3DComponent(path, 1.0f));
+            coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
         }
         ImGui::EndDragDropTarget();
     }

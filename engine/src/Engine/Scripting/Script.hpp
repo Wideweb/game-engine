@@ -25,11 +25,17 @@ class Script : public ScriptBase {
     Script(std::string path, std::string entry, std::shared_ptr<TContext> context) : m_Context(context) {
         lua_State *L = m_Context->getState();
 
-        if (luaL_loadfile(L, path.c_str())) {
+        int error = luaL_loadfile(L, path.c_str());
+        while (error && lua_gettop(L)) {
+            std::cerr << "stack = " << lua_gettop(L) << "\n";
+            std::cerr << "error = " << error << "\n";
+            std::cerr << "message = " << lua_tostring(L, -1) << "\n";
+            lua_pop(L, 1);
+            error = lua_pcall(L, 0, 0, 0);
             throw std::runtime_error("Unable to find lua file");
         }
 
-        int error = lua_pcall(L, 0, 0, 0);
+        error = lua_pcall(L, 0, 0, 0);
         while (error && lua_gettop(L)) {
             std::cerr << "stack = " << lua_gettop(L) << "\n";
             std::cerr << "error = " << error << "\n";

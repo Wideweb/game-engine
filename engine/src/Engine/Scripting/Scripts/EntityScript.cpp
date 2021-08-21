@@ -15,11 +15,17 @@ EntityScript::EntityScript(std::string path, LuaEntity entity) : m_Entity(entity
     LuaInput::add(L);
     LuaEntity::add(L);
 
-    if (luaL_loadfile(L, path.c_str())) {
+    int error = luaL_loadfile(L, path.c_str());
+    if (error && lua_gettop(L)) {
+        std::cerr << "stack = " << lua_gettop(L) << "\n";
+        std::cerr << "error = " << error << "\n";
+        std::cerr << "message = " << lua_tostring(L, -1) << "\n";
+        lua_pop(L, 1);
+        error = lua_pcall(L, 0, 0, 0);
         throw std::runtime_error("Unable to find lua file");
     }
 
-    int error = lua_pcall(L, 0, 0, 0);
+    error = lua_pcall(L, 0, 0, 0);
     while (error && lua_gettop(L)) {
         std::cerr << "stack = " << lua_gettop(L) << "\n";
         std::cerr << "error = " << error << "\n";

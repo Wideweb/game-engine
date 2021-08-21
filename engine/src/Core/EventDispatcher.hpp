@@ -7,7 +7,7 @@
 
 namespace Engine {
 
-template <typename T> using EventDelegate = std::function<void(const T &)>;
+template <class... TArgs> using EventDelegate = std::function<void(TArgs &&...args)>;
 
 class IEventDispatcher {};
 
@@ -30,18 +30,18 @@ class IEventDispatcher {};
 //     }
 // };
 
-template <typename TEvent> class EventDispatcher : public IEventDispatcher {
+template <class... TArgs> class EventDispatcher : public IEventDispatcher {
   private:
-    std::list<EventDelegate<TEvent>> m_Delegates;
+    std::list<EventDelegate<TArgs...>> m_Delegates;
 
   public:
-    void dispatch(const TEvent &event) {
+    void dispatch(TArgs... args) {
         for (auto &delegate : m_Delegates) {
-            delegate(event);
+            delegate(std::forward<TArgs>(args)...);
         }
     }
 
-    void addEventCallback(const EventDelegate<TEvent> &delegate) { m_Delegates.push_back(delegate); }
+    void addEventCallback(const EventDelegate<TArgs...> &delegate) { m_Delegates.push_back(delegate); }
 };
 
 } // namespace Engine

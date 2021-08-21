@@ -21,6 +21,9 @@ void Time::tick() {
 
 void Time::play() { m_Stop = false; }
 
-void Time::stop() { m_Stop = true; }
+void Time::stop() {
+    m_Stop = true;
+    m_deltaTime = 0;
+}
 
 } // namespace Engine

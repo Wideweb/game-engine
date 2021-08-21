@@ -8,17 +8,21 @@
 #include "BehaviourPanel.hpp"
 #include "CameraDirector.hpp"
 #include "ContentBrowserPanel.hpp"
+#include "DirectedLightDirector.hpp"
 #include "DirectedLightModel.hpp"
 #include "DirectedLightPanel.hpp"
 #include "GameObjectModel.hpp"
+#include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
 #include "MaterialPanel.hpp"
 #include "ParticlesPanel.hpp"
 #include "SceneHierarchyPanel.hpp"
-#include "TransformControls.hpp"
+#include "TransformControlsPosition.hpp"
+#include "TransformControlsRotation.hpp"
+#include "TransformControlsScale.hpp"
 #include "TransformPanel.hpp"
+#include "VelocityPanel.hpp"
 #include "Window.hpp"
-#include "GamePanel.hpp"
 
 namespace Engine {
 
@@ -31,7 +35,9 @@ class EditToolsLayer : public Layer {
 
     ImguiImpl m_Imgui;
 
-    std::unique_ptr<TransformControls> m_TransformControls;
+    std::unique_ptr<TransformControlsPosition> m_TransformControlsPosition;
+    std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;
+    std::unique_ptr<TransformControlsScale> m_TransformControlsScale;
     std::unique_ptr<TransformPanel> m_TransformPanel;
     std::unique_ptr<DirectedLightPanel> m_DirectedLightPanel;
     std::unique_ptr<ParticlesPanel> m_ParticlesPanel;
@@ -41,6 +47,8 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<BehaviourPanel> m_BehaviourPanel;
     std::unique_ptr<CameraDirector> m_CameraDirector;
     std::unique_ptr<GamePanel> m_GamePanel;
+    std::unique_ptr<VelocityPanel> m_VelocityPanel;
+    std::unique_ptr<DirectedLightDirector> m_DirectedLightDirector;
 
     Layer &gameLayer();
 

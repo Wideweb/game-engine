@@ -28,8 +28,9 @@ std::shared_ptr<Model> AssimpModel::load(std::string path) {
     m_Model = std::make_shared<SkinnedModel>();
 
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_OptimizeMeshes |
-                                                     aiProcess_OptimizeGraph | aiProcess_CalcTangentSpace);
+    const aiScene *scene =
+        import.ReadFile(path, aiProcess_Triangulate | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph |
+                                  aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -166,6 +167,7 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
 
     for (unsigned int i = 0; i < meshSrc->mNumFaces; i++) {
         aiFace face = meshSrc->mFaces[i];
+        assert(face.mNumIndices == 3);
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
             indices.push_back(face.mIndices[j]);
         }
@@ -175,19 +177,17 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
     if (meshSrc->mMaterialIndex >= 0) {
         aiMaterial *materialSrc = scene->mMaterials[meshSrc->mMaterialIndex];
 
-        if (materialSrc->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-            mesh.material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.jpeg"));
-            mesh.material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg"));
-            mesh.material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg"));
-            mesh.hasMaterial = true;
-        }
+        // if (materialSrc->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+        //     mesh.material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.jpeg"));
+        //     mesh.material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg"));
+        //     mesh.material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg"));
+        //     mesh.hasMaterial = true;
+        // }
 
-        // material.diffuseMap.reset(
-        //     loadMaterialTexture(materialSrc, aiTextureType_DIFFUSE));
-        // material.specularMap.reset(
-        //     loadMaterialTexture(materialSrc, aiTextureType_SPECULAR));
-        // material.normalMap.reset(
-        //     loadMaterialTexture(materialSrc, aiTextureType_NORMALS));
+        mesh.material.diffuseMap.reset(loadMaterialTexture(materialSrc, aiTextureType_DIFFUSE));
+        mesh.material.specularMap.reset(loadMaterialTexture(materialSrc, aiTextureType_SPECULAR));
+        mesh.material.normalMap.reset(loadMaterialTexture(materialSrc, aiTextureType_NORMALS));
+        mesh.hasMaterial = true;
     }
 
     for (unsigned int i = 0; i < meshSrc->mNumBones; i++) {
@@ -213,7 +213,7 @@ Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType
     for (unsigned int i = 0; i < materialSrc->GetTextureCount(type); i++) {
         aiString str;
         materialSrc->GetTexture(type, i, &str);
-        return TextureLoader::loadTexture(m_Directory + std::string(str.C_Str()));
+        return TextureLoader::loadTexture(std::string(str.C_Str()));
     }
     return nullptr;
 }

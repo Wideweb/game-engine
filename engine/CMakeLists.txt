@@ -49,7 +49,9 @@ set(SOURCE_EXE
     src/Engine/EditTools/EditToolsLayer.cpp
     src/Engine/EditTools/Components/BaseView.cpp
     src/Engine/EditTools/Components/TransformPanel.cpp
-    src/Engine/EditTools/Components/TransformControls.cpp
+    src/Engine/EditTools/Components/TransformControlsPosition.cpp
+    src/Engine/EditTools/Components/TransformControlsRotation.cpp
+    src/Engine/EditTools/Components/TransformControlsScale.cpp
     src/Engine/EditTools/Components/DirectedLightPanel.cpp
     src/Engine/EditTools/Components/ParticlesPanel.cpp
     src/Engine/EditTools/Components/SceneHierarchyPanel.cpp
@@ -58,6 +60,8 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/BehaviourPanel.cpp
     src/Engine/EditTools/Components/CameraDirector.cpp
     src/Engine/EditTools/Components/GamePanel.cpp
+    src/Engine/EditTools/Components/VelocityPanel.cpp
+    src/Engine/EditTools/Components/DirectedLightDirector.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
     src/Render3D/Models/InstancedMesh.cpp

@@ -50,7 +50,7 @@ class EntityManager {
         Entity last = m_Entities[m_ActiveEntities];
         m_Entities[index] = last;
         m_EntityToIndex[last] = index;
-        m_Entities[m_ActiveEntities] = index;
+        m_Entities[m_ActiveEntities] = entity;
     }
 
     Entity GetEntity(const std::string &name) const {
@@ -60,6 +60,8 @@ class EntityManager {
 
         return it->second;
     }
+
+    bool HasEntity(const std::string &name) const { return m_NameToEntity.find(name) != m_NameToEntity.end(); }
 
     void SetSignature(Entity entity, Signature signature) { m_Signatures[entity] = signature; }
 
