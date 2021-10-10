@@ -15,6 +15,7 @@ class Shader {
     std::unordered_map<std::string, GLint> m_UniformLocationMap;
 
   public:
+    Shader(const std::string &computeSrc);
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc);
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
            std::vector<std::string> transformFeedbackVaryings);

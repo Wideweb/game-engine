@@ -3,6 +3,7 @@
 #include "Camera.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
+#include "RenderSettings.hpp"
 #include "RendererState.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
@@ -26,7 +27,7 @@ class GRenderer {
   public:
     GRenderer(Viewport &viewport, ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer);
 
-    void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state);
+    void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state, RenderSettings &settings);
     void resize();
 
     unsigned int gPosition() { return m_GPosition; }

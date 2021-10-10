@@ -48,6 +48,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/ImguiImpl.cpp
     src/Engine/EditTools/EditToolsLayer.cpp
     src/Engine/EditTools/Components/BaseView.cpp
+    src/Engine/EditTools/Components/RenderPanel.cpp
     src/Engine/EditTools/Components/TransformPanel.cpp
     src/Engine/EditTools/Components/TransformControlsPosition.cpp
     src/Engine/EditTools/Components/TransformControlsRotation.cpp
@@ -62,6 +63,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/GamePanel.cpp
     src/Engine/EditTools/Components/VelocityPanel.cpp
     src/Engine/EditTools/Components/DirectedLightDirector.cpp
+    src/Engine/EditTools/Components/SkeletPanel.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
     src/Render3D/Models/InstancedMesh.cpp

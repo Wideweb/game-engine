@@ -18,6 +18,7 @@ class ImguiImpl {
     std::shared_ptr<Texture> m_ColorBuffer[2];
 
     std::shared_ptr<Texture> m_ImGuiFonts;
+    std::shared_ptr<Texture> m_IconPlay, m_IconStop;
     glm::vec2 m_PrevViewportSize, m_ViewportSize;
     float m_Ratio;
     bool m_BlockEvents = true;

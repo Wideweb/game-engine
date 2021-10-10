@@ -2,7 +2,7 @@
 
 #include "BaseView.hpp"
 #include "DirectedLight.hpp"
-#include "DirectedLightModel.hpp"
+#include "GameObjectModel.hpp"
 
 #include <glm/vec3.hpp>
 
@@ -10,12 +10,12 @@ namespace Engine {
 
 class DirectedLightPanel : public BaseView {
   private:
-    DirectedLightModel &m_Model;
+    GameObjectModel &m_Model;
 
     DirectedLight m_Light;
 
   public:
-    DirectedLightPanel(DirectedLightModel &model);
+    DirectedLightPanel(GameObjectModel &model);
 
     void onAttach() override;
     void onUpdate() override;

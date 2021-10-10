@@ -116,7 +116,6 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<DirectedLight>("DirectedLight")
         .addConstructor<void (*)(void)>()
-        .addProperty("direction", &DirectedLight::direction)
         .addProperty("ambient", &DirectedLight::ambient)
         .addProperty("diffuse", &DirectedLight::diffuse)
         .addProperty("specular", &DirectedLight::specular)

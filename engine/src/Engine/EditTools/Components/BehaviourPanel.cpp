@@ -11,7 +11,7 @@ namespace Engine {
 BehaviourPanel::BehaviourPanel(GameObjectModel &model) : m_Model(model) {}
 
 void BehaviourPanel::onDraw(int x, int y) {
-    ImGui::Begin("Script");
+    ImGui::Begin("Behaviour");
 
     ImGui::Button("script", ImVec2(100.0f, 0.0f));
     if (ImGui::BeginDragDropTarget()) {

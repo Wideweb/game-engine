@@ -4,6 +4,10 @@
 /////////////////////// DECLARATION /////////////////////////
 /////////////////////////////////////////////////////////////
 struct DirectedLight {
+    int pcf;
+    float biasFactor;
+    float biasMin;
+
     vec3 direction;
 
     vec3 ambient;
@@ -71,6 +75,7 @@ uniform SpotLight u_spotLights[c_maxSpotLights];
 uniform int u_spotLightsNumber;
 uniform Material u_material;
 uniform vec3 u_viewPos;
+uniform float u_threshold;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -124,7 +129,7 @@ void main() {
     o_fragColor = mix(vec4(c_fogColor, 1.0), o_fragColor, v_visibility);
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > 1.0)
+    if (brightness > u_threshold)
         o_brightColor = vec4(o_fragColor.rgb, 1.0);
     else
         o_brightColor = vec4(0.0, 0.0, 0.0, 1.0);
@@ -143,7 +148,6 @@ vec3 spotLightCalculation(SpotLight light, FragmentMaterial material, vec3 fragP
     float diff = max(dot(material.normal, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * material.diffuse;
 
-    vec3 reflectDir = reflect(-lightDir, material.normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(material.normal, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * material.specular;
@@ -188,12 +192,11 @@ vec3 directedLightCalculation(DirectedLight light, FragmentMaterial material, ve
     float diffuseFactor = max(dot(material.normal, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diffuseFactor;
 
-    vec3 reflectDir = reflect(-lightDir, material.normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float specularFactor = pow(max(dot(material.normal, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * material.specular * specularFactor;
 
-    float bias = max(0.05 * (1.0 - dot(material.normal, lightDir)), 0.005);
+    float bias = max(light.biasFactor * (1.0 - dot(material.normal, lightDir)), light.biasMin);
     float shadow = directedLightShadowCalculation(light, fragPos, bias);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * material.diffuse;
 
@@ -215,13 +218,13 @@ float directedLightShadowCalculation(DirectedLight light, vec3 fragPos, float bi
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(light.shadowMap, 0);
-    for (int x = -1; x <= 1; ++x) {
-        for (int y = -1; y <= 1; ++y) {
+    for (int x = -light.pcf; x <= light.pcf; ++x) {
+        for (int y = -light.pcf; y <= light.pcf; ++y) {
             float pcfDepth = texture(light.shadowMap, coords.xy + vec2(x, y) * texelSize).r;
             shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
-    shadow /= 9.0;
+    shadow /= (light.pcf * 2 + 1) * (light.pcf * 2 + 1);
 
     return shadow;
 }

@@ -15,10 +15,10 @@ class Render3DComponent {
     bool m_Overlay;
 
   public:
-    float scale;
     std::string model;
+    glm::vec3 scale = glm::vec3(1.0f);
     glm::vec3 rotation = glm::vec3(0.0f);
-    ModelInstance instance = NoModelInstance;
+    ModelInstance instance = c_NoModelInstance;
     bool updated = false;
 
     Render3DComponent() {}

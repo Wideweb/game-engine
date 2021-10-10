@@ -63,8 +63,11 @@ void main() {
     v_normal = normalize(mat3(transpose(inverse(modelMatrix))) * a_vertexNormal);
 
     vec3 T = normalize(vec3(modelMatrix * vec4(a_vertexTangent, 0.0)));
-    vec3 B = normalize(vec3(modelMatrix * vec4(a_vertexBitangent, 0.0)));
     vec3 N = normalize(vec3(modelMatrix * vec4(a_vertexNormal, 0.0)));
+
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
+
     v_TBN = mat3(T, B, N);
 
     vec4 positionRelativeToCamera = u_view * worldPosition;

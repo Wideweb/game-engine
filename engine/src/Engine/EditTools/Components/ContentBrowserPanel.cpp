@@ -8,8 +8,8 @@ namespace Engine {
 
 ContentBrowserPanel::ContentBrowserPanel(std::string path)
     : m_AssetPath(path), m_CurrentDirectory(std::filesystem::path(path)) {
-    m_DirectoryIcon.reset(TextureLoader::loadTexture("assets/DirectoryIcon.png"));
-    m_FileIcon.reset(TextureLoader::loadTexture("assets/FileIcon.png"));
+    m_DirectoryIcon.reset(TextureLoader::loadTexture("assets/icons/directory.png"));
+    m_FileIcon.reset(TextureLoader::loadTexture("assets/icons/file.png"));
 }
 
 void ContentBrowserPanel::onDraw(int x, int y) {

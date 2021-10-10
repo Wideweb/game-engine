@@ -4,6 +4,7 @@
 #include "GRenderer.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
+#include "RenderSettings.hpp"
 #include "RendererState.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
@@ -27,7 +28,7 @@ class WaterRenderer {
   public:
     WaterRenderer(GRenderer &gRenderer);
 
-    void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState& state);
+    void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state, RenderSettings &settings);
 };
 
 } // namespace Engine

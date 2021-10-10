@@ -3,6 +3,7 @@
 #include "Application.hpp"
 #include "BehaviourComponent.hpp"
 #include "CollisionComponent.hpp"
+#include "DirectedLight.hpp"
 #include "DirectedLightComponent.hpp"
 #include "Entity.hpp"
 #include "EventDispatcher.hpp"
@@ -12,28 +13,35 @@
 #include "Particles.hpp"
 #include "ParticlesComponent.hpp"
 #include "Render3DComponent.hpp"
+#include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include <glm/vec3.hpp>
+#include <string>
 
 namespace Engine {
 
 class GameObjectModel {
+  public:
+    enum class TransformOrientation { Global = 0, Local = 1 };
+
   private:
     Entity m_Entity = c_NoEntity;
+    TransformOrientation m_TransformOrientation = TransformOrientation::Local;
 
   public:
     EventDispatcher<glm::vec3> positionChange$;
     EventDispatcher<glm::vec3> rotationChange$;
     EventDispatcher<glm::vec3> localRotationChange$;
-    EventDispatcher<float, float> scaleChange$;
+    EventDispatcher<glm::vec3, glm::vec3> scaleChange$;
     EventDispatcher<ParticlesConfiguration> particlesChange$;
     EventDispatcher<float> materialSpecularChange$;
     EventDispatcher<float> materialShininessChange$;
     EventDispatcher<glm::vec3> velocityChange$;
     EventDispatcher<glm::vec3> rotationVelocityChange$;
     EventDispatcher<float> directionalSpeedChange$;
+    EventDispatcher<DirectedLight> directedLightChange$;
 
     void setEntity(Entity entity) {
         m_Entity = entity;
@@ -57,11 +65,19 @@ class GameObjectModel {
             rotationVelocityChange$.dispatch(rotationVelocity());
             directionalSpeedChange$.dispatch(directionalSpeed());
         }
+
+        if (hasDirectedLight()) {
+            directedLightChange$.dispatch(directedLight());
+        }
     }
 
     Entity entity() { return m_Entity; }
 
     bool isActive() { return m_Entity != c_NoEntity; }
+
+    void transformOrientation(TransformOrientation value) { m_TransformOrientation = value; }
+
+    TransformOrientation transformOrientation() { return m_TransformOrientation; }
 
     bool hasPosition() {
         if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
@@ -105,10 +121,6 @@ class GameObjectModel {
     }
 
     glm::vec3 rotation() {
-        if (coordinator().HasComponent<DirectedLightComponent>(m_Entity)) {
-            return coordinator().GetComponent<DirectedLightComponent>(m_Entity).light.direction;
-        }
-
         if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
             return coordinator().GetComponent<LocationComponent>(m_Entity).rotation;
         }
@@ -117,13 +129,12 @@ class GameObjectModel {
     }
 
     void rotation(glm::vec3 value) {
-        if (coordinator().HasComponent<DirectedLightComponent>(m_Entity)) {
-            auto &light = coordinator().GetComponent<DirectedLightComponent>(m_Entity).light;
-            light.direction = value;
-        }
-
         if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
             auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+
+            if (location.rotation == value) {
+                return;
+            }
 
             location.rotation = value;
             location.updated = true;
@@ -152,22 +163,19 @@ class GameObjectModel {
     }
 
     bool hasScale() {
-        if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
-            return true;
-        }
-
-        return false;
+        return coordinator().HasComponent<Render3DComponent>(m_Entity) &&
+               !coordinator().HasComponent<DirectedLightComponent>(m_Entity);
     }
 
-    float scale() {
+    glm::vec3 scale() {
         if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
             return coordinator().GetComponent<Render3DComponent>(m_Entity).scale;
         }
 
-        return 0.0f;
+        return glm::vec3(0.0f);
     }
 
-    void scale(float value) {
+    void scale(glm::vec3 value) {
         auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
 
@@ -181,7 +189,7 @@ class GameObjectModel {
             collision.updated = true;
         }
 
-        float oldValue = render.scale;
+        glm::vec3 oldValue = render.scale;
         render.scale = value;
 
         render.updated = true;
@@ -189,6 +197,16 @@ class GameObjectModel {
 
         scaleChange$.dispatch(value, oldValue);
     }
+
+    std::string model() { return coordinator().GetComponent<Render3DComponent>(m_Entity).model; }
+
+    bool hasSkelet() { return coordinator().HasComponent<SkeletComponent>(m_Entity); }
+
+    void animation(std::string animation) {
+        coordinator().GetComponent<SkeletComponent>(m_Entity).state.play(animation);
+    }
+
+    std::string animation() { return coordinator().GetComponent<SkeletComponent>(m_Entity).state.animation(); }
 
     bool hasParticles() { return coordinator().HasComponent<ParticlesComponent>(m_Entity); }
 
@@ -342,6 +360,28 @@ class GameObjectModel {
         auto &location = coordinator().GetComponent<VelocityComponent>(m_Entity);
         location.speed = value;
         directionalSpeedChange$.dispatch(value);
+    }
+
+    bool hasDirectedLight() { return coordinator().HasComponent<DirectedLightComponent>(m_Entity); }
+
+    DirectedLight directedLight() {
+        auto &components = coordinator().GetComponentArray<DirectedLightComponent>()->components();
+        if (components.size() == 0) {
+            return {};
+        }
+
+        return components[0].light;
+    }
+
+    void directedLight(DirectedLight value) {
+        auto &components = coordinator().GetComponentArray<DirectedLightComponent>()->components();
+        if (components.size() == 0 || components[0].light == value) {
+            return;
+        }
+
+        components[0].light = value;
+
+        directedLightChange$.dispatch(value);
     }
 
   private:

@@ -92,9 +92,9 @@ void TransformControlsScale::onDraw(int, int) {
     auto &renderY = coordinator.GetComponent<Render3DComponent>(m_ControlY);
     auto &renderZ = coordinator.GetComponent<Render3DComponent>(m_ControlZ);
 
-    renderX.scale = 0.05f;
-    renderY.scale = 0.05f;
-    renderZ.scale = 0.05f;
+    renderX.scale = glm::vec3(0.05f);
+    renderY.scale = glm::vec3(0.05f);
+    renderZ.scale = glm::vec3(0.05f);
 
     renderX.updated = true;
     renderY.updated = true;
@@ -165,9 +165,9 @@ void TransformControlsScale::hide() {
     auto &renderY = coordinator.GetComponent<Render3DComponent>(m_ControlY);
     auto &renderZ = coordinator.GetComponent<Render3DComponent>(m_ControlZ);
 
-    renderX.scale = 0.0f;
-    renderY.scale = 0.0f;
-    renderZ.scale = 0.0f;
+    renderX.scale = glm::vec3(0.0f);
+    renderY.scale = glm::vec3(0.0f);
+    renderZ.scale = glm::vec3(0.0f);
 
     renderX.updated = true;
     renderY.updated = true;
@@ -200,7 +200,19 @@ void TransformControlsScale::onTransform() {
     float initDist = glm::distance(glm::vec2(screenPos), initMousePos);
     float currDist = glm::distance(glm::vec2(screenPos), curMousePos);
 
-    m_Model.scale(m_InitScale * (currDist / initDist));
+    glm::vec3 scale = m_InitScale * (currDist / initDist);
+
+    if (m_ActiveControl != m_ControlX) {
+        scale.x = m_InitScale.x;
+    }
+    if (m_ActiveControl != m_ControlY) {
+        scale.y = m_InitScale.y;
+    }
+    if (m_ActiveControl != m_ControlZ) {
+        scale.z = m_InitScale.z;
+    }
+
+    m_Model.scale(scale);
 }
 
 } // namespace Engine

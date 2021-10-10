@@ -4,7 +4,6 @@
 #include "DirectedLightComponent.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
-#include "Render3DComponent.hpp"
 #include "TagComponent.hpp"
 
 #include "imgui/imgui.h"
@@ -23,24 +22,8 @@ void DirectedLightDirector::onAttach() {
     coordinator.AddComponent(sun, TagComponent("sun"));
     m_Sun = sun;
 
-    m_Model.scaleChange$.addEventCallback([this, &coordinator](float scale, float prevScale) {
-        if (m_Model.entity() != m_Sun) {
-            return;
-        }
-
-        auto loghtArray = coordinator.GetComponentArray<DirectedLightComponent>();
-        if (loghtArray->size() == 0) {
-            return;
-        }
-
-        Entity entity = loghtArray->entities()[0];
-        auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
-        auto &entityLight = coordinator.GetComponent<DirectedLightComponent>(entity);
-
-        entityLight.light.ambient *= (1.0f / prevScale) * scale;
-        entityLight.light.diffuse *= (1.0f / prevScale) * scale;
-        entityLight.light.specular *= (1.0f / prevScale) * scale;
-    });
+    m_Render = Render3DComponent("sun", 0.2f, true);
+    m_Render.rotation.x = 1.57f;
 }
 
 void DirectedLightDirector::onUpdate() {
@@ -60,9 +43,7 @@ void DirectedLightDirector::show() {
 
     auto lightArray = coordinator.GetComponentArray<DirectedLightComponent>();
     if (lightArray->size() > 0 && lightArray->entities()[0] == m_Sun) {
-        auto render = Render3DComponent("sun", 0.2f, true);
-        render.rotation.x = 1.57f;
-        coordinator.AddComponent(m_Sun, render);
+        coordinator.AddComponent(m_Sun, m_Render);
     }
 
     BaseView::show();
@@ -71,6 +52,8 @@ void DirectedLightDirector::show() {
 void DirectedLightDirector::hide() {
     auto &coordinator = gameLayer().getCoordinator();
     if (coordinator.HasComponent<Render3DComponent>(m_Sun)) {
+        m_Render = coordinator.GetComponent<Render3DComponent>(m_Sun);
+        m_Render.instance = c_NoModelInstance;
         coordinator.RemoveComponent<Render3DComponent>(m_Sun);
     }
     BaseView::hide();

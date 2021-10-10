@@ -69,7 +69,8 @@ GRenderer::GRenderer(Viewport &viewport, ModelRenderer &modelRenderer, SkyboxRen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state) {
+void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state,
+                     RenderSettings &settings) {
     glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -82,7 +83,7 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
     rs.activeTextures = 0;
     rs.fbo = m_GBuffer;
     m_ModelRenderer.draw(*m_Shader, scene, models, rs);
-    m_SkyboxRenderer.draw(camera, scene);
+    m_SkyboxRenderer.draw(camera, scene, settings);
 
     glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
 }

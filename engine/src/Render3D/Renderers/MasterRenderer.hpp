@@ -15,6 +15,7 @@
 #include "OverlayRenderer.hpp"
 #include "ParticlesRenderer.hpp"
 #include "QuadRenderer.hpp"
+#include "RenderSettings.hpp"
 #include "Renderer2D.hpp"
 #include "RendererState.hpp"
 #include "SkyboxRenderer.hpp"
@@ -26,14 +27,10 @@
 
 namespace Engine {
 
-struct RenderSettings {
-    bool hdr = true;
-    bool bloom = true;
-};
-
 class MasterRenderer {
   private:
     unsigned int m_FBO = 0;
+    unsigned int m_BloomScale = 4;
 
     std::unique_ptr<Shader> m_Shader, m_HdrShader, m_BlurShader;
 
@@ -52,7 +49,7 @@ class MasterRenderer {
     Viewport m_Viewport;
     RendererState m_State;
 
-    std::shared_ptr<Texture> m_ColorBuffer[2];
+    std::shared_ptr<Texture> m_ColorBuffer[2], m_EntityBuffer;
     unsigned int m_HdrFBO, m_DepthRBO;
 
     unsigned int m_PingpongFBO[2];
@@ -73,6 +70,11 @@ class MasterRenderer {
 
     void draw2D(const std::vector<Mesh2D::Vertex> &vertices, std::vector<uint32_t> &indices, const Texture *texture,
                 const glm::mat4 &model);
+
+    const std::unique_ptr<DirectedLightRenderer> &directedLightRenderer() { return m_DirectedLightRenderer; }
+
+  private:
+    void updateBloom();
 };
 
 } // namespace Engine

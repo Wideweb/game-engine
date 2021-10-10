@@ -1,6 +1,7 @@
 #include "TransformPanel.hpp"
 
 #include "imgui/imgui.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Engine {
 
@@ -10,7 +11,7 @@ void TransformPanel::onAttach() {
     m_Model.positionChange$.addEventCallback([this](glm::vec3 position) { m_Position = position; });
     m_Model.rotationChange$.addEventCallback([this](glm::vec3 rotation) { m_Rotation = rotation; });
     m_Model.localRotationChange$.addEventCallback([this](glm::vec3 rotation) { m_LocalRotation = rotation; });
-    m_Model.scaleChange$.addEventCallback([this](float scale, float prev) { m_Scale = scale; });
+    m_Model.scaleChange$.addEventCallback([this](glm::vec3 scale, glm::vec3 prev) { m_Scale = scale; });
 }
 
 void TransformPanel::onUpdate() {
@@ -32,10 +33,24 @@ void TransformPanel::onUpdate() {
 }
 
 void TransformPanel::onDraw(int x, int y) {
-    // ImGui::SetNextWindowSize(ImVec2(250, 200));
-    // ImGui::SetNextWindowPos(ImVec2(x, y));
-
     ImGui::Begin("Transform");
+
+    auto currentOrientation =
+        m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local ? "Local" : "Global";
+
+    if (ImGui::BeginCombo("orientation", currentOrientation)) {
+        if (ImGui::Selectable("Global",
+                              m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Global)) {
+            m_Model.transformOrientation(GameObjectModel::TransformOrientation::Global);
+        }
+
+        if (ImGui::Selectable("Local",
+                              m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local)) {
+            m_Model.transformOrientation(GameObjectModel::TransformOrientation::Local);
+        }
+
+        ImGui::EndCombo();
+    }
 
     {
         ImGui::Text("Location: ");
@@ -60,7 +75,7 @@ void TransformPanel::onDraw(int x, int y) {
 
     {
         ImGui::Text("Scale: ");
-        ImGui::InputFloat("xyz", &m_Scale, 0.1f, 0.01f);
+        ImGui::InputFloat3("xyz", glm::value_ptr(m_Scale));
     }
 
     // ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

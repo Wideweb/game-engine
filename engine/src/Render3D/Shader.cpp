@@ -6,6 +6,42 @@
 
 namespace Engine {
 
+Shader::Shader(const std::string &computeSrc) {
+    GLuint computeShader = compileShader(GL_COMPUTE_SHADER, computeSrc);
+    if (computeShader == 0) {
+        return;
+    }
+
+    GLuint programId = glCreateProgram();
+    if (programId == 0) {
+        std::cerr << "failed to create gl program";
+        return;
+    }
+
+    glAttachShader(programId, computeShader);
+
+    glLinkProgram(programId);
+
+    GLint linked_status = 0;
+    glGetProgramiv(programId, GL_LINK_STATUS, &linked_status);
+    if (linked_status == 0) {
+        GLint infoLen = 0;
+        glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLen);
+
+        std::vector<char> infoLog(static_cast<size_t>(infoLen));
+        glGetProgramInfoLog(programId, infoLen, nullptr, infoLog.data());
+
+        std::cerr << "Error linking program:\n" << infoLog.data();
+        glDeleteProgram(programId);
+        return;
+    }
+
+    glDetachShader(programId, computeShader);
+    glDeleteShader(computeShader);
+
+    m_Program = programId;
+}
+
 Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
                std::vector<std::string> transformFeedbackVaryings) {
     compile(vertexSrc, fragmentSrc, transformFeedbackVaryings);

@@ -34,6 +34,8 @@ class SkeletState {
   public:
     float mixDuration = 0.5f;
 
+    std::string animation() { return m_CurrentAnimation; }
+
     void play(std::string animation) {
         if (m_CurrentAnimation.empty()) {
             m_CurrentAnimation = animation;
@@ -49,6 +51,10 @@ class SkeletState {
     }
 
     std::vector<glm::mat4> update(Skelet &skelet, double elapsed) {
+        if (m_CurrentAnimation.empty()) {
+            return {};
+        }
+
         m_Elapsed += elapsed;
 
         if (m_Transitioning) {

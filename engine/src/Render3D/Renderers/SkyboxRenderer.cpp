@@ -14,7 +14,7 @@ SkyboxRenderer::SkyboxRenderer() {
     m_SkyboxShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
 }
 
-void SkyboxRenderer::draw(Camera &camera, Scene &scene) {
+void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings) {
     if (scene.getSkybox()) {
         // m_SkyboxRotation += 0.01f;
 
@@ -30,6 +30,8 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene) {
         m_SkyboxShader->setMatrix4("u_model", model);
         m_SkyboxShader->setMatrix4("u_view", fixedView);
         m_SkyboxShader->setMatrix4("u_projection", camera.projectionMatrix());
+
+        m_SkyboxShader->setFloat("u_threshold", settings.threshold);
 
         scene.getSkybox()->draw(*m_SkyboxShader);
 

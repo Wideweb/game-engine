@@ -7,7 +7,7 @@ namespace Engine {
 
 using ModelInstance = uint32_t;
 
-constexpr ModelInstance NoModelInstance = 0;
+constexpr ModelInstance c_NoModelInstance = 0;
 
 class ModelInstanceManager {
   public:

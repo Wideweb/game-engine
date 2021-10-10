@@ -24,11 +24,14 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
     m_ColorBuffer[0].reset(TextureLoader::createRGBA16Buffer(width, height));
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorBuffer[0]->getId(), 0);
 
-    m_ColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width, height));
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_ColorBuffer[1]->getId(), 0);
+    m_EntityBuffer.reset(TextureLoader::createR32IBuffer(width, height));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_EntityBuffer->getId(), 0);
 
-    unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, attachments);
+    m_ColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width, height));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_ColorBuffer[1]->getId(), 0);
+
+    unsigned int attachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+    glDrawBuffers(3, attachments);
 
     glGenRenderbuffers(1, &m_DepthRBO);
     glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRBO);
@@ -46,11 +49,11 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
     glGenFramebuffers(2, m_PingpongFBO);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[0]);
-    m_PingpongColorBuffer[0].reset(TextureLoader::createRGBA16Buffer(width, height));
+    m_PingpongColorBuffer[0].reset(TextureLoader::createRGBA16Buffer(width / m_BloomScale, height / m_BloomScale));
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingpongColorBuffer[0]->getId(), 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[1]);
-    m_PingpongColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width, height));
+    m_PingpongColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width / m_BloomScale, height / m_BloomScale));
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingpongColorBuffer[1]->getId(), 0);
 
     m_QuadRenderer = std::make_unique<QuadRenderer>();
@@ -71,11 +74,14 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_State.fbo = m_HdrFBO;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
 
     m_Shader->bind();
     m_Shader->setFloat3("u_viewPos", camera.positionVec());
     m_Shader->setMatrix4("u_view", camera.viewMatrix());
     m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
+
+    m_Shader->setFloat("u_threshold", settings.threshold);
 
     m_Shader->setInt("u_hasDirectedLight", 0);
     m_Shader->setInt("u_spotLightsNumber", 0);
@@ -89,26 +95,28 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_SpotLightRenderer->apply(obj.light, obj.position, *m_Shader, scene, models, m_State);
     }
 
-    m_SkyboxRenderer->draw(camera, scene);
+    m_SkyboxRenderer->draw(camera, scene, settings);
 
     for (const auto &obj : scene.getParticleEmitters()) {
-        m_ParticlesRenderer->draw(obj.particles, obj.position, camera);
+        m_ParticlesRenderer->draw(obj.particles, obj.position, camera, settings);
     }
 
     m_ModelRenderer->draw(*m_Shader, scene, models, m_State);
-    m_WaterRenderer->draw(camera, scene, models, m_State);
+    m_WaterRenderer->draw(camera, scene, models, m_State, settings);
 
     if (settings.hdr) {
-        m_State.fbo = m_FBO;
-        glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
-
         bool horizontal = true, firstIteration = true;
         if (settings.bloom) {
-            int amount = 5;
+            if (settings.bloomScale != m_BloomScale) {
+                m_BloomScale = settings.bloomScale;
+                updateBloom();
+            }
+
+            glViewport(0, 0, m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
             m_BlurShader->bind();
             glActiveTexture(GL_TEXTURE0);
             m_BlurShader->setInt("u_colorBuffer", 0);
-            for (unsigned int i = 0; i < amount; i++) {
+            for (unsigned int i = 0; i < settings.blur; i++) {
                 glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[horizontal]);
                 m_BlurShader->setInt("u_horizontal", horizontal);
                 if (firstIteration) {
@@ -121,9 +129,11 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
                 m_QuadRenderer->draw();
                 horizontal = !horizontal;
             }
-            m_State.fbo = m_FBO;
-            glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+            glViewport(0, 0, m_Viewport.width, m_Viewport.height);
         }
+
+        m_State.fbo = m_FBO;
+        glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
 
         m_HdrShader->bind();
         glActiveTexture(GL_TEXTURE0);
@@ -134,7 +144,14 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_PingpongColorBuffer[horizontal]->bind();
         m_HdrShader->setInt("u_blurBuffer", 1);
 
-        m_HdrShader->setFloat("u_exposure", 1.0f);
+        glActiveTexture(GL_TEXTURE2);
+        m_EntityBuffer->bind();
+        m_HdrShader->setInt("u_id", 2);
+
+        m_HdrShader->setFloat("u_exposure", settings.exposure);
+        m_HdrShader->setFloat("u_gamma", settings.gamma);
+        m_HdrShader->setInt("u_toneMapping", static_cast<int>(settings.toneMapping));
+
         m_QuadRenderer->draw();
     }
 
@@ -149,6 +166,33 @@ void MasterRenderer::setViewport(int width, int height) {
     m_Viewport.width = width;
     m_Viewport.height = height;
     m_GRenderer->resize();
+    m_DirectedLightRenderer->resize();
+
+    m_ColorBuffer[0]->bind();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+    m_ColorBuffer[0]->unbind();
+
+    m_ColorBuffer[1]->bind();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+    m_ColorBuffer[1]->unbind();
+
+    m_EntityBuffer->bind();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
+    m_EntityBuffer->unbind();
+
+    updateBloom();
+}
+
+void MasterRenderer::updateBloom() {
+    m_PingpongColorBuffer[0]->bind();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale, 0,
+                 GL_RGBA, GL_FLOAT, NULL);
+    m_PingpongColorBuffer[0]->unbind();
+
+    m_PingpongColorBuffer[1]->bind();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale, 0,
+                 GL_RGBA, GL_FLOAT, NULL);
+    m_PingpongColorBuffer[1]->unbind();
 }
 
 const Viewport &MasterRenderer::getViewport() { return m_Viewport; }
@@ -159,10 +203,18 @@ void MasterRenderer::clear() {
     m_SpotLightRenderer->clear();
     m_State.activeTextures = 0;
     m_State.fbo = m_FBO;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[0]);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[1]);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glBindFramebuffer(GL_FRAMEBUFFER, m_HdrFBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_State.fbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

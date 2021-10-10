@@ -20,12 +20,14 @@ ParticlesRenderer::ParticlesRenderer() {
     m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc, transformFeedbackVaryings);
 }
 
-void ParticlesRenderer::draw(const Particles &particles, const glm::mat4 &model, Camera &camera) {
+void ParticlesRenderer::draw(const Particles &particles, const glm::mat4 &model, Camera &camera,
+                             RenderSettings &settings) {
     m_Shader->bind();
     m_Shader->setMatrix4("u_view", camera.viewMatrix());
     m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
     m_Shader->setFloat3("u_viewPos", camera.positionVec());
     m_Shader->setMatrix4("u_model", model);
+    m_Shader->setFloat("u_threshold", settings.threshold);
 
     // VERTEX_PROGRAM_POINT_SIZE
     glEnable(0x8642);

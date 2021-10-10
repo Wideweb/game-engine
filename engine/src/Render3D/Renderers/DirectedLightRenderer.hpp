@@ -28,6 +28,9 @@ class DirectedLightRenderer {
 
     void apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene, const ModelManager &models,
                RendererState &state);
+    void resize();
+
+    const std::unique_ptr<Texture> &depthMap() { return m_DepthMap; }
 };
 
 } // namespace Engine

@@ -17,7 +17,7 @@ class TransformControlsScale : public BaseView {
     glm::vec3 m_PrevMouseWorldPos;
     glm::vec2 m_InitMouseScreenPos;
 
-    float m_InitScale;
+    glm::vec3 m_InitScale;
 
   public:
     TransformControlsScale(GameObjectModel &model);

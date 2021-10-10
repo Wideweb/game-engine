@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "RenderSettings.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
 
@@ -16,7 +17,7 @@ class SkyboxRenderer {
   public:
     SkyboxRenderer();
 
-    void draw(Camera &camera, Scene &scene);
+    void draw(Camera &camera, Scene &scene, RenderSettings &settings);
 };
 
 } // namespace Engine

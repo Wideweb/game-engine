@@ -3,6 +3,7 @@
 #include "Camera.hpp"
 #include "Particles.hpp"
 #include "Shader.hpp"
+#include "RenderSettings.hpp"
 
 #include <glm/glm.hpp>
 
@@ -17,7 +18,7 @@ class ParticlesRenderer {
   public:
     ParticlesRenderer();
 
-    void draw(const Particles &particles, const glm::mat4 &position, Camera &camera);
+    void draw(const Particles &particles, const glm::mat4 &position, Camera &camera, RenderSettings &settings);
 };
 
 } // namespace Engine

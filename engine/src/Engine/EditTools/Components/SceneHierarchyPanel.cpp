@@ -3,8 +3,7 @@
 #include "imgui/imgui.h"
 
 #include "CameraComponent.hpp"
-#include "SkeletComponent.hpp"
-#include "TagComponent.hpp"
+#include "ParticlesComponent.hpp"
 #include "VelocityComponent.hpp"
 
 namespace Engine {
@@ -19,13 +18,12 @@ void SceneHierarchyPanel::onDraw(int x, int y) {
     auto entities = gameCordinator.GetEntities();
     for (auto entity : entities) {
         auto &name = gameCordinator.GetEntityName(entity);
-        auto &tag = gameCordinator.GetComponent<TagComponent>(entity).tag;
 
         ImGuiTreeNodeFlags flags = (m_Model.entity() == entity) ? ImGuiTreeNodeFlags_Selected : 0;
         flags |= ImGuiTreeNodeFlags_OpenOnArrow;
         flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
-        bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, (name + tag).c_str());
+        bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, (name).c_str());
 
         if (ImGui::IsItemClicked()) {
             m_Model.setEntity(entity);
@@ -36,8 +34,8 @@ void SceneHierarchyPanel::onDraw(int x, int y) {
                 gameCordinator.AddComponent<VelocityComponent>(entity, VelocityComponent());
             }
 
-            if (!gameCordinator.HasComponent<SkeletComponent>(entity) && ImGui::MenuItem("Add Skelet Animation")) {
-                gameCordinator.AddComponent<SkeletComponent>(entity, SkeletComponent());
+            if (!gameCordinator.HasComponent<ParticlesComponent>(entity) && ImGui::MenuItem("Add Particles")) {
+                gameCordinator.AddComponent<ParticlesComponent>(entity, ParticlesComponent());
             }
 
             if (!gameCordinator.HasComponent<CameraComponent>(entity) && ImGui::MenuItem("Bind Camera")) {

@@ -9,14 +9,15 @@
 #include "CameraDirector.hpp"
 #include "ContentBrowserPanel.hpp"
 #include "DirectedLightDirector.hpp"
-#include "DirectedLightModel.hpp"
 #include "DirectedLightPanel.hpp"
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
 #include "MaterialPanel.hpp"
 #include "ParticlesPanel.hpp"
+#include "RenderPanel.hpp"
 #include "SceneHierarchyPanel.hpp"
+#include "SkeletPanel.hpp"
 #include "TransformControlsPosition.hpp"
 #include "TransformControlsRotation.hpp"
 #include "TransformControlsScale.hpp"
@@ -29,7 +30,6 @@ namespace Engine {
 class EditToolsLayer : public Layer {
   private:
     GameObjectModel m_GameObject;
-    DirectedLightModel m_DirectedLightModel;
     glm::vec2 m_MousePos;
     std::string m_Logs;
 
@@ -49,6 +49,8 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<GamePanel> m_GamePanel;
     std::unique_ptr<VelocityPanel> m_VelocityPanel;
     std::unique_ptr<DirectedLightDirector> m_DirectedLightDirector;
+    std::unique_ptr<SkeletPanel> m_SkeletPanel;
+    std::unique_ptr<RenderPanel> m_RenderPanel;
 
     Layer &gameLayer();
 

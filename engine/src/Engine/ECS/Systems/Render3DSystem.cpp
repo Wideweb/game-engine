@@ -15,6 +15,10 @@ void Render3DSystem::Attach(ComponentManager &components) const {
         auto &scene = getScene();
         auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
 
+        if (render.instance == c_NoModelInstance) {
+            return;
+        }
+
         if (render.overlay()) {
             scene.removeOverlayObject(render.model, render.instance);
         } else {
@@ -30,7 +34,7 @@ void Render3DSystem::Update(ComponentManager &components) const {
         auto &render = components.GetComponent<Render3DComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
 
-        if (render.instance == NoModelInstance) {
+        if (render.instance == c_NoModelInstance) {
             auto transform = GetTransform(render, location);
 
             if (render.overlay()) {

@@ -33,6 +33,15 @@ class ModelManager {
         return std::static_pointer_cast<TModel>(it->second);
     }
 
+    template <typename TModel, typename = std::enable_if_t<std::is_base_of_v<Model, TModel>>>
+    bool Is(const std::string &name) const {
+        const auto &it = m_NameToModel.find(name);
+
+        assert(it != m_NameToModel.end() && "no model.");
+
+        return typeid(TModel).name() == typeid(*(it->second)).name();
+    }
+
     bool HasModel(const std::string &name) const {
         const auto &it = m_NameToModel.find(name);
         return it != m_NameToModel.end();

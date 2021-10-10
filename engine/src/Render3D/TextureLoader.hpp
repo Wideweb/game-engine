@@ -21,6 +21,7 @@ class TextureLoader {
     static Texture *createRGB16Buffer(int width, int height);
     static Texture *createRGB8IBuffer(int width, int height);
     static Texture *createRGBA8Buffer(int width, int height);
+    static Texture *createR32IBuffer(int width, int height);
 };
 
 } // namespace Engine

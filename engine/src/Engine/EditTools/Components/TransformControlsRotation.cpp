@@ -86,9 +86,9 @@ void TransformControlsRotation::onDraw(int, int) {
     auto &renderY = coordinator.GetComponent<Render3DComponent>(m_ControlY);
     auto &renderZ = coordinator.GetComponent<Render3DComponent>(m_ControlZ);
 
-    renderX.scale = 0.1f;
-    renderY.scale = 0.1f;
-    renderZ.scale = 0.1f;
+    renderX.scale = glm::vec3(0.1f);
+    renderY.scale = glm::vec3(0.1f);
+    renderZ.scale = glm::vec3(0.1f);
 
     renderX.updated = true;
     renderY.updated = true;
@@ -101,6 +101,24 @@ void TransformControlsRotation::onDraw(int, int) {
     locationX.position = m_Model.position() + glm::vec3(1.5f, 0.5f, 0.0f);
     locationY.position = m_Model.position() + glm::vec3(0.0f, 1.5f, -0.5f);
     locationZ.position = m_Model.position() + glm::vec3(0.0f, -0.5f, 1.5f);
+
+    if (m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Global) {
+        locationX.position = m_Model.position() + glm::vec3(1.5f, 0.5f, 0.0f);
+        locationY.position = m_Model.position() + glm::vec3(0.0f, 1.5f, -0.5f);
+        locationZ.position = m_Model.position() + glm::vec3(0.0f, -0.5f, 1.5f);
+
+        locationX.rotation = glm::vec3(0.0f);
+        locationY.rotation = glm::vec3(0.0f);
+        locationZ.rotation = glm::vec3(0.0f);
+    } else {
+        locationX.position = m_Model.position() + glm::quat(m_Model.rotation()) * glm::vec3(1.5f, 0.5f, 0.0f);
+        locationY.position = m_Model.position() + glm::quat(m_Model.rotation()) * glm::vec3(0.0f, 1.5f, -0.5f);
+        locationZ.position = m_Model.position() + glm::quat(m_Model.rotation()) * glm::vec3(0.0f, -0.5f, 1.5f);
+
+        locationX.rotation = m_Model.rotation();
+        locationY.rotation = m_Model.rotation();
+        locationZ.rotation = m_Model.rotation();
+    }
 
     locationX.updated = true;
     locationY.updated = true;
@@ -149,9 +167,9 @@ void TransformControlsRotation::hide() {
     auto &renderY = coordinator.GetComponent<Render3DComponent>(m_ControlY);
     auto &renderZ = coordinator.GetComponent<Render3DComponent>(m_ControlZ);
 
-    renderX.scale = 0.0f;
-    renderY.scale = 0.0f;
-    renderZ.scale = 0.0f;
+    renderX.scale = glm::vec3(0.0f);
+    renderY.scale = glm::vec3(0.0f);
+    renderZ.scale = glm::vec3(0.0f);
 
     renderX.updated = true;
     renderY.updated = true;
@@ -181,7 +199,14 @@ void TransformControlsRotation::onTransform() {
     } else {
         dRotation = glm::vec3(0.0f);
     }
-    m_Model.rotation(glm::eulerAngles(glm::quat(dRotation) * glm::quat(m_Model.rotation())));
+
+    if (m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local) {
+        dRotation = glm::eulerAngles(glm::quat(m_Model.rotation()) * glm::quat(dRotation));
+    } else {
+        dRotation = glm::eulerAngles(glm::quat(dRotation) * glm::quat(m_Model.rotation()));
+    }
+
+    m_Model.rotation(dRotation);
 }
 
 } // namespace Engine

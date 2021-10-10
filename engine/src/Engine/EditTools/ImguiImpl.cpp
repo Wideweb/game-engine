@@ -14,6 +14,8 @@
 #include "Mesh2D.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
+#include "SkeletComponent.hpp"
+#include "SkinnedModel.hpp"
 #include "TagComponent.hpp"
 #include "TextureLoader.hpp"
 
@@ -118,6 +120,9 @@ void ImguiImpl::OnAttach() {
 
     window.setNativeEventCallback(
         [this](const void *e) { ImGui_ImplSDL2_ProcessEvent(static_cast<const SDL_Event *>(e)); });
+
+    m_IconPlay.reset(TextureLoader::loadTexture("assets/icons/play.png"));
+    m_IconStop.reset(TextureLoader::loadTexture("assets/icons/stop.png"));
 }
 
 void ImguiImpl::onUpdate() {
@@ -209,26 +214,26 @@ void ImguiImpl::Begin() {
 
     ImGuiIO &io = ImGui::GetIO();
 
-    ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2.0f - 20.0f));
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+    // ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2.0f - 20.0f));
+    // ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
-    ImGui::PushItemWidth(10.0f);
-    ImGui::SmallButton(">");
-    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
-        Application::get().getTime().poused()) {
-        Application::get().getTime().play();
-        m_CameraPos = Application::get().getCamera().positionVec();
-        m_CameraRotation = Application::get().getCamera().rotationVec();
-    }
-    ImGui::SameLine();
-    ImGui::SmallButton("||");
-    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
-        !Application::get().getTime().poused()) {
-        Application::get().getTime().stop();
-        Application::get().getCamera().setPosition(m_CameraPos);
-        Application::get().getCamera().setRotation(m_CameraRotation);
-    }
-    ImGui::PopItemWidth();
+    // ImGui::PushItemWidth(10.0f);
+    // ImGui::SmallButton(">");
+    // if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+    //     Application::get().getTime().poused()) {
+    //     Application::get().getTime().play();
+    //     m_CameraPos = Application::get().getCamera().positionVec();
+    //     m_CameraRotation = Application::get().getCamera().rotationVec();
+    // }
+    // ImGui::SameLine();
+    // ImGui::SmallButton("||");
+    // if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+    //     !Application::get().getTime().poused()) {
+    //     Application::get().getTime().stop();
+    //     Application::get().getCamera().setPosition(m_CameraPos);
+    //     Application::get().getCamera().setRotation(m_CameraRotation);
+    // }
+    // ImGui::PopItemWidth();
 
     ImGuiStyle &style = ImGui::GetStyle();
     float minWinSizeX = style.WindowMinSize.x;
@@ -239,6 +244,38 @@ void ImguiImpl::Begin() {
     }
 
     style.WindowMinSize.x = minWinSizeX;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+    auto &colors = ImGui::GetStyle().Colors;
+    const auto &buttonHovered = colors[ImGuiCol_ButtonHovered];
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+    const auto &buttonActive = colors[ImGuiCol_ButtonActive];
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+    ImGui::Begin("##toolbar", nullptr,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    float size = ImGui::GetWindowHeight() - 4.0f;
+    std::shared_ptr<Texture> icon = Application::get().getTime().poused() ? m_IconPlay : m_IconStop;
+    ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+
+    if (ImGui::ImageButton((ImTextureID)icon->getId(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+        if (Application::get().getTime().poused()) {
+            Application::get().getTime().play();
+            m_CameraPos = Application::get().getCamera().positionVec();
+            m_CameraRotation = Application::get().getCamera().rotationVec();
+        } else {
+            Application::get().getTime().stop();
+            Application::get().getCamera().setPosition(m_CameraPos);
+            Application::get().getCamera().setRotation(m_CameraRotation);
+        }
+    }
+
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(3);
+    ImGui::End();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
@@ -285,6 +322,10 @@ void ImguiImpl::Begin() {
             coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
             coordinator().AddComponent<Render3DComponent>(entity, Render3DComponent(path, 1.0f));
             coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
+
+            if (models.Is<SkinnedModel>(path)) {
+                coordinator().AddComponent<SkeletComponent>(entity, SkeletComponent());
+            }
         }
         ImGui::EndDragDropTarget();
     }

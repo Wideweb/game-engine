@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
@@ -209,13 +210,14 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
 }
 
 Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type) {
-
     for (unsigned int i = 0; i < materialSrc->GetTextureCount(type); i++) {
         aiString str;
         materialSrc->GetTexture(type, i, &str);
-        return TextureLoader::loadTexture(std::string(str.C_Str()));
+        if (std::filesystem::exists(str.C_Str())) {
+            return TextureLoader::loadTexture(std::string(str.C_Str()));
+        }
     }
-    return nullptr;
+    return TextureLoader::placeholder();
 }
 
 void AssimpModel::addJoint(aiBone *joint) {

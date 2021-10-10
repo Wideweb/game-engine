@@ -28,6 +28,10 @@ void EditToolsLayer::onAttach() {
 
     m_Imgui.OnAttach();
 
+    m_RenderPanel = std::make_unique<RenderPanel>();
+    m_RenderPanel->onAttach();
+    m_RenderPanel->show();
+
     m_ContentBrowserPanel = std::make_unique<ContentBrowserPanel>("assets");
     m_ContentBrowserPanel->onAttach();
     m_ContentBrowserPanel->show();
@@ -59,8 +63,9 @@ void EditToolsLayer::onAttach() {
     m_ParticlesPanel = std::make_unique<ParticlesPanel>(m_GameObject);
     m_ParticlesPanel->onAttach();
 
-    m_DirectedLightPanel = std::make_unique<DirectedLightPanel>(m_DirectedLightModel);
+    m_DirectedLightPanel = std::make_unique<DirectedLightPanel>(m_GameObject);
     m_DirectedLightPanel->onAttach();
+    m_DirectedLightPanel->hide();
 
     m_MaterialPanel = std::make_unique<MaterialPanel>(m_GameObject);
     m_MaterialPanel->onAttach();
@@ -69,6 +74,10 @@ void EditToolsLayer::onAttach() {
     m_BehaviourPanel = std::make_unique<BehaviourPanel>(m_GameObject);
     m_BehaviourPanel->onAttach();
     m_BehaviourPanel->hide();
+
+    m_SkeletPanel = std::make_unique<SkeletPanel>(m_GameObject);
+    m_SkeletPanel->onAttach();
+    m_SkeletPanel->hide();
 
     m_CameraDirector = std::make_unique<CameraDirector>(m_GameObject);
     m_CameraDirector->onAttach();
@@ -83,6 +92,10 @@ void EditToolsLayer::onAttach() {
 void EditToolsLayer::onUpdate() {
     m_Imgui.onUpdate();
     m_GamePanel->onUpdate();
+
+    if (m_RenderPanel->isVisible()) {
+        m_RenderPanel->onUpdate();
+    }
 
     if (!Application::get().getTime().poused()) {
         m_GameObject.setEntity(c_NoEntity);
@@ -132,6 +145,12 @@ void EditToolsLayer::onUpdate() {
         m_ParticlesPanel->hide();
     }
 
+    if (m_GameObject.isActive() && m_GameObject.hasDirectedLight()) {
+        m_DirectedLightPanel->show();
+    } else {
+        m_DirectedLightPanel->hide();
+    }
+
     if (m_TransformControlsPosition->isVisible()) {
         m_TransformControlsPosition->onUpdate();
     }
@@ -156,16 +175,19 @@ void EditToolsLayer::onUpdate() {
         m_MaterialPanel->onUpdate();
     }
 
+    if (m_GameObject.isActive() && m_GameObject.hasSkelet()) {
+        m_SkeletPanel->show();
+    } else {
+        m_SkeletPanel->hide();
+    }
+
     if (m_ParticlesPanel->isVisible()) {
         m_ParticlesPanel->onUpdate();
     }
 
-    // if (m_DirectedLightModel.isActive()) {
-    //     m_DirectedLightPanel->show();
-    //     m_DirectedLightPanel->onUpdate();
-    // } else {
-    //     m_DirectedLightPanel->hide();
-    // }
+    if (m_DirectedLightPanel->isVisible()) {
+        m_DirectedLightPanel->onUpdate();
+    }
 
     if (Application::get().getTime().poused()) {
         m_CameraDirector->show();
@@ -238,9 +260,35 @@ void EditToolsLayer::onDraw() {
         ImGui::SetScrollHereY(1.0f);
     ImGui::End();
 
-    m_GamePanel->onDraw(0, 0);
+    {
+        bool cameraDirectorVisible = m_CameraDirector->isVisible();
+        bool directedLightDirectorVisible = m_DirectedLightDirector->isVisible();
+
+        if (cameraDirectorVisible) {
+            m_CameraDirector->hide();
+        }
+
+        if (directedLightDirectorVisible) {
+            m_DirectedLightDirector->hide();
+        }
+
+        m_GamePanel->onDraw(0, 0);
+
+        if (cameraDirectorVisible) {
+            m_CameraDirector->show();
+        }
+
+        if (directedLightDirectorVisible) {
+            m_DirectedLightDirector->show();
+        }
+    }
+
     m_CameraDirector->onDraw(0, 0);
     m_DirectedLightDirector->onDraw(0, 0);
+
+    if (m_RenderPanel->isVisible()) {
+        m_RenderPanel->onDraw(0, 0);
+    }
 
     if (m_ContentBrowserPanel->isVisible()) {
         m_ContentBrowserPanel->onDraw(0, 0);
@@ -274,16 +322,20 @@ void EditToolsLayer::onDraw() {
         m_BehaviourPanel->onDraw(0, 250);
     }
 
-    if (m_MaterialPanel->isVisible() && m_GameObject.hasMaterial()) {
+    if (m_MaterialPanel->isVisible()) {
         m_MaterialPanel->onDraw(0, 250);
     }
 
-    if (m_ParticlesPanel->isVisible() && m_GameObject.hasParticles()) {
+    if (m_SkeletPanel->isVisible()) {
+        m_SkeletPanel->onDraw(0, 250);
+    }
+
+    if (m_ParticlesPanel->isVisible()) {
         m_ParticlesPanel->onDraw(0, 450);
     }
 
-    if (m_DirectedLightModel.isActive()) {
-        m_DirectedLightPanel->onDraw(dWidth - 150, 0);
+    if (m_DirectedLightPanel->isVisible()) {
+        m_DirectedLightPanel->onDraw(0, 0);
     }
 
     m_Imgui.End();
@@ -302,6 +354,7 @@ void EditToolsLayer::onDetach() {
     m_DirectedLightPanel->onDetach();
     m_MaterialPanel->onDetach();
     m_BehaviourPanel->onDetach();
+    m_SkeletPanel->onDetach();
     m_Imgui.OnDetach();
 }
 
