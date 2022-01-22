@@ -2,7 +2,6 @@
 
 #include "Application.hpp"
 #include "Entity.hpp"
-#include "ModelInstanceManager.hpp"
 
 #include "cmath"
 #include <glm/gtx/quaternion.hpp>
@@ -15,15 +14,15 @@ void Render3DSystem::Attach(ComponentManager &components) const {
         auto &scene = getScene();
         auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
 
-        if (render.instance == c_NoModelInstance) {
+        if (!render.instanced) {
             return;
         }
 
         if (render.overlay()) {
-            scene.removeOverlayObject(render.model, render.instance);
+            scene.removeOverlayObject(entity, render.model);
         } else {
-            scene.removeObject(render.model, render.instance);
-        }
+            scene.removeObject(entity, render.model);
+        } 
     });
 }
 
@@ -34,35 +33,57 @@ void Render3DSystem::Update(ComponentManager &components) const {
         auto &render = components.GetComponent<Render3DComponent>(entity);
         auto &location = components.GetComponent<LocationComponent>(entity);
 
-        if (render.instance == c_NoModelInstance) {
-            auto transform = GetTransform(render, location);
+        if (!render.instanced) {
+            auto transform = GetTransform(entity, components, render, location);
 
             if (render.overlay()) {
-                render.instance = scene.addOverlayObject(render.model, transform, entity);
+                scene.addOverlayObject(entity, render.model, transform, render.shader);
             } else {
-                render.instance = scene.addObject(render.model, transform, entity);
+                scene.addObject(entity, render.model, transform, render.shader);
             }
-
-        } else if (location.updated || render.updated) {
-            auto transform = GetTransform(render, location);
+            render.instanced = true;
+        } else if (location.isUpdated(entity, components) || render.isUpdated(entity, components)) {
+            auto transform = GetTransform(entity, components, render, location);
 
             if (render.overlay()) {
-                scene.updateOverlayObject(render.model, transform, render.instance);
+                scene.updateOverlayObject(entity, render.model, transform, render.shader);
             } else {
-                scene.updateObject(render.model, transform, render.instance);
+                scene.updateObject(entity, render.model, transform, render.shader);
             }
 
+            location.prevUpdated = location.updated;
             location.updated = false;
+
+            render.prevUpdated = render.updated;
             render.updated = false;
         }
     }
 }
 
-glm::mat4x4 Render3DSystem::GetTransform(const Render3DComponent &render, const LocationComponent location) const {
+glm::mat4x4 Render3DSystem::GetTransform(Entity entity, ComponentManager &components, const Render3DComponent &render,
+                                         const LocationComponent location) const {
     glm::mat4 worldTransform(1);
+
+    std::vector<Entity> ancestors;
+    Entity current = entity;
+    while (components.HasComponent<ParentComponent>(current)) {
+        current = components.GetComponent<ParentComponent>(current).entity;
+        ancestors.push_back(current);
+    }
+
+    for (int i = ancestors.size() - 1; i >= 0; i--) {
+        Entity parent = ancestors[i];
+        auto parentLocation = components.GetComponent<LocationComponent>(parent);
+        auto parentRender = components.GetComponent<Render3DComponent>(parent);
+
+        worldTransform = glm::translate(worldTransform, parentLocation.position);
+        worldTransform = worldTransform * glm::toMat4(glm::quat(parentLocation.rotation));
+        worldTransform = glm::scale(worldTransform, parentRender.scale);
+    }
+
     worldTransform = glm::translate(worldTransform, location.position);
     worldTransform = worldTransform * glm::toMat4(glm::quat(location.rotation) * glm::quat(render.rotation));
-    worldTransform = glm::scale(worldTransform, glm::vec3(render.scale));
+    worldTransform = glm::scale(worldTransform, render.scale);
 
     return worldTransform;
 }

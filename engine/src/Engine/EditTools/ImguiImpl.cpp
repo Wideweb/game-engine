@@ -12,6 +12,7 @@
 #include "Input.hpp"
 #include "LocationComponent.hpp"
 #include "Mesh2D.hpp"
+#include "ModelFactory.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
@@ -265,7 +266,7 @@ void ImguiImpl::Begin() {
         if (Application::get().getTime().poused()) {
             Application::get().getTime().play();
             m_CameraPos = Application::get().getCamera().positionVec();
-            m_CameraRotation = Application::get().getCamera().rotationVec();
+            m_CameraRotation = Application::get().getCamera().rotationQuat();
         } else {
             Application::get().getTime().stop();
             Application::get().getCamera().setPosition(m_CameraPos);
@@ -330,12 +331,54 @@ void ImguiImpl::Begin() {
         ImGui::EndDragDropTarget();
     }
 
-    if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-            const char *path = static_cast<const char *>(payload->Data);
+    if (ImGui::BeginPopupContextWindow()) {
+        if (ImGui::MenuItem("Add Box")) {
+            std::string model = "primitive-box";
+            auto &models = Application::get().getModels();
+            if (!models.HasModel(model)) {
+                models.RegisterModel(model, ModelFactory::createCube());
+            }
+
+            std::string name;
+            size_t index = coordinator().GetEntities().size();
+            do {
+                name = std::string("entity") + std::to_string(index);
+                index++;
+            } while (coordinator().HasEntity(name));
+            auto entity = coordinator().CreateEntity(name);
+
+            coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
+            coordinator().AddComponent<Render3DComponent>(entity, Render3DComponent(model, 1.0f));
+            coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
         }
-        ImGui::EndDragDropTarget();
+
+        if (ImGui::MenuItem("Add Plane")) {
+            std::string model = "primitive-plane";
+            auto &models = Application::get().getModels();
+            if (!models.HasModel(model)) {
+                models.RegisterModel(model, ModelFactory::createPlane());
+            }
+
+            std::string name;
+            size_t index = coordinator().GetEntities().size();
+            do {
+                name = std::string("entity") + std::to_string(index);
+                index++;
+            } while (coordinator().HasEntity(name));
+            auto entity = coordinator().CreateEntity(name);
+            coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
+            coordinator().AddComponent<Render3DComponent>(entity, Render3DComponent(model, 1.0f));
+            coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
+        }
+        ImGui::EndPopup();
     }
+
+    // if (ImGui::BeginDragDropTarget()) {
+    //     if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+    //         const char *path = static_cast<const char *>(payload->Data);
+    //     }
+    //     ImGui::EndDragDropTarget();
+    // }
 
     ImGui::End();
     ImGui::PopStyleVar();

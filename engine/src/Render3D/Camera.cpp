@@ -1,7 +1,6 @@
 #include "Camera.hpp"
 #include "Math.hpp"
 
-#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
 namespace Engine {
@@ -47,30 +46,10 @@ void Camera::setProjection(Projection mode) { this->mode = mode; }
 
 void Camera::setPosition(glm::vec3 position) { this->position = position; }
 
-void Camera::setRotation(glm::vec3 rotation) {
-    // if (rotation.x < -3.14f) {
-    //     rotation.x += 6.28f;
-    // } else if (rotation.x > 3.14f) {
-    //     rotation.x -= 6.28f;
-    // }
-
-    // if (rotation.y < -3.14f) {
-    //     rotation.y += 6.28f;
-    // } else if (rotation.y > 3.14f) {
-    //     rotation.y -= 6.28f;
-    // }
-
-    // if (rotation.z < -3.14f) {
-    //     rotation.z += 6.28f;
-    // } else if (rotation.z > 3.14f) {
-    //     rotation.z -= 6.28f;
-    // }
-
+void Camera::setRotation(glm::quat rotation) {
     this->rotation = rotation;
-    this->front = glm::normalize((glm::quat(this->rotation) * glm::vec3(0.0f, 0.0f, -1.0f)));
+    this->front = glm::normalize((this->rotation * glm::vec3(0.0f, 0.0f, -1.0f)));
 }
-
-void Camera::rotate(const glm::vec3 &offset) { this->setRotation(this->rotation + offset); }
 
 void Camera::move(const glm::vec3 &offset) {
     position += front * offset.x;
@@ -78,10 +57,12 @@ void Camera::move(const glm::vec3 &offset) {
     position += glm::normalize(glm::cross(front, up)) * offset.z;
 }
 
-void Camera::inversePitch() { setRotation(this->rotation * glm::vec3(-1.0f, 1.0f, 1.0f)); }
+void Camera::inversePitch() {
+    setRotation(glm::quat(glm::eulerAngles(this->rotation) * glm::vec3(-1.0f, 1.0f, -1.0f)));
+}
 
 glm::vec3 Camera::frontVec() const { return front; }
 
-glm::vec3 Camera::rotationVec() const { return rotation; }
+glm::quat Camera::rotationQuat() const { return this->rotation; }
 
 } // namespace Engine

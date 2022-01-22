@@ -2,13 +2,11 @@
 
 #include "Application.hpp"
 #include "LocationComponent.hpp"
-#include "ModelInstanceManager.hpp"
 #include "StaticRender3DComponent.hpp"
 #include "cmath"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -29,7 +27,7 @@ void StaticRender3DSystem::Update(ComponentManager &components) const {
         model = model * glm::toMat4(glm::quat(location.rotation));
         model = glm::scale(model, glm::vec3(render.scale));
 
-        render.instance = scene.addStaticObject(render.model, model, entity);
+        scene.addStaticObject(entity, render.model, model);
         coordinator.RemoveComponent<StaticRender3DComponent>(entity);
     }
 }

@@ -5,7 +5,20 @@
 
 #include "Entity.hpp"
 
+#include <string>
+#include <vector>
+
 namespace Engine {
+
+class SceneHierarchyNode {
+  public:
+    std::string title;
+    Entity entity;
+    std::vector<SceneHierarchyNode *> children;
+
+    void display(GameObjectModel &model, Coordinator &coordinator, bool childOnly = false) const;
+    void addTools(GameObjectModel &model, Coordinator &coordinator) const;
+};
 
 class SceneHierarchyPanel : public BaseView {
   private:

@@ -9,9 +9,13 @@
 
 namespace Engine {
 
+using ShaderId = GLuint;
+
+constexpr ShaderId c_NoShader = 0;
+
 class Shader {
   private:
-    GLuint m_Program;
+    ShaderId m_Program;
     std::unordered_map<std::string, GLint> m_UniformLocationMap;
 
   public:
@@ -22,12 +26,15 @@ class Shader {
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
     ~Shader();
 
+    ShaderId id() { return m_Program; }
+
     void bind() const;
     void unbind() const;
 
     void setInt(const std::string &name, int value);
     void setFloat(const std::string &name, float value);
     void setFloat2(const std::string &name, float value1, float value2);
+    void setFloat2(const std::string &name, glm::vec2 value);
     void setFloat3(const std::string &name, float value, float value2, float value3);
     void setFloat3(const std::string &name, glm::vec3 value);
     void setFloat4(const std::string &name, glm::vec4 value);

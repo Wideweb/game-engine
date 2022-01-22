@@ -13,7 +13,7 @@ class TransformPanel : public BaseView {
 
     glm::vec3 m_Position = glm::vec3(0.0f);
     glm::vec3 m_Rotation = glm::vec3(0.0f);
-    glm::vec3 m_LocalRotation = glm::vec3(0.0f);
+    glm::vec3 m_RenderRotation = glm::vec3(0.0f);
     glm::vec3 m_Scale = glm::vec3(0.0f);
     ;
 

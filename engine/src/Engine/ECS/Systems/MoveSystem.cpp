@@ -16,15 +16,10 @@ void MoveSystem::Update(ComponentManager &components) const {
         auto &location = components.GetComponent<LocationComponent>(entity);
         float deltaTime = static_cast<float>(Application::get().getTime().getDeltaSeconds());
 
-        location.rotation += velocity.rotation * deltaTime;
+        location.rotation += velocity.getFullRotation(entity, components) * deltaTime;
         location.front = glm::quat(location.rotation) * glm::vec3(0.0f, 0.0f, -1.0f);
         location.position += location.front * velocity.speed * deltaTime;
-        location.position += velocity.velocity * deltaTime;
-
-        // if (location.parent != c_NoEntity) {
-        //     auto &otherLocation = components.GetComponent<LocationComponent>(location.parent);
-        //     location.rotation = otherLocation.rotation;
-        // }
+        location.position += velocity.getFullVelocity(entity, components) * deltaTime;
 
         location.updated = true;
     }

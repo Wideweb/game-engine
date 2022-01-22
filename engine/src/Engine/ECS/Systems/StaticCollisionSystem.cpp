@@ -33,8 +33,11 @@ void StaticCollisionSystem::Update(ComponentManager &components) const {
 
         vertices.clear();
 
+        glm::vec3 position = location.getFullPosition(entity, components);
+        glm::quat rotation = glm::quat(location.getFullRotation(entity, components));
+
         std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),
-                       [&](const glm::vec3 &v) { return glm::quat(location.rotation) * v + location.position; });
+                       [&](const glm::vec3 &v) { return rotation * v + position; });
 
         if (!collision.added) {
             collision3D.AddShape(entity, vertices);

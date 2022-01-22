@@ -157,6 +157,8 @@ void SkinnedMesh::update() {
 
 void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints,
                        unsigned int textureShift, uint32_t id) const {
+    shader.bind();
+
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4)), glm::value_ptr(position),
                  GL_DYNAMIC_DRAW);

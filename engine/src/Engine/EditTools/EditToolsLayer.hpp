@@ -7,6 +7,8 @@
 
 #include "BehaviourPanel.hpp"
 #include "CameraDirector.hpp"
+#include "CollisionBody.hpp"
+#include "CollisionPanel.hpp"
 #include "ContentBrowserPanel.hpp"
 #include "DirectedLightDirector.hpp"
 #include "DirectedLightPanel.hpp"
@@ -14,10 +16,14 @@
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
 #include "MaterialPanel.hpp"
+#include "MeshBody.hpp"
 #include "ParticlesPanel.hpp"
 #include "RenderPanel.hpp"
+#include "RigitBodyPanel.hpp"
 #include "SceneHierarchyPanel.hpp"
 #include "SkeletPanel.hpp"
+#include "TerrainPanel.hpp"
+#include "TerrainTransform.hpp"
 #include "TransformControlsPosition.hpp"
 #include "TransformControlsRotation.hpp"
 #include "TransformControlsScale.hpp"
@@ -51,6 +57,12 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<DirectedLightDirector> m_DirectedLightDirector;
     std::unique_ptr<SkeletPanel> m_SkeletPanel;
     std::unique_ptr<RenderPanel> m_RenderPanel;
+    std::unique_ptr<CollisionBody> m_CollisionBody;
+    std::unique_ptr<RigitBodyPanel> m_RigitBodyPanel;
+    std::unique_ptr<CollisionPanel> m_CollisionPanel;
+    std::unique_ptr<TerrainPanel> m_TerrainPanel;
+    std::unique_ptr<TerrainTransform> m_TerrainTransform;
+    std::unique_ptr<MeshBody> m_MeshBody;
 
     Layer &gameLayer();
 

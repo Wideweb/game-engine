@@ -89,7 +89,7 @@ void GamePanel::onDraw(int x, int y) {
     auto &coordinator = gameLayer().getCoordinator();
 
     glm::vec3 lastCameraPos = camera.positionVec();
-    glm::vec3 lastCameraRotation = camera.rotationVec();
+    glm::quat lastCameraRotation = camera.rotationQuat();
     glm::vec2 lastCameraSize = camera.size();
     unsigned int lastFBO = render.getFBO();
     auto lastViewport = render.getViewport();
@@ -100,7 +100,7 @@ void GamePanel::onDraw(int x, int y) {
     auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
 
     camera.setPosition(entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset);
-    camera.setRotation(entityLocation.rotation + entityCamera.rotation);
+    camera.setRotation(glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation));
 
     render.setFBO(m_FBO);
     render.setViewport(m_ViewportSize.x, m_ViewportSize.y);

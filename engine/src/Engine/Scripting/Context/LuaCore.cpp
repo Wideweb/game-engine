@@ -46,7 +46,6 @@ void LuaCore::add(lua_State *state) {
         .addConstructor<void (*)(float, float, float)>()
         .addProperty("position", &LocationComponent::position)
         .addProperty("rotation", &LocationComponent::rotation)
-        .addProperty("parent", &LocationComponent::parent)
         .endClass()
         .endNamespace();
 
@@ -101,7 +100,6 @@ void LuaCore::add(lua_State *state) {
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
         .beginClass<TerrainCollisionComponent>("TerrainCollisionComponent")
-        .addConstructor<void (*)(unsigned int, unsigned int)>()
         .endClass()
         .endNamespace();
 

@@ -1,22 +1,20 @@
 #include "glad/glad.h"
 #include <iostream>
 
-#include "InstancedMesh.hpp"
+#include "Mesh.hpp"
 
 namespace Engine {
 
-InstancedMesh::InstancedMesh() {}
-InstancedMesh::~InstancedMesh() {}
+Mesh::Mesh() {}
+Mesh::~Mesh() {}
 
-InstancedMesh::InstancedMesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
-                             const Material &material)
+Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices, const Material &material)
     : vertices(vertices), indices(indices), material(material), hasMaterial(true) {}
 
-InstancedMesh::InstancedMesh(const InstancedMesh &mesh) {
+Mesh::Mesh(const Mesh &mesh) {
     VAO = mesh.VAO;
     EBO = mesh.EBO;
     VBO = mesh.VBO;
-    instanceVBO = mesh.instanceVBO;
 
     vertices = mesh.vertices;
     indices = mesh.indices;
@@ -24,7 +22,7 @@ InstancedMesh::InstancedMesh(const InstancedMesh &mesh) {
     hasMaterial = mesh.hasMaterial;
 }
 
-void InstancedMesh::setUp() {
+void Mesh::setUp() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -33,50 +31,10 @@ void InstancedMesh::setUp() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * static_cast<GLuint>(indices.size()), indices.data(),
                  GL_STATIC_DRAW);
 
-    // clang-format off
-    GLsizei vec4Size = sizeof(glm::vec4);
-
-    /////////////////////////////////////////////////////////////
-    //////////////////////////// ID /////////////////////////////
-    /////////////////////////////////////////////////////////////
-    glGenBuffers(1, &idVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
-    
-    glVertexAttribIPointer(0, 1, GL_INT, sizeof(uint32_t), reinterpret_cast<void *>(0));
-    glEnableVertexAttribArray(0); 
-
-    glVertexAttribDivisor(0, 1);
-
-    /////////////////////////////////////////////////////////////
-    ////////////////////////// MODEL ////////////////////////////
-    /////////////////////////////////////////////////////////////
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
-    glEnableVertexAttribArray(1); 
-
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
-    glEnableVertexAttribArray(2); 
-
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
-    glEnableVertexAttribArray(3); 
-
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
-    glEnableVertexAttribArray(4);
-
-    glVertexAttribDivisor(1, 1);
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-
-    /////////////////////////////////////////////////////////////
-    
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,
-                 static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()),
-                 vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()), vertices.data(),
+                 GL_STATIC_DRAW);
 
     /////////////////////////////////////////////////////////////
     ///////////////////////// POSITION //////////////////////////
@@ -113,58 +71,87 @@ void InstancedMesh::setUp() {
     /////////////////////////////////////////////////////////////
     glVertexAttribPointer(10, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(14 * sizeof(float)));
     glEnableVertexAttribArray(10);
-    // clang-format on
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
 }
 
-void InstancedMesh::update() {
+void Mesh::update() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * vertices.size()), vertices.data(),
                  GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
 
-void InstancedMesh::setInstances(const std::vector<glm::mat4> &positions, const std::vector<uint32_t> &ids) const {
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4) * positions.size()), positions.data(),
-                 GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, idVBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t) * ids.size()), ids.data(), GL_DYNAMIC_DRAW);
-
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * static_cast<GLuint>(indices.size()), indices.data(),
+                 GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void InstancedMesh::updateInstances(size_t from, size_t to, const std::vector<glm::mat4> &positions,
-                                    const std::vector<uint32_t> &ids) const {
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4) * from),
-                    static_cast<GLsizeiptr>(sizeof(glm::mat4) * (to - from + 1)), positions.data() + from);
+void Mesh::setInstances(GLuint idVBO, GLuint instanceVBO) const {
+    // 4.3
+    // glVertexArrayVertexBuffer(VAO, 1, idVBO, reinterpret_cast<void *>(0), sizeof(uint32_t));
+    // glVertexArrayVertexBuffer(VAO, 2, instanceVBO, reinterpret_cast<void *>(0), sizeof(glm::vec4) * 4);
 
+    glBindVertexArray(VAO);
+
+    GLsizei vec4Size = sizeof(glm::vec4);
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////////// ID /////////////////////////////
+    /////////////////////////////////////////////////////////////
     glBindBuffer(GL_ARRAY_BUFFER, idVBO);
-    glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t) * from),
-                    static_cast<GLsizeiptr>(sizeof(uint32_t) * (to - from + 1)), ids.data() + from);
+
+    glVertexAttribIPointer(0, 1, GL_INT, sizeof(uint32_t), reinterpret_cast<void *>(0));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribDivisor(0, 1);
+
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// MODEL ////////////////////////////
+    /////////////////////////////////////////////////////////////
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(0));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(vec4Size));
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(2 * vec4Size));
+    glEnableVertexAttribArray(3);
+
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, reinterpret_cast<void *>(3 * vec4Size));
+    glEnableVertexAttribArray(4);
+
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glBindVertexArray(0);
 }
 
-void InstancedMesh::draw(Shader &shader, size_t instanceCount, unsigned int textureShift = 0) const {
+void Mesh::draw(Shader &shader, size_t instanceCount, unsigned int textureShift = 0) const {
+    shader.bind();
+
     glActiveTexture(GL_TEXTURE0 + textureShift);
 
     if (hasMaterial) {
         shader.setInt("u_hasMaterial", 1);
         material.diffuseMap->bind();
-        // shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
+        shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
 
         glActiveTexture(GL_TEXTURE1 + textureShift);
         material.specularMap->bind();
-        // shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
+        shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
 
         glActiveTexture(GL_TEXTURE2 + textureShift);
         material.normalMap->bind();
-        // shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
+        shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
 
         shader.setFloat("u_material.shininess", material.shininess);
     } else {

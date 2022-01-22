@@ -39,6 +39,10 @@ flat out int v_id;
 out vec3 v_color;
 out vec2 v_texCoord;
 
+flat out int g_id;
+out vec3 g_color;
+out vec2 g_texCoord;
+
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -51,6 +55,10 @@ void main() {
     gl_Position = u_projection * positionRelativeToCamera;
     v_color = a_vertexColor;
     v_texCoord = vec2(a_vertexTextureCoord.x, a_vertexTextureCoord.y);
+
+    g_color = v_color;
+    g_texCoord = v_texCoord;
+    g_id = v_id;
 }
 
 mat4 getVertexTransform() {

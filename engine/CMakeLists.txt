@@ -64,9 +64,15 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/VelocityPanel.cpp
     src/Engine/EditTools/Components/DirectedLightDirector.cpp
     src/Engine/EditTools/Components/SkeletPanel.cpp
+    src/Engine/EditTools/Components/CollisionBody.cpp
+    src/Engine/EditTools/Components/RigitBodyPanel.cpp
+    src/Engine/EditTools/Components/CollisionPanel.cpp
+    src/Engine/EditTools/Components/TerrainPanel.cpp
+    src/Engine/EditTools/Components/TerrainTransform.cpp
+    src/Engine/EditTools/Components/MeshBody.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
-    src/Render3D/Models/InstancedMesh.cpp
+    src/Render3D/Models/Mesh.cpp
     src/Render3D/Models/InstancedModel.cpp
     src/Render3D/Models/SkinnedMesh.cpp
     src/Render3D/Models/SkinnedModel.cpp
@@ -85,6 +91,7 @@ set(SOURCE_EXE
     src/Render3D/Renderers/Renderer2D.cpp
     src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
+    src/Render3D/ModelFactory.cpp
     src/Render3D/Scene.cpp
     src/Render3D/Shader.cpp
     src/Render3D/Texture.cpp

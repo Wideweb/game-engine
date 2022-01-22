@@ -16,6 +16,9 @@ struct Material {
 uniform int u_hasMaterial;
 uniform Material u_material;
 
+uniform int u_useColor;
+uniform vec3 u_color;
+
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
@@ -36,7 +39,9 @@ void main() {
     o_id = v_id;
 
     vec3 color = v_color;
-    if (u_hasMaterial > 0) {
+    if (u_useColor > 0) {
+        color = u_color;
+    } else if (u_hasMaterial > 0) {
         color = texture(u_material.specular, v_texCoord).rgb;
     }
 

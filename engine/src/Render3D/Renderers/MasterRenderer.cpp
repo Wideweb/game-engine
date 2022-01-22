@@ -56,6 +56,8 @@ MasterRenderer::MasterRenderer(int width, int height) : m_Viewport{width, height
     m_PingpongColorBuffer[1].reset(TextureLoader::createRGBA16Buffer(width / m_BloomScale, height / m_BloomScale));
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingpongColorBuffer[1]->getId(), 0);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     m_QuadRenderer = std::make_unique<QuadRenderer>();
     m_ModelRenderer = std::make_unique<ModelRenderer>();
     m_OverlayRenderer = std::make_unique<OverlayRenderer>();
@@ -122,7 +124,6 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
                 if (firstIteration) {
                     m_ColorBuffer[1]->bind();
                     firstIteration = false;
-
                 } else {
                     m_PingpongColorBuffer[!horizontal]->bind();
                 }
@@ -170,15 +171,17 @@ void MasterRenderer::setViewport(int width, int height) {
 
     m_ColorBuffer[0]->bind();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-    m_ColorBuffer[0]->unbind();
 
     m_ColorBuffer[1]->bind();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-    m_ColorBuffer[1]->unbind();
 
     m_EntityBuffer->bind();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
     m_EntityBuffer->unbind();
+
+    glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     updateBloom();
 }
@@ -187,7 +190,6 @@ void MasterRenderer::updateBloom() {
     m_PingpongColorBuffer[0]->bind();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale, 0,
                  GL_RGBA, GL_FLOAT, NULL);
-    m_PingpongColorBuffer[0]->unbind();
 
     m_PingpongColorBuffer[1]->bind();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale, 0,

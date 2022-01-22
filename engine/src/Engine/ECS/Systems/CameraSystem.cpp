@@ -21,7 +21,7 @@ void CameraSystem::Update(ComponentManager &components) const {
         auto &cameraCmp = components.GetComponent<CameraComponent>(entity);
 
         camera.setPosition(location.position + glm::quat(location.rotation) * cameraCmp.offset);
-        camera.setRotation(location.rotation + cameraCmp.rotation);
+        camera.setRotation(glm::quat(location.rotation) * glm::quat(cameraCmp.rotation));
         // camera.move(cameraCmp.offset);
     }
 }

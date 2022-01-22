@@ -16,6 +16,9 @@ OverlayRenderer::OverlayRenderer() {
 
 void OverlayRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
     glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     m_Shader->bind();
 
     m_Shader->setMatrix4("u_view", camera.viewMatrix());
@@ -24,9 +27,11 @@ void OverlayRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mod
     for (auto &pair : scene.getOverlayObjects()) {
         const auto &model = models.GetModel(pair.first);
         auto &instances = pair.second;
+
         model->draw(*m_Shader, instances, 0);
     }
 
+    glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 }
 

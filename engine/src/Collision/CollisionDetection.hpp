@@ -12,6 +12,8 @@
 #include <cmath>
 #include <map>
 
+#include <iostream>
+
 namespace Engine {
 
 template <typename T> struct CollisionResult {
@@ -39,51 +41,14 @@ template <typename T> class CollisionDetection {
 
         glm::vec3 offset = glm::vec3(0.0f);
 
-        AABB aabb{vertices};
-        glm::vec3 center = aabb.min + (aabb.max - aabb.min) / 2.0f;
-        center.y = aabb.min.y;
-
         for (const auto &overlapedShape : overlaps) {
+            glm::vec3 mtv;
+
             if (overlapedShape.type == CollisionShapeType::Terrain) {
-                glm::vec3 positionInTerrain = center - overlapedShape.box.min;
-                float terrainWidth = static_cast<float>(overlapedShape.width);
-                float terrainHeight = static_cast<float>(overlapedShape.height);
-
-                positionInTerrain.x = glm::clamp(positionInTerrain.x, 0.0f, terrainWidth);
-                positionInTerrain.z = glm::clamp(positionInTerrain.z, 0.0f, terrainHeight);
-
-                unsigned int x = static_cast<unsigned int>(std::floor(positionInTerrain.x));
-                unsigned int z = static_cast<unsigned int>(std::floor(positionInTerrain.z));
-
-                float positionInTileX = positionInTerrain.x - static_cast<float>(x);
-                float positionInTileZ = positionInTerrain.z - static_cast<float>(z);
-
-                auto &vertices = overlapedShape.vertices;
-                float terrainY = 0.0f;
-
-                if (positionInTileX <= (1 - positionInTileZ)) {
-                    terrainY = BarryCentric(glm::vec3(0.0f, vertices[(z + 1) * overlapedShape.width + x].y, 1.0),
-                                            glm::vec3(1.0f, vertices[z * overlapedShape.width + x + 1].y, 0.0),
-                                            glm::vec3(0.0f, vertices[z * overlapedShape.width + x].y, 0.0),
-                                            glm::vec2(positionInTileX, positionInTileZ));
-                } else {
-                    terrainY = BarryCentric(glm::vec3(0.0f, vertices[(z + 1) * overlapedShape.width + x].y, 1.0),
-                                            glm::vec3(1.0f, vertices[(z + 1) * overlapedShape.width + x + 1].y, 1.0),
-                                            glm::vec3(1.0f, vertices[z * overlapedShape.width + x + 1].y, 0.0),
-                                            glm::vec2(positionInTileX, positionInTileZ));
-                }
-
-                if (terrainY > center.y) {
-                    glm::vec3 mtv = glm::vec3(0.0f, terrainY - center.y, 0.0f);
-
-                    result.emplace_back(overlapedShape.id, mtv);
-                    offset += mtv;
-                }
-
-                continue;
+                mtv = DetectTerrainCollision(overlapedShape, vertices);
+            } else {
+                mtv = m_NarrowPhase.Collide(vertices, overlapedShape.vertices, offset);
             }
-
-            glm::vec3 mtv = m_NarrowPhase.Collide(vertices, overlapedShape.vertices, offset);
 
             if (!Math::isEqual(mtv.x + mtv.y + mtv.z, 0.0f)) {
                 result.emplace_back(overlapedShape.id, mtv);
@@ -92,6 +57,48 @@ template <typename T> class CollisionDetection {
         }
 
         return result;
+    }
+
+    glm::vec3 DetectTerrainCollision(const CollisionShape<T> &terrain, const std::vector<glm::vec3> &vertices) const {
+        AABB aabb{vertices};
+        glm::vec3 center = (aabb.min + aabb.max) / 2.0f;
+        center.y = aabb.min.y;
+
+        float terrainWidth = static_cast<float>(terrain.columns);
+        float terrainHeight = static_cast<float>(terrain.rows);
+
+        glm::vec3 cellSize = (terrain.box.max - terrain.box.min) / glm::vec3(terrain.columns, 1.0f, terrain.rows);
+        cellSize.y = 1.0f;
+        glm::vec3 positionInTerrain = (center - terrain.box.min) / cellSize;
+
+        positionInTerrain.x = glm::clamp(positionInTerrain.x, 0.0f, terrainWidth);
+        positionInTerrain.z = glm::clamp(positionInTerrain.z, 0.0f, terrainHeight);
+
+        unsigned int x = static_cast<unsigned int>(std::floor(positionInTerrain.x));
+        unsigned int z = static_cast<unsigned int>(std::floor(positionInTerrain.z));
+
+        float positionInTileX = positionInTerrain.x - static_cast<float>(x);
+        float positionInTileZ = positionInTerrain.z - static_cast<float>(z);
+
+        float terrainY = 0.0f;
+
+        if (positionInTileX <= (1 - positionInTileZ)) {
+            terrainY = BarryCentric(glm::vec3(0.0f, terrain.vertices[(z + 1) * terrain.columns + x].y, 1.0),
+                                    glm::vec3(1.0f, terrain.vertices[z * terrain.columns + x + 1].y, 0.0),
+                                    glm::vec3(0.0f, terrain.vertices[z * terrain.columns + x].y, 0.0),
+                                    glm::vec2(positionInTileX, positionInTileZ));
+        } else {
+            terrainY = BarryCentric(glm::vec3(0.0f, terrain.vertices[(z + 1) * terrain.columns + x].y, 1.0),
+                                    glm::vec3(1.0f, terrain.vertices[(z + 1) * terrain.columns + x + 1].y, 1.0),
+                                    glm::vec3(1.0f, terrain.vertices[z * terrain.columns + x + 1].y, 0.0),
+                                    glm::vec2(positionInTileX, positionInTileZ));
+        }
+
+        if (terrainY > center.y) {
+            return glm::vec3(0.0f, terrainY - center.y, 0.0f);
+        }
+
+        return glm::vec3(0.0f);
     }
 
     float BarryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos) const {

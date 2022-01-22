@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Model.hpp"
+#include "ShaderModelInstanceManager.hpp"
 #include "Skelet.hpp"
 #include "SkinnedMesh.hpp"
 
@@ -19,8 +20,7 @@ class SkinnedModel : public Model {
     void setUp() override;
     void update() override;
 
-    void draw(Shader &shader, ModelInstanceManager &instances,
-              unsigned int textureShift) override;
+    void draw(Shader &shader, ShaderModelInstanceManager &instances, unsigned int textureShift) override;
 };
 
 } // namespace Engine

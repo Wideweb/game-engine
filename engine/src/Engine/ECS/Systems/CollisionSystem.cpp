@@ -27,7 +27,7 @@ void CollisionSystem::Update(ComponentManager &components) const {
 
         vertices.clear();
 
-        glm::vec3 move(location.position);
+        glm::vec3 move(location.getFullPosition(entity, components));
         move = move + glm::vec3(location.front) * glm::vec3(velocity.speed) * deltaTime;
 
         std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),

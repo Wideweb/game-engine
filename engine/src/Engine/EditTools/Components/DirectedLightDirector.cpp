@@ -53,7 +53,7 @@ void DirectedLightDirector::hide() {
     auto &coordinator = gameLayer().getCoordinator();
     if (coordinator.HasComponent<Render3DComponent>(m_Sun)) {
         m_Render = coordinator.GetComponent<Render3DComponent>(m_Sun);
-        m_Render.instance = c_NoModelInstance;
+        m_Render.instanced = false;
         coordinator.RemoveComponent<Render3DComponent>(m_Sun);
     }
     BaseView::hide();

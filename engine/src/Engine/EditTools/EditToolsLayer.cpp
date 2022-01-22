@@ -5,6 +5,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "Application.hpp"
+#include "EditToolComponent.hpp"
 #include "Input.hpp"
 #include "Mesh2D.hpp"
 #include "TextureLoader.hpp"
@@ -16,7 +17,7 @@ Layer &EditToolsLayer::gameLayer() { return Application::get().getLayer("game_ar
 void EditToolsLayer::onAttach() {
     Application::get().getTime().stop();
     Application::get().getCamera().setPosition(glm::vec3(8.0f, 6.0f, 8.0f));
-    Application::get().getCamera().setRotation(glm::vec3(glm::radians(-25.0f), glm::radians(45.0f), 0.0f));
+    Application::get().getCamera().setRotation(glm::quat(glm::vec3(glm::radians(-25.0f), glm::radians(45.0f), 0.0f)));
 
     Application::get().getTextures().add("engine_placeholder", TextureLoader::placeholder());
 
@@ -44,6 +45,18 @@ void EditToolsLayer::onAttach() {
     m_TransformPanel->onAttach();
     m_TransformPanel->hide();
 
+    m_TerrainPanel = std::make_unique<TerrainPanel>(m_GameObject);
+    m_TerrainPanel->onAttach();
+    m_TerrainPanel->hide();
+
+    m_TerrainTransform = std::make_unique<TerrainTransform>(m_GameObject, *m_TerrainPanel);
+    m_TerrainTransform->onAttach();
+    m_TerrainTransform->hide();
+
+    m_MeshBody = std::make_unique<MeshBody>(m_GameObject);
+    m_MeshBody->onAttach();
+    m_MeshBody->hide();
+
     m_TransformControlsPosition = std::make_unique<TransformControlsPosition>(m_GameObject);
     m_TransformControlsPosition->onAttach();
     m_TransformControlsPosition->hide();
@@ -55,6 +68,18 @@ void EditToolsLayer::onAttach() {
     m_TransformControlsScale = std::make_unique<TransformControlsScale>(m_GameObject);
     m_TransformControlsScale->onAttach();
     m_TransformControlsScale->hide();
+
+    m_CollisionBody = std::make_unique<CollisionBody>(m_GameObject);
+    m_CollisionBody->onAttach();
+    m_CollisionBody->hide();
+
+    m_CollisionPanel = std::make_unique<CollisionPanel>(m_GameObject);
+    m_CollisionPanel->onAttach();
+    m_CollisionPanel->hide();
+
+    m_RigitBodyPanel = std::make_unique<RigitBodyPanel>(m_GameObject);
+    m_RigitBodyPanel->onAttach();
+    m_RigitBodyPanel->hide();
 
     m_VelocityPanel = std::make_unique<VelocityPanel>(m_GameObject);
     m_VelocityPanel->onAttach();
@@ -84,6 +109,7 @@ void EditToolsLayer::onAttach() {
 
     m_GamePanel = std::make_unique<GamePanel>();
     m_GamePanel->onAttach();
+    m_GamePanel->hide();
 
     m_DirectedLightDirector = std::make_unique<DirectedLightDirector>(m_GameObject);
     m_DirectedLightDirector->onAttach();
@@ -91,7 +117,10 @@ void EditToolsLayer::onAttach() {
 
 void EditToolsLayer::onUpdate() {
     m_Imgui.onUpdate();
-    m_GamePanel->onUpdate();
+
+    if (m_GamePanel->isVisible()) {
+        m_GamePanel->onUpdate();
+    }
 
     if (m_RenderPanel->isVisible()) {
         m_RenderPanel->onUpdate();
@@ -104,15 +133,29 @@ void EditToolsLayer::onUpdate() {
     if (m_GameObject.isActive()) {
         m_TransformPanel->show();
         m_BehaviourPanel->show();
+        m_MeshBody->show();
     } else {
         m_TransformPanel->hide();
         m_BehaviourPanel->hide();
+        m_MeshBody->hide();
     }
 
     if (m_GameObject.isActive() && m_GameObject.hasPosition()) {
         m_TransformControlsPosition->show();
     } else {
         m_TransformControlsPosition->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasTerrainCollision()) {
+        m_TerrainTransform->show();
+    } else {
+        m_TerrainTransform->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasTerrainCollision()) {
+        m_TerrainPanel->show();
+    } else {
+        m_TerrainPanel->hide();
     }
 
     if (m_GameObject.isActive() && m_GameObject.hasRotation()) {
@@ -125,6 +168,24 @@ void EditToolsLayer::onUpdate() {
         m_TransformControlsScale->show();
     } else {
         m_TransformControlsScale->hide();
+    }
+
+    if (m_GameObject.isActive() && (m_GameObject.hasCollision())) {
+        m_CollisionBody->show();
+    } else {
+        m_CollisionBody->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasCollision()) {
+        m_CollisionPanel->show();
+    } else {
+        m_CollisionPanel->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasPhysics()) {
+        m_RigitBodyPanel->show();
+    } else {
+        m_RigitBodyPanel->hide();
     }
 
     if (m_GameObject.isActive() && m_GameObject.hasVelocity()) {
@@ -155,6 +216,10 @@ void EditToolsLayer::onUpdate() {
         m_TransformControlsPosition->onUpdate();
     }
 
+    if (m_TerrainTransform->isVisible()) {
+        m_TerrainTransform->onUpdate();
+    }
+
     if (m_TransformControlsRotation->isVisible()) {
         m_TransformControlsRotation->onUpdate();
     }
@@ -163,8 +228,24 @@ void EditToolsLayer::onUpdate() {
         m_TransformControlsScale->onUpdate();
     }
 
+    if (m_CollisionBody->isVisible()) {
+        m_CollisionBody->onUpdate();
+    }
+
+    if (m_CollisionPanel->isVisible()) {
+        m_CollisionPanel->onUpdate();
+    }
+
+    if (m_RigitBodyPanel->isVisible()) {
+        m_RigitBodyPanel->onUpdate();
+    }
+
     if (m_TransformPanel->isVisible()) {
         m_TransformPanel->onUpdate();
+    }
+
+    if (m_TerrainPanel->isVisible()) {
+        m_TerrainPanel->onUpdate();
     }
 
     if (m_VelocityPanel->isVisible()) {
@@ -239,9 +320,20 @@ void EditToolsLayer::onUpdate() {
 
         if (input.IsKeyPressed(KeyCode::Space) && m_GameObject.isActive()) {
             glm::vec3 distance = camera.positionVec() - m_GameObject.position();
-            glm::vec3 newPosition = m_GameObject.position() + glm::quat(glm::vec3(0.0f, 0.01f, 0.0f)) * distance;
+            glm::quat deltaRotation = glm::quat(glm::vec3(0.0f, 0.01f, 0.0f));
+            glm::vec3 newPosition = m_GameObject.position() + deltaRotation * distance;
             camera.setPosition(newPosition);
-            camera.rotate(glm::vec3(0.0f, 0.01f, 0.0f));
+            camera.setRotation(deltaRotation * camera.rotationQuat());
+        }
+
+        if (input.IsKeyPressed(KeyCode::F) && m_GameObject.isActive()) {
+            glm::vec3 curDir = camera.frontVec();
+            glm::vec3 newDir = glm::normalize(m_GameObject.position() - camera.positionVec());
+
+            glm::vec3 half = glm::normalize(curDir + newDir);
+            glm::quat deltaRotation = glm::quat(glm::dot(curDir, half), glm::cross(curDir, half));
+
+            camera.setRotation(deltaRotation * camera.rotationQuat());
         }
     }
 }
@@ -260,7 +352,7 @@ void EditToolsLayer::onDraw() {
         ImGui::SetScrollHereY(1.0f);
     ImGui::End();
 
-    {
+    if (m_GamePanel->isVisible()) {
         bool cameraDirectorVisible = m_CameraDirector->isVisible();
         bool directedLightDirectorVisible = m_DirectedLightDirector->isVisible();
 
@@ -302,6 +394,10 @@ void EditToolsLayer::onDraw() {
         m_TransformControlsPosition->onDraw(0, 0);
     }
 
+    if (m_TerrainTransform->isVisible()) {
+        m_TerrainTransform->onDraw(0, 0);
+    }
+
     if (m_TransformControlsRotation->isVisible()) {
         m_TransformControlsRotation->onDraw(0, 0);
     }
@@ -310,8 +406,24 @@ void EditToolsLayer::onDraw() {
         m_TransformControlsScale->onDraw(0, 0);
     }
 
+    if (m_CollisionBody->isVisible()) {
+        m_CollisionBody->onDraw(0, 0);
+    }
+
+    if (m_CollisionPanel->isVisible()) {
+        m_CollisionPanel->onDraw(0, 0);
+    }
+
+    if (m_RigitBodyPanel->isVisible()) {
+        m_RigitBodyPanel->onDraw(0, 0);
+    }
+
     if (m_TransformPanel->isVisible()) {
         m_TransformPanel->onDraw(0, 250);
+    }
+
+    if (m_TerrainPanel->isVisible()) {
+        m_TerrainPanel->onDraw(0, 250);
     }
 
     if (m_VelocityPanel->isVisible()) {
@@ -320,6 +432,10 @@ void EditToolsLayer::onDraw() {
 
     if (m_BehaviourPanel->isVisible()) {
         m_BehaviourPanel->onDraw(0, 250);
+    }
+
+    if (m_MeshBody->isVisible()) {
+        m_MeshBody->onDraw(0, 250);
     }
 
     if (m_MaterialPanel->isVisible()) {
@@ -346,14 +462,20 @@ void EditToolsLayer::onDetach() {
     m_CameraDirector->onDetach();
     m_DirectedLightDirector->onDetach();
     m_TransformControlsPosition->onDetach();
+    m_TerrainTransform->onDetach();
     m_TransformControlsRotation->onDetach();
     m_TransformControlsScale->onDetach();
+    m_CollisionBody->onDetach();
+    m_CollisionPanel->onDetach();
+    m_RigitBodyPanel->onDetach();
     m_TransformPanel->onDetach();
+    m_TerrainPanel->onDetach();
     m_VelocityPanel->onDetach();
     m_ParticlesPanel->onDetach();
     m_DirectedLightPanel->onDetach();
     m_MaterialPanel->onDetach();
     m_BehaviourPanel->onDetach();
+    m_MeshBody->onDetach();
     m_SkeletPanel->onDetach();
     m_Imgui.OnDetach();
 }
@@ -385,6 +507,13 @@ void EditToolsLayer::onMouseEvent(MouseEvent &event) {
         }
     }
 
+    if (m_TerrainTransform->isVisible()) {
+        m_TerrainTransform->onMouseEvent(event);
+        if (event.handled) {
+            return;
+        }
+    }
+
     if (event.type == EventType::MouseDown) {
         handleSelection();
     }
@@ -392,10 +521,16 @@ void EditToolsLayer::onMouseEvent(MouseEvent &event) {
     if (!event.handled && Application::get().getTime().poused() &&
         Application::get().getInput().IsMousePressed(MouseButton::Left)) {
         auto mousePos = Application::get().getInput().GetMousePosition();
+        auto &camera = Application::get().getCamera();
+        auto cameraRotation = camera.rotationQuat();
 
-        glm::vec2 offset = (mousePos - m_MousePos) * 0.002f;
+        glm::vec2 mouseOffset = (mousePos - m_MousePos) * 0.002f;
 
-        Application::get().getCamera().rotate(glm::vec3(offset.y, offset.x, 0.0f));
+        auto deltaRotationX =
+            glm::angleAxis(mouseOffset.y, glm::normalize(glm::cross(camera.frontVec(), camera.upVec())));
+        auto deltaRotationY = glm::angleAxis(mouseOffset.x, camera.upVec());
+
+        camera.setRotation(deltaRotationX * deltaRotationY * cameraRotation);
     }
     m_MousePos = Application::get().getInput().GetMousePosition();
 }
@@ -404,7 +539,6 @@ void EditToolsLayer::handleSelection() {
     auto ray = Application::get().getMousePicker().ray();
     auto pos = Application::get().getCamera().positionVec();
     auto editToolsEntities = m_Collision.Raycast(pos, ray, 100.0f);
-    auto gameEntities = gameLayer().getCollision().Raycast(pos, ray, 100.0f);
 
     if (editToolsEntities.empty() && m_Imgui.entity() == c_NoEntity) {
         m_GameObject.setEntity(c_NoEntity);
@@ -426,7 +560,8 @@ void EditToolsLayer::handleSelection() {
         }
     }
 
-    if (m_Imgui.entity() != c_NoEntity) {
+    if (m_Imgui.entity() != c_NoEntity &&
+        !gameLayer().getCoordinator().HasComponent<EditToolComponent>(m_Imgui.entity())) {
         m_GameObject.setEntity(m_Imgui.entity());
     }
 }

@@ -3,6 +3,7 @@
 #include "Application.hpp"
 #include "InstancedModel.hpp"
 #include "LocationComponent.hpp"
+#include "Math.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
 #include "StaticCollisionComponent.hpp"
@@ -200,7 +201,7 @@ void TransformControlsScale::onTransform() {
     float initDist = glm::distance(glm::vec2(screenPos), initMousePos);
     float currDist = glm::distance(glm::vec2(screenPos), curMousePos);
 
-    glm::vec3 scale = m_InitScale * (currDist / initDist);
+    glm::vec3 scale = Math::rescale(m_InitScale, glm::vec3(1.0f), glm::vec3(currDist / initDist));
 
     if (m_ActiveControl != m_ControlX) {
         scale.x = m_InitScale.x;

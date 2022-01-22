@@ -25,7 +25,7 @@ class ImguiImpl {
 
     Entity m_Entity;
     glm::vec3 m_CameraPos;
-    glm::vec3 m_CameraRotation;
+    glm::quat m_CameraRotation;
 
     Layer &layer() { return Application::get().getLayer("game_area"); }
     Coordinator &coordinator() { return layer().getCoordinator(); }

@@ -10,13 +10,18 @@
 #include "InstancedModel.hpp"
 #include "LocationComponent.hpp"
 #include "Material.hpp"
+#include "Math.hpp"
+#include "ParentComponent.hpp"
 #include "Particles.hpp"
 #include "ParticlesComponent.hpp"
+#include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
+#include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
+#include <glm/gtx/matrix_decompose.hpp>
 #include <glm/vec3.hpp>
 #include <string>
 
@@ -31,9 +36,10 @@ class GameObjectModel {
     TransformOrientation m_TransformOrientation = TransformOrientation::Local;
 
   public:
+    EventDispatcher<Entity> entityChange$;
     EventDispatcher<glm::vec3> positionChange$;
     EventDispatcher<glm::vec3> rotationChange$;
-    EventDispatcher<glm::vec3> localRotationChange$;
+    EventDispatcher<glm::vec3> renderRotationChange$;
     EventDispatcher<glm::vec3, glm::vec3> scaleChange$;
     EventDispatcher<ParticlesConfiguration> particlesChange$;
     EventDispatcher<float> materialSpecularChange$;
@@ -42,13 +48,21 @@ class GameObjectModel {
     EventDispatcher<glm::vec3> rotationVelocityChange$;
     EventDispatcher<float> directionalSpeedChange$;
     EventDispatcher<DirectedLight> directedLightChange$;
+    EventDispatcher<float> weightChange$;
+    EventDispatcher<std::vector<glm::vec3>> collisionChange$;
 
     void setEntity(Entity entity) {
         m_Entity = entity;
 
-        positionChange$.dispatch(position());
-        rotationChange$.dispatch(rotation());
-        localRotationChange$.dispatch(localRotation());
+        entityChange$.dispatch(m_Entity);
+
+        if (m_Entity == c_NoEntity) {
+            return;
+        }
+
+        positionChange$.dispatch(localPosition());
+        rotationChange$.dispatch(localRotation());
+        renderRotationChange$.dispatch(renderRotation());
         scaleChange$.dispatch(scale(), scale());
 
         if (hasMaterial()) {
@@ -69,6 +83,15 @@ class GameObjectModel {
         if (hasDirectedLight()) {
             directedLightChange$.dispatch(directedLight());
         }
+
+        if (hasPhysics()) {
+            weightChange$.dispatch(weight());
+        }
+
+        if (hasCollision()) {
+            auto box = collisionBox();
+            collisionChange$.dispatch(box);
+        }
     }
 
     Entity entity() { return m_Entity; }
@@ -87,15 +110,93 @@ class GameObjectModel {
         return false;
     }
 
-    glm::vec3 position() {
-        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return coordinator().GetComponent<LocationComponent>(m_Entity).position;
+    glm::mat4 parentTransform() {
+        glm::mat4 transform(1);
+
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return transform;
         }
 
-        return glm::vec3(0.0f);
+        std::vector<Entity> ancestors;
+        Entity current = m_Entity;
+        while (coordinator().HasComponent<ParentComponent>(current)) {
+            current = coordinator().GetComponent<ParentComponent>(current).entity;
+            ancestors.push_back(current);
+        }
+
+        for (int i = ancestors.size() - 1; i >= 0; i--) {
+            Entity current = ancestors[i];
+            auto &location = coordinator().GetComponent<LocationComponent>(current);
+            auto &render = coordinator().GetComponent<Render3DComponent>(current);
+
+            transform = glm::translate(transform, location.position);
+            transform = transform * glm::toMat4(glm::quat(location.rotation));
+            transform = glm::scale(transform, render.scale);
+        }
+
+        return transform;
+    }
+
+    glm::mat4 localTransform() {
+        glm::mat4 transform(1);
+
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return transform;
+        }
+
+        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+
+        transform = glm::translate(transform, location.position);
+        transform = transform * glm::toMat4(glm::quat(location.rotation));
+        transform = glm::scale(transform, render.scale);
+
+        return transform;
+    }
+
+    glm::mat4 transform() {
+        glm::mat4 transform(1);
+
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return transform;
+        }
+
+        return parentTransform() * localTransform();
+    }
+
+    glm::vec3 position() {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return glm::vec3(0.0f);
+        }
+
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(transform(), scale, rotation, position, skew, perspective);
+
+        return position;
     }
 
     void position(glm::vec3 value) {
+        // auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+
+        // location.position = value;
+        // location.updated = true;
+
+        // if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+        //     coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
+        // }
+
+        // if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+        //     coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+        // }
+
+        // positionChange$.dispatch(value);
+    }
+
+    void localPosition(glm::vec3 value) {
         auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
 
         location.position = value;
@@ -105,7 +206,63 @@ class GameObjectModel {
             coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
         }
 
+        if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+        }
+
         positionChange$.dispatch(value);
+    }
+
+    glm::vec3 localPosition() {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return glm::vec3(0.0f);
+        }
+
+        return coordinator().GetComponent<LocationComponent>(m_Entity).position;
+    }
+
+    void move(glm::vec3 value) {
+        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+
+        glm::mat4 transform = glm::inverse(parentTransform());
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(transform, scale, rotation, position, skew, perspective);
+
+        value = rotation * value;
+
+        location.position += value;
+        location.updated = true;
+
+        if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
+        }
+
+        if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+        }
+
+        positionChange$.dispatch(location.position);
+    }
+
+    void moveLocal(glm::vec3 value) {
+        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+
+        location.position += value;
+        location.updated = true;
+
+        if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
+        }
+
+        if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+        }
+
+        positionChange$.dispatch(location.position);
     }
 
     bool hasRotation() {
@@ -121,14 +278,52 @@ class GameObjectModel {
     }
 
     glm::vec3 rotation() {
-        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return coordinator().GetComponent<LocationComponent>(m_Entity).rotation;
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return glm::vec3(0.0f);
         }
 
-        return glm::vec3(0.0f);
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(transform(), scale, rotation, position, skew, perspective);
+
+        return glm::eulerAngles(rotation);
     }
 
     void rotation(glm::vec3 value) {
+        // if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+        //     auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+
+        //     if (location.rotation == value) {
+        //         return;
+        //     }
+
+        //     location.rotation = value;
+        //     location.updated = true;
+
+        //     if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+        //         coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
+        //     }
+
+        //     if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+        //         coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+        //     }
+        // }
+
+        // rotationChange$.dispatch(value);
+    }
+
+    glm::vec3 localRotation() {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return glm::vec3(0.0f);
+        }
+
+        return coordinator().GetComponent<LocationComponent>(m_Entity).rotation;
+    }
+
+    void localRotation(glm::vec3 value) {
         if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
             auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
 
@@ -142,12 +337,16 @@ class GameObjectModel {
             if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
                 coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
             }
+
+            if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+                coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+            }
         }
 
         rotationChange$.dispatch(value);
     }
 
-    glm::vec3 localRotation() {
+    glm::vec3 renderRotation() {
         if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
             return coordinator().GetComponent<Render3DComponent>(m_Entity).rotation;
         }
@@ -155,11 +354,11 @@ class GameObjectModel {
         return glm::vec3(0.0f);
     }
 
-    void localRotation(glm::vec3 value) {
+    void renderRotation(glm::vec3 value) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         render.rotation = value;
         render.updated = true;
-        localRotationChange$.dispatch(value);
+        renderRotationChange$.dispatch(value);
     }
 
     bool hasScale() {
@@ -168,6 +367,26 @@ class GameObjectModel {
     }
 
     glm::vec3 scale() {
+        if (!coordinator().HasComponent<Render3DComponent>(m_Entity)) {
+            return glm::vec3(0.0f);
+        }
+
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(transform(), scale, rotation, position, skew, perspective);
+
+        return scale;
+    }
+
+    void scale(glm::vec3 value) {
+        auto parentScale = Math::rescale(glm::vec3(1.0f), localScale(), scale());
+        localScale(Math::rescale(glm::vec3(1.0f), parentScale, value));
+    }
+
+    glm::vec3 localScale() {
         if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
             return coordinator().GetComponent<Render3DComponent>(m_Entity).scale;
         }
@@ -175,27 +394,40 @@ class GameObjectModel {
         return glm::vec3(0.0f);
     }
 
-    void scale(glm::vec3 value) {
+    void localScale(glm::vec3 value) {
         auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+
+        glm::vec3 oldValue = scale();
+        render.scale = value;
+        glm::vec3 newValue = scale();
 
         if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
             auto &collision = coordinator().GetComponent<StaticCollisionComponent>(m_Entity);
             std::vector<glm::vec3> vertices;
             vertices.reserve(8);
             std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),
-                           [&](const glm::vec3 &v) { return v / render.scale * value; });
-            collision.vertices = std::move(vertices);
-            collision.updated = true;
+                           [&](const glm::vec3 &v) { return Math::rescale(v, oldValue, newValue); });
+            collisionBox(vertices);
         }
 
-        glm::vec3 oldValue = render.scale;
-        render.scale = value;
+        if (coordinator().HasComponent<CollisionComponent>(m_Entity)) {
+            auto &collision = coordinator().GetComponent<CollisionComponent>(m_Entity);
+            std::vector<glm::vec3> vertices;
+            vertices.reserve(8);
+            std::transform(collision.vertices.begin(), collision.vertices.end(), std::back_inserter(vertices),
+                           [&](const glm::vec3 &v) { return Math::rescale(v, oldValue, newValue); });
+            collisionBox(vertices);
+        }
+
+        if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+        }
 
         render.updated = true;
         location.updated = true;
 
-        scaleChange$.dispatch(value, oldValue);
+        scaleChange$.dispatch(newValue, oldValue);
     }
 
     std::string model() { return coordinator().GetComponent<Render3DComponent>(m_Entity).model; }
@@ -382,6 +614,93 @@ class GameObjectModel {
         components[0].light = value;
 
         directedLightChange$.dispatch(value);
+    }
+
+    bool hasTerrainCollision() { return coordinator().HasComponent<TerrainCollisionComponent>(m_Entity); }
+
+    bool hasCollision() {
+        return coordinator().HasComponent<StaticCollisionComponent>(m_Entity) ||
+               coordinator().HasComponent<CollisionComponent>(m_Entity);
+    }
+
+    std::vector<glm::vec3> collisionBox() {
+        if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+            return coordinator().GetComponent<StaticCollisionComponent>(m_Entity).vertices;
+        }
+
+        if (coordinator().HasComponent<CollisionComponent>(m_Entity)) {
+            return coordinator().GetComponent<CollisionComponent>(m_Entity).vertices;
+        }
+
+        return {};
+    }
+
+    void collisionBox(std::vector<glm::vec3> value) {
+        if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+            auto &collision = coordinator().GetComponent<StaticCollisionComponent>(m_Entity);
+
+            collision.vertices = value;
+            collision.updated = true;
+
+            collisionChange$.dispatch(value);
+        }
+
+        if (coordinator().HasComponent<CollisionComponent>(m_Entity)) {
+            auto &collision = coordinator().GetComponent<CollisionComponent>(m_Entity).vertices = value;
+
+            collisionChange$.dispatch(value);
+        }
+    }
+
+    bool hasPhysics() { return coordinator().HasComponent<PhysicsComponent>(m_Entity); }
+
+    float weight() {
+        if (coordinator().HasComponent<PhysicsComponent>(m_Entity)) {
+            return coordinator().GetComponent<PhysicsComponent>(m_Entity).weight;
+        }
+
+        return 0;
+    }
+
+    void weight(float value) {
+        if (coordinator().HasComponent<PhysicsComponent>(m_Entity)) {
+            coordinator().GetComponent<PhysicsComponent>(m_Entity).weight = value;
+            weightChange$.dispatch(value);
+        }
+    }
+
+    void updateTerrain(std::vector<Mesh::Vertex> vertices) {
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+        const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
+        model->meshes[0].vertices = vertices;
+        model->update();
+
+        coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
+    }
+
+    void updateTerrain(std::vector<Mesh::Vertex> vertices, std::vector<GLuint> indices, int columns, int rows) {
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+        const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
+        model->meshes[0].vertices = vertices;
+        model->meshes[0].indices = indices;
+        model->update();
+
+        auto &terrain = coordinator().GetComponent<TerrainCollisionComponent>(m_Entity);
+        terrain.columns = columns;
+        terrain.rows = rows;
+        terrain.updated = true;
+    }
+
+    void parent(Entity entity) {
+        if (coordinator().HasComponent<ParentComponent>(m_Entity)) {
+            coordinator().GetComponent<ParentComponent>(m_Entity).entity = entity;
+        } else {
+            coordinator().AddComponent<ParentComponent>(m_Entity, ParentComponent(entity));
+        }
+
+        positionChange$.dispatch(localPosition());
+        rotationChange$.dispatch(localRotation());
+        scaleChange$.dispatch(scale(), scale());
     }
 
   private:

@@ -79,10 +79,10 @@ void main() {
     vec3 reflectDir = normalize(v_fragPos - texture(u_positionMap, reflectTexCoord).rgb);
 
     float refractFactor = dot(normalize(viewDir), vec3(0, 1, 0));
-    refractFactor = pow(refractFactor, 0.5);
+    refractFactor = pow(refractFactor, 2.0);
 
-    vec4 reflectColor = vec4(texture(u_colorMap, reflectTexCoord).rgb, refractFactor);
-    reflectColor = mix(reflectColor, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
+    vec4 reflectColor = vec4(texture(u_colorMap, reflectTexCoord).rgb, 1.0 - refractFactor);
+    reflectColor = mix(reflectColor, vec4(0.0, 1.0, 1.0, reflectColor.a), 0.5);
 
     vec3 normalMapColor = texture(u_normalMap, texCoordDistorted).rgb;
     vec3 normal = normalize(mat3(u_noramlFix) * normalize(normalMapColor * 2.0 - 1.0));

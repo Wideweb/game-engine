@@ -31,6 +31,8 @@ class StaticCollisionComponent {
         vertices.emplace_back(wHalf, -hHalf, dHalf);
         vertices.emplace_back(-wHalf, -hHalf, dHalf);
     }
+
+    
 };
 
 } // namespace Engine

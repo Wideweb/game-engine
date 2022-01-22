@@ -5,9 +5,9 @@
 #include <iostream>
 #include <utility>
 
-#include "InstancedMesh.hpp"
 #include "InstancedModel.hpp"
 #include "Material.hpp"
+#include "Mesh.hpp"
 #include "ModelLoader.hpp"
 #include "TextureLoader.hpp"
 
@@ -330,7 +330,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::st
     std::vector<glm::vec3> pVertices;
     std::vector<glm::vec3> nVertices;
     std::vector<glm::vec2> tVertices;
-    std::vector<InstancedMesh::Vertex> vertices;
+    std::vector<Mesh::Vertex> vertices;
     std::vector<GLuint> indices;
     Material material;
 
@@ -371,7 +371,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::st
     material.specularMap.reset(TextureLoader::loadTexture(toSpecularMap));
     material.normalMap.reset(TextureLoader::loadTexture(toNormalMap));
 
-    InstancedMesh mesh(vertices, indices, material);
+    Mesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
     model->setUp();
     return model;
@@ -441,7 +441,7 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path, unsigne
     unsigned char *heightMapSrc = stbi_load(path.data(), &width, &height, &nrChannels, 0);
     StbiPixel *heightMap = reinterpret_cast<StbiPixel *>(heightMapSrc);
 
-    std::vector<InstancedMesh::Vertex> vertices;
+    std::vector<Mesh::Vertex> vertices;
     std::vector<GLuint> indices;
     Material material;
 
@@ -563,7 +563,7 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path, unsigne
     material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg"));
     material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg"));
 
-    InstancedMesh mesh(vertices, indices, material);
+    Mesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
     model->setUp();
     return model;

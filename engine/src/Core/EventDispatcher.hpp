@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "FlatDictionary.hpp"
+
 #include <functional>
 #include <iterator>
 #include <list>
@@ -33,6 +35,7 @@ class IEventDispatcher {};
 template <class... TArgs> class EventDispatcher : public IEventDispatcher {
   private:
     std::list<EventDelegate<TArgs...>> m_Delegates;
+    // ObjectManager<uint32_t> m_Delegates;
 
   public:
     void dispatch(TArgs... args) {
@@ -41,7 +44,7 @@ template <class... TArgs> class EventDispatcher : public IEventDispatcher {
         }
     }
 
-    void addEventCallback(const EventDelegate<TArgs...> &delegate) { m_Delegates.push_back(delegate); }
+    void addEventCallback(const EventDelegate<TArgs...> &delegate) { m_Delegates.emplace_back(delegate); }
 };
 
 } // namespace Engine

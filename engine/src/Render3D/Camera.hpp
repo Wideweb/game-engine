@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 
 namespace Engine {
@@ -14,7 +15,7 @@ class Camera {
     ~Camera();
 
     void move(const glm::vec3 &offset);
-    void rotate(const glm::vec3 &offset);
+    void rotate(const glm::quat &delta);
 
     glm::mat4 viewMatrix() const;
     glm::mat4 projectionMatrix() const;
@@ -22,7 +23,7 @@ class Camera {
     glm::vec3 positionVec() const;
     glm::vec3 upVec() const;
     glm::vec3 frontVec() const;
-    glm::vec3 rotationVec() const;
+    glm::quat rotationQuat() const;
     glm::vec2 size() const;
 
     void setSize(int width, int height);
@@ -30,7 +31,7 @@ class Camera {
     void setOrthogonal(float zNear, float zFar);
     void setProjection(Projection mode);
     void setPosition(glm::vec3 position);
-    void setRotation(glm::vec3 direction);
+    void setRotation(glm::quat rotation);
     void inversePitch();
 
   private:
@@ -40,7 +41,7 @@ class Camera {
     glm::vec3 position;
     glm::vec3 up;
     glm::vec3 front;
-    glm::vec3 rotation;
+    glm::quat rotation;
 
     Projection mode;
     glm::mat4 orthogonal;

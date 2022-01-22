@@ -12,7 +12,7 @@ void SpotLightSystem::Update(ComponentManager &components) const {
         const auto &light = components.GetComponent<SpotLightComponent>(entity);
         const auto &location = components.GetComponent<LocationComponent>(entity);
 
-        scene.addSpotLight(light.light, location.position);
+        scene.addSpotLight(entity, light.light, location.position);
     }
 }
 

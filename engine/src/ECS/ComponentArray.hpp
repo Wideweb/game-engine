@@ -1,12 +1,10 @@
 #pragma once
 
-#include <array>
-#include <cassert>
 #include <string>
-#include <unordered_map>
 
 #include "Entity.hpp"
 #include "EventDispatcher.hpp"
+#include "FlatDictionary.hpp"
 
 namespace Engine {
 
@@ -20,56 +18,36 @@ template <typename T> class ComponentArray : public IComponentArray {
   public:
     EventDispatcher<Entity> beforeRemove$;
 
-    void Add(Entity entity, T component) {
-        assert(m_Size < c_MaxEntities && "Too many components");
-
-        m_Components[m_Size] = component;
-        m_Entities[m_Size] = entity;
-        m_EntityToIndex[entity] = m_Size;
-        ++m_Size;
-    }
+    void Add(Entity entity, T component) { m_Components.add(entity, component); }
 
     T &Get(Entity entity) {
-        const auto &it = m_EntityToIndex.find(entity);
-
-        // assert(it != m_EntityToIndex.end() && "no component.");
-
-        if (it == m_EntityToIndex.end()) {
+        if (!Has(entity)) {
             throw std::string("No component:") + std::string(typeid(T).name());
         }
 
-        return m_Components[it->second];
+        return m_Components[entity];
     }
 
-    bool Has(Entity entity) { return m_EntityToIndex.find(entity) != m_EntityToIndex.end(); }
+    bool Has(Entity entity) { return m_Components.hasKey(entity); }
 
     void Remove(Entity entity) {
-        if (m_EntityToIndex.find(entity) == m_EntityToIndex.end()) {
+        if (!Has(entity)) {
             return;
         }
 
         beforeRemove$.dispatch(entity);
 
-        const auto index = m_EntityToIndex[entity];
-        --m_Size;
-        m_Components[index] = m_Components[m_Size];
-        m_Entities[index] = m_Entities[m_Size];
-        m_EntityToIndex[m_Entities[index]] = index;
-        m_EntityToIndex.erase(entity);
+        m_Components.remove(entity);
     }
 
-    uint32_t size() { return m_Size; }
+    uint32_t size() { return m_Components.size(); }
 
-    std::array<T, c_MaxEntities> &components() { return m_Components; }
+    std::vector<T> &components() { return m_Components.values(); }
 
-    std::array<Entity, c_MaxEntities> &entities() { return m_Entities; }
+    std::vector<Entity> &entities() { return m_Components.keys(); }
 
   private:
-    std::array<T, c_MaxEntities> m_Components;
-    std::array<Entity, c_MaxEntities> m_Entities;
-    uint32_t m_Size = 0;
-
-    std::unordered_map<Entity, size_t> m_EntityToIndex;
+    FlatDictionary<Entity, T> m_Components;
 };
 
 } // namespace Engine

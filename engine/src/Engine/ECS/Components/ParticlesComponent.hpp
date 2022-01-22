@@ -9,7 +9,7 @@ namespace Engine {
 
 class ParticlesComponent {
   public:
-    ParticlesEmitterInstance instance = NoParticlesEmitterInstance;
+    bool instanced = false;
     ParticlesConfiguration emitter;
 
     ParticlesComponent() {}

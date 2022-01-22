@@ -35,6 +35,8 @@ template <typename T> class Grid {
         ++m_ActiveShapes;
     }
 
+    const CollisionShape<T> &GetShape(T id) { return m_Shapes[id]; }
+
     void UpdateShape(T id, const std::vector<glm::vec3> &vertices) {
         auto &shape = m_Shapes[id];
 

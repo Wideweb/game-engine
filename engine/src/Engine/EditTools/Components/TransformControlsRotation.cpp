@@ -201,12 +201,12 @@ void TransformControlsRotation::onTransform() {
     }
 
     if (m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local) {
-        dRotation = glm::eulerAngles(glm::quat(m_Model.rotation()) * glm::quat(dRotation));
+        dRotation = glm::eulerAngles(glm::quat(m_Model.localRotation()) * glm::quat(dRotation));
     } else {
-        dRotation = glm::eulerAngles(glm::quat(dRotation) * glm::quat(m_Model.rotation()));
+        dRotation = glm::eulerAngles(glm::quat(dRotation) * glm::quat(m_Model.localRotation()));
     }
 
-    m_Model.rotation(dRotation);
+    m_Model.localRotation(dRotation);
 }
 
 } // namespace Engine

@@ -216,6 +216,12 @@ void Shader::setFloat2(const std::string &name, float value1, float value2) {
     // std::cout << glGetError() << std::endl;
 }
 
+void Shader::setFloat2(const std::string &name, glm::vec2 value) {
+    GLint location = getUniformLocation(name);
+    glUniform2f(location, value.x, value.y);
+    // std::cout << glGetError() << std::endl;
+}
+
 void Shader::setFloat3(const std::string &name, float value1, float value2, float value3) {
     GLint location = getUniformLocation(name);
     glUniform3f(location, value1, value2, value3);

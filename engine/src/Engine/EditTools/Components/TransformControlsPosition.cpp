@@ -165,9 +165,10 @@ void TransformControlsPosition::onTransform() {
 
     if (m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local) {
         dPosition = glm::quat(m_Model.rotation()) * dPosition;
+        m_Model.moveLocal(dPosition);
+    } else {
+        m_Model.move(dPosition);
     }
-
-    m_Model.position(m_Model.position() + dPosition);
 }
 
 } // namespace Engine

@@ -13,7 +13,7 @@ void ParticlesSystem::Attach(ComponentManager &components) const {
         auto &scene = getScene();
         auto &particles = getCoordinator().GetComponent<ParticlesComponent>(entity);
 
-        scene.removeParticlesEmitter(particles.instance);
+        scene.removeParticlesEmitter(entity);
     });
 }
 
@@ -28,10 +28,11 @@ void ParticlesSystem::Update(ComponentManager &components) const {
         model = glm::translate(model, location.position);
         model = model * glm::toMat4(glm::quat(location.rotation));
 
-        if (particles.instance == NoParticlesEmitterInstance) {
-            particles.instance = scene.addParticlesEmitter(particles.emitter, model);
+        if (!particles.instanced) {
+            scene.addParticlesEmitter(entity, particles.emitter, model);
+            particles.instanced = true;
         } else {
-            scene.updateParticlesEmitter(particles.instance, particles.emitter, model,
+            scene.updateParticlesEmitter(entity, particles.emitter, model,
                                          Application::get().getTime().getDeltaSeconds());
         }
     }

@@ -12,7 +12,9 @@
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
+#include "EditToolComponent.hpp"
 #include "LocationComponent.hpp"
+#include "ParentComponent.hpp"
 #include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
@@ -58,6 +60,8 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<BehaviourComponent>();
     m_Coordinator.RegisterComponent<ParticlesComponent>();
     m_Coordinator.RegisterComponent<TagComponent>();
+    m_Coordinator.RegisterComponent<ParentComponent>();
+    m_Coordinator.RegisterComponent<EditToolComponent>();
 
     {
         Signature signature;
@@ -87,7 +91,8 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
         Signature signature;
         signature.set(m_Coordinator.GetComponentType<TerrainCollisionComponent>());
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
-        signature.set(m_Coordinator.GetComponentType<StaticRender3DComponent>());
+        // signature.set(m_Coordinator.GetComponentType<StaticRender3DComponent>());
+        signature.set(m_Coordinator.GetComponentType<Render3DComponent>());
 
         m_Coordinator.RegisterSystem<TerrainCollisionSystem>(signature, m_Name);
     }
@@ -182,9 +187,7 @@ void Layer::update() {
     onUpdate();
 }
 
-void Layer::draw() {
-    onDraw();
-}
+void Layer::draw() { onDraw(); }
 
 void Layer::detach() {
     onDetach();

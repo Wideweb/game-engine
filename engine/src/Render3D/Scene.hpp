@@ -8,22 +8,18 @@
 #include <vector>
 
 #include "DirectedLight.hpp"
+#include "FlatDictionary.hpp"
 #include "IteratorRange.hpp"
 #include "Model.hpp"
-#include "ModelInstanceManager.hpp"
 #include "Particles.hpp"
+#include "ShaderModelInstanceManager.hpp"
 #include "Skybox.hpp"
 #include "SpotLight.hpp"
 #include "Texture.hpp"
 
 namespace Engine {
 
-using ParticlesEmitterInstance = uint32_t;
-constexpr ParticlesEmitterInstance NoParticlesEmitterInstance = 0;
-
-constexpr uint32_t c_MaxSceneObjects = 500;
 constexpr uint32_t c_MaxSceneLights = 4;
-constexpr uint32_t c_MaxParticleEmitters = 10;
 
 struct SceneSpotLight {
     SpotLight light;
@@ -35,62 +31,66 @@ struct SceneParticles {
     glm::mat4 position;
 };
 
+struct SceneShaderObject {
+    std::string model;
+    glm::mat4 position;
+    std::shared_ptr<Shader> shader;
+};
+
 class Scene {
   public:
     ~Scene() = default;
 
-    using ParticlesRange = IteratorRange<std::array<SceneParticles, c_MaxParticleEmitters>::const_iterator>;
-
-    using ObjectsRange = IteratorRange<std::unordered_map<std::string, ModelInstanceManager>::iterator>;
-
-    using OverlayObjectsRange = IteratorRange<std::unordered_map<std::string, ModelInstanceManager>::iterator>;
-
-    using LightsRange = IteratorRange<std::array<SceneSpotLight, c_MaxSceneLights>::const_iterator>;
+    using ObjectsRange = IteratorRange<std::unordered_map<std::string, ShaderModelInstanceManager>::iterator>;
 
     void setSkybox(const std::shared_ptr<Skybox> skybox);
     std::shared_ptr<Skybox> getSkybox();
 
-    ModelInstance addStaticObject(const std::string &model, glm::mat4 position, uint32_t id);
+    uint32_t addStaticObject(uint32_t id, const std::string &model, glm::mat4 position);
 
-    ModelInstance addOverlayObject(const std::string &model, glm::mat4 position, uint32_t id);
-    void removeOverlayObject(const std::string &model, ModelInstance instance);
-    void updateOverlayObject(const std::string &model, glm::mat4 position, ModelInstance instance);
+    uint32_t addOverlayObject(uint32_t id, const std::string &model, glm::mat4 position,
+                              std::shared_ptr<Shader> shader = nullptr);
+    void removeOverlayObject(uint32_t id, const std::string &model);
+    void updateOverlayObject(uint32_t id, const std::string &model, glm::mat4 position,
+                             std::shared_ptr<Shader> shader = nullptr);
     ObjectsRange getOverlayObjects();
 
-    ModelInstance addObject(const std::string &model, glm::mat4 position, uint32_t id);
-    void removeObject(const std::string &model, ModelInstance instance);
-    void updateObject(const std::string &model, glm::mat4 position, ModelInstance instance);
-    void updateObject(const std::string &model, std::vector<glm::mat4> joints, ModelInstance instance);
+    uint32_t addObject(uint32_t id, const std::string &model, glm::mat4 position,
+                       std::shared_ptr<Shader> shader = nullptr);
+    void removeObject(uint32_t id, const std::string &model);
+    void updateObject(uint32_t id, const std::string &model, glm::mat4 position, std::shared_ptr<Shader> shader);
+    void updateObject(uint32_t id, const std::string &model, std::vector<glm::mat4> joints);
+    void updateObject(uint32_t id, const std::string &model, std::shared_ptr<Shader> shader = nullptr);
     ObjectsRange getObjects();
 
     void setDirectedLight(const DirectedLight &light);
     bool hasDirectedLight();
     DirectedLight &getDirectedLight();
 
-    void addSpotLight(const SpotLight &light, glm::vec3 position);
-    LightsRange getSpotLights();
+    uint32_t addSpotLight(uint32_t id, const SpotLight &light, glm::vec3 position);
+    void removeSpotLight(uint32_t id);
+    void updateSpotLight(uint32_t id, const SpotLight &light, glm::vec3 position);
+    const std::vector<SceneSpotLight> &getSpotLights() const;
 
-    ParticlesEmitterInstance addParticlesEmitter(ParticlesConfiguration config, glm::mat4 position);
-    void removeParticlesEmitter(ModelInstance instance);
-    void updateParticlesEmitter(ParticlesEmitterInstance instance, const ParticlesConfiguration &config,
-                                glm::mat4 position, double deltaTime);
-    ParticlesRange getParticleEmitters();
+    uint32_t addParticlesEmitter(uint32_t id, ParticlesConfiguration config, glm::mat4 position);
+    void removeParticlesEmitter(uint32_t id);
+    void updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &config, glm::mat4 position,
+                                double deltaTime);
+    const std::vector<SceneParticles> &getParticleEmitters() const;
 
     void clear();
 
   private:
-    std::unordered_map<std::string, ModelInstanceManager> m_Objects;
-    std::unordered_map<std::string, ModelInstanceManager> m_OverlayObjects;
+    std::unordered_map<std::string, ShaderModelInstanceManager> m_Objects;
+    std::unordered_map<std::string, ShaderModelInstanceManager> m_OverlayObjects;
 
-    DirectedLight m_DirectedLight;
-    std::array<SceneSpotLight, c_MaxSceneLights> m_SpotLights;
     std::shared_ptr<Skybox> m_Skybox;
 
-    uint32_t m_ActiveLights = 0;
     bool m_HasDirectedLight = false;
+    DirectedLight m_DirectedLight;
 
-    uint32_t m_ActiveParticleEmitters = 0;
-    std::array<SceneParticles, c_MaxParticleEmitters> m_ParticleEmitters;
+    FlatDictionary<uint32_t, SceneParticles> m_ParticleEmitters;
+    FlatDictionary<uint32_t, SceneSpotLight> m_SpotLights;
 };
 
 } // namespace Engine

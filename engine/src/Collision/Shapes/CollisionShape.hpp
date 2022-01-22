@@ -15,12 +15,11 @@ template <typename T> struct CollisionShape {
     AABB box;
     CollisionShapeType type;
 
-    unsigned int width;
-    unsigned int height;
+    // Terrain
+    int columns, rows;
 
     CollisionShape() {}
-    CollisionShape(T id, const std::vector<glm::vec3> &vertices,
-                   CollisionShapeType type)
+    CollisionShape(T id, const std::vector<glm::vec3> &vertices, CollisionShapeType type)
         : id(id), vertices(vertices), box(AABB(vertices)), type(type) {}
 };
 

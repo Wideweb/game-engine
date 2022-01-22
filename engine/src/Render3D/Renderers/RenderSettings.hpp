@@ -5,6 +5,12 @@
 
 namespace Engine {
 
+enum class PolygonMode {
+    None = 0,
+    Fill = 1,
+    Line = 2,
+};
+
 enum class ToneMapping {
     LinearToneMapping = 0,
     SimpleReinhardToneMapping = 1,
