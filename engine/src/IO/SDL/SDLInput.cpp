@@ -1,5 +1,6 @@
 #include "SDLInput.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 namespace Engine {
@@ -24,8 +25,16 @@ static SDL_Scancode getSDLScancode(KeyCode code) {
         return SDL_SCANCODE_Q;
     case KeyCode::E:
         return SDL_SCANCODE_E;
+    case KeyCode::X:
+        return SDL_SCANCODE_X;
+    case KeyCode::Y:
+        return SDL_SCANCODE_Y;
+    case KeyCode::Z:
+        return SDL_SCANCODE_Z;
     case KeyCode::Escape:
         return SDL_SCANCODE_ESCAPE;
+    case KeyCode::Shift:
+        return SDL_SCANCODE_LSHIFT;
     default:
         return SDL_SCANCODE_UNKNOWN;
     }
@@ -49,6 +58,10 @@ void SDLInput::update() {}
 bool SDLInput::IsKeyPressed(KeyCode key) {
     const Uint8 *keystates = SDL_GetKeyboardState(NULL);
     return keystates[getSDLScancode(key)];
+}
+
+bool SDLInput::IsAnyKeyPressed(const std::vector<KeyCode> keys) {
+    return std::any_of(keys.begin(), keys.end(), [this](KeyCode code) { return IsKeyPressed(code); });
 }
 
 bool SDLInput::IsMousePressed(MouseButton button) {

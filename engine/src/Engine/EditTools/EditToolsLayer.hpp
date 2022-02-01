@@ -41,6 +41,8 @@ class EditToolsLayer : public Layer {
 
     ImguiImpl m_Imgui;
 
+    glm::vec3 m_Pivot;
+
     std::unique_ptr<TransformControlsPosition> m_TransformControlsPosition;
     std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;
     std::unique_ptr<TransformControlsScale> m_TransformControlsScale;

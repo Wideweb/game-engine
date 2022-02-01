@@ -27,6 +27,8 @@ Application::Application(ApplicationSettings settings) {
     m_Camera->setPerspective(glm::radians(45.0f), 0.1f, 50.0f);
     m_Camera->setProjection(Camera::Projection::PERSPECTIVE);
 
+    m_CameraController = std::make_unique<CameraController>(*m_Camera);
+
     m_Texture = std::unique_ptr<TextureManager>(new TextureManager());
 
     m_EventHandler = std::make_unique<EventHandler>();
@@ -42,13 +44,17 @@ void Application::run() {
     std::cout << "RUN" << std::endl;
     m_Render->setClearColor(0.0f, 0.1f, 0.1f, 1.0f);
     m_Time.tick();
+    m_GlobalTime.tick();
 
     while (m_Running) {
         m_Time.tick();
+        m_GlobalTime.tick();
 
         m_Window->readInput();
         m_Input->update();
         m_MousePicker->update();
+
+        m_CameraController->update(m_GlobalTime.getDeltaSeconds());
 
         for (auto layer : m_LayerStack) {
             layer->getScene().clear();

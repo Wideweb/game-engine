@@ -3,6 +3,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
+#include <limits>
 
 #include "Application.hpp"
 #include "EditToolComponent.hpp"
@@ -290,27 +291,33 @@ void EditToolsLayer::onUpdate() {
         auto &input = Application::get().getInput();
         auto &camera = Application::get().getCamera();
         if (input.IsKeyPressed(KeyCode::W)) {
-            camera.move(glm::vec3(0.1f, 0.0f, 0.0f));
+            glm::vec3 delta = glm::vec3(0.5, 0.0f, 0.0f);
+            Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::S)) {
-            camera.move(glm::vec3(-0.1f, 0.0f, 0.0f));
+            glm::vec3 delta = glm::vec3(-0.5, 0.0f, 0.0f);
+            Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::A)) {
-            camera.move(glm::vec3(0.0f, 0.0f, -0.1f));
+            glm::vec3 delta = glm::vec3(0.0f, 0.0f, -0.5);
+            Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::D)) {
-            camera.move(glm::vec3(0.0f, 0.0f, 0.1f));
+            glm::vec3 delta = glm::vec3(0.0f, 0.0f, 0.5);
+            Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::Q)) {
-            camera.move(glm::vec3(0.0f, -0.1f, 0.0f));
+            glm::vec3 delta = glm::vec3(0.0f, -0.5, 0.0f);
+            Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::E)) {
-            camera.move(glm::vec3(0.0f, 0.1f, 0.0f));
+            glm::vec3 delta = glm::vec3(0.0f, 0.5, 0.0f);
+            Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::Backspace) && m_GameObject.isActive()) {
@@ -319,11 +326,13 @@ void EditToolsLayer::onUpdate() {
         }
 
         if (input.IsKeyPressed(KeyCode::Space) && m_GameObject.isActive()) {
-            glm::vec3 distance = camera.positionVec() - m_GameObject.position();
-            glm::quat deltaRotation = glm::quat(glm::vec3(0.0f, 0.01f, 0.0f));
-            glm::vec3 newPosition = m_GameObject.position() + deltaRotation * distance;
-            camera.setPosition(newPosition);
-            camera.setRotation(deltaRotation * camera.rotationQuat());
+            // glm::vec3 distance = camera.positionVec() - m_GameObject.position();
+            glm::quat deltaRotation = glm::angleAxis(glm::radians(1.0f), camera.upVec());
+            // glm::vec3 newPosition = m_GameObject.position() + deltaRotation * distance;
+            // camera.setPosition(newPosition);
+            // camera.setRotation(deltaRotation * camera.rotationQuat());
+            Application::get().getCameraController().spin(m_GameObject.position(),
+                                                          deltaRotation * camera.rotationQuat(), 0.0);
         }
 
         if (input.IsKeyPressed(KeyCode::F) && m_GameObject.isActive()) {
@@ -333,7 +342,65 @@ void EditToolsLayer::onUpdate() {
             glm::vec3 half = glm::normalize(curDir + newDir);
             glm::quat deltaRotation = glm::quat(glm::dot(curDir, half), glm::cross(curDir, half));
 
-            camera.setRotation(deltaRotation * camera.rotationQuat());
+            // camera.setRotation(deltaRotation * camera.rotationQuat());
+
+            Application::get().getCameraController().rotateTo(deltaRotation * camera.rotationQuat(), 0.2);
+        }
+
+        if (input.IsAnyKeyPressed({KeyCode::X, KeyCode::Y, KeyCode::Z})) {
+            glm::vec3 cameraPos = camera.positionVec();
+            glm::vec3 cameraDir = camera.frontVec();
+
+            glm::vec3 planeNormal, newDir;
+
+            if (input.IsKeyPressed(KeyCode::X)) {
+                planeNormal = glm::vec3(-1.0f, 0.0f, 0.0f);
+                newDir = glm::vec3(1.0, 0.0f, 0.001f);
+
+                if (input.IsKeyPressed(KeyCode::Shift)) {
+                    newDir = glm::vec3(-1.0, 0.0f, 0.001f);
+                }
+            }
+
+            if (input.IsKeyPressed(KeyCode::Y)) {
+                planeNormal = glm::vec3(0.0f, 1.0f, 0.0f);
+                newDir = glm::vec3(0.001f, -1.0f, 0.0f);
+
+                if (input.IsKeyPressed(KeyCode::Shift)) {
+                    newDir = glm::vec3(0.001f, 1.0f, 0.0f);
+                }
+            }
+
+            if (input.IsKeyPressed(KeyCode::Z)) {
+                planeNormal = glm::vec3(0.0f, 0.0f, -1.0f);
+                newDir = glm::vec3(0.001f, 0.0f, 1.0f);
+
+                if (input.IsKeyPressed(KeyCode::Shift)) {
+                    newDir = glm::vec3(0.001f, 0.0f, -1.0f);
+                }
+            }
+
+            glm::vec3 planePoint = glm::vec3(0.0f, 0.0f, 0.0f);
+            glm::vec3 planePointToCamera = cameraPos - planePoint;
+
+            float normalDistance = glm::dot(planePointToCamera, planeNormal);
+            float dot = glm::dot(glm::reflect(cameraDir, planeNormal), planeNormal);
+            float t = normalDistance / dot;
+
+            glm::vec3 pivot;
+            if (std::abs(glm::dot(cameraDir, planeNormal)) < 0.01f) {
+                pivot = m_Pivot;
+            } else {
+                pivot = cameraPos + cameraDir * t;
+                m_Pivot = pivot;
+            }
+
+            glm::vec3 half = glm::normalize(cameraDir + newDir);
+            glm::quat deltaRotation = glm::quat(glm::dot(cameraDir, half), glm::cross(cameraDir, half));
+
+            glm::vec3 newPosition = pivot - newDir * std::abs(normalDistance);
+
+            Application::get().getCameraController().spin(pivot, deltaRotation * camera.rotationQuat(), 0.4f);
         }
     }
 }
@@ -518,19 +585,28 @@ void EditToolsLayer::onMouseEvent(MouseEvent &event) {
         handleSelection();
     }
 
-    if (!event.handled && Application::get().getTime().poused() &&
-        Application::get().getInput().IsMousePressed(MouseButton::Left)) {
+    if (!event.handled && event.type == EventType::MouseWheel && Application::get().getTime().poused()) {
         auto mousePos = Application::get().getInput().GetMousePosition();
         auto &camera = Application::get().getCamera();
         auto cameraRotation = camera.rotationQuat();
 
-        glm::vec2 mouseOffset = (mousePos - m_MousePos) * 0.002f;
+        float eventXSign = event.x > 0.0f ? 1.0f : -1.0f;
+        float eventYSign = event.y > 0.0f ? 1.0f : -1.0f;
+
+        // glm::vec2 mouseOffset = (mousePos - m_MousePos) * 0.002f;
+        glm::vec2 mouseOffset =
+            glm::vec2(-1.0f * eventXSign * std::pow(event.x, 2), eventYSign * std::pow(event.y, 2)) * 0.015f;
+        // float speed = mouseOffset.x * mouseOffset.x + mouseOffset.y * mouseOffset.y;
+
+        // std::cout << speed << std::endl;
 
         auto deltaRotationX =
             glm::angleAxis(mouseOffset.y, glm::normalize(glm::cross(camera.frontVec(), camera.upVec())));
         auto deltaRotationY = glm::angleAxis(mouseOffset.x, camera.upVec());
 
-        camera.setRotation(deltaRotationX * deltaRotationY * cameraRotation);
+        // camera.setRotation(deltaRotationX * deltaRotationY * cameraRotation);
+
+        Application::get().getCameraController().rotateTo(deltaRotationX * deltaRotationY * cameraRotation, 0.1);
     }
     m_MousePos = Application::get().getInput().GetMousePosition();
 }

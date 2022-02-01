@@ -72,6 +72,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/MeshBody.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
+    src/Render3D/CameraController.cpp
     src/Render3D/Models/Mesh.cpp
     src/Render3D/Models/InstancedModel.cpp
     src/Render3D/Models/SkinnedMesh.cpp

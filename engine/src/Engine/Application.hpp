@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "CameraController.hpp"
 #include "EventHandler.hpp"
 #include "Input.hpp"
 #include "Layer.hpp"
@@ -41,6 +42,7 @@ class Application {
     std::unique_ptr<Input> m_Input;
     std::unique_ptr<MasterRenderer> m_Render;
     std::unique_ptr<Camera> m_Camera;
+    std::unique_ptr<CameraController> m_CameraController;
     std::unique_ptr<TextureManager> m_Texture;
     std::unique_ptr<EventHandler> m_EventHandler;
     std::unique_ptr<SoundMixer> m_Sound;
@@ -48,6 +50,7 @@ class Application {
     std::list<std::shared_ptr<Layer>> m_LayerStack;
     std::unordered_map<std::string, std::list<std::shared_ptr<Layer>>::iterator> m_NameToLayer;
     Time m_Time;
+    Time m_GlobalTime;
     ModelManager m_Models;
 
     bool m_Running = true;
@@ -90,7 +93,9 @@ class Application {
     MousePicker &getMousePicker() { return *m_MousePicker; }
     MasterRenderer &getRender() { return *m_Render; }
     Camera &getCamera() { return *m_Camera; }
+    CameraController &getCameraController() { return *m_CameraController; }
     Time &getTime() { return m_Time; }
+    Time &getGlobalTime() { return m_GlobalTime; }
     TextureManager &getTextures() { return *m_Texture; }
     ModelManager &getModels() { return m_Models; }
     EventHandler &getEventHandler() { return *m_EventHandler; }

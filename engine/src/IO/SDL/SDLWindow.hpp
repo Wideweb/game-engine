@@ -14,6 +14,7 @@ class SDLWindow : public Window {
     EventCallbackFn<MouseEvent &> m_mouseEventCallback;
     EventCallbackFn<WindowEvent &> m_windowEventCallback;
     EventCallbackFn<void *> m_nativeEventCallback;
+    MouseEvent m_MouseEvent;
 
   public:
     SDLWindow(const WindowProps &props);
@@ -36,6 +37,7 @@ class SDLWindow : public Window {
     virtual void shutDown() override;
     virtual void *getNaviteWindow() const override;
     virtual void *getContext() const override;
+    virtual MouseEvent &getMouseEvent() override;
 };
 
 } // namespace Engine

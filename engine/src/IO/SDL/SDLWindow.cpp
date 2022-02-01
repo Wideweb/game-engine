@@ -133,6 +133,8 @@ void SDLWindow::readInput() {
     }
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
+        m_MouseEvent.type = EventType::None;
+
         if (e.type == SDL_QUIT) {
             WindowEvent event(EventType::WindowClosed);
             m_windowEventCallback(event);
@@ -144,18 +146,29 @@ void SDLWindow::readInput() {
             m_windowEventCallback(event);
             break;
         } else if (e.type == SDL_MOUSEMOTION) {
-            MouseEvent event(e.motion.x, m_Props.height - e.motion.y, EventType::MouseMoved);
-            m_mouseEventCallback(event);
+            m_MouseEvent = MouseEvent(e.motion.x, m_Props.height - e.motion.y, EventType::MouseMoved);
+            m_mouseEventCallback(m_MouseEvent);
+        } else if (e.type == SDL_MOUSEWHEEL) {
+            m_MouseEvent = MouseEvent(e.wheel.x, e.wheel.y, EventType::MouseWheel);
+            m_mouseEventCallback(m_MouseEvent);
         } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            MouseEvent event(e.motion.x, m_Props.height - e.motion.y, EventType::MouseDown);
-            m_mouseEventCallback(event);
+            m_MouseEvent = MouseEvent(e.motion.x, m_Props.height - e.motion.y, EventType::MouseDown);
+            m_mouseEventCallback(m_MouseEvent);
         } else if (e.type == SDL_MOUSEBUTTONUP) {
-            MouseEvent event(e.motion.x, m_Props.height - e.motion.y, EventType::MouseUp);
-            m_mouseEventCallback(event);
+            m_MouseEvent = MouseEvent(e.motion.x, m_Props.height - e.motion.y, EventType::MouseUp);
+            m_mouseEventCallback(m_MouseEvent);
         } else if (e.type == SDL_TEXTINPUT) {
             WindowEvent event(EventType::TextInput, e.text.text);
             m_windowEventCallback(event);
         }
+        // else if (e.type == SDL_MULTIGESTURE) {
+        //     const SDL_MultiGestureEvent *mge = &e.mgesture;
+        //     int nFingers = SDL_GetNumTouchFingers(mge->touchId);
+        //     if (nFingers == 2) {
+        //         std::cout << "SDL_MULTIGESTURE" << std::endl;
+        //     }
+        // }
+
         if (m_nativeEventCallback) {
             m_nativeEventCallback(&e);
         }
@@ -167,6 +180,8 @@ void SDLWindow::swapBuffers() { SDL_GL_SwapWindow(m_Window); }
 void *SDLWindow::getNaviteWindow() const { return m_Window; }
 
 void *SDLWindow::getContext() const { return m_Context; }
+
+MouseEvent &SDLWindow::getMouseEvent() { return m_MouseEvent; }
 
 void SDLWindow::getDrawableSize(int &width, int &height) const { SDL_GL_GetDrawableSize(m_Window, &width, &height); }
 

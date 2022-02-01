@@ -6,7 +6,7 @@
 
 namespace Engine {
 
-enum class EventType { None = 0, MouseMoved, MouseDown, MouseUp, WindowResized, WindowClosed, TextInput };
+enum class EventType { None = 0, MouseMoved, MouseDown, MouseUp, MouseWheel, WindowResized, WindowClosed, TextInput };
 
 struct MouseEvent {
     float x;
@@ -15,6 +15,7 @@ struct MouseEvent {
     bool handled = false;
 
     MouseEvent(float x, float y, EventType type) : x(x), y(y), type(type) {}
+    MouseEvent() : MouseEvent(0.0f, 0.0f, EventType::None) {}
 };
 
 struct WindowEvent {
@@ -52,6 +53,7 @@ class Window {
     virtual void shutDown() = 0;
     virtual void *getNaviteWindow() const = 0;
     virtual void *getContext() const = 0;
+    virtual MouseEvent &getMouseEvent() = 0;
 
     static Window *create(const WindowProps &props);
 };
