@@ -71,14 +71,14 @@ void CameraDirector::onUpdate() {
             auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
 
             glm::vec3 position = entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset;
-            glm::vec3 rotation = entityLocation.rotation + entityCamera.rotation;
+            glm::quat rotation = glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation);
             if (m_Model.entity() == m_Camera) {
                 m_Model.position(position);
-                m_Model.rotation(rotation);
+                m_Model.rotation(glm::eulerAngles(rotation));
             } else {
                 auto &location = coordinator.GetComponent<LocationComponent>(m_Camera);
                 location.position = position;
-                location.rotation = rotation;
+                location.rotation = glm::eulerAngles(rotation);
                 coordinator.GetComponent<Render3DComponent>(m_Camera).updated = true;
             }
         } else {
