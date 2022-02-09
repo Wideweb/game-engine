@@ -3,6 +3,7 @@
 
 #include <glm/gtx/transform.hpp>
 
+#include <cmath>
 #include <iostream>
 
 namespace Engine {
@@ -61,10 +62,15 @@ void Camera::move(const glm::vec3 &offset) {
 }
 
 void Camera::inversePitch() {
-    glm::vec3 newDir = glm::reflect(this->front, this->up);
-    glm::vec3 half = glm::normalize(this->front + newDir);
-    glm::quat deltaRotation = glm::quat(glm::dot(this->front, half), glm::cross(this->front, half));
-    setRotation(deltaRotation * this->rotation);
+    this->front = glm::reflect(this->front, this->up);
+
+    // if (std::abs(glm::dot(this->front, newDir)) < 0.1f) {
+    //     return;
+    // }
+
+    // glm::vec3 half = glm::normalize(this->front + newDir);
+    // glm::quat deltaRotation = glm::quat(glm::dot(this->front, half), glm::cross(this->front, half));
+    // setRotation(deltaRotation * this->rotation);
 
     // glm::vec3 right = glm::normalize(glm::cross(front, up));
     // glm::quat deltaRotation = glm::angleAxis(-angles.x, right);
