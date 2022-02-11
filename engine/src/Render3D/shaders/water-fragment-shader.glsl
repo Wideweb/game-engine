@@ -22,7 +22,8 @@ const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
 uniform mat4 u_noramlFix;
-uniform sampler2D u_colorMap;
+uniform sampler2D u_reflectionMap;
+uniform sampler2D u_refractionMap;
 uniform sampler2D u_depthMap;
 uniform sampler2D u_normalMap;
 uniform sampler2D u_positionMap;
@@ -53,15 +54,19 @@ void main() {
     vec2 ndc = (v_clipSpace.xy / v_clipSpace.w) / 2.0 + 0.5;
 
     vec2 reflectTexCoord = vec2(ndc.x, -ndc.y);
+    vec2 refractTexCoord = vec2(ndc.x, ndc.y);
 
-    float depth = texture(u_depthMap, reflectTexCoord).r;
-    float floorDistance = 2.0 * c_near * c_far / (c_far + c_near - depth * (c_far - c_near));
-    float waterDistance = 2.0 * c_near * c_far / (c_far + c_near - gl_FragCoord.z * (c_far - c_near));
-    float waterDepth = 0; // floorDistance - waterDistance;
+    float depth = texture(u_depthMap, refractTexCoord).r;
+    float floorDistance = 2.0 * c_near * c_far / (c_far + c_near - (2.0 * depth - 1.0) * (c_far - c_near));
+
+    depth = gl_FragCoord.z;
+    float waterDistance = 2.0 * c_near * c_far / (c_far + c_near - (2.0 * depth - 1.0) * (c_far - c_near));
+    float waterDepth = floorDistance - waterDistance;
 
     vec2 texCoordDistorted = texture(u_dudvMap, vec2(v_texCoord.x + u_moveFactor, v_texCoord.y)).rg * 0.1;
     texCoordDistorted = v_texCoord + vec2(texCoordDistorted.x, texCoordDistorted.y + u_moveFactor);
-    vec2 totalDistortion = (texture(u_dudvMap, texCoordDistorted).rg * 2.0 - 1.0) * c_waveStrength;
+    vec2 totalDistortion =
+        (texture(u_dudvMap, texCoordDistorted).rg * 2.0 - 1.0) * c_waveStrength * clamp(waterDepth, 0.0, 1.0);
 
     // vec2 distortion1 =
     //     (texture(u_dudvMap, vec2(v_texCoord.x + u_moveFactor, v_texCoord.y)).rg * 2.0 - 1.0) * c_waveStrength;
@@ -75,26 +80,38 @@ void main() {
     reflectTexCoord.x = clamp(reflectTexCoord.x, 0.001, 0.999);
     reflectTexCoord.y = clamp(reflectTexCoord.y, -0.999, -0.001);
 
-    vec3 viewDir = normalize(u_viewPos - v_fragPos);
-    vec3 reflectDir = normalize(v_fragPos - texture(u_positionMap, reflectTexCoord).rgb);
+    refractTexCoord += totalDistortion;
+    refractTexCoord.x = clamp(refractTexCoord.x, 0.001, 0.999);
+    refractTexCoord.y = clamp(refractTexCoord.y, 0.001, 0.999);
 
-    float refractFactor = dot(normalize(viewDir), vec3(0, 1, 0));
-    refractFactor = pow(refractFactor, 2.0);
-
-    vec4 reflectColor = vec4(texture(u_colorMap, reflectTexCoord).rgb, 1.0 - refractFactor);
-    reflectColor = mix(reflectColor, vec4(0.0, 1.0, 1.0, reflectColor.a), 0.5);
+    // vec3 reflectDir = normalize(v_fragPos - texture(u_positionMap, reflectTexCoord).rgb);
 
     vec3 normalMapColor = texture(u_normalMap, texCoordDistorted).rgb;
-    vec3 normal = normalize(mat3(u_noramlFix) * normalize(normalMapColor * 2.0 - 1.0));
+    vec3 normal = normalize(mat3(u_noramlFix) * normalize(normalMapColor * 2.0 - 1.0) * vec3(1.0, 1.0, 1.0));
+
+    vec3 viewDir = normalize(u_viewPos - v_fragPos);
+    float refractFactor = dot(normalize(viewDir), normal);
+    refractFactor = pow(refractFactor, 1);
+
+    vec4 refractColor = texture(u_refractionMap, refractTexCoord);
+    vec4 reflectColor = texture(u_reflectionMap, reflectTexCoord);
+
+    vec3 ambient = u_directedLight.ambient;
+
+    vec3 lightDir = normalize(-u_directedLight.direction);
+    float diffuseFactor = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = u_directedLight.diffuse * diffuseFactor;
 
     vec3 halfwayDir = normalize(viewDir - u_directedLight.direction);
     float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), 128);
     vec3 specular = u_directedLight.specular * specularFactor;
 
-    o_fragColor = vec4(u_directedLight.ambient, 1.0) * reflectColor + vec4(specular, 0.0);
-    // o_fragColor.a = min(o_fragColor.a, clamp(waterDepth / 5.0, 0.0, 1.0));
+    o_fragColor = mix(reflectColor, refractColor, refractFactor);
+    o_fragColor = mix(o_fragColor, vec4(0.0, 0.7, 1.0, 1.0), 0.2);
+    o_fragColor = vec4((ambient + diffuse + specular), 1.0) * o_fragColor;
 
-    o_fragColor = mix(vec4(c_fogColor, 1.0), o_fragColor, v_visibility);
+    // o_fragColor.a = clamp(waterDepth * 2.0, 0.0, 1.0);
+    // o_fragColor = mix(vec4(c_fogColor, 1.0), o_fragColor, v_visibility);
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)

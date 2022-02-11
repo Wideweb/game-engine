@@ -34,6 +34,10 @@ class GRenderer {
     unsigned int gNormal() { return m_GNormal; }
     unsigned int gColor() { return m_GColor; }
     unsigned int gDepth() { return m_GDepth; }
+
+    void setGColor(unsigned int id);
+
+    void resetGColor();
 };
 
 } // namespace Engine

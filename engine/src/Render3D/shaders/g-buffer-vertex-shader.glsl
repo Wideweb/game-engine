@@ -42,7 +42,7 @@ uniform int u_jointsNumber;
 out vec3 v_color;
 out vec3 v_normal;
 out vec2 v_texCoord;
-out vec3 v_fragPos;
+out vec4 v_fragPos;
 out float v_visibility;
 out mat3 v_TBN;
 
@@ -56,7 +56,7 @@ void main() {
     gl_Position = u_projection * positionRelativeToCamera;
     v_color = a_vertexColor;
     v_texCoord = vec2(a_vertexTextureCoord.x, a_vertexTextureCoord.y);
-    v_fragPos = vec3(worldPos * vec4(a_vertexPosition, 1.0));
+    v_fragPos = worldPos * vec4(a_vertexPosition, 1.0);
     v_normal = normalize(mat3(transpose(inverse(worldPos))) * a_vertexNormal);
 
     vec3 T = normalize(vec3(worldPos * vec4(a_vertexTangent, 0.0)));

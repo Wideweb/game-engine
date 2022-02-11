@@ -20,7 +20,7 @@ const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 /////////////////////////////////////////////////////////////
 uniform int u_hasMaterial;
 uniform Material u_material;
-uniform float u_clipY;
+uniform vec4 u_clipPlane;
 
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
@@ -28,7 +28,7 @@ uniform float u_clipY;
 in vec3 v_color;
 in vec3 v_normal;
 in vec2 v_texCoord;
-in vec3 v_fragPos;
+in vec4 v_fragPos;
 in mat3 v_TBN;
 in float v_visibility;
 
@@ -44,7 +44,7 @@ layout(location = 3) out vec4 o_gSpecular;
 ////////////////////////// MAIN /////////////////////////////
 /////////////////////////////////////////////////////////////
 void main() {
-    if (v_fragPos.y < u_clipY) {
+    if (dot(v_fragPos, u_clipPlane) < 0) {
         discard;
     }
 
@@ -61,7 +61,8 @@ void main() {
         shininess = u_material.shininess;
     }
 
-    o_gPosition = v_fragPos;
+    o_gColor = vec4(v_color, 1.0);
+    o_gPosition = v_fragPos.xyz;
     o_gNormal = normal;
     o_gSpecular.rgb = color;
     o_gSpecular.a = shininess;

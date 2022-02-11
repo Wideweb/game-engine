@@ -30,6 +30,7 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings
         m_SkyboxShader->setMatrix4("u_model", model);
         m_SkyboxShader->setMatrix4("u_view", fixedView);
         m_SkyboxShader->setMatrix4("u_projection", camera.projectionMatrix());
+        m_SkyboxShader->setFloat4("u_clipPlane", settings.clipPlane);
 
         m_SkyboxShader->setFloat("u_threshold", settings.threshold);
 

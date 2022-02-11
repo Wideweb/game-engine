@@ -13,11 +13,13 @@ const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 /////////////////////////////////////////////////////////////
 uniform samplerCube u_skybox;
 uniform float u_threshold;
+uniform vec4 u_clipPlane;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
 /////////////////////////////////////////////////////////////
 in vec3 v_texCoord;
+in vec4 v_fragPos;
 
 /////////////////////////////////////////////////////////////
 /////////////////////////// OUT /////////////////////////////
@@ -26,6 +28,10 @@ layout(location = 0) out vec4 o_fragColor;
 layout(location = 2) out vec4 o_brightColor;
 
 void main() {
+    if (dot(v_fragPos, u_clipPlane) < 0) {
+        discard;
+    }
+
     vec4 color = texture(u_skybox, v_texCoord);
 
     float factor = (v_texCoord.y - c_lowerLimit) / (c_upperLimit - c_lowerLimit);

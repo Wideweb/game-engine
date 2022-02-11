@@ -77,7 +77,7 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
     m_Shader->bind();
     m_Shader->setMatrix4("u_view", camera.viewMatrix());
     m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-    m_Shader->setFloat("u_clipY", 0);
+    m_Shader->setFloat4("u_clipPlane", settings.clipPlane);
 
     RendererState rs;
     rs.activeTextures = 0;
@@ -109,6 +109,24 @@ void GRenderer::resize() {
     glBindTexture(GL_TEXTURE_2D, m_GDepth);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_Viewport.width, m_Viewport.height, 0, GL_DEPTH_COMPONENT,
                  GL_FLOAT, NULL);
+}
+
+void GRenderer::setGColor(unsigned int id) {
+    int fbo;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+void GRenderer::resetGColor() {
+    int fbo;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GColor, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 } // namespace Engine

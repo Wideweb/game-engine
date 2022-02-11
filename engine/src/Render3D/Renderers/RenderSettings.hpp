@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/vec4.hpp>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,7 @@ struct RenderSettings {
     float threshold = 1.0f;
     unsigned int bloomScale = 4;
     unsigned int blur = 4;
+    glm::vec4 clipPlane = glm::vec4(0.0f, 1.0f, 0.0f, 99999.0f);
 };
 
 } // namespace Engine

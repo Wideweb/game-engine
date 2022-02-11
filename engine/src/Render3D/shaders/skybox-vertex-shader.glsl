@@ -16,9 +16,11 @@ uniform mat4 u_projection;
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
 out vec3 v_texCoord;
+out vec4 v_fragPos;
 
 void main() {
     v_texCoord = a_vertexPosition;
-    vec4 pos = u_projection * u_view * u_model * vec4(a_vertexPosition, 1.0);
+    v_fragPos = u_model * vec4(a_vertexPosition, 1.0);
+    vec4 pos = u_projection * u_view * v_fragPos;
     gl_Position = pos.xyww;
 }

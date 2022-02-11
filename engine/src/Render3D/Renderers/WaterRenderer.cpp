@@ -11,7 +11,7 @@
 
 namespace Engine {
 
-WaterRenderer::WaterRenderer(GRenderer &gRenderer) : m_GRenderer(gRenderer) {
+WaterRenderer::WaterRenderer(Viewport &viewport, GRenderer &gRenderer) : m_Viewport(viewport), m_GRenderer(gRenderer) {
     auto vertexSrc = File::read("./shaders/water-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/water-fragment-shader.glsl");
     m_WaterShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
@@ -40,17 +40,62 @@ WaterRenderer::WaterRenderer(GRenderer &gRenderer) : m_GRenderer(gRenderer) {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    // Reflection color
+    glGenTextures(1, &m_ReflectionColor);
+    glBindTexture(GL_TEXTURE_2D, m_ReflectionColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, c_ReflectionWidth, c_ReflectionHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // Refraction color
+    glGenTextures(1, &m_RefractionColor);
+    glBindTexture(GL_TEXTURE_2D, m_RefractionColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, c_RefractionWidth, c_RefractionHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state,
                          RenderSettings &settings) {
+    int lastViewportWidth = m_Viewport.width;
+    int lastViewportHeight = m_Viewport.height;
+
+    glm::vec4 lastClipPlane = settings.clipPlane;
+
+    // Reflection begin
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     camera.inversePitch();
 
+    settings.clipPlane = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+
+    m_Viewport.width = c_ReflectionWidth;
+    m_Viewport.height = c_ReflectionHeight;
+    m_GRenderer.setGColor(m_ReflectionColor);
+    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
+    m_GRenderer.resize();
     m_GRenderer.draw(camera, scene, models, state, settings);
 
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     camera.inversePitch();
+    // Reflection end
+
+    // Refraction begin
+    settings.clipPlane = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+
+    m_Viewport.width = c_RefractionWidth;
+    m_Viewport.height = c_RefractionHeight;
+    m_GRenderer.setGColor(m_RefractionColor);
+    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
+    m_GRenderer.resize();
+    m_GRenderer.draw(camera, scene, models, state, settings);
+    // Refraction end
+
+    settings.clipPlane = lastClipPlane;
+
+    m_Viewport.width = lastViewportWidth;
+    m_Viewport.height = lastViewportHeight;
+    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
 
     m_WaterShader->bind();
 
@@ -77,24 +122,28 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_WaterShader->setFloat3("u_directedLight.specular", light.specular * light.intensity);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gColor());
-    m_WaterShader->setInt("u_colorMap", 0);
+    glBindTexture(GL_TEXTURE_2D, m_ReflectionColor);
+    m_WaterShader->setInt("u_reflectionMap", 0);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gDepth());
-    m_WaterShader->setInt("u_depthMap", 1);
+    glBindTexture(GL_TEXTURE_2D, m_RefractionColor);
+    m_WaterShader->setInt("u_refractionMap", 1);
 
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gPosition());
-    m_WaterShader->setInt("u_positionMap", 2);
+    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gDepth());
+    m_WaterShader->setInt("u_depthMap", 2);
 
     glActiveTexture(GL_TEXTURE3);
-    m_WaterDudvMap->bind();
-    m_WaterShader->setInt("u_dudvMap", 3);
+    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gPosition());
+    m_WaterShader->setInt("u_positionMap", 3);
 
     glActiveTexture(GL_TEXTURE4);
+    m_WaterDudvMap->bind();
+    m_WaterShader->setInt("u_dudvMap", 4);
+
+    glActiveTexture(GL_TEXTURE5);
     m_WaterNormalMap->bind();
-    m_WaterShader->setInt("u_normalMap", 4);
+    m_WaterShader->setInt("u_normalMap", 5);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -106,6 +155,9 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     glBindVertexArray(0);
 
     glDisable(GL_BLEND);
+
+    m_GRenderer.resetGColor();
+    m_GRenderer.resize();
 }
 
 } // namespace Engine
