@@ -17,6 +17,7 @@ const float c_waveStrength = 0.02;
 const float c_near = 0.01;
 const float c_far = 100.0;
 const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
+const vec4 c_waterColor = vec4(0.0, 0.3, 0.5, 1.0);
 
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
@@ -32,6 +33,9 @@ uniform float u_moveFactor;
 uniform DirectedLight u_directedLight;
 uniform vec3 u_viewPos;
 uniform float u_threshold;
+
+uniform mat4 u_view;
+uniform mat4 u_projection;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -52,21 +56,29 @@ layout(location = 2) out vec4 o_brightColor;
 /////////////////////////////////////////////////////////////
 void main() {
     vec2 ndc = (v_clipSpace.xy / v_clipSpace.w) / 2.0 + 0.5;
+    vec2 refractNdc = (v_clipSpace.xy / v_clipSpace.w) / (2.0 * 1.5) + 0.5;
 
     vec2 reflectTexCoord = vec2(ndc.x, -ndc.y);
-    vec2 refractTexCoord = vec2(ndc.x, ndc.y);
+    vec2 refractTexCoord = vec2(refractNdc.x, refractNdc.y);
 
-    float depth = texture(u_depthMap, refractTexCoord).r;
-    float floorDistance = 2.0 * c_near * c_far / (c_far + c_near - (2.0 * depth - 1.0) * (c_far - c_near));
+    // float depth = texture(u_depthMap, refractTexCoord).r;
+    float waterDepth = distance(texture(u_positionMap, refractTexCoord).xyz, v_fragPos);
 
-    depth = gl_FragCoord.z;
-    float waterDistance = 2.0 * c_near * c_far / (c_far + c_near - (2.0 * depth - 1.0) * (c_far - c_near));
-    float waterDepth = floorDistance - waterDistance;
+    // depth = gl_FragCoord.z;
+    // float waterDistance = 2.0 * c_near * c_far / (c_far + c_near - (2.0 * depth - 1.0) * (c_far - c_near));
+    // float waterDepth = floorDistance - waterDistance;
 
     vec2 texCoordDistorted = texture(u_dudvMap, vec2(v_texCoord.x + u_moveFactor, v_texCoord.y)).rg * 0.1;
     texCoordDistorted = v_texCoord + vec2(texCoordDistorted.x, texCoordDistorted.y + u_moveFactor);
     vec2 totalDistortion =
-        (texture(u_dudvMap, texCoordDistorted).rg * 2.0 - 1.0) * c_waveStrength * clamp(waterDepth, 0.0, 1.0);
+        (texture(u_dudvMap, texCoordDistorted).rg * 2.0 - 1.0) * c_waveStrength * clamp(waterDepth, 0.0, 2.0) / 3.0;
+
+    vec3 normalMapColor = texture(u_normalMap, texCoordDistorted).rgb;
+    vec3 normal = normalize(mat3(u_noramlFix) * normalize(normalMapColor * 2.0 - 1.0) * vec3(1.0, 1.0, 1.0));
+
+    vec3 refr = refract(normalize(v_fragPos - u_viewPos), vec3(0, 1, 0), 0.75) * clamp(waterDepth, 0, 2.0) / 3.0;
+    vec4 refrFragPos = u_projection * u_view * vec4(v_fragPos + refr, 1.0);
+    refractTexCoord = (refrFragPos.xy / refrFragPos.w) / (2.0 * 1.5) + 0.5;
 
     // vec2 distortion1 =
     //     (texture(u_dudvMap, vec2(v_texCoord.x + u_moveFactor, v_texCoord.y)).rg * 2.0 - 1.0) * c_waveStrength;
@@ -86,15 +98,14 @@ void main() {
 
     // vec3 reflectDir = normalize(v_fragPos - texture(u_positionMap, reflectTexCoord).rgb);
 
-    vec3 normalMapColor = texture(u_normalMap, texCoordDistorted).rgb;
-    vec3 normal = normalize(mat3(u_noramlFix) * normalize(normalMapColor * 2.0 - 1.0) * vec3(1.0, 1.0, 1.0));
-
     vec3 viewDir = normalize(u_viewPos - v_fragPos);
     float refractFactor = dot(normalize(viewDir), normal);
-    refractFactor = pow(refractFactor, 1);
+    refractFactor = clamp(pow(refractFactor, 1), 0.0, 1.0); // * clamp(waterDepth, 0.0, 1.0);
 
     vec4 refractColor = texture(u_refractionMap, refractTexCoord);
     vec4 reflectColor = texture(u_reflectionMap, reflectTexCoord);
+
+    // refractColor = c_waterColor + (refractColor - c_waterColor) * exp(-waterDepth * 0.1);
 
     vec3 ambient = u_directedLight.ambient;
 
@@ -107,7 +118,7 @@ void main() {
     vec3 specular = u_directedLight.specular * specularFactor;
 
     o_fragColor = mix(reflectColor, refractColor, refractFactor);
-    o_fragColor = mix(o_fragColor, vec4(0.0, 0.7, 1.0, 1.0), 0.2);
+    o_fragColor = mix(o_fragColor, c_waterColor, 0.2);
     o_fragColor = vec4((ambient + diffuse + specular), 1.0) * o_fragColor;
 
     // o_fragColor.a = clamp(waterDepth * 2.0, 0.0, 1.0);

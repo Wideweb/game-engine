@@ -48,7 +48,8 @@ void main() {
         discard;
     }
 
-    vec3 color = v_color;
+    vec3 diffuse = v_color;
+    vec3 specular = v_color;
     vec3 normal = v_normal;
     float shininess = 128.0;
 
@@ -57,13 +58,14 @@ void main() {
         normal = normalize(normal * 2.0 - 1.0);
         normal = normalize(v_TBN * normal);
 
-        color = texture(u_material.specular, v_texCoord).rgb;
+        diffuse = texture(u_material.diffuse, v_texCoord).rgb;
+        specular = texture(u_material.specular, v_texCoord).rgb;
         shininess = u_material.shininess;
     }
 
-    o_gColor = vec4(v_color, 1.0);
+    o_gColor = vec4(diffuse, 1.0);
     o_gPosition = v_fragPos.xyz;
     o_gNormal = normal;
-    o_gSpecular.rgb = color;
+    o_gSpecular.rgb = specular;
     o_gSpecular.a = shininess;
 }

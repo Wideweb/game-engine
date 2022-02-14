@@ -23,11 +23,13 @@ class Camera {
     glm::vec3 positionVec() const;
     glm::vec3 upVec() const;
     glm::vec3 frontVec() const;
+    glm::vec3 rightVec() const;
     glm::quat rotationQuat() const;
     glm::vec2 size() const;
 
     void setSize(int width, int height);
     void setPerspective(float fieldOfView, float zNear, float zFar);
+    void setFieldOfView(float fieldOfView);
     void setOrthogonal(float zNear, float zFar);
     void setProjection(Projection mode);
     void setPosition(glm::vec3 position);

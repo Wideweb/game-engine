@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 #include "Math.hpp"
 
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
 #include <cmath>
@@ -41,6 +42,11 @@ void Camera::setPerspective(float fieldOfView, float zNear, float zFar) {
     perspective = glm::perspective(fieldOfView, static_cast<float>(width) / static_cast<float>(height), zNear, zFar);
 }
 
+void Camera::setFieldOfView(float fieldOfView) {
+    this->fieldOfView = fieldOfView;
+    perspective = glm::perspective(fieldOfView, static_cast<float>(width) / static_cast<float>(height), zNear, zFar);
+}
+
 void Camera::setOrthogonal(float zNear, float zFar) {
     orthogonal = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), zNear, zFar);
 }
@@ -78,6 +84,8 @@ void Camera::inversePitch() {
 }
 
 glm::vec3 Camera::frontVec() const { return front; }
+
+glm::vec3 Camera::rightVec() const { return glm::normalize(glm::cross(front, up)); }
 
 glm::quat Camera::rotationQuat() const { return this->rotation; }
 

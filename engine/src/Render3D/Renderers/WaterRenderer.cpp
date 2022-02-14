@@ -76,12 +76,43 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_GRenderer.resize();
     m_GRenderer.draw(camera, scene, models, state, settings);
 
-    camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     camera.inversePitch();
+    camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     // Reflection end
 
     // Refraction begin
-    settings.clipPlane = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+    // glm::quat lastCameraRotation = camera.rotationQuat();
+    // camera.setRotation(glm::angleAxis(glm::radians(-45.0f), camera.frontVec()) * lastCameraRotation);
+    // camera.setPerspective(glm::radians(30.0f), 0.1f, 50.0f);
+
+    // glm::vec3 cameraPos = camera.positionVec();
+    // glm::quat cameraRotation = camera.rotationQuat();
+    // glm::vec3 cameraDir = camera.frontVec();
+
+    glm::vec3 planeNormal = glm::vec3(0.0f, 1.0f, 0.0f);
+    // glm::vec3 newDir = glm::vec3(0.0, -1.0f, 0.0f);
+
+    // glm::vec3 planePoint = glm::vec3(0.0f, 0.0f, 0.0f);
+    // glm::vec3 planePointToCamera = cameraPos - planePoint;
+
+    // float normalDistance = glm::dot(planePointToCamera, planeNormal);
+    // float dot = glm::dot(glm::reflect(cameraDir, planeNormal), planeNormal);
+    // float t = normalDistance / dot;
+
+    // glm::vec3 pivot = cameraPos + cameraDir * t;
+
+    // glm::vec3 half = glm::normalize(cameraDir + newDir);
+    // glm::quat deltaRotation = glm::quat(glm::dot(cameraDir, half), glm::cross(cameraDir, half));
+    // deltaRotation = glm::pow(deltaRotation, 0.33f / 1.33f);
+
+    // glm::vec3 newPosition = pivot + newDir * std::abs(normalDistance);
+
+    // camera.setRotation(deltaRotation * camera.rotationQuat());
+    // camera.setPosition(pivot + deltaRotation * (camera.positionVec() - pivot));
+
+    camera.setFieldOfView(glm::radians(45.0f * 1.5f));
+
+    settings.clipPlane = glm::vec4(planeNormal * -1.0f, 0.0f);
 
     m_Viewport.width = c_RefractionWidth;
     m_Viewport.height = c_RefractionHeight;
@@ -89,6 +120,14 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     glViewport(0, 0, m_Viewport.width, m_Viewport.height);
     m_GRenderer.resize();
     m_GRenderer.draw(camera, scene, models, state, settings);
+
+    camera.setFieldOfView(glm::radians(45.0f));
+
+    // camera.setRotation(cameraRotation);
+    // camera.setPosition(cameraPos);
+
+    // camera.setPerspective(glm::radians(45.0f), 0.1f, 50.0f);
+    // camera.setRotation(lastCameraRotation);
     // Refraction end
 
     settings.clipPlane = lastClipPlane;
