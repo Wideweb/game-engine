@@ -8,7 +8,7 @@ namespace Engine {
 Renderer2D::Renderer2D() {
     auto vertexSrc = File::read("./shaders/screen-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
-    m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    m_Shader = Shader(vertexSrc, fragmentSrc);
 
     glGenVertexArrays(1, &m_VAO);
     glBindVertexArray(m_VAO);
@@ -55,12 +55,12 @@ void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::ve
                  GL_STREAM_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    m_Shader->bind();
-    m_Shader->setMatrix4("u_model", model);
+    m_Shader.bind();
+    m_Shader.setMatrix4("u_model", model);
 
     glActiveTexture(GL_TEXTURE0);
     texture->bind();
-    m_Shader->setInt("u_colorMap", 0);
+    m_Shader.setInt("u_colorMap", 0);
 
     GLint last_scissor_box[4];
     glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);

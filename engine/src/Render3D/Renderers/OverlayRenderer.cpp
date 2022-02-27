@@ -11,7 +11,7 @@ namespace Engine {
 OverlayRenderer::OverlayRenderer() {
     auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
 void OverlayRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
@@ -19,16 +19,16 @@ void OverlayRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mod
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_Shader->bind();
+    m_Shader.bind();
 
-    m_Shader->setMatrix4("u_view", camera.viewMatrix());
-    m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
+    m_Shader.setMatrix4("u_view", camera.viewMatrix());
+    m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
 
     for (auto &pair : scene.getOverlayObjects()) {
         const auto &model = models.GetModel(pair.first);
         auto &instances = pair.second;
 
-        model->draw(*m_Shader, instances, 0);
+        model->draw(m_Shader, instances);
     }
 
     glDisable(GL_BLEND);

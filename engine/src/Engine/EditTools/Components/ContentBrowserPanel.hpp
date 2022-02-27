@@ -6,8 +6,8 @@
 #include "Texture.hpp"
 
 #include <filesystem>
-#include <string>
 #include <memory>
+#include <string>
 
 namespace Engine {
 
@@ -16,7 +16,7 @@ class ContentBrowserPanel : public BaseView {
     std::string m_AssetPath;
     std::filesystem::path m_CurrentDirectory;
 
-    std::unique_ptr<Texture> m_DirectoryIcon, m_FileIcon;
+    Texture m_DirectoryIcon, m_FileIcon;
 
   public:
     ContentBrowserPanel(std::string directory);

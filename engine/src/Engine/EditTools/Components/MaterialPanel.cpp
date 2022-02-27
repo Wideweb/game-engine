@@ -38,7 +38,7 @@ void MaterialPanel::onDraw(int x, int y) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
                 std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setDiffuseMap(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
+                m_Model.setDiffuseMap(TextureLoader::loadTexture(textureSrc));
             }
             ImGui::EndDragDropTarget();
         }
@@ -48,7 +48,7 @@ void MaterialPanel::onDraw(int x, int y) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
                 std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setSpecualMap(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
+                m_Model.setSpecualMap(TextureLoader::loadTexture(textureSrc));
             }
             ImGui::EndDragDropTarget();
         }
@@ -58,7 +58,7 @@ void MaterialPanel::onDraw(int x, int y) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
                 std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setNormalMap(std::shared_ptr<Texture>(TextureLoader::loadTexture(textureSrc)));
+                m_Model.setNormalMap(TextureLoader::loadTexture(textureSrc));
             }
             ImGui::EndDragDropTarget();
         }

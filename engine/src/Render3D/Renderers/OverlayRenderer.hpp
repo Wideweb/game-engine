@@ -5,13 +5,11 @@
 #include "Scene.hpp"
 #include "Shader.hpp"
 
-#include <memory>
-
 namespace Engine {
 
 class OverlayRenderer {
   private:
-    std::unique_ptr<Shader> m_Shader;
+    Shader m_Shader;
 
   public:
     OverlayRenderer();

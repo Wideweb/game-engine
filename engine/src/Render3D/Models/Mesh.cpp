@@ -131,28 +131,18 @@ void Mesh::setInstances(GLuint idVBO, GLuint instanceVBO) const {
     glVertexAttribDivisor(4, 1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     glBindVertexArray(0);
 }
 
-void Mesh::draw(Shader &shader, size_t instanceCount, unsigned int textureShift = 0) const {
+void Mesh::draw(Shader &shader, size_t instanceCount) const {
     shader.bind();
-
-    glActiveTexture(GL_TEXTURE0 + textureShift);
 
     if (hasMaterial) {
         shader.setInt("u_hasMaterial", 1);
-        material.diffuseMap->bind();
-        shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
-
-        glActiveTexture(GL_TEXTURE1 + textureShift);
-        material.specularMap->bind();
-        shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
-
-        glActiveTexture(GL_TEXTURE2 + textureShift);
-        material.normalMap->bind();
-        shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
-
+        shader.setTexture("u_material.diffuse", material.diffuseMap);
+        shader.setTexture("u_material.specular", material.specularMap);
+        shader.setTexture("u_material.normal", material.normalMap);
         shader.setFloat("u_material.shininess", material.shininess);
     } else {
         shader.setInt("u_hasMaterial", 0);

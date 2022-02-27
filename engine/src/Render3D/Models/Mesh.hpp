@@ -61,26 +61,26 @@ class Mesh {
 
     std::shared_ptr<Shader> shader;
     std::vector<Vertex> vertices;
-    std::vector<GLuint> indices;
+    std::vector<unsigned int> indices;
     Material material;
     bool hasMaterial = false;
 
-    Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices, const Material &material);
+    Mesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, const Material &material);
 
     Mesh(const Mesh &mesh);
 
     Mesh();
     ~Mesh();
 
-    void setInstances(GLuint idVBO, GLuint instanceVBO) const;
+    void setInstances(unsigned int idVBO, unsigned int instanceVBO) const;
 
-    void draw(Shader &shader, size_t instanceCount, unsigned int textureShift) const;
+    void draw(Shader &shader, size_t instanceCount) const;
 
     void setUp();
     void update();
 
   public:
-    GLuint VAO, VBO, EBO;
+    unsigned int VAO, VBO, EBO;
 };
 
 } // namespace Engine

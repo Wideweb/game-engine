@@ -15,7 +15,7 @@ namespace Engine {
 class FlareRenderer {
   private:
     std::unique_ptr<Shader> m_LensShader;
-    std::array<std::shared_ptr<Texture>, 11> m_LensFlares;
+    std::array<Texture, 11> m_LensFlares;
     std::array<float, 11> m_LensFlareSize;
 
     Viewport &m_Viewport;

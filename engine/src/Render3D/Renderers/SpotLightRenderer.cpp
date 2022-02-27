@@ -12,39 +12,36 @@ SpotLightRenderer::SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRen
     auto vertexSrc = File::read("./shaders/cube-shadow-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/cube-shadow-fragment-shader.glsl");
     auto geometrySrc = File::read("./shaders/cube-shadow-geometry-shader.glsl");
-    m_CubeShadowShader = std::make_unique<Shader>(vertexSrc, fragmentSrc, geometrySrc);
+    m_CubeShadowShader = Shader(vertexSrc, fragmentSrc, geometrySrc);
 
     for (size_t i = 0; i < 4; i++) {
         m_SadowCubeMaps[i] = std::make_unique<CubeMap>(1024, 1024, 50.0f, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
-    glGenFramebuffers(1, &m_DepthCubeMapFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_DepthCubeMapFBO);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_DepthCubeMapFramebuffer = Framebuffer::create();
 }
 
 void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
                               const ModelManager &models, RendererState &state) {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_DepthCubeMapFBO);
-    glViewport(0, 0, 1024, 1024);
+    unsigned int lastViewportWidth = m_Viewport.width;
+    unsigned int lastViewportHeight = m_Viewport.height;
+
+    m_DepthCubeMapFramebuffer.bind();
+    m_Viewport.resize(1024, 1024);
 
     auto &cubeMap = m_SadowCubeMaps[m_ActiveLights];
+    m_DepthCubeMapFramebuffer.setDepthAttachment(cubeMap->texture());
+    m_DepthCubeMapFramebuffer.clearDepth();
 
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeMap->texture().getId(), 0);
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    m_CubeShadowShader->bind();
+    m_CubeShadowShader.bind();
     cubeMap->setPosition(position);
-    cubeMap->bind(*m_CubeShadowShader);
+    cubeMap->bind(m_CubeShadowShader);
 
-    RendererState rs;
-    rs.activeTextures = 1;
-    rs.fbo = m_DepthCubeMapFBO;
-    m_ModelRenderer.draw(*m_CubeShadowShader, scene, models, rs);
+    m_DepthCubeMapFramebuffer.bind();
+    m_ModelRenderer.draw(m_CubeShadowShader, scene, models);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
-    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
+    state.framebuffer.bind();
+    m_Viewport.resize(lastViewportWidth, lastViewportHeight);
     // glCullFace(GL_BACK);
 
     std::string lightRef = "u_spotLights[" + std::to_string(m_ActiveLights) + "]";
@@ -57,12 +54,7 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
     shader.setFloat(lightRef + ".constant", light.constant);
     shader.setFloat(lightRef + ".linear", light.linear);
     shader.setFloat(lightRef + ".quadratic", light.quadratic);
-
-    glActiveTexture(GL_TEXTURE0 + state.activeTextures);
-    m_SadowCubeMaps[m_ActiveLights]->texture().bind();
-    shader.setInt(lightRef + ".shadowMap", static_cast<int>(state.activeTextures));
-    ++state.activeTextures;
-
+    shader.setTexture(lightRef + ".shadowMap", m_SadowCubeMaps[m_ActiveLights]->texture());
     shader.setFloat(lightRef + ".farPlane", m_SadowCubeMaps[m_ActiveLights]->farPlane());
 
     m_ActiveLights++;

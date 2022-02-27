@@ -11,6 +11,8 @@
 #include "ModelLoader.hpp"
 #include "TextureLoader.hpp"
 
+#include "glad/glad.h"
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wcast-qual"
@@ -185,9 +187,9 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
         //     mesh.hasMaterial = true;
         // }
 
-        mesh.material.diffuseMap.reset(loadMaterialTexture(materialSrc, aiTextureType_DIFFUSE));
-        mesh.material.specularMap.reset(loadMaterialTexture(materialSrc, aiTextureType_SPECULAR));
-        mesh.material.normalMap.reset(loadMaterialTexture(materialSrc, aiTextureType_NORMALS));
+        mesh.material.diffuseMap = loadMaterialTexture(materialSrc, aiTextureType_DIFFUSE);
+        mesh.material.specularMap = loadMaterialTexture(materialSrc, aiTextureType_SPECULAR);
+        mesh.material.normalMap = loadMaterialTexture(materialSrc, aiTextureType_NORMALS);
         mesh.hasMaterial = true;
     }
 
@@ -209,7 +211,7 @@ SkinnedMesh AssimpModel::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
     return mesh;
 }
 
-Texture *AssimpModel::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type) {
+Texture AssimpModel::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType type) {
     for (unsigned int i = 0; i < materialSrc->GetTextureCount(type); i++) {
         aiString str;
         materialSrc->GetTexture(type, i, &str);
@@ -367,9 +369,9 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::st
 
     in.close();
 
-    material.diffuseMap.reset(TextureLoader::loadTexture(toDiffuseMap));
-    material.specularMap.reset(TextureLoader::loadTexture(toSpecularMap));
-    material.normalMap.reset(TextureLoader::loadTexture(toNormalMap));
+    material.diffuseMap = TextureLoader::loadTexture(toDiffuseMap);
+    material.specularMap = TextureLoader::loadTexture(toSpecularMap);
+    material.normalMap = TextureLoader::loadTexture(toNormalMap);
 
     Mesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
@@ -424,7 +426,7 @@ std::shared_ptr<Skybox> ModelLoader::loadSkybox(const std::vector<std::string> &
     };
     // clang-format on
 
-    auto cubemapTexture = std::shared_ptr<Texture>(TextureLoader::loadCubemap(faces));
+    auto cubemapTexture = TextureLoader::loadCubemap(faces);
     return std::make_shared<Skybox>(vertices, cubemapTexture);
 }
 
@@ -559,9 +561,9 @@ std::shared_ptr<Model> ModelLoader::loadTerrain(const std::string &path, unsigne
         vertices[i].normal = glm::normalize(vertices[i].normal);
     }
 
-    material.diffuseMap.reset(TextureLoader::loadTexture("./assets/models/box/diffuse-map.jpeg"));
-    material.specularMap.reset(TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg"));
-    material.normalMap.reset(TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg"));
+    material.diffuseMap = TextureLoader::loadTexture("./assets/models/box/diffuse-map.jpeg");
+    material.specularMap = TextureLoader::loadTexture("./assets/models/box/specular-map.jpeg");
+    material.normalMap = TextureLoader::loadTexture("./assets/models/box/normal-map.jpeg");
 
     Mesh mesh(vertices, indices, material);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));

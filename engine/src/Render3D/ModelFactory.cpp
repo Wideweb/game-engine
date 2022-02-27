@@ -3,6 +3,8 @@
 #include "Material.hpp"
 #include "Mesh.hpp"
 
+#include "glad/glad.h"
+
 #include <glm/vec3.hpp>
 
 namespace Engine {
@@ -176,7 +178,7 @@ std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int co
     }
     // clang-format on
 
-    std::vector<GLuint> indices;
+    std::vector<unsigned int> indices;
     Material material;
 
     for (unsigned int i = 0; i < rows; i++) {

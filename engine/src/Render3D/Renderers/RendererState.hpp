@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Framebuffer.hpp"
+
 namespace Engine {
 
 struct RendererState {
-    unsigned int activeTextures = 0;
-    unsigned int fbo = 0;
+    Framebuffer framebuffer;
 };
 
 } // namespace Engine

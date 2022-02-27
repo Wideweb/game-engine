@@ -19,15 +19,15 @@ class InstancedModel : public Model {
     void setUp() override;
     void update() override;
 
-    void setInstances(GLuint instanceVBO, GLuint idVBO, const std::vector<glm::mat4> &positions,
+    void setInstances(unsigned int instanceVBO, unsigned int idVBO, const std::vector<glm::mat4> &positions,
                       const std::vector<uint32_t> &ids) const;
-    void updateInstances(GLuint instanceVBO, GLuint idVBO, size_t from, size_t to,
+    void updateInstances(unsigned int instanceVBO, unsigned int idVBO, size_t from, size_t to,
                          const std::vector<glm::mat4> &positions, const std::vector<uint32_t> &ids) const;
 
-    void draw(Shader &shader, ShaderModelInstanceManager &instances, unsigned int textureShift) override;
+    void draw(Shader &shader, ShaderModelInstanceManager &instances) override;
 
   private:
-    std::unordered_map<ShaderId, GLuint> shaderToInstanceVBO, shaderToIdVBO;
+    std::unordered_map<ShaderId, unsigned int> shaderToInstanceVBO, shaderToIdVBO;
 };
 
 } // namespace Engine

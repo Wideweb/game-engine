@@ -20,58 +20,30 @@ void GamePanel::onAttach() {
     m_PrevViewportSize = m_ViewportSize;
     m_Ratio = m_ViewportSize.x / m_ViewportSize.y;
 
-    glGenFramebuffers(1, &m_FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+    m_GColor = Texture::createRGBA32FBuffer(m_ViewportSize.x, m_ViewportSize.y);
+    m_GEntity = Texture::createR32IBuffer(m_ViewportSize.x, m_ViewportSize.y);
+    m_GDepth = Texture::createDepthBuffer(m_ViewportSize.x, m_ViewportSize.y);
 
-    glGenTextures(1, &m_GColor);
-    glBindTexture(GL_TEXTURE_2D, m_GColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GColor, 0);
-
-    glGenTextures(1, &m_GEntity);
-    glBindTexture(GL_TEXTURE_2D, m_GEntity);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE,
-                 NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_GEntity, 0);
-
-    glGenRenderbuffers(1, &m_GDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_GDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ViewportSize.x, m_ViewportSize.y);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_GDepth);
-
-    unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, attachments);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_Framebuffer = Framebuffer::create();
+    m_Framebuffer.bind();
+    m_Framebuffer.addAttachment(m_GColor);
+    m_Framebuffer.addAttachment(m_GEntity);
+    m_Framebuffer.addAttachment(m_GDepth);
+    m_Framebuffer.check();
+    m_Framebuffer.unbind();
 }
 
 void GamePanel::onUpdate() {
     if (m_PrevViewportSize != m_ViewportSize) {
-        glBindTexture(GL_TEXTURE_2D, m_GColor);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_GColor.bind();
+        m_GColor.resize(m_ViewportSize.x, m_ViewportSize.y);
 
-        glBindTexture(GL_TEXTURE_2D, m_GEntity);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RED_INTEGER,
-                     GL_UNSIGNED_BYTE, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_GEntity.bind();
+        m_GEntity.resize(m_ViewportSize.x, m_ViewportSize.y);
 
-        glBindRenderbuffer(GL_RENDERBUFFER, m_GDepth);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ViewportSize.x, m_ViewportSize.y);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        m_GDepth.bind();
+        m_GDepth.resize(m_ViewportSize.x, m_ViewportSize.y);
+        m_GDepth.unbind();
 
         m_PrevViewportSize = m_ViewportSize;
     }
@@ -91,7 +63,7 @@ void GamePanel::onDraw(int x, int y) {
     glm::vec3 lastCameraPos = camera.positionVec();
     glm::quat lastCameraRotation = camera.rotationQuat();
     glm::vec2 lastCameraSize = camera.size();
-    unsigned int lastFBO = render.getFBO();
+    Framebuffer lastFBO = render.getFramebuffer();
     auto lastViewport = render.getViewport();
 
     auto cameraArray = coordinator.GetComponentArray<CameraComponent>();
@@ -102,12 +74,12 @@ void GamePanel::onDraw(int x, int y) {
     camera.setPosition(entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset);
     camera.setRotation(glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation));
 
-    render.setFBO(m_FBO);
+    render.setFramebuffer(m_Framebuffer);
     render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
     camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
     render.clear();
     render.draw(camera, scene, models, renderSettings);
-    render.setFBO(lastFBO);
+    render.setFramebuffer(lastFBO);
     render.setViewport(lastViewport.width, lastViewport.height);
 
     camera.setPosition(lastCameraPos);
@@ -126,7 +98,7 @@ void GamePanel::onDraw(int x, int y) {
     m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
     // Application::get().getMousePicker().setRect(min, min + m_ViewportSize);
 
-    ImGui::Image(reinterpret_cast<void *>(m_GColor), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1},
+    ImGui::Image(reinterpret_cast<void *>(m_GColor.id), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1},
                  ImVec2{1, 0});
 
     ImGui::End();

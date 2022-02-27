@@ -2,18 +2,16 @@
 
 #include "Camera.hpp"
 #include "Particles.hpp"
-#include "Shader.hpp"
 #include "RenderSettings.hpp"
+#include "Shader.hpp"
 
 #include <glm/glm.hpp>
-
-#include <memory>
 
 namespace Engine {
 
 class ParticlesRenderer {
   private:
-    std::unique_ptr<Shader> m_Shader;
+    Shader m_Shader;
 
   public:
     ParticlesRenderer();

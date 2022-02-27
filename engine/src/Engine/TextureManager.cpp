@@ -4,15 +4,11 @@
 namespace Engine {
 
 void TextureManager::load(const std::string &name, const std::string &path) {
-    m_Map[name] = std::shared_ptr<Texture>(TextureLoader::loadTexture(path));
+    m_Map[name] = TextureLoader::loadTexture(path);
 }
 
-void TextureManager::add(const std::string &name, Texture *texture) {
-    m_Map[name].reset(texture);
-}
+void TextureManager::add(const std::string &name, const Texture &texture) { m_Map[name] = texture; }
 
-std::shared_ptr<Texture> TextureManager::get(const std::string &name) {
-    return m_Map[name];
-}
+Texture &TextureManager::get(const std::string &name) { return m_Map[name]; }
 
 } // namespace Engine

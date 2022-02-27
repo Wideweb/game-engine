@@ -30,44 +30,19 @@ void ImguiImpl::OnAttach() {
     m_PrevViewportSize = m_ViewportSize;
     m_Ratio = m_ViewportSize.x / m_ViewportSize.y;
 
-    glGenFramebuffers(1, &m_FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+    m_GColor = Texture::createRGBA32FBuffer(m_ViewportSize.x, m_ViewportSize.y);
+    m_GEntity = Texture::createR32IBuffer(m_ViewportSize.x, m_ViewportSize.y);
+    m_GDepth = Renderbuffer::create(m_ViewportSize.x, m_ViewportSize.y, Renderbuffer::InternalFormat::DEPTH_COMPONENT);
 
-    glGenTextures(1, &m_GColor);
-    glBindTexture(GL_TEXTURE_2D, m_GColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    m_Framebuffer = Framebuffer::create();
+    m_Framebuffer.bind();
+    m_Framebuffer.addAttachment(m_GColor);
+    m_Framebuffer.addAttachment(m_GEntity);
+    m_Framebuffer.setDepthAttachment(m_GDepth);
+    m_Framebuffer.check();
+    m_Framebuffer.unbind();
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GColor, 0);
-
-    glGenTextures(1, &m_GEntity);
-    glBindTexture(GL_TEXTURE_2D, m_GEntity);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE,
-                 NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_GEntity, 0);
-
-    glGenRenderbuffers(1, &m_GDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_GDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ViewportSize.x, m_ViewportSize.y);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_GDepth);
-
-    unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, attachments);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    render.setFBO(m_FBO);
+    render.setFramebuffer(m_Framebuffer);
     render.clear();
 
     ImGui::CreateContext();
@@ -122,24 +97,22 @@ void ImguiImpl::OnAttach() {
     window.setNativeEventCallback(
         [this](const void *e) { ImGui_ImplSDL2_ProcessEvent(static_cast<const SDL_Event *>(e)); });
 
-    m_IconPlay.reset(TextureLoader::loadTexture("assets/icons/play.png"));
-    m_IconStop.reset(TextureLoader::loadTexture("assets/icons/stop.png"));
+    m_IconPlay = TextureLoader::loadTexture("assets/icons/play.png");
+    m_IconStop = TextureLoader::loadTexture("assets/icons/stop.png");
 }
 
 void ImguiImpl::onUpdate() {
     if (m_PrevViewportSize != m_ViewportSize) {
-        glBindTexture(GL_TEXTURE_2D, m_GColor);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
 
-        glBindTexture(GL_TEXTURE_2D, m_GEntity);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, m_ViewportSize.x, m_ViewportSize.y, 0, GL_RED_INTEGER,
-                     GL_UNSIGNED_BYTE, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        m_GColor.bind();
+        m_GColor.resize(m_ViewportSize.x, m_ViewportSize.y);
 
-        glBindRenderbuffer(GL_RENDERBUFFER, m_GDepth);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ViewportSize.x, m_ViewportSize.y);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        m_GEntity.bind();
+        m_GEntity.resize(m_ViewportSize.x, m_ViewportSize.y);
+
+        m_GDepth.bind();
+        m_GDepth.resize(m_ViewportSize.x, m_ViewportSize.y);
+        m_GDepth.unbind();
 
         auto &render = Application::get().getRender();
         auto &camera = Application::get().getCamera();
@@ -159,12 +132,11 @@ void ImguiImpl::OnDetach() {
 }
 
 void ImguiImpl::onMouseEvent(MouseEvent &event) {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-    glReadBuffer(GL_COLOR_ATTACHMENT1);
-    Entity entity;
     auto pos = Application::get().getMousePicker().getPos();
-    glReadPixels(pos.x, m_ViewportSize.y - pos.y, 1, 1, GL_RED_INTEGER, GL_INT, &entity);
-    m_Entity = entity;
+
+    m_Framebuffer.bind();
+    m_Framebuffer[1].read(pos.x, m_ViewportSize.y - pos.y, 1, 1, &m_Entity);
+    m_Framebuffer.unbind();
 }
 
 void ImguiImpl::Begin() {
@@ -259,10 +231,10 @@ void ImguiImpl::Begin() {
                  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     float size = ImGui::GetWindowHeight() - 4.0f;
-    std::shared_ptr<Texture> icon = Application::get().getTime().poused() ? m_IconPlay : m_IconStop;
+    Texture &icon = Application::get().getTime().poused() ? m_IconPlay : m_IconStop;
     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
-    if (ImGui::ImageButton((ImTextureID)icon->getId(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+    if (ImGui::ImageButton((ImTextureID)icon.id, ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
         if (Application::get().getTime().poused()) {
             Application::get().getTime().play();
             m_CameraPos = Application::get().getCamera().positionVec();
@@ -301,7 +273,7 @@ void ImguiImpl::Begin() {
 
     Application::get().getMousePicker().setRect(min, min + m_ViewportSize);
 
-    ImGui::Image(reinterpret_cast<void *>(m_GColor), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1},
+    ImGui::Image(reinterpret_cast<void *>(m_GColor.id), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1},
                  ImVec2{1, 0});
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {

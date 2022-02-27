@@ -1,6 +1,5 @@
 #include "CubeMap.hpp"
 
-#include "TextureLoader.hpp"
 #include <glm/gtx/transform.hpp>
 
 #include "glad/glad.h"
@@ -9,7 +8,7 @@ namespace Engine {
 
 CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
     : m_FarPlane(farPlane), m_Position(position) {
-    m_CubeMapTexture.reset(TextureLoader::createCubeDepthBuffer(width, height));
+    m_CubeMapTexture = Texture::createCubeDepthBuffer(width, height);
 
     float aspect = width / height;
     float near = 1.0f;

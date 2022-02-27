@@ -90,12 +90,18 @@ set(SOURCE_EXE
     src/Render3D/Renderers/GRenderer.cpp
     src/Render3D/Renderers/ParticlesRenderer.cpp
     src/Render3D/Renderers/Renderer2D.cpp
+    src/Render3D/Renderers/DeferredRenderer.cpp
+    src/Render3D/GfxObjects/GfxUtils.cpp
+    src/Render3D/GfxObjects/GfxImage.cpp
+    src/Render3D/GfxObjects/Texture.cpp
+    src/Render3D/GfxObjects/Renderbuffer.cpp
+    src/Render3D/GfxObjects/Framebuffer.cpp
+    src/Render3D/GfxObjects/Shader.cpp
     src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/ModelFactory.cpp
+    src/Render3D/Viewport.cpp
     src/Render3D/Scene.cpp
-    src/Render3D/Shader.cpp
-    src/Render3D/Texture.cpp
     src/Render3D/TextureLoader.cpp
     src/Render3D/CubeMap.cpp
     src/Collision/NarrowPhaseAlgorithm.cpp
@@ -121,6 +127,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/GfxObjects
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Models
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Renderers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
@@ -154,7 +161,7 @@ conan_cmake_autodetect(settings)
 
 conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
-                    REMOTE conan-center
+                    REMOTE conancenter
                     SETTINGS ${settings})
 
 find_package(SDL2 REQUIRED)

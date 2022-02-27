@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "Framebuffer.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
 #include "RenderSettings.hpp"
@@ -8,36 +9,20 @@
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "SkyboxRenderer.hpp"
-#include "Viewport.hpp"
-
-#include <memory>
 
 namespace Engine {
 
 class GRenderer {
   private:
-    std::unique_ptr<Shader> m_Shader;
-    unsigned int m_GBuffer;
-    unsigned int m_GPosition, m_GNormal, m_GColor, m_GSpecular, m_GDepth;
+    Shader m_Shader;
 
-    Viewport &m_Viewport;
     ModelRenderer &m_ModelRenderer;
     SkyboxRenderer &m_SkyboxRenderer;
 
   public:
-    GRenderer(Viewport &viewport, ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer);
+    GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer);
 
-    void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state, RenderSettings &settings);
-    void resize();
-
-    unsigned int gPosition() { return m_GPosition; }
-    unsigned int gNormal() { return m_GNormal; }
-    unsigned int gColor() { return m_GColor; }
-    unsigned int gDepth() { return m_GDepth; }
-
-    void setGColor(unsigned int id);
-
-    void resetGColor();
+    void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings);
 };
 
 } // namespace Engine

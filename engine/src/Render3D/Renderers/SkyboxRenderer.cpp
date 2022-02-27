@@ -11,7 +11,7 @@ namespace Engine {
 SkyboxRenderer::SkyboxRenderer() {
     auto vertexSrc = File::read("./shaders/skybox-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/skybox-fragment-shader.glsl");
-    m_SkyboxShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
 void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings) {
@@ -22,19 +22,19 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glDepthFunc(GL_LEQUAL);
-        m_SkyboxShader->bind();
+        m_Shader.bind();
 
         auto fixedView = glm::mat4(glm::mat3(camera.viewMatrix()));
         auto model = glm::rotate(glm::radians(m_SkyboxRotation), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        m_SkyboxShader->setMatrix4("u_model", model);
-        m_SkyboxShader->setMatrix4("u_view", fixedView);
-        m_SkyboxShader->setMatrix4("u_projection", camera.projectionMatrix());
-        m_SkyboxShader->setFloat4("u_clipPlane", settings.clipPlane);
+        m_Shader.setMatrix4("u_model", model);
+        m_Shader.setMatrix4("u_view", fixedView);
+        m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
+        m_Shader.setFloat4("u_clipPlane", settings.clipPlane);
 
-        m_SkyboxShader->setFloat("u_threshold", settings.threshold);
+        m_Shader.setFloat("u_threshold", settings.threshold);
 
-        scene.getSkybox()->draw(*m_SkyboxShader);
+        scene.getSkybox()->draw(m_Shader);
 
         glDisable(GL_BLEND);
         glDepthFunc(GL_LESS);

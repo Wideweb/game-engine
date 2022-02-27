@@ -8,8 +8,8 @@ namespace Engine {
 
 ContentBrowserPanel::ContentBrowserPanel(std::string path)
     : m_AssetPath(path), m_CurrentDirectory(std::filesystem::path(path)) {
-    m_DirectoryIcon.reset(TextureLoader::loadTexture("assets/icons/directory.png"));
-    m_FileIcon.reset(TextureLoader::loadTexture("assets/icons/file.png"));
+    m_DirectoryIcon = TextureLoader::loadTexture("assets/icons/directory.png");
+    m_FileIcon = TextureLoader::loadTexture("assets/icons/file.png");
 }
 
 void ContentBrowserPanel::onDraw(int x, int y) {
@@ -38,7 +38,7 @@ void ContentBrowserPanel::onDraw(int x, int y) {
         std::string filenameString = relativePath.filename().string();
 
         ImGui::PushID(filenameString.c_str());
-        uint32_t icon = directoryEntry.is_directory() ? m_DirectoryIcon->getId() : m_FileIcon->getId();
+        uint32_t icon = directoryEntry.is_directory() ? m_DirectoryIcon.id : m_FileIcon.id;
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
         ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 

@@ -156,7 +156,7 @@ void SkinnedMesh::update() {
 }
 
 void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints,
-                       unsigned int textureShift, uint32_t id) const {
+                       uint32_t id) const {
     shader.bind();
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -169,19 +169,9 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vec
 
     if (hasMaterial) {
         shader.setInt("u_hasMaterial", 1);
-
-        glActiveTexture(GL_TEXTURE0 + textureShift);
-        material.diffuseMap->bind();
-        // shader.setInt("u_material.diffuse", static_cast<int>(textureShift));
-
-        glActiveTexture(GL_TEXTURE1 + textureShift);
-        material.specularMap->bind();
-        // shader.setInt("u_material.specular", static_cast<int>(textureShift) + 1);
-
-        glActiveTexture(GL_TEXTURE2 + textureShift);
-        material.normalMap->bind();
-        // shader.setInt("u_material.normal", static_cast<int>(textureShift) + 2);
-
+        // shader.setTexture("u_material.diffuse", material.diffuseMap);
+        // shader.setTexture("u_material.specular", material.specularMap);
+        // shader.setTexture("u_material.normal", material.normalMap);
         shader.setFloat("u_material.shininess", material.shininess);
     } else {
         shader.setInt("u_hasMaterial", 0);

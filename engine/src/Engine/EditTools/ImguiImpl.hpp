@@ -2,6 +2,9 @@
 
 #include "Application.hpp"
 #include "Entity.hpp"
+#include "Framebuffer.hpp"
+#include "Texture.hpp"
+#include "Renderbuffer.hpp"
 
 #include "imgui/imgui.h"
 #include <SDL2/SDL.h>
@@ -14,11 +17,13 @@ namespace Engine {
 
 class ImguiImpl {
   private:
-    unsigned int m_FBO, m_GColor, m_GEntity, m_GDepth;
-    std::shared_ptr<Texture> m_ColorBuffer[2];
+    Framebuffer m_Framebuffer;
+    Texture m_GColor, m_GEntity;
+    Texture m_ColorBuffer[2];
+    Renderbuffer m_GDepth;
 
-    std::shared_ptr<Texture> m_ImGuiFonts;
-    std::shared_ptr<Texture> m_IconPlay, m_IconStop;
+    Texture m_ImGuiFonts;
+    Texture m_IconPlay, m_IconStop;
     glm::vec2 m_PrevViewportSize, m_ViewportSize;
     float m_Ratio;
     bool m_BlockEvents = true;

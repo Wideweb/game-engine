@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Mesh2D.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
@@ -10,7 +8,7 @@ namespace Engine {
 
 class Renderer2D {
   private:
-    std::unique_ptr<Shader> m_Shader;
+    Shader m_Shader;
     unsigned int m_VAO, m_VBO, m_EBO;
 
   public:

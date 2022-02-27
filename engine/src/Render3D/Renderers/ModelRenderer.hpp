@@ -11,7 +11,7 @@ class ModelRenderer {
   public:
     ModelRenderer();
 
-    void draw(Shader &shader, Scene &scene, const ModelManager &models, RendererState& state);
+    void draw(Shader &shader, Scene &scene, const ModelManager &models);
 };
 
 } // namespace Engine

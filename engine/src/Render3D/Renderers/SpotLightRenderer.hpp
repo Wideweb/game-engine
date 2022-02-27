@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CubeMap.hpp"
+#include "Framebuffer.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
 #include "RendererState.hpp"
@@ -16,8 +17,8 @@ namespace Engine {
 
 class SpotLightRenderer {
   private:
-    std::unique_ptr<Shader> m_CubeShadowShader;
-    unsigned int m_DepthCubeMapFBO;
+    Shader m_CubeShadowShader;
+    Framebuffer m_DepthCubeMapFramebuffer;
     std::array<std::unique_ptr<CubeMap>, 4> m_SadowCubeMaps;
 
     Viewport m_Viewport;

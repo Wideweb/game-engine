@@ -15,17 +15,17 @@ FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
     auto m_LensShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
 
-    m_LensFlares[0].reset(TextureLoader::loadTexture("./assets/lensFlare/tex6.png"));
-    m_LensFlares[1].reset(TextureLoader::loadTexture("./assets/lensFlare/tex4.png"));
-    m_LensFlares[2].reset(TextureLoader::loadTexture("./assets/lensFlare/tex2.png"));
-    m_LensFlares[3].reset(TextureLoader::loadTexture("./assets/lensFlare/tex7.png"));
-    m_LensFlares[4].reset(TextureLoader::loadTexture("./assets/lensFlare/tex3.png"));
-    m_LensFlares[5].reset(TextureLoader::loadTexture("./assets/lensFlare/tex5.png"));
+    m_LensFlares[0] = TextureLoader::loadTexture("./assets/lensFlare/tex6.png");
+    m_LensFlares[1] = TextureLoader::loadTexture("./assets/lensFlare/tex4.png");
+    m_LensFlares[2] = TextureLoader::loadTexture("./assets/lensFlare/tex2.png");
+    m_LensFlares[3] = TextureLoader::loadTexture("./assets/lensFlare/tex7.png");
+    m_LensFlares[4] = TextureLoader::loadTexture("./assets/lensFlare/tex3.png");
+    m_LensFlares[5] = TextureLoader::loadTexture("./assets/lensFlare/tex5.png");
     m_LensFlares[6] = m_LensFlares[3];
     m_LensFlares[7] = m_LensFlares[4];
     m_LensFlares[8] = m_LensFlares[5];
     m_LensFlares[9] = m_LensFlares[1];
-    m_LensFlares[10].reset(TextureLoader::loadTexture("./assets/lensFlare/tex8.png"));
+    m_LensFlares[10] = TextureLoader::loadTexture("./assets/lensFlare/tex8.png");
 
     m_LensFlareSize[0] = 0.5f;
     m_LensFlareSize[1] = 0.23f;
@@ -67,10 +67,7 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
                                                  m_LensFlareSize[i] * m_Viewport.width / m_Viewport.height, 0.0f));
 
             m_LensShader->setMatrix4("u_model", flareModel);
-
-            glActiveTexture(GL_TEXTURE0);
-            m_LensFlares[i]->bind();
-            m_LensShader->setInt("u_colorMap", 0);
+            m_LensShader->setTexture("u_colorMap", m_LensFlares[i]);
 
             m_QuadRenderer.draw();
         }
