@@ -13,6 +13,7 @@ class OverlayRenderer {
 
   public:
     OverlayRenderer();
+    ~OverlayRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models);
 };

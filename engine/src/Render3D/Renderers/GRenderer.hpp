@@ -21,6 +21,7 @@ class GRenderer {
 
   public:
     GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer);
+    ~GRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings);
 };

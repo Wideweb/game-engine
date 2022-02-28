@@ -14,6 +14,8 @@ OverlayRenderer::OverlayRenderer() {
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
+OverlayRenderer::~OverlayRenderer() { m_Shader.free(); }
+
 void OverlayRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models) {
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);

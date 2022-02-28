@@ -21,6 +21,7 @@ class DeferredRenderer {
 
   public:
     DeferredRenderer(DirectedLightRenderer &directedLightRenderer, QuadRenderer &quadRenderer);
+    ~DeferredRenderer();
 
     void draw(Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
               RenderSettings &settings, RendererState &state);

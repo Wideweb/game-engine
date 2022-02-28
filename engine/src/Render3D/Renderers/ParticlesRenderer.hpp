@@ -15,6 +15,7 @@ class ParticlesRenderer {
 
   public:
     ParticlesRenderer();
+    ~ParticlesRenderer();
 
     void draw(const Particles &particles, const glm::mat4 &position, Camera &camera, RenderSettings &settings);
 };

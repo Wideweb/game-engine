@@ -14,6 +14,8 @@ SkyboxRenderer::SkyboxRenderer() {
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
+SkyboxRenderer::~SkyboxRenderer() { m_Shader.free(); }
+
 void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings) {
     if (scene.getSkybox()) {
         // m_SkyboxRotation += 0.01f;

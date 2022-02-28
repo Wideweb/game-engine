@@ -8,13 +8,12 @@
 
 #include <array>
 #include <glm/glm.hpp>
-#include <memory>
 
 namespace Engine {
 
 class FlareRenderer {
   private:
-    std::unique_ptr<Shader> m_LensShader;
+    Shader m_LensShader;
     std::array<Texture, 11> m_LensFlares;
     std::array<float, 11> m_LensFlareSize;
 
@@ -23,6 +22,7 @@ class FlareRenderer {
 
   public:
     FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer);
+    ~FlareRenderer();
 
     void draw(Camera &camera, const glm::vec3 &lightPosition);
 };

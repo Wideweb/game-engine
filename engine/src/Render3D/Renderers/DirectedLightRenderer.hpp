@@ -11,13 +11,11 @@
 #include "Texture.hpp"
 #include "Viewport.hpp"
 
-#include <memory>
-
 namespace Engine {
 
 class DirectedLightRenderer {
   private:
-    std::unique_ptr<Shader> m_DepthShader;
+    Shader m_DepthShader;
     Framebuffer m_DepthMapFramebuffer;
     Texture m_DepthMap;
 
@@ -26,6 +24,7 @@ class DirectedLightRenderer {
 
   public:
     DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRender);
+    ~DirectedLightRenderer();
 
     void apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene, const ModelManager &models,
                RendererState &state);

@@ -21,6 +21,7 @@ class Skybox {
     Texture cubemapTexture;
 
     Skybox(std::vector<SkyboxVertex> vertices, Texture cubemapTexture);
+    ~Skybox();
 
     void draw(Shader &shader) const;
 

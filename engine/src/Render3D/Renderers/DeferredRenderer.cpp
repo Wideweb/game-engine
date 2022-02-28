@@ -15,6 +15,10 @@ DeferredRenderer::DeferredRenderer(DirectedLightRenderer &directedLightRenderer,
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
+DeferredRenderer::~DeferredRenderer() {
+    m_Shader.free();
+}
+
 void DeferredRenderer::draw(Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
                             RenderSettings &settings, RendererState &state) {
     RendererState currentRenderState = {.framebuffer = framebuffer};

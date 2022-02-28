@@ -13,6 +13,7 @@ class Renderer2D {
 
   public:
     Renderer2D();
+    ~Renderer2D();
 
     void draw(const std::vector<Mesh2D::Vertex> &vertices, const std::vector<uint32_t> &indices, const Texture *texture,
               const glm::mat4 &model);

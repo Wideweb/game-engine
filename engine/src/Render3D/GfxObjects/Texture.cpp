@@ -30,7 +30,12 @@ void Texture::resize(unsigned int width, unsigned int height) {
                  GfxImage::getNativeDataFormat(dataFormat), GfxImage::getNativeDataType(dataType), NULL);
 }
 
-// Texture::~Texture() { glDeleteTextures(1, &id); }
+void Texture::free() {
+    if (!empty()) {
+        glDeleteTextures(1, &id);
+        setEmpty();
+    }
+}
 
 Texture Texture::createDepthBuffer(int width, int height) {
     Texture texture;

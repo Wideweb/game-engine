@@ -42,6 +42,7 @@ class WaterRenderer {
 
   public:
     WaterRenderer(Viewport &viewport, GRenderer &gRenderer, DeferredRenderer &deferredRenderer);
+    ~WaterRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state, RenderSettings &settings);
 };

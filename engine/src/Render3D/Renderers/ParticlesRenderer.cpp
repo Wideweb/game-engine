@@ -20,6 +20,8 @@ ParticlesRenderer::ParticlesRenderer() {
     m_Shader = Shader(vertexSrc, fragmentSrc, transformFeedbackVaryings);
 }
 
+ParticlesRenderer::~ParticlesRenderer() { m_Shader.free(); }
+
 void ParticlesRenderer::draw(const Particles &particles, const glm::mat4 &model, Camera &camera,
                              RenderSettings &settings) {
     m_Shader.bind();

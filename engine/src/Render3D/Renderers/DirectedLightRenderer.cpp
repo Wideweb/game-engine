@@ -15,7 +15,7 @@ DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &
     : m_Viewport(viewport), m_ModelRenderer(modelRenderer) {
     auto vertexSrc = File::read("./shaders/depth-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/depth-fragment-shader.glsl");
-    m_DepthShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    m_DepthShader = Shader(vertexSrc, fragmentSrc);
 
     m_DepthMap = Texture::createDepthBuffer(viewport.width * 2.0f, viewport.height * 2.0f);
 
@@ -23,6 +23,12 @@ DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &
     m_DepthMapFramebuffer.bind();
     m_DepthMapFramebuffer.setDepthAttachment(m_DepthMap);
     m_DepthMapFramebuffer.unbind();
+}
+
+DirectedLightRenderer::~DirectedLightRenderer() {
+    m_DepthShader.free();
+    m_DepthMapFramebuffer.free();
+    m_DepthMap.free();
 }
 
 void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene,
@@ -42,14 +48,14 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
     glm::mat4 lightProjection = glm::ortho(-farHalf, farHalf, -farHalf, farHalf, light.nearPlane, light.farPlane);
     glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_DepthShader->bind();
-    m_DepthShader->setMatrix4("u_view", lightView);
-    m_DepthShader->setMatrix4("u_projection", lightProjection);
+    m_DepthShader.bind();
+    m_DepthShader.setMatrix4("u_view", lightView);
+    m_DepthShader.setMatrix4("u_projection", lightProjection);
 
     RendererState rs = {.framebuffer = m_DepthMapFramebuffer};
 
     // glCullFace(GL_FRONT);
-    m_ModelRenderer.draw(*m_DepthShader, scene, models);
+    m_ModelRenderer.draw(m_DepthShader, scene, models);
     // glCullFace(GL_BACK);
 
     state.framebuffer.bind();

@@ -6,6 +6,8 @@
 
 namespace Engine {
 
+CubeMap::CubeMap() {}
+
 CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
     : m_FarPlane(farPlane), m_Position(position) {
     m_CubeMapTexture = Texture::createCubeDepthBuffer(width, height);
@@ -18,7 +20,7 @@ CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
     updateTransforms();
 }
 
-CubeMap::~CubeMap() {}
+CubeMap::~CubeMap() { m_CubeMapTexture.free(); }
 
 void CubeMap::bind(Shader &shader) {
     shader.setFloat("u_farPlane", m_FarPlane);

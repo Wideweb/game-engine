@@ -57,13 +57,16 @@ Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc, con
     compile(vertexSrc, fragmentSrc, geometrySrc);
 }
 
-Shader::~Shader() {
-    // glDeleteProgram(id);
-}
-
 void Shader::bind() const { glUseProgram(id); }
 
 void Shader::unbind() const { glUseProgram(0); }
+
+void Shader::free() {
+    if (!empty()) {
+        glDeleteProgram(id);
+        setEmpty();
+    }
+}
 
 void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSrc,
                      std::vector<std::string> transformFeedbackVaryings) {

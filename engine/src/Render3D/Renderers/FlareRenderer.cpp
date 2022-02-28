@@ -13,7 +13,7 @@ FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     : m_Viewport(viewport), m_QuadRenderer(quadRenderer) {
     auto vertexSrc = File::read("./shaders/screen-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
-    auto m_LensShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    auto m_LensShader = Shader(vertexSrc, fragmentSrc);
 
     m_LensFlares[0] = TextureLoader::loadTexture("./assets/lensFlare/tex6.png");
     m_LensFlares[1] = TextureLoader::loadTexture("./assets/lensFlare/tex4.png");
@@ -40,6 +40,13 @@ FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     m_LensFlareSize[10] = 0.6f;
 }
 
+FlareRenderer::~FlareRenderer() {
+    m_LensShader.free();
+    for (unsigned int i = 0; i < m_LensFlares.size(); i++) {
+        m_LensFlares[i].free();
+    }
+}
+
 void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
     glm::vec4 sunScreenPos =
         camera.projectionMatrix() * glm::mat4(glm::mat3(camera.viewMatrix())) * glm::vec4(lightPosition, 1.0f);
@@ -54,9 +61,9 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        m_LensShader->bind();
+        m_LensShader.bind();
 
-        m_LensShader->setFloat("u_alpha", brightness);
+        m_LensShader.setFloat("u_alpha", brightness);
 
         for (unsigned int i = 0; i < m_LensFlares.size(); i++) {
             glm::vec2 flarePos = glm::vec2(sunScreenPos / sunScreenPos.w) + sunToCenter * (0.4f * i);
@@ -66,8 +73,8 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
                 glm::scale(flareModel, glm::vec3(m_LensFlareSize[i],
                                                  m_LensFlareSize[i] * m_Viewport.width / m_Viewport.height, 0.0f));
 
-            m_LensShader->setMatrix4("u_model", flareModel);
-            m_LensShader->setTexture("u_colorMap", m_LensFlares[i]);
+            m_LensShader.setMatrix4("u_model", flareModel);
+            m_LensShader.setTexture("u_colorMap", m_LensFlares[i]);
 
             m_QuadRenderer.draw();
         }

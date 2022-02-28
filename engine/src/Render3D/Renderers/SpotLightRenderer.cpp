@@ -15,10 +15,16 @@ SpotLightRenderer::SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRen
     m_CubeShadowShader = Shader(vertexSrc, fragmentSrc, geometrySrc);
 
     for (size_t i = 0; i < 4; i++) {
-        m_SadowCubeMaps[i] = std::make_unique<CubeMap>(1024, 1024, 50.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+        m_SadowCubeMaps[i] = CubeMap(1024, 1024, 50.0f, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
     m_DepthCubeMapFramebuffer = Framebuffer::create();
+}
+
+SpotLightRenderer::~SpotLightRenderer() {
+    m_CubeShadowShader.free();
+    m_DepthCubeMapFramebuffer.free();
+    std::array<CubeMap, 4> m_SadowCubeMaps;
 }
 
 void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
@@ -30,12 +36,12 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
     m_Viewport.resize(1024, 1024);
 
     auto &cubeMap = m_SadowCubeMaps[m_ActiveLights];
-    m_DepthCubeMapFramebuffer.setDepthAttachment(cubeMap->texture());
+    m_DepthCubeMapFramebuffer.setDepthAttachment(cubeMap.texture());
     m_DepthCubeMapFramebuffer.clearDepth();
 
     m_CubeShadowShader.bind();
-    cubeMap->setPosition(position);
-    cubeMap->bind(m_CubeShadowShader);
+    cubeMap.setPosition(position);
+    cubeMap.bind(m_CubeShadowShader);
 
     m_DepthCubeMapFramebuffer.bind();
     m_ModelRenderer.draw(m_CubeShadowShader, scene, models);
@@ -54,8 +60,8 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
     shader.setFloat(lightRef + ".constant", light.constant);
     shader.setFloat(lightRef + ".linear", light.linear);
     shader.setFloat(lightRef + ".quadratic", light.quadratic);
-    shader.setTexture(lightRef + ".shadowMap", m_SadowCubeMaps[m_ActiveLights]->texture());
-    shader.setFloat(lightRef + ".farPlane", m_SadowCubeMaps[m_ActiveLights]->farPlane());
+    shader.setTexture(lightRef + ".shadowMap", m_SadowCubeMaps[m_ActiveLights].texture());
+    shader.setFloat(lightRef + ".farPlane", m_SadowCubeMaps[m_ActiveLights].farPlane());
 
     m_ActiveLights++;
     shader.setInt("u_spotLightsNumber", static_cast<int>(m_ActiveLights));

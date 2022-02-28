@@ -65,6 +65,27 @@ WaterRenderer::WaterRenderer(Viewport &viewport, GRenderer &gRenderer, DeferredR
     m_RefractionFbo.unbind();
 }
 
+WaterRenderer::~WaterRenderer() {
+    m_Shader.free();
+
+    glDeleteVertexArrays(1, &m_WaterVAO);
+    glDeleteBuffers(1, &m_WaterVBO);
+
+    m_WaterDudvMap.free();
+    m_WaterNormalMap.free();
+
+    m_ReflectionFbo.free();
+    m_ReflectionColorAttachment.free();
+    m_ReflectionDepthAttachment.free();
+
+    m_RefractionFbo.free();
+    m_RefractionColorAttachment.free();
+    m_PositionAttachment.free();
+    m_NormalAttachment.free();
+    m_DepthAttachment.free();
+    m_SpecularAttachment.free();
+}
+
 void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state,
                          RenderSettings &settings) {
     unsigned int lastViewportWidth = m_Viewport.width;

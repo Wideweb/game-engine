@@ -62,6 +62,7 @@ class MasterRenderer {
 
   public:
     MasterRenderer(unsigned int width, unsigned int height);
+    ~MasterRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings);
     void setClearColor(float r, float g, float b, float a);

@@ -43,6 +43,16 @@ Renderer2D::Renderer2D() {
     glBindVertexArray(0);
 }
 
+Renderer2D::~Renderer2D() {
+    glDeleteVertexArrays(1, &m_VAO);
+    m_VAO = 0;
+    unsigned int buffers[2]{m_VBO, m_EBO};
+    glDeleteBuffers(2, buffers);
+    m_VBO = 0;
+    m_EBO = 0;
+    m_Shader.free();
+}
+
 void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::vector<uint32_t> &indices,
                       const Texture *texture, const glm::mat4 &model) {
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

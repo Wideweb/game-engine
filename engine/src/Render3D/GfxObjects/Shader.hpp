@@ -27,10 +27,10 @@ class Shader : public GfxObject {
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc,
            std::vector<std::string> transformFeedbackVaryings);
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
-    ~Shader();
 
     void bind() const override;
     void unbind() const override;
+    void free() override;
 
     void setInt(const std::string &name, int value);
     void setFloat(const std::string &name, float value);

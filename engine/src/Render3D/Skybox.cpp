@@ -10,6 +10,14 @@ Skybox::Skybox(std::vector<SkyboxVertex> vertices, Texture cubemapTexture)
     this->setUp();
 }
 
+Skybox::~Skybox() {
+    glDeleteVertexArrays(1, &VAO);
+    VAO = 0;
+    glDeleteBuffers(1, &VBO);
+    VBO = 0;
+    cubemapTexture.free();
+}
+
 void Skybox::setUp() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);

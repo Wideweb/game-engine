@@ -64,6 +64,26 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_DeferredRenderer = std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_QuadRenderer);
 }
 
+MasterRenderer::~MasterRenderer() {
+    m_Framebuffer.free();
+    m_HdrFramebuffer.free();
+
+    m_PingpongFramebuffer[0].free();
+    m_PingpongFramebuffer[1].free();
+
+    m_PingpongColorBuffer[0].free();
+    m_PingpongColorBuffer[1].free();
+
+    m_Shader.free();
+    m_HdrShader.free();
+    m_BlurShader.free();
+
+    m_ColorBuffer[0].free();
+    m_ColorBuffer[1].free();
+    m_EntityBuffer.free();
+    m_DepthRenderbuffer.free();
+}
+
 void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings) {
     if (settings.hdr) {
         m_State.framebuffer = m_HdrFramebuffer;

@@ -16,6 +16,8 @@ GRenderer::GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRendere
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
+GRenderer::~GRenderer() { m_Shader.free(); }
+
 void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings) {
     m_Shader.bind();
     m_Shader.setMatrix4("u_view", camera.viewMatrix());

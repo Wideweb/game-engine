@@ -28,7 +28,20 @@ void Framebuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, id); }
 
 void Framebuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-void Framebuffer::addAttachment(const Texture &attachment) {
+void Framebuffer::free() {
+    if (!empty()) {
+        glDeleteFramebuffers(1, &id);
+        setEmpty();
+
+        for (unsigned int index = 0; index < m_AttachmentsIndex; index++) {
+            m_Attachments[index].free();
+        }
+        m_DepthAttachment.free();
+        m_AttachmentsIndex = 0;
+    }
+}
+
+void Framebuffer::addAttachment(const Texture &attachment, bool own) {
     switch (attachment.format) {
     case GfxImage::InternalFormat::DEPTH_COMPONENT:
         setDepthAttachment(attachment);
@@ -36,7 +49,7 @@ void Framebuffer::addAttachment(const Texture &attachment) {
     default:
         assert(m_AttachmentsIndex < c_MaxFramebufferAttachments && "Too many attachments");
 
-        m_Attachments[m_AttachmentsIndex] = Framebuffer::Attachment(attachment, m_AttachmentsIndex);
+        m_Attachments[m_AttachmentsIndex] = Framebuffer::Attachment(attachment, m_AttachmentsIndex, own);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_AttachmentsIndex, GL_TEXTURE_2D, attachment.id,
                                0);
@@ -53,7 +66,7 @@ void Framebuffer::addAttachment(const Texture &attachment) {
     }
 }
 
-void Framebuffer::addAttachment(const Renderbuffer &attachment) {
+void Framebuffer::addAttachment(const Renderbuffer &attachment, bool own) {
     switch (attachment.format) {
     case GfxImage::InternalFormat::DEPTH_COMPONENT:
         setDepthAttachment(attachment);
@@ -61,7 +74,7 @@ void Framebuffer::addAttachment(const Renderbuffer &attachment) {
     default:
         assert(m_AttachmentsIndex < c_MaxFramebufferAttachments && "Too many attachments");
 
-        m_Attachments[m_AttachmentsIndex] = Framebuffer::Attachment(attachment, m_AttachmentsIndex);
+        m_Attachments[m_AttachmentsIndex] = Framebuffer::Attachment(attachment, m_AttachmentsIndex, own);
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_AttachmentsIndex, GL_RENDERBUFFER,
                                   attachment.id);
@@ -77,22 +90,22 @@ void Framebuffer::addAttachment(const Renderbuffer &attachment) {
     }
 }
 
-void Framebuffer::setDepthAttachment(const Renderbuffer &attachment) {
+void Framebuffer::setDepthAttachment(const Renderbuffer &attachment, bool own) {
     if (attachment.format != Renderbuffer::InternalFormat::DEPTH_COMPONENT) {
         throw std::invalid_argument("Framebuffer::setDepthAttachment: Invalid attachment type.");
     }
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, attachment.id);
     Gfx::checkError();
-    m_DepthAttachment = Framebuffer::Attachment(attachment, 0);
+    m_DepthAttachment = Framebuffer::Attachment(attachment, 0, own);
 }
 
-void Framebuffer::setDepthAttachment(const Texture &attachment) {
+void Framebuffer::setDepthAttachment(const Texture &attachment, bool own) {
     if (attachment.format != Texture::InternalFormat::DEPTH_COMPONENT) {
         throw std::invalid_argument("Framebuffer::setDepthAttachment: Invalid attachment type.");
     }
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, attachment.id, 0);
     Gfx::checkError();
-    m_DepthAttachment = Framebuffer::Attachment(attachment, 0);
+    m_DepthAttachment = Framebuffer::Attachment(attachment, 0, own);
 }
 
 void Framebuffer::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
@@ -107,14 +120,14 @@ void Framebuffer::check() {
 
 Framebuffer::Attachment::Attachment() {}
 
-Framebuffer::Attachment::Attachment(const Texture &attachment, unsigned int index)
-    : m_Index(index), m_Type(Attachment::Type::Texture) {
+Framebuffer::Attachment::Attachment(const Texture &attachment, unsigned int index, bool owned)
+    : m_Index(index), m_Type(Attachment::Type::Texture), m_Owned(owned) {
     id = attachment.id;
     format = attachment.format;
 }
 
-Framebuffer::Attachment::Attachment(const Renderbuffer &attachment, unsigned int index)
-    : m_Index(index), m_Type(Attachment::Type::Renderbuffer) {
+Framebuffer::Attachment::Attachment(const Renderbuffer &attachment, unsigned int index, bool owned)
+    : m_Index(index), m_Type(Attachment::Type::Renderbuffer), m_Owned(owned) {
     id = attachment.id;
     format = attachment.format;
 }
@@ -122,6 +135,22 @@ Framebuffer::Attachment::Attachment(const Renderbuffer &attachment, unsigned int
 void Framebuffer::Attachment::bind() const {}
 
 void Framebuffer::Attachment::unbind() const {}
+
+void Framebuffer::Attachment::free() {
+    if (!m_Owned || empty()) {
+        return;
+    }
+
+    if (m_Type == Attachment::Type::Texture) {
+        glDeleteTextures(1, &id);
+        setEmpty();
+    }
+
+    if (m_Type == Attachment::Type::Renderbuffer) {
+        glDeleteRenderbuffers(1, &id);
+        setEmpty();
+    }
+}
 
 void Framebuffer::Attachment::resize(unsigned int width, unsigned int height) {}
 

@@ -8,6 +8,7 @@ class QuadRenderer {
 
   public:
     QuadRenderer();
+    ~QuadRenderer();
 
     void draw();
 };

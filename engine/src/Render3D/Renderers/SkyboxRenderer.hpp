@@ -16,6 +16,7 @@ class SkyboxRenderer {
 
   public:
     SkyboxRenderer();
+    ~SkyboxRenderer();
 
     void draw(Camera &camera, Scene &scene, RenderSettings &settings);
 };

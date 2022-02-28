@@ -11,7 +11,6 @@
 #include "Viewport.hpp"
 
 #include <glm/glm.hpp>
-#include <memory>
 
 namespace Engine {
 
@@ -19,7 +18,7 @@ class SpotLightRenderer {
   private:
     Shader m_CubeShadowShader;
     Framebuffer m_DepthCubeMapFramebuffer;
-    std::array<std::unique_ptr<CubeMap>, 4> m_SadowCubeMaps;
+    std::array<CubeMap, 4> m_SadowCubeMaps;
 
     Viewport m_Viewport;
     ModelRenderer &m_ModelRenderer;
@@ -28,6 +27,7 @@ class SpotLightRenderer {
 
   public:
     SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer);
+    ~SpotLightRenderer();
 
     void apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
                const ModelManager &models, RendererState &state);

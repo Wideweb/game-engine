@@ -13,7 +13,6 @@ class GamePanel : public BaseView {
   private:
     Framebuffer m_Framebuffer;
     Texture m_GColor, m_GEntity, m_GDepth;
-    std::shared_ptr<Texture> m_ColorBuffer[2];
     glm::vec2 m_PrevViewportSize, m_ViewportSize;
     float m_Ratio;
 

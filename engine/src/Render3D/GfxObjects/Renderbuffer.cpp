@@ -26,6 +26,13 @@ void Renderbuffer::bind() const { glBindRenderbuffer(GL_RENDERBUFFER, id); }
 
 void Renderbuffer::unbind() const { glBindRenderbuffer(GL_RENDERBUFFER, 0); }
 
+void Renderbuffer::free() {
+    if (!empty()) {
+        glDeleteRenderbuffers(1, &id);
+        setEmpty();
+    }
+}
+
 void Renderbuffer::resize(unsigned int width, unsigned int height) {
     this->width = width;
     this->height = height;
