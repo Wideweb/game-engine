@@ -78,6 +78,9 @@ set(SOURCE_EXE
     src/Render3D/Models/SkinnedMesh.cpp
     src/Render3D/Models/SkinnedModel.cpp
     src/Render3D/Models/Particles.cpp
+    src/Render3D/Models/Skybox.cpp
+    src/Render3D/Mappers/ModelMapper.cpp
+    src/Render3D/Mappers/TerrainMapper.cpp
     src/Render3D/Renderers/MasterRenderer.cpp
     src/Render3D/Renderers/QuadRenderer.cpp
     src/Render3D/Renderers/ModelRenderer.cpp
@@ -97,7 +100,6 @@ set(SOURCE_EXE
     src/Render3D/GfxObjects/Renderbuffer.cpp
     src/Render3D/GfxObjects/Framebuffer.cpp
     src/Render3D/GfxObjects/Shader.cpp
-    src/Render3D/Skybox.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/ModelFactory.cpp
     src/Render3D/Viewport.cpp
@@ -129,6 +131,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/GfxObjects
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Models
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Mappers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Renderers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL

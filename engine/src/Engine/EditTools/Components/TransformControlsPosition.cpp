@@ -15,11 +15,11 @@ TransformControlsPosition::TransformControlsPosition(GameObjectModel &model) : m
 void TransformControlsPosition::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    Application::get().getModels().RegisterModel("arrow-x", ModelLoader::loadModel("./assets/models/box/arrow-x.fbx"));
+    Application::get().getModels().RegisterModel("arrow-x", ModelLoader::load("./assets/models/box/arrow-x.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-y", ModelLoader::loadModel("./assets/models/box/arrow-y.fbx"));
+    Application::get().getModels().RegisterModel("arrow-y", ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-z", ModelLoader::loadModel("./assets/models/box/arrow-z.fbx"));
+    Application::get().getModels().RegisterModel("arrow-z", ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
     auto controlX = coordinator.CreateEntity("arrow-x");
     auto locationX = LocationComponent();

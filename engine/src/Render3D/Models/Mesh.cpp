@@ -11,6 +11,9 @@ Mesh::~Mesh() {}
 Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices, const Material &material)
     : vertices(vertices), indices(indices), material(material), hasMaterial(true) {}
 
+Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices)
+    : vertices(vertices), indices(indices), hasMaterial(false) {}
+
 Mesh::Mesh(const Mesh &mesh) {
     VAO = mesh.VAO;
     EBO = mesh.EBO;

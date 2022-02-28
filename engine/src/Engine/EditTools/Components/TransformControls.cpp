@@ -18,11 +18,11 @@ TransformControls::TransformControls(GameObjectModel &model) : m_Model(model) {}
 void TransformControls::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    Application::get().getModels().RegisterModel("arrow-x", ModelLoader::loadModel("./assets/models/box/arrow-x.fbx"));
+    Application::get().getModels().RegisterModel("arrow-x", ModelLoader::load("./assets/models/box/arrow-x.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-y", ModelLoader::loadModel("./assets/models/box/arrow-y.fbx"));
+    Application::get().getModels().RegisterModel("arrow-y", ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-z", ModelLoader::loadModel("./assets/models/box/arrow-z.fbx"));
+    Application::get().getModels().RegisterModel("arrow-z", ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
     auto arrowX = coordinator.CreateEntity("arrow-x");
     auto arrowXLocation = LocationComponent();
@@ -51,7 +51,7 @@ void TransformControls::onAttach() {
     coordinator.AddComponent(arrowZ, TagComponent("arrow"));
     m_ArrowZ = arrowZ;
 
-    Application::get().getModels().RegisterModel("arc-x", ModelLoader::loadModel("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel("arc-x", ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcXModel = Application::get().getModels().GetModel<InstancedModel>("arc-x");
         auto &vertices = arcXModel->meshes[0].vertices;
@@ -61,7 +61,7 @@ void TransformControls::onAttach() {
         arcXModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-y", ModelLoader::loadModel("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel("arc-y", ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcYModel = Application::get().getModels().GetModel<InstancedModel>("arc-y");
         auto &vertices = arcYModel->meshes[0].vertices;
@@ -71,7 +71,7 @@ void TransformControls::onAttach() {
         arcYModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-z", ModelLoader::loadModel("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel("arc-z", ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcZModel = Application::get().getModels().GetModel<InstancedModel>("arc-z");
         auto &vertices = arcZModel->meshes[0].vertices;
@@ -109,8 +109,7 @@ void TransformControls::onAttach() {
     m_ArcZ = arcZ;
 
     {
-        Application::get().getModels().RegisterModel("scale-x",
-                                                     ModelLoader::loadModel("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel("scale-x", ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-x");
         auto &vertices = model->meshes[0].vertices;
@@ -121,8 +120,7 @@ void TransformControls::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-y",
-                                                     ModelLoader::loadModel("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel("scale-y", ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-y");
         auto &vertices = model->meshes[0].vertices;
@@ -133,8 +131,7 @@ void TransformControls::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-z",
-                                                     ModelLoader::loadModel("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel("scale-z", ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-z");
         auto &vertices = model->meshes[0].vertices;

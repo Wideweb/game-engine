@@ -281,7 +281,7 @@ void ImguiImpl::Begin() {
             auto &models = Application::get().getModels();
             if (!models.HasModel(path)) {
                 std::filesystem::path modelSrc = std::filesystem::path("assets") / path;
-                models.RegisterModel(path, ModelLoader::loadModel(modelSrc));
+                models.RegisterModel(path, ModelLoader::load(modelSrc));
             }
 
             std::string name;

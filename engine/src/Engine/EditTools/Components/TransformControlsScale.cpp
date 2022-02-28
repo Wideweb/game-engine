@@ -21,7 +21,7 @@ void TransformControlsScale::onAttach() {
 
     {
         Application::get().getModels().RegisterModel("scale-x",
-                                                     ModelLoader::loadModel("./assets/models/box/scale.obj"));
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-x");
         auto &vertices = model->meshes[0].vertices;
@@ -33,7 +33,7 @@ void TransformControlsScale::onAttach() {
 
     {
         Application::get().getModels().RegisterModel("scale-y",
-                                                     ModelLoader::loadModel("./assets/models/box/scale.obj"));
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-y");
         auto &vertices = model->meshes[0].vertices;
@@ -45,7 +45,7 @@ void TransformControlsScale::onAttach() {
 
     {
         Application::get().getModels().RegisterModel("scale-z",
-                                                     ModelLoader::loadModel("./assets/models/box/scale.obj"));
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-z");
         auto &vertices = model->meshes[0].vertices;
