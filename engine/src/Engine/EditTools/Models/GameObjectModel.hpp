@@ -18,6 +18,7 @@
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
+#include "TBN.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -672,6 +673,7 @@ class GameObjectModel {
     void updateTerrain(std::vector<Mesh::Vertex> vertices) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
+        Render3D::Utils::tbn(vertices, model->meshes[0].indices);
         model->meshes[0].vertices = vertices;
         model->update();
 
@@ -681,6 +683,9 @@ class GameObjectModel {
     void updateTerrain(std::vector<Mesh::Vertex> vertices, std::vector<unsigned int> indices, int columns, int rows) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
+
+        Render3D::Utils::tbn(vertices, indices);
+
         model->meshes[0].vertices = vertices;
         model->meshes[0].indices = indices;
         model->update();

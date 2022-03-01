@@ -133,6 +133,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Models
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Mappers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Renderers
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Utils
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
