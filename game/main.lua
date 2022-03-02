@@ -1,5 +1,5 @@
 function main(app)
-    app:loadModel3D_v2("box", "./assets/models/box/box.fbx");
+    app:load3D_v2("box", "./assets/models/box/box.fbx");
 
     app:setSkybox("./assets/models/skybox-2/right.png",
                   "./assets/models/skybox-2/left.png",

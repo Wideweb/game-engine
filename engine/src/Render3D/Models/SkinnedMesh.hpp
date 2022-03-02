@@ -37,25 +37,24 @@ class SkinnedMesh {
 #pragma pack(pop)
 
     std::vector<Vertex> vertices;
-    std::vector<GLuint> indices;
+    std::vector<unsigned int> indices;
     Material material;
     bool hasMaterial = false;
 
-    SkinnedMesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices);
+    SkinnedMesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
 
     SkinnedMesh(const SkinnedMesh &mesh);
 
     SkinnedMesh();
     ~SkinnedMesh();
 
-    void draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints,
-              unsigned int textureShift, uint32_t id) const;
+    void draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints, uint32_t id) const;
 
     void setUp();
     void update();
 
   private:
-    GLuint VAO, VBO, EBO, instanceVBO, idVBO;
+    unsigned int VAO, VBO, EBO, instanceVBO, idVBO;
 };
 
 } // namespace Engine

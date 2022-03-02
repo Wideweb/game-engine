@@ -2,6 +2,8 @@
 
 #include "Math.hpp"
 
+#include "glad/glad.h"
+
 #include <glm/gtx/transform.hpp>
 #include <vector>
 

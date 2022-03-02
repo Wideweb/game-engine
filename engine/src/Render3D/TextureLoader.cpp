@@ -1,7 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "TextureLoader.hpp"
-#include "Texture.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -13,14 +12,16 @@
 #include "stb_image.hpp"
 #pragma GCC diagnostic pop
 
+#include "glad/glad.h"
+
 #include <cassert>
 #include <iostream>
 #include <vector>
 
 namespace Engine {
 
-Texture *TextureLoader::loadTexture(const std::string &path) {
-    GLuint textureID;
+Texture TextureLoader::loadTexture(const std::string &path) {
+    Texture texture;
     int width, height, channels;
 
     stbi_set_flip_vertically_on_load(0);
@@ -38,8 +39,8 @@ Texture *TextureLoader::loadTexture(const std::string &path) {
         dataFormat = GL_RGB;
     }
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
 
     GLint mipmapLevel = 0;
     GLint border = 0;
@@ -67,14 +68,21 @@ Texture *TextureLoader::loadTexture(const std::string &path) {
     glBindTexture(GL_TEXTURE_2D, 0);
     stbi_image_free(data);
 
-    return new Texture(textureID);
+    texture.width = width;
+    texture.height = height;
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = GL_RGB8 ? Texture::InternalFormat::RGB8F : Texture::InternalFormat::RGBA8F;
+    texture.dataFormat = GL_RGB ? Texture::DataFormat::RGB : Texture::DataFormat::RGBA;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
+
+    return texture;
 }
 
-Texture *TextureLoader::placeholder() {
-    GLuint textureID;
+Texture TextureLoader::placeholder() {
+    Texture texture;
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
 
     unsigned char data[3] = {0, 0, 0};
 
@@ -95,17 +103,25 @@ Texture *TextureLoader::placeholder() {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    return new Texture(textureID);
+    texture.width = 0;
+    texture.height = 0;
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = Texture::InternalFormat::RGB8F;
+    texture.dataFormat = Texture::DataFormat::RGB;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
+
+    return texture;
 }
 
-Texture *TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
-    GLuint textureID;
+Texture TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
+    Texture texture;
+
     GLint mipmapLevel = 0;
     GLint border = 0;
     int width, height, nrChannels;
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id);
 
     for (size_t i = 0; i < faces.size(); i++) {
         unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
@@ -116,7 +132,7 @@ Texture *TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
         glTexImage2D(
             static_cast<GLenum>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i),
             mipmapLevel,
-            GL_RGB,
+            GL_RGB8,
             static_cast<GLsizei>(width),
             static_cast<GLsizei>(height),
             border,
@@ -136,133 +152,14 @@ Texture *TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    return new Texture(textureID, Texture::TextureType::CUBE_MAP);
-}
+    texture.width = 0;
+    texture.height = 0;
+    texture.type = Texture::TextureType::CUBE_MAP;
+    texture.format = Texture::InternalFormat::RGB8F;
+    texture.dataFormat = Texture::DataFormat::RGB;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
 
-Texture *TextureLoader::createDepthBuffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-    return new Texture(textureID, Texture::TextureType::DEPTH_BUFFER);
-}
-
-Texture *TextureLoader::createCubeDepthBuffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-    for (unsigned int i = 0; i < 6; i++) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT,
-                     GL_FLOAT, NULL);
-    }
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    return new Texture(textureID, Texture::TextureType::CUBE_MAP);
-}
-
-Texture *TextureLoader::createRGBA32Buffer(int width, int height, const void *data) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-#ifdef GL_UNPACK_ROW_LENGTH
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-#endif
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-    return new Texture(textureID, Texture::TextureType::SIMPLE);
-}
-
-Texture *TextureLoader::createRGBA8Buffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return new Texture(textureID, Texture::TextureType::SIMPLE);
-}
-
-Texture *TextureLoader::createRGBA16Buffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return new Texture(textureID, Texture::TextureType::SIMPLE);
-}
-
-Texture *TextureLoader::createRGB16Buffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return new Texture(textureID, Texture::TextureType::SIMPLE);
-}
-
-Texture *TextureLoader::createRGB8IBuffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8I, width, height, 0, GL_RGB, GL_INT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return new Texture(textureID, Texture::TextureType::SIMPLE);
-}
-
-Texture *TextureLoader::createR32IBuffer(int width, int height) {
-    GLuint textureID;
-
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return new Texture(textureID, Texture::TextureType::SIMPLE);
+    return texture;
 }
 
 } // namespace Engine

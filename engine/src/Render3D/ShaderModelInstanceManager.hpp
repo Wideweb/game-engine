@@ -29,7 +29,7 @@ class ShaderModelInstanceManager {
 
     void update(uint32_t id, std::shared_ptr<Shader> shader) {
         auto prevShaderId = getShaderId(id);
-        auto nextShaderId = shader ? shader->id() : c_NoShader;
+        auto nextShaderId = shader ? shader->id : c_NoShader;
         if (prevShaderId == nextShaderId) {
             return;
         }
@@ -77,7 +77,7 @@ class ShaderModelInstanceManager {
   private:
     ShaderId getShaderId(uint32_t id) const {
         if (m_InstanceShader[id] != nullptr) {
-            return m_InstanceShader[id]->id();
+            return m_InstanceShader[id]->id;
         }
 
         return c_NoShader;

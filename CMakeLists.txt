@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(RedHat VERSION 1.0)
+project(GameEngine VERSION 1.0)
 
 add_compile_options(
     # -Werror

@@ -22,13 +22,13 @@
 //     auto &coordinator = toolsLayer().getCoordinator();
 
 //     Engine::Application::get().getModels().RegisterModel(
-//         "arrow-x", Engine::ModelLoader::loadModel("./assets/models/box/arrow-x.fbx"));
+//         "arrow-x", Engine::ModelLoader::load("./assets/models/box/arrow-x.fbx"));
 
 //     Engine::Application::get().getModels().RegisterModel(
-//         "arrow-y", Engine::ModelLoader::loadModel("./assets/models/box/arrow-y.fbx"));
+//         "arrow-y", Engine::ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
 //     Engine::Application::get().getModels().RegisterModel(
-//         "arrow-z", Engine::ModelLoader::loadModel("./assets/models/box/arrow-z.fbx"));
+//         "arrow-z", Engine::ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
 //     auto arrowX = coordinator.CreateEntity("arrow-x");
 //     auto arrowXLocation = Engine::LocationComponent();
@@ -58,7 +58,7 @@
 //     m_ArrowZ = arrowZ;
 
 //     Engine::Application::get().getModels().RegisterModel("arc-x",
-//                                                          Engine::ModelLoader::loadModel("./assets/models/box/arc.obj"));
+//                                                          Engine::ModelLoader::load("./assets/models/box/arc.obj"));
 //     {
 //         auto arcXModel = Engine::Application::get().getModels().GetModel<Engine::InstancedModel>("arc-x");
 //         auto &vertices = arcXModel->meshes[0].vertices;
@@ -69,7 +69,7 @@
 //     }
 
 //     Engine::Application::get().getModels().RegisterModel("arc-y",
-//                                                          Engine::ModelLoader::loadModel("./assets/models/box/arc.obj"));
+//                                                          Engine::ModelLoader::load("./assets/models/box/arc.obj"));
 //     {
 //         auto arcYModel = Engine::Application::get().getModels().GetModel<Engine::InstancedModel>("arc-y");
 //         auto &vertices = arcYModel->meshes[0].vertices;
@@ -80,7 +80,7 @@
 //     }
 
 //     Engine::Application::get().getModels().RegisterModel("arc-z",
-//                                                          Engine::ModelLoader::loadModel("./assets/models/box/arc.obj"));
+//                                                          Engine::ModelLoader::load("./assets/models/box/arc.obj"));
 //     {
 //         auto arcZModel = Engine::Application::get().getModels().GetModel<Engine::InstancedModel>("arc-z");
 //         auto &vertices = arcZModel->meshes[0].vertices;
@@ -119,7 +119,7 @@
 
 //     {
 //         Engine::Application::get().getModels().RegisterModel(
-//             "scale-x", Engine::ModelLoader::loadModel("./assets/models/box/scale.obj"));
+//             "scale-x", Engine::ModelLoader::load("./assets/models/box/scale.obj"));
 
 //         auto model = Engine::Application::get().getModels().GetModel<Engine::InstancedModel>("scale-x");
 //         auto &vertices = model->meshes[0].vertices;
@@ -131,7 +131,7 @@
 
 //     {
 //         Engine::Application::get().getModels().RegisterModel(
-//             "scale-y", Engine::ModelLoader::loadModel("./assets/models/box/scale.obj"));
+//             "scale-y", Engine::ModelLoader::load("./assets/models/box/scale.obj"));
 
 //         auto model = Engine::Application::get().getModels().GetModel<Engine::InstancedModel>("scale-y");
 //         auto &vertices = model->meshes[0].vertices;
@@ -143,7 +143,7 @@
 
 //     {
 //         Engine::Application::get().getModels().RegisterModel(
-//             "scale-z", Engine::ModelLoader::loadModel("./assets/models/box/scale.obj"));
+//             "scale-z", Engine::ModelLoader::load("./assets/models/box/scale.obj"));
 
 //         auto model = Engine::Application::get().getModels().GetModel<Engine::InstancedModel>("scale-z");
 //         auto &vertices = model->meshes[0].vertices;

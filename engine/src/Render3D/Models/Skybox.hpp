@@ -18,15 +18,15 @@ struct SkyboxVertex {
 class Skybox {
   public:
     std::vector<SkyboxVertex> vertices;
-    std::shared_ptr<Texture> cubemapTexture;
+    Texture cubemapTexture;
 
-    Skybox(std::vector<SkyboxVertex> vertices,
-           std::shared_ptr<Texture> cubemapTexture);
+    Skybox(std::vector<SkyboxVertex> vertices, Texture cubemapTexture);
+    ~Skybox();
 
     void draw(Shader &shader) const;
 
   private:
-    GLuint VAO, VBO;
+    unsigned int VAO, VBO;
 
     void setUp();
 };

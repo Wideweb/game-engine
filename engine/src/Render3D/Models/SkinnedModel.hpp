@@ -20,7 +20,7 @@ class SkinnedModel : public Model {
     void setUp() override;
     void update() override;
 
-    void draw(Shader &shader, ShaderModelInstanceManager &instances, unsigned int textureShift) override;
+    void draw(Shader &shader, ShaderModelInstanceManager &instances) override;
 };
 
 } // namespace Engine

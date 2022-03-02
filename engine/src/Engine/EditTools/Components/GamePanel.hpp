@@ -2,6 +2,7 @@
 
 #include "BaseView.hpp"
 
+#include "Framebuffer.hpp"
 #include "Texture.hpp"
 
 #include <glm/vec2.hpp>
@@ -10,8 +11,8 @@ namespace Engine {
 
 class GamePanel : public BaseView {
   private:
-    unsigned int m_FBO, m_GColor, m_GEntity, m_GDepth;
-    std::shared_ptr<Texture> m_ColorBuffer[2];
+    Framebuffer m_Framebuffer;
+    Texture m_GColor, m_GEntity, m_GDepth;
     glm::vec2 m_PrevViewportSize, m_ViewportSize;
     float m_Ratio;
 

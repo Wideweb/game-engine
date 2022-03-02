@@ -18,7 +18,7 @@ void SkinnedModel::update() {
     }
 }
 
-void SkinnedModel::draw(Shader &shader, ShaderModelInstanceManager &instances, unsigned int textureShift) {
+void SkinnedModel::draw(Shader &shader, ShaderModelInstanceManager &instances) {
     auto &shaderInstances = instances.instances(c_NoShader);
 
     for (const auto &mesh : meshes) {
@@ -27,7 +27,7 @@ void SkinnedModel::draw(Shader &shader, ShaderModelInstanceManager &instances, u
             auto joints = shaderInstances.joints()[i];
             auto id = shaderInstances.ids()[i];
 
-            mesh.draw(shader, position, joints, textureShift, id);
+            mesh.draw(shader, position, joints, id);
         }
     }
 }

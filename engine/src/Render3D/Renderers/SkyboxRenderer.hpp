@@ -11,11 +11,12 @@ namespace Engine {
 
 class SkyboxRenderer {
   private:
-    std::unique_ptr<Shader> m_SkyboxShader;
+    Shader m_Shader;
     float m_SkyboxRotation = 0.0f;
 
   public:
     SkyboxRenderer();
+    ~SkyboxRenderer();
 
     void draw(Camera &camera, Scene &scene, RenderSettings &settings);
 };

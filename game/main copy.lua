@@ -1,9 +1,9 @@
 function main(app)
-    app:loadModel3D_v2("frog", "./assets/models/man/Man8.fbx");
+    app:load3D_v2("frog", "./assets/models/man/Man8.fbx");
 
-    app:loadModel3D_v2("box", "./assets/models/box/box.fbx");
+    app:load3D_v2("box", "./assets/models/box/box.fbx");
 
-    -- app:loadModel3D("cottage", "./assets/models/cottage/cottage.obj",
+    -- app:load3D("cottage", "./assets/models/cottage/cottage.obj",
     --                 "./assets/models/cottage/cottage_diffuse.png",
     --                 "./assets/models/cottage/cottage_specular.png",
     --                 "./assets/models/cottage/cottage_normal.png");

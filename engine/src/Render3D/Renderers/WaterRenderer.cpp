@@ -11,13 +11,14 @@
 
 namespace Engine {
 
-WaterRenderer::WaterRenderer(Viewport &viewport, GRenderer &gRenderer) : m_Viewport(viewport), m_GRenderer(gRenderer) {
+WaterRenderer::WaterRenderer(Viewport &viewport, GRenderer &gRenderer, DeferredRenderer &deferredRenderer)
+    : m_Viewport(viewport), m_GRenderer(gRenderer), m_DeferredRenderer(deferredRenderer) {
     auto vertexSrc = File::read("./shaders/water-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/water-fragment-shader.glsl");
-    m_WaterShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    m_Shader = Shader(vertexSrc, fragmentSrc);
 
-    m_WaterDudvMap.reset(TextureLoader::loadTexture("./shaders/waterDUDV.png"));
-    m_WaterNormalMap.reset(TextureLoader::loadTexture("./shaders/waterNormalMap.png"));
+    m_WaterDudvMap = TextureLoader::loadTexture("./shaders/waterDUDV.png");
+    m_WaterNormalMap = TextureLoader::loadTexture("./shaders/waterNormalMap.png");
 
     // clang-format off
     float waterVertices[] = {
@@ -41,25 +42,64 @@ WaterRenderer::WaterRenderer(Viewport &viewport, GRenderer &gRenderer) : m_Viewp
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // Reflection color
-    glGenTextures(1, &m_ReflectionColor);
-    glBindTexture(GL_TEXTURE_2D, m_ReflectionColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, c_ReflectionWidth, c_ReflectionHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    m_ReflectionColorAttachment = Texture::createRGBA16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+    m_ReflectionPositionAttachment = Texture::createRGB16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+    m_ReflectionNormalAttachment = Texture::createRGB16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+    m_ReflectionSpecularAttachment = Texture::createRGBA16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
 
-    // Refraction color
-    glGenTextures(1, &m_RefractionColor);
-    glBindTexture(GL_TEXTURE_2D, m_RefractionColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, c_RefractionWidth, c_RefractionHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    m_RefractionColorAttachment = Texture::createRGBA16FBuffer(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionPositionAttachment = Texture::createRGB16FBuffer(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionNormalAttachment = Texture::createRGB16FBuffer(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionSpecularAttachment = Texture::createRGBA16FBuffer(c_RefractionWidth, c_RefractionHeight);
+
+    m_ReflectionFbo = Framebuffer::create();
+    m_ReflectionFbo.bind();
+    m_ReflectionFbo.addAttachment(m_ReflectionColorAttachment);
+    m_ReflectionFbo.addAttachment(m_ReflectionPositionAttachment);
+    m_ReflectionFbo.addAttachment(m_ReflectionNormalAttachment);
+    m_ReflectionFbo.addAttachment(m_ReflectionSpecularAttachment);
+    m_ReflectionFbo.setDepthAttachment(
+        Renderbuffer::create(c_ReflectionWidth, c_ReflectionHeight, Renderbuffer::InternalFormat::DEPTH_COMPONENT),
+        true);
+
+    m_RefractionFbo = Framebuffer::create();
+    m_RefractionFbo.bind();
+    m_RefractionFbo.addAttachment(m_RefractionColorAttachment);
+    m_RefractionFbo.addAttachment(m_RefractionPositionAttachment);
+    m_RefractionFbo.addAttachment(m_RefractionNormalAttachment);
+    m_RefractionFbo.addAttachment(m_RefractionSpecularAttachment);
+    m_ReflectionFbo.setDepthAttachment(
+        Renderbuffer::create(c_RefractionWidth, c_RefractionHeight, Renderbuffer::InternalFormat::DEPTH_COMPONENT),
+        true);
+    m_RefractionFbo.unbind();
+}
+
+WaterRenderer::~WaterRenderer() {
+    m_Shader.free();
+
+    glDeleteVertexArrays(1, &m_WaterVAO);
+    glDeleteBuffers(1, &m_WaterVBO);
+
+    m_WaterDudvMap.free();
+    m_WaterNormalMap.free();
+
+    m_ReflectionFbo.free();
+    m_ReflectionColorAttachment.free();
+    m_ReflectionPositionAttachment.free();
+    m_ReflectionNormalAttachment.free();
+    m_ReflectionSpecularAttachment.free();
+
+    m_RefractionFbo.free();
+    m_RefractionColorAttachment.free();
+    m_RefractionPositionAttachment.free();
+    m_RefractionNormalAttachment.free();
+    m_RefractionSpecularAttachment.free();
 }
 
 void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state,
                          RenderSettings &settings) {
-    int lastViewportWidth = m_Viewport.width;
-    int lastViewportHeight = m_Viewport.height;
+    unsigned int lastViewportWidth = m_Viewport.width;
+    unsigned int lastViewportHeight = m_Viewport.height;
 
     glm::vec4 lastClipPlane = settings.clipPlane;
 
@@ -69,134 +109,78 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
 
     settings.clipPlane = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
-    m_Viewport.width = c_ReflectionWidth;
-    m_Viewport.height = c_ReflectionHeight;
-    m_GRenderer.setGColor(m_ReflectionColor);
-    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
-    m_GRenderer.resize();
-    m_GRenderer.draw(camera, scene, models, state, settings);
+    m_Viewport.resize(c_ReflectionWidth, c_ReflectionHeight);
+
+    m_ReflectionFbo.bind();
+    m_ReflectionFbo.clear();
+    m_GRenderer.draw(camera, scene, models, settings);
+    m_DeferredRenderer.draw(m_ReflectionColorAttachment, m_ReflectionPositionAttachment, m_ReflectionNormalAttachment,
+                            m_ReflectionSpecularAttachment, m_ReflectionFbo, camera, scene, models, settings, state);
 
     camera.inversePitch();
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
     // Reflection end
 
     // Refraction begin
-    // glm::quat lastCameraRotation = camera.rotationQuat();
-    // camera.setRotation(glm::angleAxis(glm::radians(-45.0f), camera.frontVec()) * lastCameraRotation);
-    // camera.setPerspective(glm::radians(30.0f), 0.1f, 50.0f);
-
-    // glm::vec3 cameraPos = camera.positionVec();
-    // glm::quat cameraRotation = camera.rotationQuat();
-    // glm::vec3 cameraDir = camera.frontVec();
-
-    glm::vec3 planeNormal = glm::vec3(0.0f, 1.0f, 0.0f);
-    // glm::vec3 newDir = glm::vec3(0.0, -1.0f, 0.0f);
-
-    // glm::vec3 planePoint = glm::vec3(0.0f, 0.0f, 0.0f);
-    // glm::vec3 planePointToCamera = cameraPos - planePoint;
-
-    // float normalDistance = glm::dot(planePointToCamera, planeNormal);
-    // float dot = glm::dot(glm::reflect(cameraDir, planeNormal), planeNormal);
-    // float t = normalDistance / dot;
-
-    // glm::vec3 pivot = cameraPos + cameraDir * t;
-
-    // glm::vec3 half = glm::normalize(cameraDir + newDir);
-    // glm::quat deltaRotation = glm::quat(glm::dot(cameraDir, half), glm::cross(cameraDir, half));
-    // deltaRotation = glm::pow(deltaRotation, 0.33f / 1.33f);
-
-    // glm::vec3 newPosition = pivot + newDir * std::abs(normalDistance);
-
-    // camera.setRotation(deltaRotation * camera.rotationQuat());
-    // camera.setPosition(pivot + deltaRotation * (camera.positionVec() - pivot));
-
     camera.setFieldOfView(glm::radians(45.0f * 1.5f));
 
-    settings.clipPlane = glm::vec4(planeNormal * -1.0f, 0.0f);
+    settings.clipPlane = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
-    m_Viewport.width = c_RefractionWidth;
-    m_Viewport.height = c_RefractionHeight;
-    m_GRenderer.setGColor(m_RefractionColor);
-    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
-    m_GRenderer.resize();
-    m_GRenderer.draw(camera, scene, models, state, settings);
+    m_Viewport.resize(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionFbo.bind();
+    m_RefractionFbo.clear();
+    m_GRenderer.draw(camera, scene, models, settings);
+    m_DeferredRenderer.draw(m_RefractionColorAttachment, m_RefractionPositionAttachment, m_RefractionNormalAttachment,
+                            m_RefractionSpecularAttachment, m_RefractionFbo, camera, scene, models, settings, state);
 
     camera.setFieldOfView(glm::radians(45.0f));
-
-    // camera.setRotation(cameraRotation);
-    // camera.setPosition(cameraPos);
-
-    // camera.setPerspective(glm::radians(45.0f), 0.1f, 50.0f);
-    // camera.setRotation(lastCameraRotation);
     // Refraction end
 
     settings.clipPlane = lastClipPlane;
 
-    m_Viewport.width = lastViewportWidth;
-    m_Viewport.height = lastViewportHeight;
-    glViewport(0, 0, m_Viewport.width, m_Viewport.height);
+    m_Viewport.resize(lastViewportWidth, lastViewportHeight);
 
-    m_WaterShader->bind();
+    m_Shader.bind();
 
     glm::mat4 model(1);
     model = glm::translate(model, glm::vec3(glm::vec3(0.0, 0.0, 0.0)));
     model = glm::scale(model, glm::vec3(10.0));
 
-    m_WaterShader->setFloat3("u_viewPos", camera.positionVec());
-    m_WaterShader->setMatrix4("u_view", camera.viewMatrix());
-    m_WaterShader->setMatrix4("u_projection", camera.projectionMatrix());
-    m_WaterShader->setMatrix4("u_model", model);
-    m_WaterShader->setMatrix4("u_noramlFix", glm::rotate(-1.57f, glm::vec3(1.0f, 0.0f, 0.0f)));
+    m_Shader.setFloat3("u_viewPos", camera.positionVec());
+    m_Shader.setMatrix4("u_view", camera.viewMatrix());
+    m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
+    m_Shader.setMatrix4("u_model", model);
+    m_Shader.setMatrix4("u_noramlFix", glm::rotate(-1.57f, glm::vec3(1.0f, 0.0f, 0.0f)));
 
-    m_WaterShader->setFloat("u_threshold", settings.threshold);
+    m_Shader.setFloat("u_threshold", settings.threshold);
 
-    m_WaterShader->setFloat("u_moveFactor", m_WaterMoveFactor);
+    m_Shader.setFloat("u_moveFactor", m_WaterMoveFactor);
     m_WaterMoveFactor += 0.001f;
 
     auto &light = scene.getDirectedLight();
     glm::vec3 lightDir = glm::quat(light.rotation) * glm::vec3(0.0f, -1.0f, 0.0f);
-    m_WaterShader->setFloat3("u_directedLight.direction", lightDir);
-    m_WaterShader->setFloat3("u_directedLight.ambient", light.ambient * light.intensity);
-    m_WaterShader->setFloat3("u_directedLight.diffuse", light.diffuse * light.intensity);
-    m_WaterShader->setFloat3("u_directedLight.specular", light.specular * light.intensity);
+    m_Shader.setFloat3("u_directedLight.direction", lightDir);
+    m_Shader.setFloat3("u_directedLight.ambient", light.ambient * light.intensity);
+    m_Shader.setFloat3("u_directedLight.diffuse", light.diffuse * light.intensity);
+    m_Shader.setFloat3("u_directedLight.specular", light.specular * light.intensity);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_ReflectionColor);
-    m_WaterShader->setInt("u_reflectionMap", 0);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_RefractionColor);
-    m_WaterShader->setInt("u_refractionMap", 1);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gDepth());
-    m_WaterShader->setInt("u_depthMap", 2);
-
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, m_GRenderer.gPosition());
-    m_WaterShader->setInt("u_positionMap", 3);
-
-    glActiveTexture(GL_TEXTURE4);
-    m_WaterDudvMap->bind();
-    m_WaterShader->setInt("u_dudvMap", 4);
-
-    glActiveTexture(GL_TEXTURE5);
-    m_WaterNormalMap->bind();
-    m_WaterShader->setInt("u_normalMap", 5);
+    m_Shader.setTexture("u_reflectionMap", m_ReflectionColorAttachment);
+    m_Shader.setTexture("u_refractionMap", m_RefractionColorAttachment);
+    // m_Shader.setTexture("u_depthMap", m_DepthAttachment);
+    m_Shader.setTexture("u_positionMap", m_RefractionPositionAttachment);
+    m_Shader.setTexture("u_dudvMap", m_WaterDudvMap);
+    m_Shader.setTexture("u_normalMap", m_WaterNormalMap);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, state.fbo);
+    state.framebuffer.bind();
 
     glBindVertexArray(m_WaterVBO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 5);
     glBindVertexArray(0);
 
     glDisable(GL_BLEND);
-
-    m_GRenderer.resetGColor();
-    m_GRenderer.resize();
 }
 
 } // namespace Engine

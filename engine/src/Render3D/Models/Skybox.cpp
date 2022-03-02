@@ -5,10 +5,17 @@
 
 namespace Engine {
 
-Skybox::Skybox(std::vector<SkyboxVertex> vertices,
-               std::shared_ptr<Texture> cubemapTexture)
+Skybox::Skybox(std::vector<SkyboxVertex> vertices, Texture cubemapTexture)
     : vertices(std::move(vertices)), cubemapTexture(cubemapTexture) {
     this->setUp();
+}
+
+Skybox::~Skybox() {
+    glDeleteVertexArrays(1, &VAO);
+    VAO = 0;
+    glDeleteBuffers(1, &VBO);
+    VBO = 0;
+    cubemapTexture.free();
 }
 
 void Skybox::setUp() {
@@ -17,13 +24,10 @@ void Skybox::setUp() {
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(sizeof(SkyboxVertex) * vertices.size()),
-        vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(SkyboxVertex) * vertices.size()), vertices.data(),
+                 GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                          reinterpret_cast<void *>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -32,7 +36,7 @@ void Skybox::setUp() {
 
 void Skybox::draw(Shader &shader) const {
     glActiveTexture(GL_TEXTURE0);
-    cubemapTexture->bind();
+    cubemapTexture.bind();
     shader.setInt("skybox", 0);
 
     glBindVertexArray(VAO);

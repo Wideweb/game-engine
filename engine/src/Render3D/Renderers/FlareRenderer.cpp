@@ -13,19 +13,19 @@ FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     : m_Viewport(viewport), m_QuadRenderer(quadRenderer) {
     auto vertexSrc = File::read("./shaders/screen-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
-    auto m_LensShader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    auto m_LensShader = Shader(vertexSrc, fragmentSrc);
 
-    m_LensFlares[0].reset(TextureLoader::loadTexture("./assets/lensFlare/tex6.png"));
-    m_LensFlares[1].reset(TextureLoader::loadTexture("./assets/lensFlare/tex4.png"));
-    m_LensFlares[2].reset(TextureLoader::loadTexture("./assets/lensFlare/tex2.png"));
-    m_LensFlares[3].reset(TextureLoader::loadTexture("./assets/lensFlare/tex7.png"));
-    m_LensFlares[4].reset(TextureLoader::loadTexture("./assets/lensFlare/tex3.png"));
-    m_LensFlares[5].reset(TextureLoader::loadTexture("./assets/lensFlare/tex5.png"));
+    m_LensFlares[0] = TextureLoader::loadTexture("./assets/lensFlare/tex6.png");
+    m_LensFlares[1] = TextureLoader::loadTexture("./assets/lensFlare/tex4.png");
+    m_LensFlares[2] = TextureLoader::loadTexture("./assets/lensFlare/tex2.png");
+    m_LensFlares[3] = TextureLoader::loadTexture("./assets/lensFlare/tex7.png");
+    m_LensFlares[4] = TextureLoader::loadTexture("./assets/lensFlare/tex3.png");
+    m_LensFlares[5] = TextureLoader::loadTexture("./assets/lensFlare/tex5.png");
     m_LensFlares[6] = m_LensFlares[3];
     m_LensFlares[7] = m_LensFlares[4];
     m_LensFlares[8] = m_LensFlares[5];
     m_LensFlares[9] = m_LensFlares[1];
-    m_LensFlares[10].reset(TextureLoader::loadTexture("./assets/lensFlare/tex8.png"));
+    m_LensFlares[10] = TextureLoader::loadTexture("./assets/lensFlare/tex8.png");
 
     m_LensFlareSize[0] = 0.5f;
     m_LensFlareSize[1] = 0.23f;
@@ -38,6 +38,13 @@ FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     m_LensFlareSize[8] = 0.3f;
     m_LensFlareSize[9] = 0.4f;
     m_LensFlareSize[10] = 0.6f;
+}
+
+FlareRenderer::~FlareRenderer() {
+    m_LensShader.free();
+    for (unsigned int i = 0; i < m_LensFlares.size(); i++) {
+        m_LensFlares[i].free();
+    }
 }
 
 void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
@@ -54,9 +61,9 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        m_LensShader->bind();
+        m_LensShader.bind();
 
-        m_LensShader->setFloat("u_alpha", brightness);
+        m_LensShader.setFloat("u_alpha", brightness);
 
         for (unsigned int i = 0; i < m_LensFlares.size(); i++) {
             glm::vec2 flarePos = glm::vec2(sunScreenPos / sunScreenPos.w) + sunToCenter * (0.4f * i);
@@ -66,11 +73,8 @@ void FlareRenderer::draw(Camera &camera, const glm::vec3 &lightPosition) {
                 glm::scale(flareModel, glm::vec3(m_LensFlareSize[i],
                                                  m_LensFlareSize[i] * m_Viewport.width / m_Viewport.height, 0.0f));
 
-            m_LensShader->setMatrix4("u_model", flareModel);
-
-            glActiveTexture(GL_TEXTURE0);
-            m_LensFlares[i]->bind();
-            m_LensShader->setInt("u_colorMap", 0);
+            m_LensShader.setMatrix4("u_model", flareModel);
+            m_LensShader.setTexture("u_colorMap", m_LensFlares[i]);
 
             m_QuadRenderer.draw();
         }

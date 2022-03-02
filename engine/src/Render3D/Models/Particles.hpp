@@ -3,7 +3,6 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 
-#include "glad/glad.h"
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -63,11 +62,11 @@ class Particles {
     ParticlesConfiguration m_Config;
     bool m_Initialized = false;
 
-    GLuint m_Feedback[2];
-    GLuint m_VBO[2];
-    GLuint m_VAO[2];
+    unsigned int m_Feedback[2];
+    unsigned int m_VBO[2];
+    unsigned int m_VAO[2];
 
-    mutable GLuint m_DrawBuf = 1;
+    mutable unsigned int m_DrawBuf = 1;
 
     double m_Time = 0;
     double m_DeltaTime = 0;

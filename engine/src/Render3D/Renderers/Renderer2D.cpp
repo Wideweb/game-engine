@@ -8,7 +8,7 @@ namespace Engine {
 Renderer2D::Renderer2D() {
     auto vertexSrc = File::read("./shaders/screen-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
-    m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
+    m_Shader = Shader(vertexSrc, fragmentSrc);
 
     glGenVertexArrays(1, &m_VAO);
     glBindVertexArray(m_VAO);
@@ -43,6 +43,16 @@ Renderer2D::Renderer2D() {
     glBindVertexArray(0);
 }
 
+Renderer2D::~Renderer2D() {
+    glDeleteVertexArrays(1, &m_VAO);
+    m_VAO = 0;
+    unsigned int buffers[2]{m_VBO, m_EBO};
+    glDeleteBuffers(2, buffers);
+    m_VBO = 0;
+    m_EBO = 0;
+    m_Shader.free();
+}
+
 void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::vector<uint32_t> &indices,
                       const Texture *texture, const glm::mat4 &model) {
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -55,12 +65,12 @@ void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::ve
                  GL_STREAM_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    m_Shader->bind();
-    m_Shader->setMatrix4("u_model", model);
+    m_Shader.bind();
+    m_Shader.setMatrix4("u_model", model);
 
     glActiveTexture(GL_TEXTURE0);
     texture->bind();
-    m_Shader->setInt("u_colorMap", 0);
+    m_Shader.setInt("u_colorMap", 0);
 
     GLint last_scissor_box[4];
     glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);

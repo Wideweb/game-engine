@@ -18,7 +18,7 @@ TransformControlsRotation::TransformControlsRotation(GameObjectModel &model) : m
 void TransformControlsRotation::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    Application::get().getModels().RegisterModel("arc-x", ModelLoader::loadModel("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel("arc-x", ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcXModel = Application::get().getModels().GetModel<InstancedModel>("arc-x");
         auto &vertices = arcXModel->meshes[0].vertices;
@@ -28,7 +28,7 @@ void TransformControlsRotation::onAttach() {
         arcXModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-y", ModelLoader::loadModel("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel("arc-y", ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcYModel = Application::get().getModels().GetModel<InstancedModel>("arc-y");
         auto &vertices = arcYModel->meshes[0].vertices;
@@ -38,7 +38,7 @@ void TransformControlsRotation::onAttach() {
         arcYModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-z", ModelLoader::loadModel("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel("arc-z", ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcZModel = Application::get().getModels().GetModel<InstancedModel>("arc-z");
         auto &vertices = arcZModel->meshes[0].vertices;

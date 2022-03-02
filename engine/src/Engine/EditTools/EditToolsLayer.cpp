@@ -414,7 +414,8 @@ void EditToolsLayer::onDraw() {
     m_Imgui.Begin();
 
     ImGui::Begin("Console");
-    ImGui::Text(m_Logs.c_str());
+    const char *logs = m_Logs.data();
+    ImGui::Text(logs);
     if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
         ImGui::SetScrollHereY(1.0f);
     ImGui::End();

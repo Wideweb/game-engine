@@ -13,7 +13,7 @@ namespace Engine {
 DirectedLightDirector::DirectedLightDirector(GameObjectModel &model) : m_Model(model) {}
 
 void DirectedLightDirector::onAttach() {
-    Application::get().getModels().RegisterModel("sun", ModelLoader::loadModel("./assets/models/box/arrow-y.fbx"));
+    Application::get().getModels().RegisterModel("sun", ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
     auto &coordinator = gameLayer().getCoordinator();
 

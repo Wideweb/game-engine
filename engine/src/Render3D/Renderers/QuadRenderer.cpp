@@ -27,6 +27,13 @@ QuadRenderer::QuadRenderer() {
     glBindVertexArray(0);
 }
 
+QuadRenderer::~QuadRenderer() {
+    glDeleteVertexArrays(1, &m_QuadVAO);
+    m_QuadVAO = 0;
+    glDeleteBuffers(1, &m_QuadVBO);
+    m_QuadVBO = 0;
+}
+
 void QuadRenderer::draw() {
     glBindVertexArray(m_QuadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

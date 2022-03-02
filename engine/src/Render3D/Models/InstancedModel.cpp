@@ -1,5 +1,7 @@
 #include "InstancedModel.hpp"
 
+#include "glad/glad.h"
+
 namespace Engine {
 
 InstancedModel::InstancedModel() {}
@@ -18,9 +20,9 @@ void InstancedModel::update() {
     }
 }
 
-void InstancedModel::draw(Shader &shader, ShaderModelInstanceManager &instances, unsigned int textureShift) {
+void InstancedModel::draw(Shader &shader, ShaderModelInstanceManager &instances) {
     for (const auto &it : instances.shaders()) {
-        ShaderId shaderId = it ? it->id() : c_NoShader;
+        ShaderId shaderId = it ? it->id : c_NoShader;
 
         GLuint instanceVBO, idVBO;
         if (shaderToInstanceVBO.find(shaderId) == shaderToInstanceVBO.end()) {
@@ -48,7 +50,7 @@ void InstancedModel::draw(Shader &shader, ShaderModelInstanceManager &instances,
             shaderInstances.resized = false;
             shaderInstances.updated = false;
 
-            mesh.draw(it ? *it : shader, shaderInstances.size(), textureShift);
+            mesh.draw(it ? *it : shader, shaderInstances.size());
         }
     }
 

@@ -18,6 +18,7 @@
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "StaticCollisionComponent.hpp"
+#include "TBN.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -457,17 +458,17 @@ class GameObjectModel {
         }
     }
 
-    void setDiffuseMap(std::shared_ptr<Texture> texture) {
+    void setDiffuseMap(Texture texture) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {
             mesh.material.diffuseMap = texture;
 
-            if (mesh.material.specularMap == nullptr) {
+            if (mesh.material.specularMap.empty()) {
                 mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
             }
 
-            if (mesh.material.normalMap == nullptr) {
+            if (mesh.material.normalMap.empty()) {
                 mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
             }
 
@@ -475,17 +476,17 @@ class GameObjectModel {
         }
     }
 
-    void setSpecualMap(std::shared_ptr<Texture> texture) {
+    void setSpecualMap(Texture texture) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {
             mesh.material.specularMap = texture;
 
-            if (mesh.material.diffuseMap == nullptr) {
+            if (mesh.material.diffuseMap.empty()) {
                 mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
             }
 
-            if (mesh.material.normalMap == nullptr) {
+            if (mesh.material.normalMap.empty()) {
                 mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
             }
 
@@ -493,17 +494,17 @@ class GameObjectModel {
         }
     }
 
-    void setNormalMap(std::shared_ptr<Texture> texture) {
+    void setNormalMap(Texture texture) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {
             mesh.material.normalMap = texture;
 
-            if (mesh.material.diffuseMap == nullptr) {
+            if (mesh.material.diffuseMap.empty()) {
                 mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
             }
 
-            if (mesh.material.specularMap == nullptr) {
+            if (mesh.material.specularMap.empty()) {
                 mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
             }
 
@@ -672,15 +673,19 @@ class GameObjectModel {
     void updateTerrain(std::vector<Mesh::Vertex> vertices) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
+        Render3D::Utils::tbn(vertices, model->meshes[0].indices);
         model->meshes[0].vertices = vertices;
         model->update();
 
         coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
     }
 
-    void updateTerrain(std::vector<Mesh::Vertex> vertices, std::vector<GLuint> indices, int columns, int rows) {
+    void updateTerrain(std::vector<Mesh::Vertex> vertices, std::vector<unsigned int> indices, int columns, int rows) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
+
+        Render3D::Utils::tbn(vertices, indices);
+
         model->meshes[0].vertices = vertices;
         model->meshes[0].indices = indices;
         model->update();

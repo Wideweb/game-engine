@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "DeferredRenderer.hpp"
+#include "Framebuffer.hpp"
 #include "GRenderer.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
@@ -10,6 +12,7 @@
 #include "Shader.hpp"
 #include "SkyboxRenderer.hpp"
 #include "Texture.hpp"
+#include "Viewport.hpp"
 
 #include <memory>
 
@@ -17,23 +20,29 @@ namespace Engine {
 
 class WaterRenderer {
   private:
-    std::unique_ptr<Shader> m_WaterShader;
+    Shader m_Shader;
     unsigned int m_WaterVAO, m_WaterVBO;
-    std::shared_ptr<Texture> m_WaterDudvMap;
-    std::shared_ptr<Texture> m_WaterNormalMap;
+    Texture m_WaterDudvMap;
+    Texture m_WaterNormalMap;
     float m_WaterMoveFactor = 0.0f;
 
-    unsigned int m_ReflectionColor;
+    Framebuffer m_ReflectionFbo;
+    Texture m_ReflectionColorAttachment, m_ReflectionPositionAttachment, m_ReflectionNormalAttachment,
+        m_ReflectionSpecularAttachment;
     const unsigned int c_ReflectionWidth = 320, c_ReflectionHeight = 180;
 
-    unsigned int m_RefractionColor;
-    const unsigned int c_RefractionWidth = 1280, c_RefractionHeight = 720;
+    Framebuffer m_RefractionFbo;
+    Texture m_RefractionColorAttachment, m_RefractionPositionAttachment, m_RefractionNormalAttachment,
+        m_RefractionSpecularAttachment;
+    const unsigned int c_RefractionWidth = 320, c_RefractionHeight = 180;
 
     Viewport &m_Viewport;
     GRenderer &m_GRenderer;
+    DeferredRenderer &m_DeferredRenderer;
 
   public:
-    WaterRenderer(Viewport &viewport, GRenderer &gRenderer);
+    WaterRenderer(Viewport &viewport, GRenderer &gRenderer, DeferredRenderer &deferredRenderer);
+    ~WaterRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state, RenderSettings &settings);
 };

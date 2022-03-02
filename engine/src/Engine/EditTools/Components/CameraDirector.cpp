@@ -15,7 +15,7 @@ namespace Engine {
 CameraDirector::CameraDirector(GameObjectModel &model) : m_Model(model) {}
 
 void CameraDirector::onAttach() {
-    Application::get().getModels().RegisterModel("camera", ModelLoader::loadModel("./assets/models/box/arrow-z.fbx"));
+    Application::get().getModels().RegisterModel("camera", ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
     auto &coordinator = gameLayer().getCoordinator();
 

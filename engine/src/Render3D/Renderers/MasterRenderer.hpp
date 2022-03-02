@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "Framebuffer.hpp"
 #include "Mesh2D.hpp"
 #include "ModelManager.hpp"
+#include "Renderbuffer.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Viewport.hpp"
 
+#include "DeferredRenderer.hpp"
 #include "DirectedLightRenderer.hpp"
 #include "FlareRenderer.hpp"
 #include "GRenderer.hpp"
@@ -29,10 +32,9 @@ namespace Engine {
 
 class MasterRenderer {
   private:
-    unsigned int m_FBO = 0;
     unsigned int m_BloomScale = 4;
 
-    std::unique_ptr<Shader> m_Shader, m_HdrShader, m_BlurShader;
+    Shader m_Shader, m_HdrShader, m_BlurShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -45,25 +47,29 @@ class MasterRenderer {
     std::unique_ptr<GRenderer> m_GRenderer;
     std::unique_ptr<ParticlesRenderer> m_ParticlesRenderer;
     std::unique_ptr<Renderer2D> m_Renderer2D;
+    std::unique_ptr<DeferredRenderer> m_DeferredRenderer;
 
     Viewport m_Viewport;
     RendererState m_State;
 
-    std::shared_ptr<Texture> m_ColorBuffer[2], m_EntityBuffer;
-    unsigned int m_HdrFBO, m_DepthRBO;
+    Texture m_ColorBuffer[2], m_EntityBuffer;
+    Renderbuffer m_DepthRenderbuffer;
 
-    unsigned int m_PingpongFBO[2];
-    std::shared_ptr<Texture> m_PingpongColorBuffer[2];
+    Framebuffer m_Framebuffer, m_HdrFramebuffer;
+
+    Framebuffer m_PingpongFramebuffer[2];
+    Texture m_PingpongColorBuffer[2];
 
   public:
-    MasterRenderer(int width, int height);
+    MasterRenderer(unsigned int width, unsigned int height);
+    ~MasterRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings);
     void setClearColor(float r, float g, float b, float a);
     void setViewport(int width, int height);
     const Viewport &getViewport();
-    void setFBO(unsigned int fbo);
-    unsigned int getFBO() { return m_FBO; }
+    void setFramebuffer(Framebuffer &framebuffer);
+    Framebuffer &getFramebuffer() { return m_Framebuffer; }
     void clear();
 
     void drawQuad();
