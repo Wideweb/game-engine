@@ -56,12 +56,12 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_SkyboxRenderer = std::make_unique<SkyboxRenderer>();
     m_GRenderer = std::make_unique<GRenderer>(*m_ModelRenderer, *m_SkyboxRenderer);
     m_DirectedLightRenderer = std::make_unique<DirectedLightRenderer>(m_Viewport, *m_ModelRenderer);
+    m_DeferredRenderer = std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_QuadRenderer);
     m_SpotLightRenderer = std::make_unique<SpotLightRenderer>(m_Viewport, *m_ModelRenderer);
     m_WaterRenderer = std::make_unique<WaterRenderer>(m_Viewport, *m_GRenderer, *m_DeferredRenderer);
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
     m_ParticlesRenderer = std::make_unique<ParticlesRenderer>();
     m_Renderer2D = std::make_unique<Renderer2D>();
-    m_DeferredRenderer = std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_QuadRenderer);
 }
 
 MasterRenderer::~MasterRenderer() {

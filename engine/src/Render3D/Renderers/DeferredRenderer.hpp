@@ -23,7 +23,8 @@ class DeferredRenderer {
     DeferredRenderer(DirectedLightRenderer &directedLightRenderer, QuadRenderer &quadRenderer);
     ~DeferredRenderer();
 
-    void draw(Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
+    void draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
+              Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
               RenderSettings &settings, RendererState &state);
 };
 

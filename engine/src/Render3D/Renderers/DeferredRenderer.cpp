@@ -15,11 +15,10 @@ DeferredRenderer::DeferredRenderer(DirectedLightRenderer &directedLightRenderer,
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
-DeferredRenderer::~DeferredRenderer() {
-    m_Shader.free();
-}
+DeferredRenderer::~DeferredRenderer() { m_Shader.free(); }
 
-void DeferredRenderer::draw(Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
+void DeferredRenderer::draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
+                            Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
                             RenderSettings &settings, RendererState &state) {
     RendererState currentRenderState = {.framebuffer = framebuffer};
 
@@ -35,10 +34,10 @@ void DeferredRenderer::draw(Framebuffer &framebuffer, Camera &camera, Scene &sce
         m_DirectedLightRenderer.apply(camera, scene.getDirectedLight(), m_Shader, scene, models, currentRenderState);
     }
 
-    // m_Shader->setTexture("u_colorMap", );
-    // m_Shader->setTexture("u_positionMap", );
-    // m_Shader->setTexture("u_normalMap", );
-    // m_Shader->setTexture("u_specularMap", );
+    m_Shader.setTexture("u_colorMap", colorMap);
+    m_Shader.setTexture("u_positionMap", positionMap);
+    m_Shader.setTexture("u_normalMap", normalMap);
+    m_Shader.setTexture("u_specularMap", specularMap);
     // m_Shader->setTexture("u_depthMap", );
 
     m_QuadRenderer.draw();

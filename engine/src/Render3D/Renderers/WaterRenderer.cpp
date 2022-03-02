@@ -43,25 +43,34 @@ WaterRenderer::WaterRenderer(Viewport &viewport, GRenderer &gRenderer, DeferredR
     glBindVertexArray(0);
 
     m_ReflectionColorAttachment = Texture::createRGBA16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+    m_ReflectionPositionAttachment = Texture::createRGB16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+    m_ReflectionNormalAttachment = Texture::createRGB16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+    m_ReflectionSpecularAttachment = Texture::createRGBA16FBuffer(c_ReflectionWidth, c_ReflectionHeight);
+
     m_RefractionColorAttachment = Texture::createRGBA16FBuffer(c_RefractionWidth, c_RefractionHeight);
-    m_PositionAttachment = Texture::createRGB16FBuffer(c_RefractionWidth, c_RefractionHeight);
-    m_NormalAttachment = Texture::createRGB16FBuffer(c_RefractionWidth, c_RefractionHeight);
-    m_SpecularAttachment = Texture::createRGBA16FBuffer(c_RefractionWidth, c_RefractionHeight);
-    m_DepthAttachment = Texture::createDepthBuffer(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionPositionAttachment = Texture::createRGB16FBuffer(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionNormalAttachment = Texture::createRGB16FBuffer(c_RefractionWidth, c_RefractionHeight);
+    m_RefractionSpecularAttachment = Texture::createRGBA16FBuffer(c_RefractionWidth, c_RefractionHeight);
 
     m_ReflectionFbo = Framebuffer::create();
     m_ReflectionFbo.bind();
     m_ReflectionFbo.addAttachment(m_ReflectionColorAttachment);
+    m_ReflectionFbo.addAttachment(m_ReflectionPositionAttachment);
+    m_ReflectionFbo.addAttachment(m_ReflectionNormalAttachment);
+    m_ReflectionFbo.addAttachment(m_ReflectionSpecularAttachment);
     m_ReflectionFbo.setDepthAttachment(
-        Renderbuffer::create(c_ReflectionWidth, c_ReflectionHeight, Renderbuffer::InternalFormat::DEPTH_COMPONENT));
+        Renderbuffer::create(c_ReflectionWidth, c_ReflectionHeight, Renderbuffer::InternalFormat::DEPTH_COMPONENT),
+        true);
 
     m_RefractionFbo = Framebuffer::create();
     m_RefractionFbo.bind();
     m_RefractionFbo.addAttachment(m_RefractionColorAttachment);
-    m_RefractionFbo.addAttachment(m_PositionAttachment);
-    m_RefractionFbo.addAttachment(m_NormalAttachment);
-    m_RefractionFbo.addAttachment(m_SpecularAttachment);
-    m_RefractionFbo.setDepthAttachment(m_DepthAttachment);
+    m_RefractionFbo.addAttachment(m_RefractionPositionAttachment);
+    m_RefractionFbo.addAttachment(m_RefractionNormalAttachment);
+    m_RefractionFbo.addAttachment(m_RefractionSpecularAttachment);
+    m_ReflectionFbo.setDepthAttachment(
+        Renderbuffer::create(c_RefractionWidth, c_RefractionHeight, Renderbuffer::InternalFormat::DEPTH_COMPONENT),
+        true);
     m_RefractionFbo.unbind();
 }
 
@@ -76,14 +85,15 @@ WaterRenderer::~WaterRenderer() {
 
     m_ReflectionFbo.free();
     m_ReflectionColorAttachment.free();
-    m_ReflectionDepthAttachment.free();
+    m_ReflectionPositionAttachment.free();
+    m_ReflectionNormalAttachment.free();
+    m_ReflectionSpecularAttachment.free();
 
     m_RefractionFbo.free();
     m_RefractionColorAttachment.free();
-    m_PositionAttachment.free();
-    m_NormalAttachment.free();
-    m_DepthAttachment.free();
-    m_SpecularAttachment.free();
+    m_RefractionPositionAttachment.free();
+    m_RefractionNormalAttachment.free();
+    m_RefractionSpecularAttachment.free();
 }
 
 void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state,
@@ -104,6 +114,8 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_ReflectionFbo.bind();
     m_ReflectionFbo.clear();
     m_GRenderer.draw(camera, scene, models, settings);
+    m_DeferredRenderer.draw(m_ReflectionColorAttachment, m_ReflectionPositionAttachment, m_ReflectionNormalAttachment,
+                            m_ReflectionSpecularAttachment, m_ReflectionFbo, camera, scene, models, settings, state);
 
     camera.inversePitch();
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
@@ -118,6 +130,8 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_RefractionFbo.bind();
     m_RefractionFbo.clear();
     m_GRenderer.draw(camera, scene, models, settings);
+    m_DeferredRenderer.draw(m_RefractionColorAttachment, m_RefractionPositionAttachment, m_RefractionNormalAttachment,
+                            m_RefractionSpecularAttachment, m_RefractionFbo, camera, scene, models, settings, state);
 
     camera.setFieldOfView(glm::radians(45.0f));
     // Refraction end
@@ -152,8 +166,8 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
 
     m_Shader.setTexture("u_reflectionMap", m_ReflectionColorAttachment);
     m_Shader.setTexture("u_refractionMap", m_RefractionColorAttachment);
-    m_Shader.setTexture("u_depthMap", m_DepthAttachment);
-    m_Shader.setTexture("u_positionMap", m_PositionAttachment);
+    // m_Shader.setTexture("u_depthMap", m_DepthAttachment);
+    m_Shader.setTexture("u_positionMap", m_RefractionPositionAttachment);
     m_Shader.setTexture("u_dudvMap", m_WaterDudvMap);
     m_Shader.setTexture("u_normalMap", m_WaterNormalMap);
 

@@ -73,7 +73,7 @@ uniform sampler2D u_colorMap;
 uniform sampler2D u_positionMap;
 uniform sampler2D u_normalMap;
 uniform sampler2D u_specularMap;
-uniform sampler2D u_depthMap;
+// uniform sampler2D u_depthMap;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -95,7 +95,7 @@ void main() {
     vec3 fragNormal = texture(u_normalMap, v_texCoord).rgb;
     vec3 fragSpecular = texture(u_specularMap, v_texCoord).rgb;
     float fragShininess = texture(u_specularMap, v_texCoord).a;
-    vec3 fragDepth = texture(u_depthMap, v_texCoord).rgb;
+    // vec3 fragDepth = texture(u_depthMap, v_texCoord).rgb;
     float fragVisibility = texture(u_colorMap, v_texCoord).a;
 
     vec3 viewDir = normalize(u_viewPos - fragPos);

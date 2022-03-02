@@ -25,7 +25,7 @@ const vec4 c_waterColor = vec4(0.0, 0.3, 0.5, 1.0);
 uniform mat4 u_noramlFix;
 uniform sampler2D u_reflectionMap;
 uniform sampler2D u_refractionMap;
-uniform sampler2D u_depthMap;
+// uniform sampler2D u_depthMap;
 uniform sampler2D u_normalMap;
 uniform sampler2D u_positionMap;
 uniform sampler2D u_dudvMap;

@@ -27,14 +27,14 @@ class WaterRenderer {
     float m_WaterMoveFactor = 0.0f;
 
     Framebuffer m_ReflectionFbo;
-    Texture m_ReflectionColorAttachment, m_ReflectionDepthAttachment;
+    Texture m_ReflectionColorAttachment, m_ReflectionPositionAttachment, m_ReflectionNormalAttachment,
+        m_ReflectionSpecularAttachment;
     const unsigned int c_ReflectionWidth = 320, c_ReflectionHeight = 180;
 
     Framebuffer m_RefractionFbo;
-    Texture m_RefractionColorAttachment;
-    const unsigned int c_RefractionWidth = 1280, c_RefractionHeight = 720;
-
-    Texture m_PositionAttachment, m_NormalAttachment, m_DepthAttachment, m_SpecularAttachment;
+    Texture m_RefractionColorAttachment, m_RefractionPositionAttachment, m_RefractionNormalAttachment,
+        m_RefractionSpecularAttachment;
+    const unsigned int c_RefractionWidth = 320, c_RefractionHeight = 180;
 
     Viewport &m_Viewport;
     GRenderer &m_GRenderer;
