@@ -169,9 +169,9 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vec
 
     if (hasMaterial) {
         shader.setInt("u_hasMaterial", 1);
-        // shader.setTexture("u_material.diffuse", material.diffuseMap);
-        // shader.setTexture("u_material.specular", material.specularMap);
-        // shader.setTexture("u_material.normal", material.normalMap);
+        shader.setTexture("u_material.diffuse", material.diffuseMap);
+        shader.setTexture("u_material.specular", material.specularMap);
+        shader.setTexture("u_material.normal", material.normalMap);
         shader.setFloat("u_material.shininess", material.shininess);
     } else {
         shader.setInt("u_hasMaterial", 0);
