@@ -44,7 +44,9 @@ class Framebuffer : public GfxObject {
 
     void bind() const override;
     void unbind() const override;
+    void resize(unsigned int width, unsigned int height);
     void free() override;
+
     void addAttachment(const Texture &attachment, bool own = false);
     void addAttachment(const Renderbuffer &attachment, bool own = false);
     void setDepthAttachment(const Texture &attachment, bool own = false);

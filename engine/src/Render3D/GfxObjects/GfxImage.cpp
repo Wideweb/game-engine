@@ -53,6 +53,10 @@ unsigned int GfxImage::getNativeFormat(InternalFormat format) {
         return GL_R8I;
     case InternalFormat::R16I:
         return GL_R16I;
+    case InternalFormat::R16F:
+        return GL_R16F;
+    case InternalFormat::R32F:
+        return GL_R32F;
     case InternalFormat::R32I:
         return GL_R32I;
 
@@ -89,6 +93,10 @@ GfxImage::DataType GfxImage::formatToDataType(InternalFormat format) {
         return DataType::INT;
     case InternalFormat::R16I:
         return DataType::INT;
+    case InternalFormat::R16F:
+        return DataType::FLOAT;
+    case InternalFormat::R32F:
+        return DataType::FLOAT;
     case InternalFormat::R32I:
         return DataType::INT;
 
@@ -123,6 +131,10 @@ GfxImage::DataFormat GfxImage::formatToDataFormat(InternalFormat format) {
         return DataFormat::RED_INTEGER;
     case InternalFormat::R16I:
         return DataFormat::RED_INTEGER;
+    case InternalFormat::R16F:
+        return DataFormat::RED;
+    case InternalFormat::R32F:
+        return DataFormat::RED;
     case InternalFormat::R32I:
         return DataFormat::RED_INTEGER;
 

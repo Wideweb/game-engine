@@ -73,6 +73,9 @@ uniform sampler2D u_colorMap;
 uniform sampler2D u_positionMap;
 uniform sampler2D u_normalMap;
 uniform sampler2D u_specularMap;
+
+uniform int u_hasSSAO;
+uniform sampler2D u_ssaoMap;
 // uniform sampler2D u_depthMap;
 
 /////////////////////////////////////////////////////////////
@@ -122,7 +125,12 @@ void main() {
 ////////////////////// DIRECTED LIGHT ///////////////////////
 /////////////////////////////////////////////////////////////
 vec3 directedLightCalculation(DirectedLight light, FragmentMaterial material, vec3 fragPos, vec3 viewDir) {
-    vec3 ambient = light.ambient;
+    float ambientOcclusion = 1.0;
+    if (u_hasSSAO > 0) {
+        ambientOcclusion = texture(u_ssaoMap, v_texCoord).r;
+    }
+
+    vec3 ambient = light.ambient * ambientOcclusion;
 
     vec3 lightDir = normalize(-light.direction);
     float diffuseFactor = max(dot(material.normal, lightDir), 0.0);

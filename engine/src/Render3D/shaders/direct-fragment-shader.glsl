@@ -76,6 +76,7 @@ uniform int u_spotLightsNumber;
 uniform Material u_material;
 uniform vec3 u_viewPos;
 uniform float u_threshold;
+uniform sampler2D u_ssao;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -85,6 +86,7 @@ in vec3 v_color;
 in vec3 v_normal;
 in vec2 v_texCoord;
 in vec3 v_fragPos;
+in vec2 v_fragScreenPos;
 in float v_visibility;
 in mat3 v_TBN;
 
@@ -186,7 +188,9 @@ float spotLightShadowCalculation(SpotLight light, vec3 fragPos, float bias) {
 ////////////////////// DIRECTED LIGHT ///////////////////////
 /////////////////////////////////////////////////////////////
 vec3 directedLightCalculation(DirectedLight light, FragmentMaterial material, vec3 fragPos, vec3 viewDir) {
-    vec3 ambient = light.ambient;
+    float ambientOcclusion = texture(u_ssao, v_fragScreenPos * 0.5 + 0.5).r;
+
+    vec3 ambient = light.ambient * ambientOcclusion;
 
     vec3 lightDir = normalize(-light.direction);
     float diffuseFactor = max(dot(material.normal, lightDir), 0.0);

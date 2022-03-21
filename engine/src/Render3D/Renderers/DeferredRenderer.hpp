@@ -23,9 +23,16 @@ class DeferredRenderer {
     DeferredRenderer(DirectedLightRenderer &directedLightRenderer, QuadRenderer &quadRenderer);
     ~DeferredRenderer();
 
-    void draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
-              Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
-              RenderSettings &settings, RendererState &state);
+    void draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap, Camera &camera,
+              Scene &scene, const ModelManager &models, RenderSettings &settings, RendererState &state);
+
+    void draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap, Texture &ssaoMap,
+              Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings, RendererState &state);
+
+  private:
+    void doDraw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
+                Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings,
+                RendererState &state);
 };
 
 } // namespace Engine

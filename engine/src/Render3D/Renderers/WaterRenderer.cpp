@@ -114,8 +114,9 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_ReflectionFbo.bind();
     m_ReflectionFbo.clear();
     m_GRenderer.draw(camera, scene, models, settings);
+    RendererState reflectionRenderState = {.framebuffer = m_ReflectionFbo};
     m_DeferredRenderer.draw(m_ReflectionColorAttachment, m_ReflectionPositionAttachment, m_ReflectionNormalAttachment,
-                            m_ReflectionSpecularAttachment, m_ReflectionFbo, camera, scene, models, settings, state);
+                            m_ReflectionSpecularAttachment, camera, scene, models, settings, reflectionRenderState);
 
     camera.inversePitch();
     camera.setPosition(camera.positionVec() * glm::vec3(1.0, -1.0, 1.0));
@@ -130,8 +131,9 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_RefractionFbo.bind();
     m_RefractionFbo.clear();
     m_GRenderer.draw(camera, scene, models, settings);
+    RendererState refractionRenderState = {.framebuffer = m_RefractionFbo};
     m_DeferredRenderer.draw(m_RefractionColorAttachment, m_RefractionPositionAttachment, m_RefractionNormalAttachment,
-                            m_RefractionSpecularAttachment, m_RefractionFbo, camera, scene, models, settings, state);
+                            m_RefractionSpecularAttachment, camera, scene, models, settings, refractionRenderState);
 
     camera.setFieldOfView(glm::radians(45.0f));
     // Refraction end

@@ -45,6 +45,7 @@ out vec3 v_color;
 out vec3 v_normal;
 out vec2 v_texCoord;
 out vec3 v_fragPos;
+out vec2 v_fragScreenPos;
 out float v_visibility;
 out mat3 v_TBN;
 
@@ -71,7 +72,9 @@ void main() {
     v_TBN = mat3(T, B, N);
 
     vec4 positionRelativeToCamera = u_view * worldPosition;
-    gl_Position = u_projection * positionRelativeToCamera;
+    vec4 screenPos = u_projection * positionRelativeToCamera;
+    v_fragScreenPos = (screenPos / screenPos.w).xy;
+    gl_Position = screenPos;
 
     float distanceToCamera = length(positionRelativeToCamera.xyz);
     v_visibility = exp(-pow(distanceToCamera * c_density, c_gradient));

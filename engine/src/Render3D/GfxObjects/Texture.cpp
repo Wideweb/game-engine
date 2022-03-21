@@ -193,7 +193,7 @@ Texture Texture::createRGB8FBuffer(int width, int height) {
     return texture;
 }
 
-Texture Texture::createRGB16FBuffer(int width, int height) {
+Texture Texture::createRGB16FBuffer(int width, int height, void *data) {
     Texture texture;
     texture.width = width;
     texture.height = height;
@@ -201,7 +201,7 @@ Texture Texture::createRGB16FBuffer(int width, int height) {
     glGenTextures(1, &texture.id);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -290,6 +290,84 @@ Texture Texture::createR32IBuffer(int width, int height) {
     texture.format = Texture::InternalFormat::R32I;
     texture.dataFormat = Texture::DataFormat::RED_INTEGER;
     texture.dataType = Texture::DataType::INT;
+
+    return texture;
+}
+
+Texture Texture::createR8Buffer(int width, int height) {
+    Texture texture;
+    texture.width = width;
+    texture.height = height;
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = Texture::InternalFormat::R8F;
+    texture.dataFormat = Texture::DataFormat::RED;
+    texture.dataType = Texture::DataType::FLOAT;
+
+    return texture;
+}
+
+Texture Texture::createR16FBuffer(int width, int height) {
+    Texture texture;
+    texture.width = width;
+    texture.height = height;
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = Texture::InternalFormat::R16F;
+    texture.dataFormat = Texture::DataFormat::RED;
+    texture.dataType = Texture::DataType::FLOAT;
+
+    return texture;
+}
+
+Texture Texture::createR32FBuffer(int width, int height) {
+    Texture texture;
+    texture.width = width;
+    texture.height = height;
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = Texture::InternalFormat::R32F;
+    texture.dataFormat = Texture::DataFormat::RED;
+    texture.dataType = Texture::DataType::FLOAT;
 
     return texture;
 }

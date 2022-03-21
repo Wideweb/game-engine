@@ -9,8 +9,8 @@
 
 namespace Engine {
 
-GRenderer::GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer)
-    : m_ModelRenderer(modelRenderer), m_SkyboxRenderer(skyboxRenderer) {
+GRenderer::GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer, ParticlesRenderer &particlesRenderer)
+    : m_ModelRenderer(modelRenderer), m_SkyboxRenderer(skyboxRenderer), m_ParticlesRenderer(particlesRenderer) {
     auto vertexSrc = File::read("./shaders/g-buffer-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/g-buffer-fragment-shader.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
@@ -26,6 +26,10 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
 
     m_ModelRenderer.draw(m_Shader, scene, models);
     m_SkyboxRenderer.draw(camera, scene, settings);
+
+    // for (const auto &obj : scene.getParticleEmitters()) {
+    //     m_ParticlesRenderer.draw(obj.particles, obj.position, camera, settings);
+    // }
 }
 
 } // namespace Engine

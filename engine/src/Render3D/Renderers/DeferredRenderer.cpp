@@ -18,11 +18,25 @@ DeferredRenderer::DeferredRenderer(DirectedLightRenderer &directedLightRenderer,
 DeferredRenderer::~DeferredRenderer() { m_Shader.free(); }
 
 void DeferredRenderer::draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
-                            Framebuffer &framebuffer, Camera &camera, Scene &scene, const ModelManager &models,
+                            Texture &ssaoMap, Camera &camera, Scene &scene, const ModelManager &models,
                             RenderSettings &settings, RendererState &state) {
-    RendererState currentRenderState = {.framebuffer = framebuffer};
-
     m_Shader.bind();
+    m_Shader.setInt("u_hasSSAO", 1);
+    m_Shader.setTexture("u_ssaoMap", ssaoMap);
+    doDraw(colorMap, positionMap, normalMap, specularMap, camera, scene, models, settings, state);
+}
+
+void DeferredRenderer::draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
+                            Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings,
+                            RendererState &state) {
+    m_Shader.bind();
+    m_Shader.setInt("u_hasSSAO", 0);
+    doDraw(colorMap, positionMap, normalMap, specularMap, camera, scene, models, settings, state);
+}
+
+void DeferredRenderer::doDraw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
+                              Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings,
+                              RendererState &state) {
     m_Shader.setFloat3("u_viewPos", camera.positionVec());
     m_Shader.setMatrix4("u_view", camera.viewMatrix());
     m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
@@ -31,7 +45,8 @@ void DeferredRenderer::draw(Texture &colorMap, Texture &positionMap, Texture &no
     m_Shader.setInt("u_hasDirectedLight", 0);
     if (scene.hasDirectedLight()) {
         m_Shader.setInt("u_hasDirectedLight", 1);
-        m_DirectedLightRenderer.apply(camera, scene.getDirectedLight(), m_Shader, scene, models, currentRenderState);
+        m_DirectedLightRenderer.apply(camera, scene.getDirectedLight(), m_Shader, scene, models, state);
+        m_Shader.bind();
     }
 
     m_Shader.setTexture("u_colorMap", colorMap);

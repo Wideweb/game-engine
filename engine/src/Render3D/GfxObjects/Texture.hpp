@@ -28,11 +28,15 @@ class Texture : public GfxImage {
     static Texture createRGBA32FBuffer(int width, int height);
 
     static Texture createRGB8FBuffer(int width, int height);
-    static Texture createRGB16FBuffer(int width, int height);
+    static Texture createRGB16FBuffer(int width, int height, void *data = nullptr);
     static Texture createRGB32FBuffer(int width, int height);
 
     static Texture createRGB8IBuffer(int width, int height);
+
     static Texture createR32IBuffer(int width, int height);
+    static Texture createR8Buffer(int width, int height);
+    static Texture createR16FBuffer(int width, int height);
+    static Texture createR32FBuffer(int width, int height);
 };
 
 } // namespace Engine

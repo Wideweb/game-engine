@@ -28,6 +28,15 @@ void Framebuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, id); }
 
 void Framebuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
+void Framebuffer::resize(unsigned int width, unsigned int height) {
+    // for (unsigned int index = 0; index < m_AttachmentsIndex; index++) {
+    //     m_Attachments[index].resize();
+    // }
+    m_DepthAttachment.bind();
+    m_DepthAttachment.resize(width, height);
+    m_DepthAttachment.unbind();
+}
+
 void Framebuffer::free() {
     if (!empty()) {
         glDeleteFramebuffers(1, &id);
@@ -152,7 +161,22 @@ void Framebuffer::Attachment::free() {
     }
 }
 
-void Framebuffer::Attachment::resize(unsigned int width, unsigned int height) {}
+void Framebuffer::Attachment::resize(unsigned int width, unsigned int height) {
+    if (!m_Owned || empty()) {
+        return;
+    }
+
+    // if (m_Type == Attachment::Type::Texture) {
+    //     glTexImage2D(getGLTextureType(type), 0, GfxImage::getNativeFormat(format), width, height, 0,
+    //                  GfxImage::getNativeDataFormat(dataFormat), GfxImage::getNativeDataType(dataType), NULL);
+    // }
+
+    if (m_Type == Attachment::Type::Renderbuffer) {
+        glBindRenderbuffer(GL_RENDERBUFFER, id);
+        glRenderbufferStorage(GL_RENDERBUFFER, GfxImage::getNativeFormat(format), width, height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
+}
 
 void Framebuffer::Attachment::read(int x, int y, int width, int height, void *buffer) {
     glReadBuffer(GL_COLOR_ATTACHMENT0 + m_Index);

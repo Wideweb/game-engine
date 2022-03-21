@@ -35,9 +35,7 @@ void Skybox::setUp() {
 }
 
 void Skybox::draw(Shader &shader) const {
-    glActiveTexture(GL_TEXTURE0);
-    cubemapTexture.bind();
-    shader.setInt("skybox", 0);
+    shader.setTexture("skybox", cubemapTexture);
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
