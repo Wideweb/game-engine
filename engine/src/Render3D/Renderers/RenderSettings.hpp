@@ -63,6 +63,12 @@ struct RenderSettings {
     unsigned int bloomScale = 4;
     unsigned int blur = 4;
     glm::vec4 clipPlane = glm::vec4(0.0f, 1.0f, 0.0f, 99999.0f);
+
+    bool ssao = false;
+    int ssaoKernelSize = 32;
+    float ssaoRadius = 0.2;
+    float ssaoBias = 0.045;
+    int ssaoNoiseScale = 4;
 };
 
 } // namespace Engine

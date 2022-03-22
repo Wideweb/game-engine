@@ -12,6 +12,12 @@ void RenderPanel::onAttach() {
     m_Threshold = gameLayer().renderSettings.threshold;
     m_BloomScale = gameLayer().renderSettings.bloomScale;
     m_Blur = gameLayer().renderSettings.blur;
+
+    m_SSAO = gameLayer().renderSettings.ssao;
+    m_SSAONoiseScale = gameLayer().renderSettings.ssaoNoiseScale;
+    m_SSAOKernelSize = gameLayer().renderSettings.ssaoKernelSize;
+    m_SSAORadius = gameLayer().renderSettings.ssaoRadius;
+    m_SSAOBias = gameLayer().renderSettings.ssaoBias;
 }
 
 void RenderPanel::onUpdate() {
@@ -21,6 +27,12 @@ void RenderPanel::onUpdate() {
     gameLayer().renderSettings.threshold = m_Threshold;
     gameLayer().renderSettings.bloomScale = m_BloomScale;
     gameLayer().renderSettings.blur = m_Blur;
+
+    gameLayer().renderSettings.ssao = m_SSAO;
+    gameLayer().renderSettings.ssaoNoiseScale = m_SSAONoiseScale;
+    gameLayer().renderSettings.ssaoKernelSize = m_SSAOKernelSize;
+    gameLayer().renderSettings.ssaoRadius = m_SSAORadius;
+    gameLayer().renderSettings.ssaoBias = m_SSAOBias;
 }
 
 void RenderPanel::onDraw(int x, int y) {
@@ -45,6 +57,16 @@ void RenderPanel::onDraw(int x, int y) {
         ImGui::InputFloat("threshold", &m_Threshold, 0.1f, 0.01f);
         ImGui::InputInt("bloomScale", &m_BloomScale);
         ImGui::InputInt("blur", &m_Blur);
+    }
+
+    {
+        ImGui::Text("SSAO: ");
+
+        ImGui::Checkbox("enable", &m_SSAO);
+        ImGui::InputInt("noiseScale", &m_SSAONoiseScale);
+        ImGui::InputInt("kernelSize", &m_SSAOKernelSize);
+        ImGui::InputFloat("radius", &m_SSAORadius, 0.1f, 0.01f);
+        ImGui::InputFloat("bias", &m_SSAOBias, 0.01f, 0.001f);
     }
 
     ImGui::End();

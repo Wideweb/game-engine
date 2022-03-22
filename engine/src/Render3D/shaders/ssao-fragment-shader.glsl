@@ -19,6 +19,10 @@ uniform mat4 u_projection;
 uniform mat4 u_view;
 uniform vec2 u_noiseScale;
 
+uniform int u_kernelSize = c_kernelSize;
+uniform float u_radius = c_radius;
+uniform float u_bias = c_bias;
+
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -42,9 +46,9 @@ void main() {
     mat3 TBN = mat3(tangent, bitangent, fragNormal);
 
     float occlusion = 0.0;
-    for (int i = 0; i < c_kernelSize; ++i) {
+    for (int i = 0; i < u_kernelSize; ++i) {
         vec3 sample = TBN * u_samples[i];
-        sample = fragPos + sample * c_radius;
+        sample = fragPos + sample * u_radius;
 
         vec4 offset = vec4(sample, 1.0);
         offset = u_projection * offset;
@@ -53,11 +57,11 @@ void main() {
 
         float sampleDepth = (u_view * vec4(texture(u_positionMap, offset.xy).rgb, 1.0)).z;
 
-        // occlusion += (sampleDepth >= fragPos.z + c_bias ? 1.0 : 0.0);
+        // occlusion += (sampleDepth >= fragPos.z + u_bias ? 1.0 : 0.0);
 
-        float rangeCheck = smoothstep(0.0, 1.0, c_radius / abs(fragPos.z - sampleDepth));
-        occlusion += (sampleDepth >= sample.z + c_bias ? 1.0 : 0.0) * rangeCheck;
+        float rangeCheck = smoothstep(0.0, 1.0, u_radius / abs(fragPos.z - sampleDepth));
+        occlusion += (sampleDepth >= sample.z + u_bias ? 1.0 : 0.0) * rangeCheck;
     }
 
-    o_occlusion = 1.0 - (occlusion / c_kernelSize);
+    o_occlusion = 1.0 - (occlusion / u_kernelSize);
 }

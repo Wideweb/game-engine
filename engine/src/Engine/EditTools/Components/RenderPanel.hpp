@@ -11,6 +11,10 @@ class RenderPanel : public BaseView {
     int m_BloomScale, m_Blur;
     ToneMapping m_ToneMapping;
 
+    bool m_SSAO;
+    int m_SSAOKernelSize, m_SSAONoiseScale;
+    float m_SSAORadius, m_SSAOBias;
+
   public:
     void onAttach() override;
     void onUpdate() override;

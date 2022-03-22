@@ -168,32 +168,37 @@ MasterRenderer::~MasterRenderer() {
 void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings) {
     m_Viewport.use();
 
-    m_GFramebuffer.bind();
-    m_GRenderer->draw(camera, scene, models, settings);
-    m_GFramebuffer.unbind();
+    if (settings.ssao) {
+        m_GFramebuffer.bind();
+        m_GRenderer->draw(camera, scene, models, settings);
+        m_GFramebuffer.unbind();
 
-    m_SSAOFramebuffer.bind();
-    m_SSAOShader.bind();
+        m_SSAOFramebuffer.bind();
+        m_SSAOShader.bind();
 
-    m_SSAOShader.setMatrix4("u_view", camera.viewMatrix());
-    m_SSAOShader.setMatrix4("u_projection", camera.projectionMatrix());
-    m_SSAOShader.setFloat2("u_noiseScale", static_cast<float>(m_Viewport.width) / 4.0f,
-                           static_cast<float>(m_Viewport.height) / 4.0f);
+        m_SSAOShader.setMatrix4("u_view", camera.viewMatrix());
+        m_SSAOShader.setMatrix4("u_projection", camera.projectionMatrix());
+        m_SSAOShader.setFloat2("u_noiseScale", static_cast<float>(m_Viewport.width) / settings.ssaoNoiseScale,
+                               static_cast<float>(m_Viewport.height) / settings.ssaoNoiseScale);
+        m_SSAOShader.setInt("u_kernelSize", settings.ssaoKernelSize);
+        m_SSAOShader.setFloat("u_radius", settings.ssaoRadius);
+        m_SSAOShader.setFloat("u_bias", settings.ssaoBias);
 
-    m_SSAOShader.setTexture("u_positionMap", m_GPositionAttachment);
-    m_SSAOShader.setTexture("u_normalMap", m_GNormalAttachment);
+        m_SSAOShader.setTexture("u_positionMap", m_GPositionAttachment);
+        m_SSAOShader.setTexture("u_normalMap", m_GNormalAttachment);
 
-    m_QuadRenderer->draw();
-    m_SSAOFramebuffer.unbind();
+        m_QuadRenderer->draw();
+        m_SSAOFramebuffer.unbind();
 
-    m_BlurSimpleShader.bind();
+        m_BlurSimpleShader.bind();
 
-    m_BlurSimpleShader.setTexture("u_input", m_SSAOBuffer);
-    m_BlurSimpleShader.setInt("u_size", 4);
+        m_BlurSimpleShader.setTexture("u_input", m_SSAOBuffer);
+        m_BlurSimpleShader.setInt("u_size", 4);
 
-    m_BlurFramebuffer.bind();
-    m_QuadRenderer->draw();
-    m_BlurFramebuffer.unbind();
+        m_BlurFramebuffer.bind();
+        m_QuadRenderer->draw();
+        m_BlurFramebuffer.unbind();
+    }
 
     if (settings.hdr) {
         m_State.framebuffer = m_HdrFramebuffer;
@@ -224,8 +229,14 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_ParticlesRenderer->draw(obj.particles, obj.position, camera, settings);
     }
 
-    m_Shader.bind();
-    m_Shader.setTexture("u_ssao", m_BlurAttachment);
+    if (settings.ssao) {
+        m_Shader.bind();
+        m_Shader.setInt("u_hasSSAO", 1);
+        m_Shader.setTexture("u_ssao", m_BlurAttachment);
+    } else {
+        m_Shader.setInt("u_hasSSAO", 0);
+    }
+
     m_ModelRenderer->draw(m_Shader, scene, models);
     m_WaterRenderer->draw(camera, scene, models, m_State, settings);
 
