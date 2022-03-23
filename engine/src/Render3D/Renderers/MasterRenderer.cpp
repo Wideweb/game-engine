@@ -229,8 +229,8 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_ParticlesRenderer->draw(obj.particles, obj.position, camera, settings);
     }
 
+    m_Shader.bind();
     if (settings.ssao) {
-        m_Shader.bind();
         m_Shader.setInt("u_hasSSAO", 1);
         m_Shader.setTexture("u_ssao", m_BlurAttachment);
     } else {

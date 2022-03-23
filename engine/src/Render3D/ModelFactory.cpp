@@ -13,91 +13,68 @@ namespace Engine {
 std::shared_ptr<Model> ModelFactory::createCube(float size) {
     // clang-format off
     std::vector<glm::vec3> positions = {
-        glm::vec3(-1.0f, 1.0f, 1.0f),
-        glm::vec3(-1.0f, -1.0f, 1.0f),
-        glm::vec3(-1.0f, 1.0f, -1.0f),
-        glm::vec3(-1.0f, -1.0f, -1.0f),
-        glm::vec3(1.0f, 1.0f, 1.0f),
-        glm::vec3(1.0f, -1.0f, 1.0f),
-        glm::vec3(1.0f, 1.0f, -1.0f),
-        glm::vec3(1.0f, -1.0f, -1.0f),
+        glm::vec3(-1.0f, 1.0f, 1.0f), // 0
+        glm::vec3(-1.0f, -1.0f, 1.0f), // 1
+        glm::vec3(-1.0f, 1.0f, -1.0f), // 2
+        glm::vec3(-1.0f, -1.0f, -1.0f), // 3
+        glm::vec3(1.0f, 1.0f, 1.0f), // 4
+        glm::vec3(1.0f, -1.0f, 1.0f), // 5
+        glm::vec3(1.0f, 1.0f, -1.0f), // 6
+        glm::vec3(1.0f, -1.0f, -1.0f), // 7
     };
 
     for (unsigned int i = 0; i < positions.size(); i++) {
         positions[i] *= size;
     }
 
-    std::vector<glm::vec2> textCoord = {
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(0.0f, 1.0f),
-    };
-
     std::vector<Mesh::Vertex> vertices;
-    vertices.emplace_back(positions[4], glm::vec3(0.0f), textCoord[0], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[2], glm::vec3(0.0f), textCoord[0], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[0], glm::vec3(0.0f), textCoord[0], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[4], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[2], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[0], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
     
-    vertices.emplace_back(positions[2], glm::vec3(0.0f), textCoord[1], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[7], glm::vec3(0.0f), textCoord[1], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[3], glm::vec3(0.0f), textCoord[1], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[2], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[7], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[3], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
     
-    vertices.emplace_back(positions[6], glm::vec3(0.0f), textCoord[2], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[5], glm::vec3(0.0f), textCoord[2], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[7], glm::vec3(0.0f), textCoord[2], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[6], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[5], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[7], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
     
-    vertices.emplace_back(positions[1], glm::vec3(0.0f), textCoord[3], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[7], glm::vec3(0.0f), textCoord[3], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[5], glm::vec3(0.0f), textCoord[3], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[1], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[7], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[5], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[0], glm::vec3(0.0f), textCoord[4], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[3], glm::vec3(0.0f), textCoord[4], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[1], glm::vec3(0.0f), textCoord[4], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[0], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[3], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[1], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[4], glm::vec3(0.0f), textCoord[5], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[1], glm::vec3(0.0f), textCoord[5], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[5], glm::vec3(0.0f), textCoord[5], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[4], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[1], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[5], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[4], glm::vec3(0.0f), textCoord[0], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[6], glm::vec3(0.0f), textCoord[0], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[2], glm::vec3(0.0f), textCoord[0], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[4], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[6], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[2], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[2], glm::vec3(0.0f), textCoord[1], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[6], glm::vec3(0.0f), textCoord[1], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[7], glm::vec3(0.0f), textCoord[1], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[2], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[6], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[7], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[6], glm::vec3(0.0f), textCoord[2], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[4], glm::vec3(0.0f), textCoord[2], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[5], glm::vec3(0.0f), textCoord[2], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[6], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[4], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[5], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[1], glm::vec3(0.0f), textCoord[3], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[3], glm::vec3(0.0f), textCoord[3], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[7], glm::vec3(0.0f), textCoord[3], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[1], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[3], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[7], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[0], glm::vec3(0.0f), textCoord[4], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[2], glm::vec3(0.0f), textCoord[4], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[3], glm::vec3(0.0f), textCoord[4], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[0], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[2], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[3], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
 
-    vertices.emplace_back(positions[4], glm::vec3(0.0f), textCoord[5], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[0], glm::vec3(0.0f), textCoord[5], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
-    vertices.emplace_back(positions[1], glm::vec3(0.0f), textCoord[5], glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[4], glm::vec3(0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[0], glm::vec3(0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
+    vertices.emplace_back(positions[1], glm::vec3(0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));
     // clang-format on
 
     Render3D::Utils::tbn(vertices);

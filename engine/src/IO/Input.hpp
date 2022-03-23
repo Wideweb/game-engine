@@ -22,6 +22,8 @@ enum class KeyCode {
     Y = 89,
     Z = 90,
     Escape = 256,
+    LeftControl = 17,
+    LeftMeta = 91,
 };
 
 enum class MouseButton { None = 0, Left = 1, Right = 2, Middle = 3 };

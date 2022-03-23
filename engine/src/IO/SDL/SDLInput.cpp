@@ -35,6 +35,8 @@ static SDL_Scancode getSDLScancode(KeyCode code) {
         return SDL_SCANCODE_ESCAPE;
     case KeyCode::Shift:
         return SDL_SCANCODE_LSHIFT;
+    case KeyCode::LeftControl:
+        return SDL_SCANCODE_LCTRL;
     default:
         return SDL_SCANCODE_UNKNOWN;
     }
