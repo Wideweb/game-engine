@@ -35,6 +35,7 @@ uniform mat4 u_view;
 uniform mat4 u_projection;
 uniform mat4 u_joints[c_maxJoints];
 uniform int u_jointsNumber;
+uniform int u_hasNormalMapping;
 
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
@@ -59,10 +60,13 @@ void main() {
     v_fragPos = worldPos * vec4(a_vertexPosition, 1.0);
     v_normal = normalize(mat3(transpose(inverse(worldPos))) * a_vertexNormal);
 
-    vec3 T = normalize(vec3(worldPos * vec4(a_vertexTangent, 0.0)));
-    vec3 B = normalize(vec3(worldPos * vec4(a_vertexBitangent, 0.0)));
-    vec3 N = normalize(vec3(worldPos * vec4(a_vertexNormal, 0.0)));
-    v_TBN = mat3(T, B, N);
+    v_TBN = mat3(0);
+    if (u_hasNormalMapping > 0) {
+        vec3 T = normalize(vec3(worldPos * vec4(a_vertexTangent, 0.0)));
+        vec3 B = normalize(vec3(worldPos * vec4(a_vertexBitangent, 0.0)));
+        vec3 N = normalize(vec3(worldPos * vec4(a_vertexNormal, 0.0)));
+        v_TBN = mat3(T, B, N);
+    }
 
     float distanceToCamera = length(positionRelativeToCamera.xyz);
     v_visibility = exp(-pow(distanceToCamera * c_density, c_gradient));

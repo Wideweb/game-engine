@@ -39,6 +39,10 @@ struct Material {
     sampler2D specular;
     sampler2D normal;
     float shininess;
+
+    int hasDiffuse;
+    int hasSpecular;
+    int hasNormal;
 };
 
 struct FragmentMaterial {
@@ -78,6 +82,7 @@ uniform vec3 u_viewPos;
 uniform float u_threshold;
 uniform int u_hasSSAO;
 uniform sampler2D u_ssao;
+uniform int u_hasNormalMapping;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -108,12 +113,22 @@ void main() {
 
     FragmentMaterial material = FragmentMaterial(v_color, v_color, v_normal, 128.0);
     if (u_hasMaterial > 0) {
-        vec3 diffuse = texture(u_material.diffuse, v_texCoord).rgb;
-        vec3 specular = texture(u_material.specular, v_texCoord).rgb;
+        vec3 diffuse = v_color;
+        if (u_material.hasDiffuse > 0) {
+            diffuse = texture(u_material.diffuse, v_texCoord).rgb;
+        }
 
-        vec3 normal = texture(u_material.normal, v_texCoord).rgb;
-        normal = normalize(normal * 2.0 - 1.0);
-        normal = normalize(v_TBN * normal);
+        vec3 specular = v_color;
+        if (u_material.hasSpecular > 0) {
+            specular = texture(u_material.specular, v_texCoord).rgb;
+        }
+
+        vec3 normal = v_normal;
+        if (u_hasNormalMapping > 0 && u_material.hasNormal > 0) {
+            normal = texture(u_material.normal, v_texCoord).rgb;
+            normal = normalize(normal * 2.0 - 1.0);
+            normal = normalize(v_TBN * normal);
+        }
 
         material = FragmentMaterial(diffuse, specular, normal, u_material.shininess);
     }

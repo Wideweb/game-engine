@@ -69,6 +69,8 @@ struct RenderSettings {
     float ssaoRadius = 0.2;
     float ssaoBias = 0.045;
     int ssaoNoiseScale = 4;
+
+    bool normalMapping = true;
 };
 
 } // namespace Engine

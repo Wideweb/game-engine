@@ -211,6 +211,8 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
     m_Shader.setFloat("u_threshold", settings.threshold);
 
+    m_Shader.setInt("u_hasNormalMapping", settings.normalMapping);
+
     m_Shader.setInt("u_hasDirectedLight", 0);
     m_Shader.setInt("u_spotLightsNumber", 0);
 

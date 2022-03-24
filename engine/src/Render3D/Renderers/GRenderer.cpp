@@ -23,6 +23,7 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
     m_Shader.setMatrix4("u_view", camera.viewMatrix());
     m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
     m_Shader.setFloat4("u_clipPlane", settings.clipPlane);
+    m_Shader.setInt("u_hasNormalMapping", settings.normalMapping);
 
     m_ModelRenderer.draw(m_Shader, scene, models);
     m_SkyboxRenderer.draw(camera, scene, settings);

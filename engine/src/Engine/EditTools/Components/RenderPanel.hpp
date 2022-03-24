@@ -15,6 +15,8 @@ class RenderPanel : public BaseView {
     int m_SSAOKernelSize, m_SSAONoiseScale;
     float m_SSAORadius, m_SSAOBias;
 
+    bool m_NormalMapping;
+
   public:
     void onAttach() override;
     void onUpdate() override;

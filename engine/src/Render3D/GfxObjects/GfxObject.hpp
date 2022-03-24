@@ -15,8 +15,8 @@ class GfxObject {
 
     virtual void free() = 0;
 
-    bool empty() { return id == c_NoGfxObjectId; }
-    void setEmpty() { id = c_NoGfxObjectId; }
+    bool empty() const { return this->id == c_NoGfxObjectId; }
+    void setEmpty() { this->id = c_NoGfxObjectId; }
 };
 
 } // namespace Engine

@@ -464,13 +464,13 @@ class GameObjectModel {
         for (auto &mesh : model->meshes) {
             mesh.material.diffuseMap = texture;
 
-            if (mesh.material.specularMap.empty()) {
-                mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
-            }
+            // if (mesh.material.specularMap.empty()) {
+            //     mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
+            // }
 
-            if (mesh.material.normalMap.empty()) {
-                mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
-            }
+            // if (mesh.material.normalMap.empty()) {
+            //     mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
+            // }
 
             mesh.hasMaterial = true;
         }
@@ -482,13 +482,13 @@ class GameObjectModel {
         for (auto &mesh : model->meshes) {
             mesh.material.specularMap = texture;
 
-            if (mesh.material.diffuseMap.empty()) {
-                mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
-            }
+            // if (mesh.material.diffuseMap.empty()) {
+            //     mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
+            // }
 
-            if (mesh.material.normalMap.empty()) {
-                mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
-            }
+            // if (mesh.material.normalMap.empty()) {
+            //     mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
+            // }
 
             mesh.hasMaterial = true;
         }
@@ -500,13 +500,13 @@ class GameObjectModel {
         for (auto &mesh : model->meshes) {
             mesh.material.normalMap = texture;
 
-            if (mesh.material.diffuseMap.empty()) {
-                mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
-            }
+            // if (mesh.material.diffuseMap.empty()) {
+            //     mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
+            // }
 
-            if (mesh.material.specularMap.empty()) {
-                mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
-            }
+            // if (mesh.material.specularMap.empty()) {
+            //     mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
+            // }
 
             mesh.hasMaterial = true;
         }

@@ -18,6 +18,8 @@ void RenderPanel::onAttach() {
     m_SSAOKernelSize = gameLayer().renderSettings.ssaoKernelSize;
     m_SSAORadius = gameLayer().renderSettings.ssaoRadius;
     m_SSAOBias = gameLayer().renderSettings.ssaoBias;
+
+    m_NormalMapping = gameLayer().renderSettings.normalMapping;
 }
 
 void RenderPanel::onUpdate() {
@@ -33,6 +35,8 @@ void RenderPanel::onUpdate() {
     gameLayer().renderSettings.ssaoKernelSize = m_SSAOKernelSize;
     gameLayer().renderSettings.ssaoRadius = m_SSAORadius;
     gameLayer().renderSettings.ssaoBias = m_SSAOBias;
+
+    gameLayer().renderSettings.normalMapping = m_NormalMapping;
 }
 
 void RenderPanel::onDraw(int x, int y) {
@@ -68,6 +72,8 @@ void RenderPanel::onDraw(int x, int y) {
         ImGui::InputFloat("radius", &m_SSAORadius, 0.1f, 0.01f);
         ImGui::InputFloat("bias", &m_SSAOBias, 0.01f, 0.001f);
     }
+
+    { ImGui::Checkbox("NormalMapping", &m_NormalMapping); }
 
     ImGui::End();
 }

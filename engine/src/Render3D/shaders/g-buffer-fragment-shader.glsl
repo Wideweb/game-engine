@@ -8,6 +8,10 @@ struct Material {
     sampler2D specular;
     sampler2D normal;
     float shininess;
+
+    int hasDiffuse;
+    int hasSpecular;
+    int hasNormal;
 };
 
 /////////////////////////////////////////////////////////////
@@ -21,6 +25,7 @@ const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 uniform int u_hasMaterial;
 uniform Material u_material;
 uniform vec4 u_clipPlane;
+uniform int u_hasNormalMapping;
 
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
@@ -54,12 +59,20 @@ void main() {
     float shininess = 128.0;
 
     if (u_hasMaterial > 0) {
-        normal = texture(u_material.normal, v_texCoord).rgb;
-        normal = normalize(normal * 2.0 - 1.0);
-        normal = normalize(v_TBN * normal);
+        if (u_material.hasDiffuse > 0) {
+            diffuse = texture(u_material.diffuse, v_texCoord).rgb;
+        }
 
-        diffuse = texture(u_material.diffuse, v_texCoord).rgb;
-        specular = texture(u_material.specular, v_texCoord).rgb;
+        if (u_material.hasSpecular > 0) {
+            specular = texture(u_material.specular, v_texCoord).rgb;
+        }
+
+        if (u_hasNormalMapping > 0 && u_material.hasNormal > 0) {
+            normal = texture(u_material.normal, v_texCoord).rgb;
+            normal = normalize(normal * 2.0 - 1.0);
+            normal = normalize(v_TBN * normal);
+        }
+
         shininess = u_material.shininess;
     }
 

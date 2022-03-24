@@ -145,9 +145,28 @@ void Mesh::draw(Shader &shader, size_t instanceCount) const {
 
     if (hasMaterial) {
         shader.setInt("u_hasMaterial", 1);
-        shader.setTexture("u_material.diffuse", material.diffuseMap);
-        shader.setTexture("u_material.specular", material.specularMap);
-        shader.setTexture("u_material.normal", material.normalMap);
+
+        if (!material.diffuseMap.empty()) {
+            shader.setInt("u_material.hasDiffuse", 1);
+            shader.setTexture("u_material.diffuse", material.diffuseMap);
+        } else {
+            shader.setInt("u_material.hasDiffuse", 0);
+        }
+
+        if (!material.specularMap.empty()) {
+            shader.setInt("u_material.hasSpecular", 1);
+            shader.setTexture("u_material.specular", material.specularMap);
+        } else {
+            shader.setInt("u_material.hasSpecular", 0);
+        }
+
+        if (!material.normalMap.empty()) {
+            shader.setInt("u_material.hasNormal", 1);
+            shader.setTexture("u_material.normal", material.normalMap);
+        } else {
+            shader.setInt("u_material.hasNormal", 0);
+        }
+
         shader.setFloat("u_material.shininess", material.shininess);
     } else {
         shader.setInt("u_hasMaterial", 0);
