@@ -1,11 +1,11 @@
 #include "MeshBody.hpp"
 
 #include "Application.hpp"
+#include "EditToolComponent.hpp"
 #include "File.hpp"
 #include "LocationComponent.hpp"
 #include "ParentComponent.hpp"
 #include "Render3DComponent.hpp"
-#include "EditToolComponent.hpp"
 
 #include "imgui/imgui.h"
 
@@ -39,7 +39,9 @@ void MeshBody::onAttach() {
             return;
         }
 
-        const auto entityRender = coordinator.GetComponent<Render3DComponent>(entity);
+        hide();
+
+        const auto &entityRender = coordinator.GetComponent<Render3DComponent>(entity);
         m_Render.model = entityRender.model;
 
         if (coordinator.HasComponent<ParentComponent>(m_MeshBody)) {
@@ -47,6 +49,8 @@ void MeshBody::onAttach() {
         } else {
             coordinator.AddComponent(m_MeshBody, ParentComponent(entity));
         }
+
+        show();
     });
 }
 
