@@ -2,6 +2,7 @@
 
 #include "Application.hpp"
 #include "DirectedLightComponent.hpp"
+#include "EditToolComponent.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
 #include "TagComponent.hpp"
@@ -20,6 +21,7 @@ void DirectedLightDirector::onAttach() {
     auto sun = coordinator.CreateEntity("sun");
     coordinator.AddComponent(sun, LocationComponent(glm::vec3(0.0f, 3.0f, -5.0f)));
     coordinator.AddComponent(sun, TagComponent("sun"));
+    coordinator.AddComponent(sun, EditToolComponent(true));
     m_Sun = sun;
 
     m_Render = Render3DComponent("sun", 0.2f, true);

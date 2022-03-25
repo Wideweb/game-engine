@@ -2,6 +2,7 @@
 
 #include "Application.hpp"
 #include "CameraComponent.hpp"
+#include "EditToolComponent.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
@@ -22,6 +23,7 @@ void CameraDirector::onAttach() {
     auto camera = coordinator.CreateEntity("camera");
     coordinator.AddComponent(camera, LocationComponent(glm::vec3(0.0f, 3.0f, 5.0f), glm::vec3(-0.5f, 0.0f, 0.0f)));
     coordinator.AddComponent(camera, TagComponent("camera"));
+    coordinator.AddComponent(camera, EditToolComponent(true));
     m_Camera = camera;
 
     m_Model.positionChange$.addEventCallback([this, &coordinator](glm::vec3 position) {

@@ -34,7 +34,8 @@ void MeshBody::onAttach() {
     m_Render.shader = m_Shader;
 
     m_Model.entityChange$.addEventCallback([&](Entity entity) {
-        if (!coordinator.HasComponent<Render3DComponent>(entity)) {
+        if (!coordinator.HasComponent<Render3DComponent>(entity) ||
+            coordinator.HasComponent<EditToolComponent>(entity)) {
             hide();
             return;
         }
