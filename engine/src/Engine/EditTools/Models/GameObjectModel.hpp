@@ -698,7 +698,7 @@ class GameObjectModel {
 
     void parent(Entity entity) {
         if (coordinator().HasComponent<ParentComponent>(m_Entity)) {
-            coordinator().GetComponent<ParentComponent>(m_Entity).entity = entity;
+            coordinator().GetComponent<ParentComponent>(m_Entity).setEntity(entity);
         } else {
             coordinator().AddComponent<ParentComponent>(m_Entity, ParentComponent(entity));
         }

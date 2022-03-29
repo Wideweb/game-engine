@@ -39,6 +39,7 @@ set(SOURCE_EXE
     src/Engine/ECS/Systems/CameraSystem.cpp
     src/Engine/ECS/Systems/BehaviourSystem.cpp
     src/Engine/ECS/Systems/ParticlesSystem.cpp
+    src/Engine/ECS/Systems/ParentSystem.cpp
     src/Engine/Scripting/Context/LuaCore.cpp
     src/Engine/Scripting/Context/LuaEntity.cpp
     src/Engine/Scripting/Context/LuaInput.cpp

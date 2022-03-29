@@ -46,7 +46,7 @@ void MeshBody::onAttach() {
         m_Render.model = entityRender.model;
 
         if (coordinator.HasComponent<ParentComponent>(m_MeshBody)) {
-            coordinator.GetComponent<ParentComponent>(m_MeshBody).entity = entity;
+            coordinator.GetComponent<ParentComponent>(m_MeshBody).setEntity(entity);
         } else {
             coordinator.AddComponent(m_MeshBody, ParentComponent(entity));
         }

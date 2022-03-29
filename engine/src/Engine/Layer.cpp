@@ -32,6 +32,7 @@
 #include "CollisionSystem.hpp"
 #include "DirectedLightSystem.hpp"
 #include "MoveSystem.hpp"
+#include "ParentSystem.hpp"
 #include "ParticlesSystem.hpp"
 #include "PhysicsSystem.hpp"
 #include "Render3DSystem.hpp"
@@ -62,6 +63,13 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<TagComponent>();
     m_Coordinator.RegisterComponent<ParentComponent>();
     m_Coordinator.RegisterComponent<EditToolComponent>();
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<ParentComponent>());
+
+        m_Coordinator.RegisterSystem<ParentSystem>(signature, m_Name);
+    }
 
     {
         Signature signature;

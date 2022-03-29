@@ -37,6 +37,8 @@ class EntityManager {
 
     Entity GetEntity(const std::string &name) const { return m_NameToEntity[name]; }
 
+    bool HasEntity(Entity entity) const { return m_EntityName.hasKey(entity); }
+
     bool HasEntity(const std::string &name) const { return m_NameToEntity.hasKey(name); }
 
     void SetSignature(Entity entity, Signature signature) { m_EntitySignature[entity] = signature; }

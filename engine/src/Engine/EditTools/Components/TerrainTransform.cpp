@@ -106,7 +106,7 @@ void TerrainTransform::show() {
     }
 
     if (coordinator.HasComponent<ParentComponent>(m_Brush)) {
-        coordinator.GetComponent<ParentComponent>(m_Brush).entity = m_Model.entity();
+        coordinator.GetComponent<ParentComponent>(m_Brush).setEntity(m_Model.entity());
     } else {
         coordinator.AddComponent(m_Brush, ParentComponent(m_Model.entity()));
     }

@@ -34,6 +34,7 @@ class ModelInstanceManager {
 
         if (!updated) {
             from = index;
+            to = index;
         }
 
         from = std::min(from, index);
@@ -48,6 +49,7 @@ class ModelInstanceManager {
 
         if (!updated) {
             from = index;
+            to = index;
         }
 
         from = std::min(from, index);

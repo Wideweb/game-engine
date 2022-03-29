@@ -143,7 +143,8 @@ void SceneHierarchyPanel::onDraw(int x, int y) {
     }
 
     for (auto entity : entities) {
-        if (gameCordinator.HasComponent<EditToolComponent>(entity)) {
+        if (gameCordinator.HasComponent<EditToolComponent>(entity) &&
+            !gameCordinator.GetComponent<EditToolComponent>(entity).canSelect) {
             continue;
         }
 
