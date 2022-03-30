@@ -98,15 +98,15 @@ template <typename T> class Collision3D {
 
             if (positionInTileX <= (1 - positionInTileZ)) {
                 terrainY = m_CollisionDetection.BarryCentric(
-                    glm::vec3(0.0f, terrain.vertices[(z + 1) * terrain.columns + x].y, 1.0),
-                    glm::vec3(1.0f, terrain.vertices[z * terrain.columns + x + 1].y, 0.0),
-                    glm::vec3(0.0f, terrain.vertices[z * terrain.columns + x].y, 0.0),
+                    glm::vec3(0.0f, terrain.vertices[(z + 1) * (terrain.columns + 1) + x].y, 1.0),
+                    glm::vec3(1.0f, terrain.vertices[z * (terrain.columns + 1) + x + 1].y, 0.0),
+                    glm::vec3(0.0f, terrain.vertices[z * (terrain.columns + 1) + x].y, 0.0),
                     glm::vec2(positionInTileX, positionInTileZ));
             } else {
                 terrainY = m_CollisionDetection.BarryCentric(
-                    glm::vec3(0.0f, terrain.vertices[(z + 1) * terrain.columns + x].y, 1.0),
-                    glm::vec3(1.0f, terrain.vertices[(z + 1) * terrain.columns + x + 1].y, 1.0),
-                    glm::vec3(1.0f, terrain.vertices[z * terrain.columns + x + 1].y, 0.0),
+                    glm::vec3(0.0f, terrain.vertices[(z + 1) * (terrain.columns + 1) + x].y, 1.0),
+                    glm::vec3(1.0f, terrain.vertices[(z + 1) * (terrain.columns + 1) + x + 1].y, 1.0),
+                    glm::vec3(1.0f, terrain.vertices[z * (terrain.columns + 1) + x + 1].y, 0.0),
                     glm::vec2(positionInTileX, positionInTileZ));
             }
 

@@ -83,14 +83,14 @@ template <typename T> class CollisionDetection {
         float terrainY = 0.0f;
 
         if (positionInTileX <= (1 - positionInTileZ)) {
-            terrainY = BarryCentric(glm::vec3(0.0f, terrain.vertices[(z + 1) * terrain.columns + x].y, 1.0),
-                                    glm::vec3(1.0f, terrain.vertices[z * terrain.columns + x + 1].y, 0.0),
-                                    glm::vec3(0.0f, terrain.vertices[z * terrain.columns + x].y, 0.0),
+            terrainY = BarryCentric(glm::vec3(0.0f, terrain.vertices[(z + 1) * (terrain.columns + 1) + x].y, 1.0),
+                                    glm::vec3(1.0f, terrain.vertices[z * (terrain.columns + 1) + x + 1].y, 0.0),
+                                    glm::vec3(0.0f, terrain.vertices[z * (terrain.columns + 1) + x].y, 0.0),
                                     glm::vec2(positionInTileX, positionInTileZ));
         } else {
-            terrainY = BarryCentric(glm::vec3(0.0f, terrain.vertices[(z + 1) * terrain.columns + x].y, 1.0),
-                                    glm::vec3(1.0f, terrain.vertices[(z + 1) * terrain.columns + x + 1].y, 1.0),
-                                    glm::vec3(1.0f, terrain.vertices[z * terrain.columns + x + 1].y, 0.0),
+            terrainY = BarryCentric(glm::vec3(0.0f, terrain.vertices[(z + 1) * (terrain.columns + 1) + x].y, 1.0),
+                                    glm::vec3(1.0f, terrain.vertices[(z + 1) * (terrain.columns + 1) + x + 1].y, 1.0),
+                                    glm::vec3(1.0f, terrain.vertices[z * (terrain.columns + 1) + x + 1].y, 0.0),
                                     glm::vec2(positionInTileX, positionInTileZ));
         }
 
@@ -100,6 +100,17 @@ template <typename T> class CollisionDetection {
 
         return glm::vec3(0.0f);
     }
+
+    // float BarryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos) const {
+    //     float det = (p1.z - p3.z) * (p2.x - p3.x) + (p3.x - p1.x) * (p2.z - p3.z);
+    //     float l1 = ((pos.y - p3.z) * (p2.x - p3.x) + (p2.z - p3.z) * (p3.x - pos.x)) / det;
+    //     float l2 = ((pos.y - p1.z) * (p3.x - p1.x) + (p3.z - p1.z) * (p1.x - pos.x)) / det;
+
+    //     // float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+    //     // float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+    //     float l3 = 1.0f - l1 - l2;
+    //     return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+    // }
 
     float BarryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos) const {
         float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
