@@ -1,11 +1,8 @@
 #pragma once
 
 #include <array>
-#include <cassert>
-#include <deque>
 #include <numeric>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Entity.hpp"
@@ -18,43 +15,30 @@ class EntityManager {
   public:
     using EntityRange = IteratorRange<std::array<Entity, c_MaxEntities>::const_iterator>;
 
-    Entity CreateEntity(const std::string &name) {
-        Entity id = m_NextId;
-        m_NextId++;
+    Entity CreateEntity(const std::string &name);
 
-        m_EntitySignature.emplace(id);
-        m_EntityName.add(id, name);
-        m_NameToEntity.add(name, id);
+    void DestroyEntity(Entity entity);
 
-        return id;
-    }
+    Entity GetEntity(const std::string &name) const;
 
-    void DestroyEntity(Entity entity) {
-        m_EntitySignature.remove(entity);
-        m_NameToEntity.remove(m_EntityName[entity]);
-        m_EntityName.remove(entity);
-    }
+    bool HasEntity(Entity entity) const;
 
-    Entity GetEntity(const std::string &name) const { return m_NameToEntity[name]; }
+    bool HasEntity(const std::string &name) const;
 
-    bool HasEntity(Entity entity) const { return m_EntityName.hasKey(entity); }
+    void SetSignature(Entity entity, Signature signature);
 
-    bool HasEntity(const std::string &name) const { return m_NameToEntity.hasKey(name); }
+    Signature GetSignature(Entity entity);
 
-    void SetSignature(Entity entity, Signature signature) { m_EntitySignature[entity] = signature; }
+    std::vector<Entity> GetEntities();
 
-    Signature GetSignature(Entity entity) { return m_EntitySignature[entity]; }
-
-    std::vector<Entity> GetEntities() { return m_EntitySignature.keys(); }
-
-    const std::string &GetName(Entity entity) { return m_EntityName.getValue(entity); }
+    const std::string &GetName(Entity entity);
 
   private:
     FlatDictionary<Entity, Signature> m_EntitySignature;
     FlatDictionary<Entity, std::string> m_EntityName;
     FlatDictionary<std::string, Entity> m_NameToEntity;
 
-    Entity m_NextId = 1;
+    static Entity s_NextId;
 };
 
 } // namespace Engine

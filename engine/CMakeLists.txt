@@ -71,6 +71,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/TerrainPanel.cpp
     src/Engine/EditTools/Components/TerrainTransform.cpp
     src/Engine/EditTools/Components/MeshBody.cpp
+    src/ECS/EntityManager.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
     src/Render3D/CameraController.cpp

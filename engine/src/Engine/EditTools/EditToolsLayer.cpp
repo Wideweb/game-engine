@@ -617,14 +617,14 @@ void EditToolsLayer::handleSelection() {
 
     auto ray = Application::get().getMousePicker().ray();
     auto pos = Application::get().getCamera().positionVec();
-    auto editToolsEntities = m_Collision.Raycast(pos, ray, 100.0f);
+    // auto editToolsEntities = m_Collision.Raycast(pos, ray, 100.0f);
 
-    if (editToolsEntities.empty() && m_Imgui.entity() == c_NoEntity) {
+    if (m_Imgui.entity() == c_NoEntity) {
         m_GameObject.setEntity(c_NoEntity);
     }
 
-    if (!editToolsEntities.empty()) {
-        Entity entity = editToolsEntities[0].id;
+    if (m_Coordinator.HasEntity(m_Imgui.entity())) {
+        Entity entity = m_Imgui.entity();
 
         if (m_TransformControlsPosition->isVisible() && m_TransformControlsPosition->handleSelection(entity)) {
             return;
@@ -639,7 +639,7 @@ void EditToolsLayer::handleSelection() {
         }
     }
 
-    if (m_Imgui.entity() != c_NoEntity) {
+    if (m_Imgui.entity() != c_NoEntity && gameCoordinator.HasEntity(m_Imgui.entity())) {
         if (gameCoordinator.HasComponent<EditToolComponent>(m_Imgui.entity())) {
             const auto &editTool = gameCoordinator.GetComponent<EditToolComponent>(m_Imgui.entity());
             if (!editTool.canSelect) {
