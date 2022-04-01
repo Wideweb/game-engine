@@ -31,4 +31,6 @@ std::string File::read(const std::string &path) {
     return result;
 }
 
+std::string File::extension(const std::string &path) { return path.substr(path.find_last_of(".") + 1); }
+
 } // namespace Engine

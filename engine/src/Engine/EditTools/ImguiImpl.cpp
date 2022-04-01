@@ -8,7 +8,10 @@
 #include <filesystem>
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
+#include <string>
 
+#include "Configs.hpp"
+#include "File.hpp"
 #include "Input.hpp"
 #include "LocationComponent.hpp"
 #include "Mesh2D.hpp"
@@ -277,27 +280,30 @@ void ImguiImpl::Begin() {
                  ImVec2{1, 0});
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-            const char *path = static_cast<const char *>(payload->Data);
-            auto &models = Application::get().getModels();
-            if (!models.HasModel(path)) {
-                std::filesystem::path modelSrc = std::filesystem::path("assets") / path;
-                models.RegisterModel(path, ModelLoader::load(modelSrc));
-            }
+            auto path = std::string(static_cast<const char *>(payload->Data));
 
-            std::string name;
-            size_t index = coordinator().GetEntities().size();
-            do {
-                name = std::string("entity") + std::to_string(index);
-                index++;
-            } while (coordinator().HasEntity(name));
-            auto entity = coordinator().CreateEntity(name);
+            if (File::isExtension(path, Configs::c_SceneObjectExtensions)) {
+                auto &models = Application::get().getModels();
+                if (!models.HasModel(path)) {
+                    std::filesystem::path modelSrc = std::filesystem::path("assets") / path;
+                    models.RegisterModel(path, ModelLoader::load(modelSrc));
+                }
 
-            coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
-            coordinator().AddComponent<Render3DComponent>(entity, Render3DComponent(path, 1.0f));
-            coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
+                std::string name;
+                size_t index = coordinator().GetEntities().size();
+                do {
+                    name = std::string("entity") + std::to_string(index);
+                    index++;
+                } while (coordinator().HasEntity(name));
+                auto entity = coordinator().CreateEntity(name);
 
-            if (models.Is<SkinnedModel>(path)) {
-                coordinator().AddComponent<SkeletComponent>(entity, SkeletComponent());
+                coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
+                coordinator().AddComponent<Render3DComponent>(entity, Render3DComponent(path, 1.0f));
+                coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
+
+                if (models.Is<SkinnedModel>(path)) {
+                    coordinator().AddComponent<SkeletComponent>(entity, SkeletComponent());
+                }
             }
         }
         ImGui::EndDragDropTarget();

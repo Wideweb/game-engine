@@ -1,5 +1,7 @@
 #include "MaterialPanel.hpp"
 
+#include "Configs.hpp"
+#include "File.hpp"
 #include "Texture.hpp"
 #include "TextureLoader.hpp"
 
@@ -37,8 +39,10 @@ void MaterialPanel::onDraw(int x, int y) {
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
-                std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setDiffuseMap(TextureLoader::loadTexture(textureSrc));
+                if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                    std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                    m_Model.setDiffuseMap(TextureLoader::loadTexture(textureSrc));
+                }
             }
             ImGui::EndDragDropTarget();
         }
@@ -47,8 +51,10 @@ void MaterialPanel::onDraw(int x, int y) {
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
-                std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setSpecualMap(TextureLoader::loadTexture(textureSrc));
+                if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                    std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                    m_Model.setSpecualMap(TextureLoader::loadTexture(textureSrc));
+                }
             }
             ImGui::EndDragDropTarget();
         }
@@ -57,8 +63,10 @@ void MaterialPanel::onDraw(int x, int y) {
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                 const char *path = static_cast<const char *>(payload->Data);
-                std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                m_Model.setNormalMap(TextureLoader::loadTexture(textureSrc));
+                if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                    std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                    m_Model.setNormalMap(TextureLoader::loadTexture(textureSrc));
+                }
             }
             ImGui::EndDragDropTarget();
         }

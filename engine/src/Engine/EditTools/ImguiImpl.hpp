@@ -3,15 +3,13 @@
 #include "Application.hpp"
 #include "Entity.hpp"
 #include "Framebuffer.hpp"
-#include "Texture.hpp"
 #include "Renderbuffer.hpp"
+#include "Texture.hpp"
 
 #include "imgui/imgui.h"
 #include <SDL2/SDL.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-
-#include "Texture.hpp"
 
 namespace Engine {
 

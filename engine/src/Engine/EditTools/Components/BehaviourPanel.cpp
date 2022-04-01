@@ -1,6 +1,8 @@
 #include "BehaviourPanel.hpp"
 
 #include "BehaviourComponent.hpp"
+#include "Configs.hpp"
+#include "File.hpp"
 
 #include "imgui/imgui.h"
 #include <filesystem>
@@ -17,8 +19,10 @@ void BehaviourPanel::onDraw(int x, int y) {
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
             const char *path = static_cast<const char *>(payload->Data);
-            std::filesystem::path script = std::filesystem::path("assets") / path;
-            m_Model.behaviour(script);
+            if (File::isExtension(path, Configs::c_ScriptExtensions)) {
+                std::filesystem::path script = std::filesystem::path("assets") / path;
+                m_Model.behaviour(script);
+            }
         }
         ImGui::EndDragDropTarget();
     }
