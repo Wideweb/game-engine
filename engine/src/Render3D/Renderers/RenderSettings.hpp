@@ -60,8 +60,8 @@ struct RenderSettings {
     float exposure = 1.0f;
     float gamma = 2.2f;
     float threshold = 1.0f;
-    unsigned int bloomScale = 4;
-    unsigned int blur = 4;
+    int bloomScale = 4;
+    int blur = 4;
     glm::vec4 clipPlane = glm::vec4(0.0f, 1.0f, 0.0f, 99999.0f);
 
     bool ssao = false;

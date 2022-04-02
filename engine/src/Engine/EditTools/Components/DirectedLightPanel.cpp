@@ -7,40 +7,36 @@ namespace Engine {
 
 DirectedLightPanel::DirectedLightPanel(GameObjectModel &model) : m_Model(model) {}
 
-void DirectedLightPanel::onAttach() {
-    m_Light = m_Model.directedLight();
-    m_Model.directedLightChange$.addEventCallback([this](DirectedLight light) { m_Light = light; });
-}
-
-void DirectedLightPanel::onUpdate() {
-    if (m_Light != m_Model.directedLight()) {
-        m_Model.directedLight(m_Light);
-    }
-}
-
 void DirectedLightPanel::onDraw(int x, int y) {
+    DirectedLight prevLight = m_Model.directedLight();
+    DirectedLight light = prevLight;
+
     ImGui::Begin("Directed Light");
 
-    ImGui::ColorEdit3("Ambient", glm::value_ptr(m_Light.ambient));
-    ImGui::ColorEdit3("Diffuse", glm::value_ptr(m_Light.diffuse));
-    ImGui::ColorEdit3("Specular", glm::value_ptr(m_Light.specular));
+    ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+    ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+    ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
 
-    ImGui::SliderFloat("Intensity", &m_Light.intensity, 0.0f, 10.0f);
+    ImGui::SliderFloat("Intensity", &light.intensity, 0.0f, 10.0f);
 
     {
         ImGui::Text("Plane: ");
-        ImGui::InputFloat("near", &m_Light.nearPlane, 0.1f, 0.01f);
-        ImGui::InputFloat("far", &m_Light.farPlane, 0.1f, 0.01f);
+        ImGui::InputFloat("near", &light.nearPlane, 0.1f, 0.01f);
+        ImGui::InputFloat("far", &light.farPlane, 0.1f, 0.01f);
     }
 
     {
         ImGui::Text("Shadow: ");
-        ImGui::InputDouble("bias factor", &m_Light.biasFactor, 0.1f, 0.01f);
-        ImGui::InputDouble("bias min", &m_Light.biasMin, 0.1f, 0.01f);
-        ImGui::InputInt("pcf", &m_Light.pcf);
+        ImGui::InputDouble("bias factor", &light.biasFactor, 0.1f, 0.01f);
+        ImGui::InputDouble("bias min", &light.biasMin, 0.1f, 0.01f);
+        ImGui::InputInt("pcf", &light.pcf);
     }
 
     ImGui::End();
+
+    if (light != prevLight) {
+        m_Model.directedLight(light);
+    }
 }
 
 } // namespace Engine

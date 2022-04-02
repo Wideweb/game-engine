@@ -13,27 +13,23 @@ namespace Engine {
 
 MaterialPanel::MaterialPanel(GameObjectModel &model) : m_Model(model) {}
 
-void MaterialPanel::onAttach() {
-    m_Model.materialShininessChange$.addEventCallback([this](float scale) { m_Shininess = scale; });
-    m_Model.materialSpecularChange$.addEventCallback([this](float scale) { m_Specular = scale; });
-}
-
-void MaterialPanel::onUpdate() {
-    if (m_Shininess != m_Model.material().shininess) {
-        m_Model.materialShininess(m_Shininess);
-    }
-
-    if (m_Specular != m_Model.material().specular) {
-        m_Model.materialSpecular(m_Specular);
-    }
-}
-
 void MaterialPanel::onDraw(int x, int y) {
     ImGui::Begin("Material");
 
     {
-        ImGui::InputFloat("shininess", &m_Shininess, 0.1f, 0.01f);
-        ImGui::InputFloat("specular", &m_Specular, 0.1f, 0.01f);
+        float prevShininess = m_Model.material().shininess;
+        float shininess = m_Model.material().shininess;
+        ImGui::InputFloat("shininess", &shininess, 0.1f, 0.01f);
+        if (prevShininess != shininess) {
+            m_Model.materialShininess(shininess);
+        }
+
+        float prevSpecular = m_Model.material().specular;
+        float specular = m_Model.material().specular;
+        ImGui::InputFloat("specular", &specular, 0.1f, 0.01f);
+        if (prevSpecular != specular) {
+            m_Model.materialShininess(specular);
+        }
 
         ImGui::Button("Diffuse map", ImVec2(100.0f, 0.0f));
         if (ImGui::BeginDragDropTarget()) {

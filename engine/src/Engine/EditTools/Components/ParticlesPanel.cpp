@@ -7,16 +7,6 @@ namespace Engine {
 
 ParticlesPanel::ParticlesPanel(GameObjectModel &model) : m_Model(model) {}
 
-void ParticlesPanel::onAttach() {
-    m_Model.particlesChange$.addEventCallback([this](ParticlesConfiguration particles) { m_Particles = particles; });
-}
-
-void ParticlesPanel::onUpdate() {
-    if (m_Particles != m_Model.particles()) {
-        m_Model.particles(m_Particles);
-    }
-}
-
 void ParticlesPanel::onDraw(int x, int y) {
     // ImGui::SetNextWindowSize(ImVec2(250, 200));
     // ImGui::SetNextWindowPos(ImVec2(x, y));
@@ -36,25 +26,32 @@ void ParticlesPanel::onDraw(int x, int y) {
     // float velocityAzimuthalAngle = 6.28f;
     // bool looped = true;
 
+    ParticlesConfiguration prevParticles = m_Model.particles();
+    ParticlesConfiguration particles = prevParticles;
+
     ImGui::Begin("Particles");
 
     {
-        ImGui::InputInt("count", &m_Particles.count, 1, 10);
-        ImGui::InputFloat("rate", &m_Particles.rate, 0.001f, 0.01f);
-        ImGui::InputFloat("lifetime", &m_Particles.lifeTime, 0.1f, 0.01f);
-        ImGui::InputFloat("radius", &m_Particles.spawnRadius, 0.1f, 0.01f);
-        ImGui::InputFloat("vel min", &m_Particles.velocityMin, 0.1f, 0.01f);
-        ImGui::InputFloat("vel max", &m_Particles.velocityMax, 0.1f, 0.01f);
-        ImGui::InputFloat("polar", &m_Particles.velocityPolarAngle, 0.01f, 0.01f);
-        ImGui::InputFloat("azimuth", &m_Particles.velocityAzimuthalAngle, 0.01f, 0.01f);
-        ImGui::InputFloat("size from", &m_Particles.sizeFrom, 0.1f, 0.01f);
-        ImGui::InputFloat("size to", &m_Particles.sizeTo, 0.1f, 0.01f);
-        ImGui::ColorEdit3("color from", glm::value_ptr(m_Particles.colorFrom));
-        ImGui::ColorEdit3("color to", glm::value_ptr(m_Particles.colorTo));
-        ImGui::InputFloat3("gravity", glm::value_ptr(m_Particles.gravity));
+        ImGui::InputInt("count", &particles.count, 1, 10);
+        ImGui::InputFloat("rate", &particles.rate, 0.001f, 0.01f);
+        ImGui::InputFloat("lifetime", &particles.lifeTime, 0.1f, 0.01f);
+        ImGui::InputFloat("radius", &particles.spawnRadius, 0.1f, 0.01f);
+        ImGui::InputFloat("vel min", &particles.velocityMin, 0.1f, 0.01f);
+        ImGui::InputFloat("vel max", &particles.velocityMax, 0.1f, 0.01f);
+        ImGui::InputFloat("polar", &particles.velocityPolarAngle, 0.01f, 0.01f);
+        ImGui::InputFloat("azimuth", &particles.velocityAzimuthalAngle, 0.01f, 0.01f);
+        ImGui::InputFloat("size from", &particles.sizeFrom, 0.1f, 0.01f);
+        ImGui::InputFloat("size to", &particles.sizeTo, 0.1f, 0.01f);
+        ImGui::ColorEdit3("color from", glm::value_ptr(particles.colorFrom));
+        ImGui::ColorEdit3("color to", glm::value_ptr(particles.colorTo));
+        ImGui::InputFloat3("gravity", glm::value_ptr(particles.gravity));
     }
 
     ImGui::End();
+
+    if (particles != prevParticles) {
+        m_Model.particles(particles);
+    }
 }
 
 } // namespace Engine

@@ -396,6 +396,18 @@ class GameObjectModel {
     }
 
     void localScale(glm::vec3 value) {
+        if (value.x <= 0.01) {
+            value.x = 0.01;
+        }
+
+        if (value.y <= 0.01) {
+            value.y = 0.01;
+        }
+
+        if (value.z <= 0.01) {
+            value.z = 0.01;
+        }
+
         auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
 

@@ -28,6 +28,12 @@ void EditToolsLayer::onAttach() {
         m_Logs += "\n";
     });
 
+    m_GameObject.entityChange$.addEventCallback([this](Entity entity) {
+        if (Application::get().getTime().poused()) {
+            ImGui::SetWindowFocus();
+        }
+    });
+
     m_Imgui.OnAttach();
 
     m_RenderPanel = std::make_unique<RenderPanel>();
@@ -287,7 +293,7 @@ void EditToolsLayer::onUpdate() {
         m_DirectedLightDirector->onUpdate();
     }
 
-    if (Application::get().getTime().poused()) {
+    if (Application::get().getTime().poused() && !m_Imgui.BlockEvents()) {
         auto &input = Application::get().getInput();
         auto &camera = Application::get().getCamera();
         if (input.IsKeyPressed(KeyCode::W)) {
