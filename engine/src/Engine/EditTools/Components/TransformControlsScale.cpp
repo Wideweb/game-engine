@@ -20,8 +20,7 @@ void TransformControlsScale::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
     {
-        Application::get().getModels().RegisterModel("scale-x",
-                                                     ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel("scale-x", ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-x");
         auto &vertices = model->meshes[0].vertices;
@@ -32,8 +31,7 @@ void TransformControlsScale::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-y",
-                                                     ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel("scale-y", ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-y");
         auto &vertices = model->meshes[0].vertices;
@@ -44,8 +42,7 @@ void TransformControlsScale::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-z",
-                                                     ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel("scale-z", ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-z");
         auto &vertices = model->meshes[0].vertices;
@@ -93,9 +90,23 @@ void TransformControlsScale::onDraw(int, int) {
     auto &renderY = coordinator.GetComponent<Render3DComponent>(m_ControlY);
     auto &renderZ = coordinator.GetComponent<Render3DComponent>(m_ControlZ);
 
-    renderX.scale = glm::vec3(0.05f);
-    renderY.scale = glm::vec3(0.05f);
-    renderZ.scale = glm::vec3(0.05f);
+    if (m_ActiveControl == m_ControlX || (m_ActiveControl == c_NoEntity && m_HoveredControl == m_ControlX)) {
+        renderX.scale = glm::vec3(0.06f);
+    } else {
+        renderX.scale = glm::vec3(0.05f);
+    }
+
+    if (m_ActiveControl == m_ControlY || (m_ActiveControl == c_NoEntity && m_HoveredControl == m_ControlY)) {
+        renderY.scale = glm::vec3(0.06f);
+    } else {
+        renderY.scale = glm::vec3(0.05f);
+    }
+
+    if (m_ActiveControl == m_ControlZ || (m_ActiveControl == c_NoEntity && m_HoveredControl == m_ControlZ)) {
+        renderZ.scale = glm::vec3(0.06f);
+    } else {
+        renderZ.scale = glm::vec3(0.05f);
+    }
 
     renderX.updated = true;
     renderY.updated = true;
@@ -133,7 +144,7 @@ void TransformControlsScale::onDetach() {}
 
 void TransformControlsScale::onMouseEvent(MouseEvent &event) {
     if (event.type == EventType::MouseMoved) {
-        if (m_ActiveControl != c_NoEntity) {
+        if (m_ActiveControl == m_ControlX || m_ActiveControl == m_ControlY || m_ActiveControl == m_ControlZ) {
             onTransform();
             event.handled = true;
         }
@@ -144,19 +155,17 @@ void TransformControlsScale::onMouseEvent(MouseEvent &event) {
     }
 
     m_PrevMouseWorldPos = Application::get().getMousePicker().ray();
+
+    m_HoveredControl = *(static_cast<Entity *>(event.data));
 }
 
 bool TransformControlsScale::handleSelection(Entity entity) {
-    if (entity != m_ControlX && entity != m_ControlY && entity != m_ControlZ) {
-        return false;
-    }
-
     m_ActiveControl = entity;
 
     m_InitScale = m_Model.scale();
     m_InitMouseScreenPos = Application::get().getMousePicker().getPos();
 
-    return true;
+    return entity == m_ControlX || entity == m_ControlY || entity == m_ControlZ;
 }
 
 void TransformControlsScale::hide() {

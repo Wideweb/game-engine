@@ -140,6 +140,8 @@ void ImguiImpl::onMouseEvent(MouseEvent &event) {
     m_Framebuffer.bind();
     m_Framebuffer[1].read(pos.x, m_ViewportSize.y - pos.y, 1, 1, &m_Entity);
     m_Framebuffer.unbind();
+
+    event.data = &m_Entity;
 }
 
 void ImguiImpl::Begin() {

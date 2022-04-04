@@ -12,7 +12,7 @@ class TransformControlsPosition : public BaseView {
     GameObjectModel &m_Model;
 
     Entity m_ControlX, m_ControlY, m_ControlZ;
-    Entity m_ActiveControl = c_NoEntity;
+    Entity m_ActiveControl = c_NoEntity, m_HoveredControl = c_NoEntity;
 
     glm::vec3 m_PrevMouseWorldPos;
 
