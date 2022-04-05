@@ -16,9 +16,9 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 
   <img width="695" alt="Screenshot 2022-04-05 at 14 54 34" src="https://user-images.githubusercontent.com/3997537/161748346-c0ad915c-2376-463d-b516-69e2498072e1.png">
   
- Use mouse left button to select a scene object. Once it is selected you can see it's mesh and gizmo tools for edit. You can remove the selected object by clicking the backspace button.
+ **Selection.** Use mouse left button to select a scene object. Once it is selected you can see it's mesh and gizmo tools for edit. You can remove the selected object by clicking the backspace button.
   
- Use the following keys for navigation:
+ **Navigation.** Use the following keys for navigation:
  - W - move forward
  - S - move back
  - A - move left
@@ -32,6 +32,8 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  - Shift+Y - point camera towards the negative y-axis
  - Z - point camera towards the positive z-axis
  - Shift+Z - point camera towards the negative z-axis
+
+**Primitives.** To add a primitive, right-click on the scene and select the one you want. Only cube and plane are available at the moment.
 
 ### Scene Hierarchy
  All scene objects are listed in the scene hierarchy tab as a tree.
