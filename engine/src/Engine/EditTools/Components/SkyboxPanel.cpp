@@ -44,7 +44,7 @@ void SkyboxPanel::onDraw(int x, int y) {
         }
         ImGui::InputFloat("rotation", &rotation, 1.0);
         if (Application::get().getTime().poused()) {
-            gameLayer().getScene().getSkybox()->rotation = glm::radians(rotation);
+            gameLayer().getScene().getSkybox()->rotation = rotation;
         }
 
         static float rotationSpeed = 0;
