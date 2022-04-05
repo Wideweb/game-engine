@@ -48,10 +48,28 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  For Hdr you can select tone mapping function, set exposure, gamma and threshold values, edit bloom and blur settings:
  
  <img width="332" alt="hdr" src="https://user-images.githubusercontent.com/3997537/161754845-03e1d362-c96c-4d31-a18e-2c486caeb071.png">
+ <img width="255" alt="hdr-scene" src="https://user-images.githubusercontent.com/3997537/161757459-234fe2a1-55d4-43bb-8cf3-3bf549256246.png">
 
   When SSAO is enabled it is possible to edit it's settings:
 
  <img width="308" alt="ssao" src="https://user-images.githubusercontent.com/3997537/161755031-f4dc306b-b00c-49b0-aa40-e6060bae66cb.png">
+ 
+  SSAO Off:
+  
+  <img width="200" alt="ssao-off" src="https://user-images.githubusercontent.com/3997537/161758409-0b78478c-ad59-4ca2-ac17-fbe392aaf032.png">
+  
+  SSAO On:
+  
+  <img width="200" alt="ssao-on" src="https://user-images.githubusercontent.com/3997537/161758488-5b5a8fa9-ade7-478b-8671-35ee54caea50.png">
+ 
+  Normal Mapping Off:
+  
+  <img width="200" alt="normal-mapping-off" src="https://user-images.githubusercontent.com/3997537/161758022-3b652197-e0b9-4822-b261-9ad6edaee3d7.png">
+  
+  Normal Mapping On:
+  
+  <img width="200" alt="normal-mapping-on" src="https://user-images.githubusercontent.com/3997537/161758033-af2a06f4-5b34-481c-b1aa-8db8d1268053.png">
+
 
 ### Skybox
   In the skybox tab you can set the background color:
