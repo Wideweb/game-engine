@@ -1,4 +1,4 @@
-# Editor
+## Editor Interface
 
 By default, the editor consist of the following tabs:
 - Scene
@@ -15,6 +15,23 @@ By default, the editor consist of the following tabs:
 In the scene tab you can directly edit the contents of the scene: move, scale, rotate, add and remove objects. By default, the scene has directional light (green arrow), camera (blue arrow), and box.
 
   <img width="695" alt="Screenshot 2022-04-05 at 14 54 34" src="https://user-images.githubusercontent.com/3997537/161748346-c0ad915c-2376-463d-b516-69e2498072e1.png">
+  
+ Use mouse left button to select a scene object. Once it is selected you can see it's mesh and gizmo tools for edit. You can remove the selected object by clicking the backspace button.
+  
+ Use the following keys for navigation:
+ - W - move forward
+ - S - move back
+ - A - move left
+ - D - move right
+ - E - move up
+ - Q - move down
+ - F - point camera at the selected object
+ - X - point camera towards the positive x-axis
+ - shift+X - point camera towards the negative x-axis
+ - Y - point camera towards the positive y-axis
+ - Shift+Y - point camera towards the negative y-axis
+ - Z - point camera towards the positive z-axis
+ - Shift+Z - point camera towards the negative z-axis
 
 ### Scene Hierarchy
  All scene objects are listed in the scene hierarchy tab as a tree.
