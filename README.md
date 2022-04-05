@@ -16,7 +16,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 
   <img width="695" alt="Screenshot 2022-04-05 at 14 54 34" src="https://user-images.githubusercontent.com/3997537/161748346-c0ad915c-2376-463d-b516-69e2498072e1.png">
   
- **Selection.** Use mouse left button to select a scene object. Once it is selected you can see it's mesh and gizmo tools for edit. You can remove the selected object by clicking the backspace button.
+ **Selection.** Left-click on a scene object to select. Once it is selected you can see it's mesh and gizmo tools for edit. You can remove the selected object by backspace.
   
  **Navigation.** Use the following keys for navigation:
  - W - move forward
