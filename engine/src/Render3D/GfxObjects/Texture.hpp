@@ -21,7 +21,6 @@ class Texture : public GfxImage {
     void resize(unsigned int width, unsigned int height) override;
 
     static Texture createDepthBuffer(int width, int height);
-    static Texture createCubeDepthBuffer(int width, int height);
 
     static Texture createRGBA8FBuffer(int width, int height);
     static Texture createRGBA16FBuffer(int width, int height);
@@ -37,6 +36,14 @@ class Texture : public GfxImage {
     static Texture createR8Buffer(int width, int height);
     static Texture createR16FBuffer(int width, int height);
     static Texture createR32FBuffer(int width, int height);
+};
+
+class CubeMapTexture : public Texture {
+  public:
+    Texture faces[6];
+
+    static CubeMapTexture createCubeDepthBuffer(int width, int height);
+    static CubeMapTexture createCubeMap();
 };
 
 } // namespace Engine

@@ -18,9 +18,10 @@ struct SkyboxVertex {
 class Skybox {
   public:
     std::vector<SkyboxVertex> vertices;
-    Texture cubemapTexture;
+    CubeMapTexture cubemapTexture;
+    float rotation, rotationSpeed = 0.0f;
 
-    Skybox(std::vector<SkyboxVertex> vertices, Texture cubemapTexture);
+    Skybox(std::vector<SkyboxVertex> vertices, CubeMapTexture cubemapTexture);
     ~Skybox();
 
     void draw(Shader &shader) const;

@@ -26,6 +26,7 @@
 #include "WaterRenderer.hpp"
 
 #include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 #include <memory>
 
 namespace Engine {
@@ -69,12 +70,15 @@ class MasterRenderer {
     Texture m_BlurAttachment;
     Framebuffer m_BlurFramebuffer;
 
+    glm::vec4 m_ClearColor = glm::vec4(0.0f);
+
   public:
     MasterRenderer(unsigned int width, unsigned int height);
     ~MasterRenderer();
 
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings);
-    void setClearColor(float r, float g, float b, float a);
+    void setClearColor(glm::vec4 color);
+    glm::vec4 getClearColor();
     void setViewport(int width, int height);
     const Viewport &getViewport();
     void setFramebuffer(Framebuffer &framebuffer);

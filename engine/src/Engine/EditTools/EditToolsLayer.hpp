@@ -15,6 +15,7 @@
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
+#include "SkyboxPanel.hpp"
 #include "MaterialPanel.hpp"
 #include "MeshBody.hpp"
 #include "ParticlesPanel.hpp"
@@ -51,6 +52,7 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<ParticlesPanel> m_ParticlesPanel;
     std::unique_ptr<SceneHierarchyPanel> m_SceneHierarchyPanel;
     std::unique_ptr<ContentBrowserPanel> m_ContentBrowserPanel;
+    std::unique_ptr<SkyboxPanel> m_SkyboxPanel;
     std::unique_ptr<MaterialPanel> m_MaterialPanel;
     std::unique_ptr<BehaviourPanel> m_BehaviourPanel;
     std::unique_ptr<CameraDirector> m_CameraDirector;

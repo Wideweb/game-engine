@@ -488,7 +488,7 @@ class GameObjectModel {
         }
     }
 
-    void setSpecualMap(Texture texture) {
+    void setSpecularMap(Texture texture) {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {

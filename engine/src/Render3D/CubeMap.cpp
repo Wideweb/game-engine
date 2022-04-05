@@ -10,7 +10,7 @@ CubeMap::CubeMap() {}
 
 CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
     : m_FarPlane(farPlane), m_Position(position) {
-    m_CubeMapTexture = Texture::createCubeDepthBuffer(width, height);
+    m_CubeMapTexture = CubeMapTexture::createCubeDepthBuffer(width, height);
 
     float aspect = width / height;
     float near = 1.0f;

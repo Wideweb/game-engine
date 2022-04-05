@@ -99,6 +99,10 @@ void EditToolsLayer::onAttach() {
     m_DirectedLightPanel->onAttach();
     m_DirectedLightPanel->hide();
 
+    m_SkyboxPanel = std::make_unique<SkyboxPanel>();
+    m_SkyboxPanel->onAttach();
+    m_SkyboxPanel->show();
+
     m_MaterialPanel = std::make_unique<MaterialPanel>(m_GameObject);
     m_MaterialPanel->onAttach();
     m_MaterialPanel->hide();
@@ -397,6 +401,10 @@ void EditToolsLayer::onUpdate() {
         m_DirectedLightPanel->onUpdate();
     }
 
+    if (m_SkyboxPanel->isVisible()) {
+        m_SkyboxPanel->onUpdate();
+    }
+
     if (Application::get().getTime().poused()) {
         m_CameraDirector->show();
         m_DirectedLightDirector->show();
@@ -531,6 +539,10 @@ void EditToolsLayer::onDraw() {
         m_DirectedLightPanel->onDraw(0, 0);
     }
 
+    if (m_SkyboxPanel->isVisible()) {
+        m_SkyboxPanel->onDraw(0, 0);
+    }
+
     m_Imgui.End();
 }
 
@@ -550,6 +562,7 @@ void EditToolsLayer::onDetach() {
     m_VelocityPanel->onDetach();
     m_ParticlesPanel->onDetach();
     m_DirectedLightPanel->onDetach();
+    m_SkyboxPanel->onDetach();
     m_MaterialPanel->onDetach();
     m_BehaviourPanel->onDetach();
     m_MeshBody->onDetach();

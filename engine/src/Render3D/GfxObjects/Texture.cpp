@@ -64,8 +64,8 @@ Texture Texture::createDepthBuffer(int width, int height) {
     return texture;
 }
 
-Texture Texture::createCubeDepthBuffer(int width, int height) {
-    Texture texture;
+CubeMapTexture CubeMapTexture::createCubeDepthBuffer(int width, int height) {
+    CubeMapTexture texture;
     texture.width = width;
     texture.height = height;
 
@@ -89,6 +89,28 @@ Texture Texture::createCubeDepthBuffer(int width, int height) {
     texture.format = Texture::InternalFormat::DEPTH_COMPONENT;
     texture.dataFormat = Texture::DataFormat::DEPTH_COMPONENT;
     texture.dataType = Texture::DataType::FLOAT;
+
+    return texture;
+}
+
+CubeMapTexture CubeMapTexture::createCubeMap() {
+    CubeMapTexture texture;
+    texture.width = 0;
+    texture.height = 0;
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id);
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture.type = Texture::TextureType::CUBE_MAP;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
 
     return texture;
 }

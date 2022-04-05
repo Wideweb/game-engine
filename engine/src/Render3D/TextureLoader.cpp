@@ -20,6 +20,8 @@
 
 namespace Engine {
 
+Texture TextureLoader::m_Placeholder;
+
 Texture TextureLoader::loadTexture(const std::string &path) {
     Texture texture;
     int width, height, channels;
@@ -79,6 +81,10 @@ Texture TextureLoader::loadTexture(const std::string &path) {
 }
 
 Texture TextureLoader::placeholder() {
+    if (!m_Placeholder.empty()) {
+        return m_Placeholder;
+    }
+
     Texture texture;
 
     glGenTextures(1, &texture.id);
@@ -110,38 +116,51 @@ Texture TextureLoader::placeholder() {
     texture.dataFormat = Texture::DataFormat::RGB;
     texture.dataType = Texture::DataType::UNSIGNED_BYTE;
 
+    m_Placeholder = texture;
+
     return texture;
 }
 
-Texture TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
-    Texture texture;
+CubeMapTexture TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
+    CubeMapTexture texture;
 
     GLint mipmapLevel = 0;
     GLint border = 0;
-    int width, height, nrChannels;
+    int width, height, channels;
 
     glGenTextures(1, &texture.id);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id);
 
     for (size_t i = 0; i < faces.size(); i++) {
-        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &channels, 0);
 
         assert(data && "file not found.");
+
+        GLenum internalFormat = 0, dataFormat = 0;
+        if (channels == 4) {
+            internalFormat = GL_RGBA8;
+            dataFormat = GL_RGBA;
+        } else if (channels == 3) {
+            internalFormat = GL_RGB8;
+            dataFormat = GL_RGB;
+        }
 
         // clang-format off
         glTexImage2D(
             static_cast<GLenum>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i),
             mipmapLevel,
-            GL_RGB8,
+            internalFormat,
             static_cast<GLsizei>(width),
             static_cast<GLsizei>(height),
             border,
-            GL_RGB,
+            dataFormat,
             GL_UNSIGNED_BYTE,
             data);
         // clang-format on
 
         stbi_image_free(data);
+
+        texture.faces[i] = loadTexture(faces[i]);
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -152,14 +171,61 @@ Texture TextureLoader::loadCubemap(const std::vector<std::string> &faces) {
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    texture.width = 0;
-    texture.height = 0;
+    texture.width = width;
+    texture.height = height;
     texture.type = Texture::TextureType::CUBE_MAP;
-    texture.format = Texture::InternalFormat::RGB8F;
-    texture.dataFormat = Texture::DataFormat::RGB;
+    texture.format = GL_RGB8 ? Texture::InternalFormat::RGB8F : Texture::InternalFormat::RGBA8F;
+    texture.dataFormat = GL_RGB ? Texture::DataFormat::RGB : Texture::DataFormat::RGBA;
     texture.dataType = Texture::DataType::UNSIGNED_BYTE;
 
     return texture;
+}
+
+void TextureLoader::loadCubemap(CubeMapTexture &texture, std::string facePath, size_t faceIndex) {
+    GLint mipmapLevel = 0;
+    GLint border = 0;
+    int width, height, channels;
+
+    texture.bind();
+
+    unsigned char *data = stbi_load(facePath.c_str(), &width, &height, &channels, 0);
+
+    assert(data && "file not found.");
+
+    GLenum internalFormat = 0, dataFormat = 0;
+    if (channels == 4) {
+        internalFormat = GL_RGBA8;
+        dataFormat = GL_RGBA;
+    } else if (channels == 3) {
+        internalFormat = GL_RGB8;
+        dataFormat = GL_RGB;
+    }
+
+    // clang-format off
+    glTexImage2D(
+        static_cast<GLenum>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex),
+        mipmapLevel,
+        internalFormat,
+        static_cast<GLsizei>(width),
+        static_cast<GLsizei>(height),
+        border,
+        dataFormat,
+        GL_UNSIGNED_BYTE,
+        data);
+    // clang-format on
+
+    texture.width = width;
+    texture.height = height;
+    texture.type = Texture::TextureType::CUBE_MAP;
+    texture.format = GL_RGB8 ? Texture::InternalFormat::RGB8F : Texture::InternalFormat::RGBA8F;
+    texture.dataFormat = GL_RGB ? Texture::DataFormat::RGB : Texture::DataFormat::RGBA;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
+
+    texture.unbind();
+
+    stbi_image_free(data);
+
+    texture.faces[faceIndex] = loadTexture(facePath);
 }
 
 } // namespace Engine

@@ -18,8 +18,8 @@ class DirectedLight {
     float nearPlane = 1.0f;
     float farPlane = 25.0f;
 
-    double biasFactor = 0.01f;
-    double biasMin = 0.005f;
+    double biasFactor = 0.0f;
+    double biasMin = 0.02f;
     int pcf = 4;
 
     bool operator==(const DirectedLight &other) {

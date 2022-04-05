@@ -18,8 +18,6 @@ SkyboxRenderer::~SkyboxRenderer() { m_Shader.free(); }
 
 void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings) {
     if (scene.getSkybox()) {
-        // m_SkyboxRotation += 0.01f;
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -27,7 +25,7 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings
         m_Shader.bind();
 
         auto fixedView = glm::mat4(glm::mat3(camera.viewMatrix()));
-        auto model = glm::rotate(glm::radians(m_SkyboxRotation), glm::vec3(0.0f, 1.0f, 0.0f));
+        auto model = glm::rotate(scene.getSkybox()->rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
         m_Shader.setMatrix4("u_model", model);
         m_Shader.setMatrix4("u_view", fixedView);
@@ -40,6 +38,8 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings
 
         glDisable(GL_BLEND);
         glDepthFunc(GL_LESS);
+
+        scene.getSkybox()->rotation += scene.getSkybox()->rotationSpeed;
     }
 }
 

@@ -5,7 +5,7 @@
 
 namespace Engine {
 
-Skybox::Skybox(std::vector<SkyboxVertex> vertices, Texture cubemapTexture)
+Skybox::Skybox(std::vector<SkyboxVertex> vertices, CubeMapTexture cubemapTexture)
     : vertices(std::move(vertices)), cubemapTexture(cubemapTexture) {
     this->setUp();
 }

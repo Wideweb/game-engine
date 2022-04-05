@@ -42,7 +42,7 @@ Application::Application(ApplicationSettings settings) {
 
 void Application::run() {
     std::cout << "RUN" << std::endl;
-    m_Render->setClearColor(0.0f, 0.1f, 0.1f, 1.0f);
+    m_Render->setClearColor({0.0f, 0.1f, 0.1f, 1.0f});
     m_Time.tick();
     m_GlobalTime.tick();
 

@@ -12,7 +12,6 @@ namespace Engine {
 class SkyboxRenderer {
   private:
     Shader m_Shader;
-    float m_SkyboxRotation = 0.0f;
 
   public:
     SkyboxRenderer();

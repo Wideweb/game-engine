@@ -240,7 +240,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     }
 
     m_ModelRenderer->draw(m_Shader, scene, models);
-    m_WaterRenderer->draw(camera, scene, models, m_State, settings);
+    // m_WaterRenderer->draw(camera, scene, models, m_State, settings);
 
     if (settings.hdr) {
         bool horizontal = true, firstIteration = true;
@@ -289,7 +289,12 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     m_Framebuffer.unbind();
 }
 
-void MasterRenderer::setClearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }
+void MasterRenderer::setClearColor(glm::vec4 color) {
+    glClearColor(color.r, color.g, color.b, color.a);
+    m_ClearColor = color;
+}
+
+glm::vec4 MasterRenderer::getClearColor() { return m_ClearColor; }
 
 void MasterRenderer::setViewport(int width, int height) {
     m_Viewport.width = width;
