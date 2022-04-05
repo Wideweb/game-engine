@@ -641,8 +641,9 @@ void EditToolsLayer::handleSelection() {
     auto pos = Application::get().getCamera().positionVec();
     // auto editToolsEntities = m_Collision.Raycast(pos, ray, 100.0f);
 
-    if (m_Imgui.entity() == c_NoEntity) {
+    if (!m_Coordinator.HasEntity(m_Imgui.entity()) && !gameCoordinator.HasEntity(m_Imgui.entity())) {
         m_GameObject.setEntity(c_NoEntity);
+        return;
     }
 
     if (m_Coordinator.HasEntity(m_Imgui.entity())) {

@@ -25,9 +25,12 @@ in vec4 v_fragPos;
 /////////////////////////// OUT /////////////////////////////
 /////////////////////////////////////////////////////////////
 layout(location = 0) out vec4 o_fragColor;
+layout(location = 1) out int o_id;
 layout(location = 2) out vec4 o_brightColor;
 
 void main() {
+    o_id = 0;
+
     if (dot(v_fragPos, u_clipPlane) < 0) {
         discard;
     }
