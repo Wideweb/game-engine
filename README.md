@@ -32,6 +32,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  - Shift+Y - point camera towards the negative y-axis
  - Z - point camera towards the positive z-axis
  - Shift+Z - point camera towards the negative z-axis
+ - Space - rotate camera around the selected object
 
 **Primitives.** To add a primitive, right-click on the scene and select the one you want. Only cube and plane are available at the moment.
 
