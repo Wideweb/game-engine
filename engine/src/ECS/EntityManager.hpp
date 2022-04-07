@@ -33,6 +33,8 @@ class EntityManager {
 
     const std::string &GetName(Entity entity);
 
+    bool ChangeName(Entity entity, std::string name);
+
   private:
     FlatDictionary<Entity, Signature> m_EntitySignature;
     FlatDictionary<Entity, std::string> m_EntityName;

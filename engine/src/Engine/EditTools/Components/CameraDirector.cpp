@@ -9,6 +9,7 @@
 
 #include "imgui/imgui.h"
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Engine {
 
@@ -41,8 +42,15 @@ void CameraDirector::onUpdate() {
     auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
     auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
 
-    glm::vec3 position = entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset;
-    glm::quat rotation = glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation);
+    auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager()) *
+                 glm::translate(glm::mat4(1.0), entityCamera.offset) * glm::toMat4(glm::quat(entityCamera.rotation));
+
+    glm::vec3 scale;
+    glm::quat rotation;
+    glm::vec3 position;
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(model, scale, rotation, position, skew, perspective);
 
     auto &toolsCoordinator = toolsLayer().getCoordinator();
 

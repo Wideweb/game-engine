@@ -35,4 +35,15 @@ std::vector<Entity> EntityManager::GetEntities() { return m_EntitySignature.keys
 
 const std::string &EntityManager::GetName(Entity entity) { return m_EntityName.getValue(entity); }
 
+bool EntityManager::ChangeName(Entity entity, std::string name) {
+    if (HasEntity(name)) {
+        return false;
+    }
+
+    m_EntityName.update(entity, name);
+    m_NameToEntity.changeKey(GetName(entity), name);
+
+    return true;
+}
+
 } // namespace Engine

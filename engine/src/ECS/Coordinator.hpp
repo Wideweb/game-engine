@@ -36,6 +36,8 @@ class Coordinator {
 
     const std::string &GetEntityName(Entity entity) { return m_EntityManager->GetName(entity); }
 
+    bool ChangeEntityName(Entity entity, std::string name) { return m_EntityManager->ChangeName(entity, name); }
+
     template <typename T> void RegisterComponent() { m_ComponentManager->RegisterComponent<T>(); }
 
     template <typename T> void AddComponent(Entity entity, T component) {

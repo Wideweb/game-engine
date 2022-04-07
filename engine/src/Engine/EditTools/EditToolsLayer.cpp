@@ -7,6 +7,7 @@
 
 #include "Application.hpp"
 #include "EditToolComponent.hpp"
+#include "ImGuiWidgets.hpp"
 #include "Input.hpp"
 #include "Mesh2D.hpp"
 #include "TextureLoader.hpp"
@@ -516,6 +517,19 @@ void EditToolsLayer::onDraw() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::PopStyleVar();
+
+    if (m_GameObject.isActive()) {
+        static char entityName[64];
+        strcpy(entityName, m_GameObject.entityName().c_str());
+        ImGuiWidgets::PaddingTop(10.0f);
+        ImGuiWidgets::PaddingLeft(10.0f);
+        ImGui::InputText("##entityName", entityName, 64);
+        ImGuiWidgets::PaddingTop(5.0f);
+        std::string newEntityName(entityName);
+        if (newEntityName != m_GameObject.entityName()) {
+            m_GameObject.entityName(newEntityName);
+        }
+    }
 
     if (m_TransformPanel->isVisible()) {
         m_TransformPanel->onDraw(0, 250);

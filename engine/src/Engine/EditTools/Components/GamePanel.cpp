@@ -72,8 +72,19 @@ void GamePanel::onDraw(int x, int y) {
         auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
         auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
 
-        camera.setPosition(entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset);
-        camera.setRotation(glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation));
+        auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager()) *
+                     glm::translate(glm::mat4(1.0), entityCamera.offset) *
+                     glm::toMat4(glm::quat(entityCamera.rotation));
+
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(model, scale, rotation, position, skew, perspective);
+
+        camera.setPosition(position);
+        camera.setRotation(rotation);
 
         render.setFramebuffer(m_Framebuffer);
         render.setViewport(m_ViewportSize.x, m_ViewportSize.y);

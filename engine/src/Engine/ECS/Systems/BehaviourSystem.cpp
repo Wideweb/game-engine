@@ -21,7 +21,7 @@ void BehaviourSystem::Update(ComponentManager &components) const {
     for (const auto entity : m_Entities) {
         auto &behaviour = components.GetComponent<BehaviourComponent>(entity);
 
-        if (behaviour.invalid) {
+        if (behaviour.invalid || behaviour.script.empty()) {
             continue;
         }
 

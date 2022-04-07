@@ -3,6 +3,7 @@
 #include "CameraComponent.hpp"
 #include "LocationComponent.hpp"
 
+#include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/vec3.hpp>
@@ -20,8 +21,18 @@ void CameraSystem::Update(ComponentManager &components) const {
         auto &location = components.GetComponent<LocationComponent>(entity);
         auto &cameraCmp = components.GetComponent<CameraComponent>(entity);
 
-        camera.setPosition(location.position + glm::quat(location.rotation) * cameraCmp.offset);
-        camera.setRotation(glm::quat(location.rotation) * glm::quat(cameraCmp.rotation));
+        auto model = LocationComponent::getFullTransform(entity, components) *
+                     glm::translate(glm::mat4(1.0), cameraCmp.offset) * glm::toMat4(glm::quat(cameraCmp.rotation));
+
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(model, scale, rotation, position, skew, perspective);
+
+        camera.setPosition(position);
+        camera.setRotation(rotation);
         // camera.move(cameraCmp.offset);
     }
 }

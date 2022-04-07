@@ -8,6 +8,7 @@
 #include "TagComponent.hpp"
 
 #include "imgui/imgui.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Engine {
 
@@ -38,8 +39,15 @@ void DirectedLightDirector::onUpdate() {
     auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
     auto &entityLight = coordinator.GetComponent<DirectedLightComponent>(entity);
 
-    glm::vec3 position = entityLocation.position;
-    glm::quat rotation = glm::quat(entityLocation.rotation) * glm::quat(entityLight.light.rotation);
+    auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager()) *
+                 glm::toMat4(glm::quat(entityLight.light.rotation));
+
+    glm::vec3 scale;
+    glm::quat rotation;
+    glm::vec3 position;
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(model, scale, rotation, position, skew, perspective);
 
     auto &toolsCoordinator = toolsLayer().getCoordinator();
 

@@ -34,7 +34,7 @@ class GameObjectModel {
 
   private:
     Entity m_Entity = c_NoEntity;
-    TransformOrientation m_TransformOrientation = TransformOrientation::Local;
+    TransformOrientation m_TransformOrientation = TransformOrientation::Global;
 
   public:
     EventDispatcher<Entity> entityChange$;
@@ -96,6 +96,10 @@ class GameObjectModel {
     }
 
     Entity entity() { return m_Entity; }
+
+    std::string entityName() { return coordinator().GetEntityName(m_Entity); }
+
+    bool entityName(std::string name) { return coordinator().ChangeEntityName(m_Entity, name); }
 
     bool isActive() { return m_Entity != c_NoEntity; }
 

@@ -72,6 +72,18 @@ template <typename TKey, typename TValue> class FlatDictionary {
 
     bool hasKey(TKey key) const { return m_KeyToIndex.find(key) != m_KeyToIndex.end(); }
 
+    bool changeKey(TKey prevKey, TKey newKey) {
+        if (hasKey(newKey)) {
+            return false;
+        }
+
+        uint32_t index = m_KeyToIndex[prevKey];
+
+        m_Keys[index] = newKey;
+        m_KeyToIndex[newKey] = index;
+        m_KeyToIndex.erase(prevKey);
+    }
+
     size_t size() const { return m_Values.size(); }
 
     void clear() {
