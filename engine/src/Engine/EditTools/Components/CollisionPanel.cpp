@@ -1,6 +1,7 @@
 #include "CollisionPanel.hpp"
 
 #include "CollisionComponent.hpp"
+#include "ImGuiWidgets.hpp"
 #include "Math.hpp"
 #include "StaticCollisionComponent.hpp"
 
@@ -65,15 +66,28 @@ void CollisionPanel::onUpdate() {
 }
 
 void CollisionPanel::onDraw(int x, int y) {
-    ImGui::Begin("Box Collider");
+    static bool expanded = false;
+    ImGuiWidgets::Collapse("Box Collider", expanded);
+    if (!expanded) {
+        return;
+    }
 
+    ImGui::PushItemWidth(120.0f);
+
+    float padding = 10.0f;
+
+    ImGuiWidgets::PaddingLeft(padding);
     ImGui::Checkbox("Static", &m_Static);
 
+    ImGuiWidgets::PaddingLeft(padding);
     ImGui::InputFloat("width", &m_Size.x, 0.1f, 0.01f);
+    ImGuiWidgets::PaddingLeft(padding);
     ImGui::InputFloat("height", &m_Size.y, 0.1f, 0.01f);
+    ImGuiWidgets::PaddingLeft(padding);
     ImGui::InputFloat("depth", &m_Size.z, 0.1f, 0.01f);
 
-    ImGui::End();
+    ImGui::PopItemWidth();
+    ImGui::NewLine();
 }
 
 } // namespace Engine

@@ -118,24 +118,7 @@ class GameObjectModel {
             return transform;
         }
 
-        std::vector<Entity> ancestors;
-        Entity current = m_Entity;
-        while (coordinator().HasComponent<ParentComponent>(current)) {
-            current = coordinator().GetComponent<ParentComponent>(current).entity;
-            ancestors.push_back(current);
-        }
-
-        for (int i = ancestors.size() - 1; i >= 0; i--) {
-            Entity current = ancestors[i];
-            auto &location = coordinator().GetComponent<LocationComponent>(current);
-            auto &render = coordinator().GetComponent<Render3DComponent>(current);
-
-            transform = glm::translate(transform, location.position);
-            transform = transform * glm::toMat4(glm::quat(location.rotation));
-            transform = glm::scale(transform, render.scale);
-        }
-
-        return transform;
+        return LocationComponent::getParentTransform(m_Entity, coordinator().GetComponentManager());
     }
 
     glm::mat4 localTransform() {
@@ -145,14 +128,7 @@ class GameObjectModel {
             return transform;
         }
 
-        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
-        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
-
-        transform = glm::translate(transform, location.position);
-        transform = transform * glm::toMat4(glm::quat(location.rotation));
-        transform = glm::scale(transform, render.scale);
-
-        return transform;
+        return LocationComponent::getLocalTransform(m_Entity, coordinator().GetComponentManager());
     }
 
     glm::mat4 transform() {
@@ -363,12 +339,12 @@ class GameObjectModel {
     }
 
     bool hasScale() {
-        return coordinator().HasComponent<Render3DComponent>(m_Entity) &&
+        return coordinator().HasComponent<LocationComponent>(m_Entity) &&
                !coordinator().HasComponent<DirectedLightComponent>(m_Entity);
     }
 
     glm::vec3 scale() {
-        if (!coordinator().HasComponent<Render3DComponent>(m_Entity)) {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
             return glm::vec3(0.0f);
         }
 
@@ -388,8 +364,8 @@ class GameObjectModel {
     }
 
     glm::vec3 localScale() {
-        if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
-            return coordinator().GetComponent<Render3DComponent>(m_Entity).scale;
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return coordinator().GetComponent<LocationComponent>(m_Entity).scale;
         }
 
         return glm::vec3(0.0f);
@@ -409,10 +385,9 @@ class GameObjectModel {
         }
 
         auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
-        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
 
         glm::vec3 oldValue = scale();
-        render.scale = value;
+        location.scale = value;
         glm::vec3 newValue = scale();
 
         if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
@@ -437,10 +412,27 @@ class GameObjectModel {
             coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
         }
 
-        render.updated = true;
         location.updated = true;
 
+        if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
+            coordinator().GetComponent<Render3DComponent>(m_Entity).updated = true;
+        }
+
         scaleChange$.dispatch(newValue, oldValue);
+    }
+
+    glm::vec3 renderScale() {
+        if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
+            return coordinator().GetComponent<Render3DComponent>(m_Entity).scale;
+        }
+
+        return glm::vec3(0.0f);
+    }
+
+    void renderScale(glm::vec3 value) {
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+        render.scale = value;
+        render.updated = true;
     }
 
     std::string model() { return coordinator().GetComponent<Render3DComponent>(m_Entity).model; }
@@ -544,13 +536,15 @@ class GameObjectModel {
         materialShininessChange$.dispatch(value);
     }
 
+    bool hasMaterial() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
+
     const Material &material() {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         return model->meshes[0].material;
     }
 
-    bool hasMaterial() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
+    bool hasBehaviour() { return coordinator().HasComponent<BehaviourComponent>(m_Entity); }
 
     void behaviour(std::string script) {
         if (coordinator().HasComponent<BehaviourComponent>(m_Entity)) {

@@ -7,7 +7,7 @@ namespace Engine {
 class ParentComponent {
   public:
     Entity entity = c_NoEntity, prevEntity = c_NoEntity;
-    bool isDirty = true;
+    bool isDirty = true, destroyWithParent = true;
 
     void setEntity(Entity entity) {
         this->prevEntity = entity;
@@ -16,7 +16,8 @@ class ParentComponent {
     }
 
     ParentComponent() {}
-    ParentComponent(Entity entity) : entity(entity) {}
+    ParentComponent(Entity entity, bool destroyWithParent = true)
+        : entity(entity), destroyWithParent(destroyWithParent) {}
 };
 
 } // namespace Engine

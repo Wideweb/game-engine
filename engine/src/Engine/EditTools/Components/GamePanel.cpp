@@ -51,7 +51,7 @@ void GamePanel::onUpdate() {
 
 void GamePanel::onDraw(int x, int y) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-    ImGui::Begin("Game");
+    ImGui::Begin("Camera");
 
     auto &render = Application::get().getRender();
     auto &camera = Application::get().getCamera();
@@ -67,24 +67,32 @@ void GamePanel::onDraw(int x, int y) {
     auto lastViewport = render.getViewport();
 
     auto cameraArray = coordinator.GetComponentArray<CameraComponent>();
-    Entity entity = cameraArray->entities()[0];
-    auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
-    auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
+    if (cameraArray->size() > 0) {
+        Entity entity = cameraArray->entities()[0];
+        auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
+        auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
 
-    camera.setPosition(entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset);
-    camera.setRotation(glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation));
+        camera.setPosition(entityLocation.position + glm::quat(entityLocation.rotation) * entityCamera.offset);
+        camera.setRotation(glm::quat(entityLocation.rotation) * glm::quat(entityCamera.rotation));
 
-    render.setFramebuffer(m_Framebuffer);
-    render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
-    camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
-    render.clear();
-    render.draw(camera, scene, models, renderSettings);
-    render.setFramebuffer(lastFBO);
-    render.setViewport(lastViewport.width, lastViewport.height);
+        render.setFramebuffer(m_Framebuffer);
+        render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
+        camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
+        render.clear();
+        render.draw(camera, scene, models, renderSettings);
+        render.setFramebuffer(lastFBO);
+        render.setViewport(lastViewport.width, lastViewport.height);
 
-    camera.setPosition(lastCameraPos);
-    camera.setRotation(lastCameraRotation);
-    camera.setSize(lastCameraSize.x, lastCameraSize.y);
+        camera.setPosition(lastCameraPos);
+        camera.setRotation(lastCameraRotation);
+        camera.setSize(lastCameraSize.x, lastCameraSize.y);
+    } else {
+        render.setFramebuffer(m_Framebuffer);
+        render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
+        render.clear();
+        render.setFramebuffer(lastFBO);
+        render.setViewport(lastViewport.width, lastViewport.height);
+    }
 
     // auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
     // auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();

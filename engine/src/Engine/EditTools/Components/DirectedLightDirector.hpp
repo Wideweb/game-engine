@@ -11,13 +11,13 @@ class DirectedLightDirector : public BaseView {
   private:
     Entity m_Sun;
     GameObjectModel &m_Model;
-    Render3DComponent m_Render;
 
   public:
     DirectedLightDirector(GameObjectModel &model);
 
     void onAttach() override;
     void onUpdate() override;
+    bool handleSelection(Entity entity) override;
 
     void show() override;
     void hide() override;

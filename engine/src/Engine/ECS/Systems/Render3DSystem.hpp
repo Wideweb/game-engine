@@ -16,8 +16,6 @@ class Render3DSystem : public BaseSystem {
 
     virtual void Attach(ComponentManager &components) const override;
     virtual void Update(ComponentManager &components) const override;
-    glm::mat4x4 GetTransform(Entity entity, ComponentManager &components, const Render3DComponent &render,
-                             const LocationComponent location) const;
 };
 
 } // namespace Engine

@@ -1,5 +1,7 @@
 #include "VelocityPanel.hpp"
 
+#include "ImGuiWidgets.hpp"
+
 #include "imgui/imgui.h"
 #include <glm/vec3.hpp>
 
@@ -8,7 +10,11 @@ namespace Engine {
 VelocityPanel::VelocityPanel(GameObjectModel &model) : m_Model(model) {}
 
 void VelocityPanel::onDraw(int x, int y) {
-    ImGui::Begin("Velocity");
+    static bool expanded = false;
+    ImGuiWidgets::Collapse("Velocity", expanded);
+    if (!expanded) {
+        return;
+    }
 
     {
         glm::vec3 prevVelocity = m_Model.velocity();
@@ -50,7 +56,8 @@ void VelocityPanel::onDraw(int x, int y) {
         }
     }
 
-    ImGui::End();
+    ImGui::PopItemWidth();
+    ImGui::NewLine();
 }
 
 } // namespace Engine

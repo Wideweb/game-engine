@@ -56,6 +56,41 @@ void EditToolsLayer::onAttach() {
     m_TerrainPanel->onAttach();
     m_TerrainPanel->hide();
 
+    m_CollisionPanel = std::make_unique<CollisionPanel>(m_GameObject);
+    m_CollisionPanel->onAttach();
+    m_CollisionPanel->hide();
+
+    m_RigitBodyPanel = std::make_unique<RigitBodyPanel>(m_GameObject);
+    m_RigitBodyPanel->onAttach();
+    m_RigitBodyPanel->hide();
+
+    m_VelocityPanel = std::make_unique<VelocityPanel>(m_GameObject);
+    m_VelocityPanel->onAttach();
+    m_VelocityPanel->hide();
+
+    m_ParticlesPanel = std::make_unique<ParticlesPanel>(m_GameObject);
+    m_ParticlesPanel->onAttach();
+
+    m_DirectedLightPanel = std::make_unique<DirectedLightPanel>(m_GameObject);
+    m_DirectedLightPanel->onAttach();
+    m_DirectedLightPanel->hide();
+
+    m_ModelTransformPanel = std::make_unique<ModelTransformPanel>(m_GameObject);
+    m_ModelTransformPanel->onAttach();
+    m_ModelTransformPanel->hide();
+
+    m_MaterialPanel = std::make_unique<MaterialPanel>(m_GameObject);
+    m_MaterialPanel->onAttach();
+    m_MaterialPanel->hide();
+
+    m_BehaviourPanel = std::make_unique<BehaviourPanel>(m_GameObject);
+    m_BehaviourPanel->onAttach();
+    m_BehaviourPanel->hide();
+
+    m_SkeletPanel = std::make_unique<SkeletPanel>(m_GameObject);
+    m_SkeletPanel->onAttach();
+    m_SkeletPanel->hide();
+
     m_TerrainTransform = std::make_unique<TerrainTransform>(m_GameObject, *m_TerrainPanel);
     m_TerrainTransform->onAttach();
     m_TerrainTransform->hide();
@@ -80,47 +115,16 @@ void EditToolsLayer::onAttach() {
     m_CollisionBody->onAttach();
     m_CollisionBody->hide();
 
-    m_CollisionPanel = std::make_unique<CollisionPanel>(m_GameObject);
-    m_CollisionPanel->onAttach();
-    m_CollisionPanel->hide();
-
-    m_RigitBodyPanel = std::make_unique<RigitBodyPanel>(m_GameObject);
-    m_RigitBodyPanel->onAttach();
-    m_RigitBodyPanel->hide();
-
-    m_VelocityPanel = std::make_unique<VelocityPanel>(m_GameObject);
-    m_VelocityPanel->onAttach();
-    m_VelocityPanel->hide();
-
-    m_ParticlesPanel = std::make_unique<ParticlesPanel>(m_GameObject);
-    m_ParticlesPanel->onAttach();
-
-    m_DirectedLightPanel = std::make_unique<DirectedLightPanel>(m_GameObject);
-    m_DirectedLightPanel->onAttach();
-    m_DirectedLightPanel->hide();
-
     m_SkyboxPanel = std::make_unique<SkyboxPanel>();
     m_SkyboxPanel->onAttach();
     m_SkyboxPanel->show();
 
-    m_MaterialPanel = std::make_unique<MaterialPanel>(m_GameObject);
-    m_MaterialPanel->onAttach();
-    m_MaterialPanel->hide();
-
-    m_BehaviourPanel = std::make_unique<BehaviourPanel>(m_GameObject);
-    m_BehaviourPanel->onAttach();
-    m_BehaviourPanel->hide();
-
-    m_SkeletPanel = std::make_unique<SkeletPanel>(m_GameObject);
-    m_SkeletPanel->onAttach();
-    m_SkeletPanel->hide();
+    m_GamePanel = std::make_unique<GamePanel>();
+    m_GamePanel->onAttach();
+    m_GamePanel->show();
 
     m_CameraDirector = std::make_unique<CameraDirector>(m_GameObject);
     m_CameraDirector->onAttach();
-
-    m_GamePanel = std::make_unique<GamePanel>();
-    m_GamePanel->onAttach();
-    m_GamePanel->hide();
 
     m_DirectedLightDirector = std::make_unique<DirectedLightDirector>(m_GameObject);
     m_DirectedLightDirector->onAttach();
@@ -263,11 +267,9 @@ void EditToolsLayer::onUpdate() {
 
     if (m_GameObject.isActive()) {
         m_TransformPanel->show();
-        m_BehaviourPanel->show();
         m_MeshBody->show();
     } else {
         m_TransformPanel->hide();
-        m_BehaviourPanel->hide();
         m_MeshBody->hide();
     }
 
@@ -326,6 +328,12 @@ void EditToolsLayer::onUpdate() {
     }
 
     if (m_GameObject.isActive() && m_GameObject.hasMaterial()) {
+        m_ModelTransformPanel->show();
+    } else {
+        m_ModelTransformPanel->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasMaterial()) {
         m_MaterialPanel->show();
     } else {
         m_MaterialPanel->hide();
@@ -341,6 +349,12 @@ void EditToolsLayer::onUpdate() {
         m_DirectedLightPanel->show();
     } else {
         m_DirectedLightPanel->hide();
+    }
+
+    if (m_GameObject.isActive() && m_GameObject.hasBehaviour()) {
+        m_BehaviourPanel->show();
+    } else {
+        m_BehaviourPanel->hide();
     }
 
     if (m_TransformControlsPosition->isVisible()) {
@@ -381,6 +395,10 @@ void EditToolsLayer::onUpdate() {
 
     if (m_VelocityPanel->isVisible()) {
         m_VelocityPanel->onUpdate();
+    }
+
+    if (m_ModelTransformPanel->isVisible()) {
+        m_ModelTransformPanel->onUpdate();
     }
 
     if (m_MaterialPanel->isVisible()) {
@@ -495,6 +513,26 @@ void EditToolsLayer::onDraw() {
         m_CollisionBody->onDraw(0, 0);
     }
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::PopStyleVar();
+
+    if (m_TransformPanel->isVisible()) {
+        m_TransformPanel->onDraw(0, 250);
+    }
+
+    if (m_VelocityPanel->isVisible()) {
+        m_VelocityPanel->onDraw(0, 0);
+    }
+
+    if (m_ModelTransformPanel->isVisible()) {
+        m_ModelTransformPanel->onDraw(0, 250);
+    }
+
+    if (m_MaterialPanel->isVisible()) {
+        m_MaterialPanel->onDraw(0, 250);
+    }
+
     if (m_CollisionPanel->isVisible()) {
         m_CollisionPanel->onDraw(0, 0);
     }
@@ -503,28 +541,12 @@ void EditToolsLayer::onDraw() {
         m_RigitBodyPanel->onDraw(0, 0);
     }
 
-    if (m_TransformPanel->isVisible()) {
-        m_TransformPanel->onDraw(0, 250);
-    }
-
     if (m_TerrainPanel->isVisible()) {
         m_TerrainPanel->onDraw(0, 250);
     }
 
-    if (m_VelocityPanel->isVisible()) {
-        m_VelocityPanel->onDraw(0, 0);
-    }
-
     if (m_BehaviourPanel->isVisible()) {
         m_BehaviourPanel->onDraw(0, 250);
-    }
-
-    if (m_MeshBody->isVisible()) {
-        m_MeshBody->onDraw(0, 250);
-    }
-
-    if (m_MaterialPanel->isVisible()) {
-        m_MaterialPanel->onDraw(0, 250);
     }
 
     if (m_SkeletPanel->isVisible()) {
@@ -537,6 +559,12 @@ void EditToolsLayer::onDraw() {
 
     if (m_DirectedLightPanel->isVisible()) {
         m_DirectedLightPanel->onDraw(0, 0);
+    }
+
+    ImGui::End();
+
+    if (m_MeshBody->isVisible()) {
+        m_MeshBody->onDraw(0, 250);
     }
 
     if (m_SkyboxPanel->isVisible()) {
@@ -563,6 +591,7 @@ void EditToolsLayer::onDetach() {
     m_ParticlesPanel->onDetach();
     m_DirectedLightPanel->onDetach();
     m_SkyboxPanel->onDetach();
+    m_ModelTransformPanel->onDetach();
     m_MaterialPanel->onDetach();
     m_BehaviourPanel->onDetach();
     m_MeshBody->onDetach();
@@ -648,6 +677,14 @@ void EditToolsLayer::handleSelection() {
 
     if (m_Coordinator.HasEntity(m_Imgui.entity())) {
         Entity entity = m_Imgui.entity();
+
+        if (m_CameraDirector->isVisible() && m_CameraDirector->handleSelection(entity)) {
+            return;
+        }
+
+        if (m_DirectedLightDirector->isVisible() && m_DirectedLightDirector->handleSelection(entity)) {
+            return;
+        }
 
         if (m_TransformControlsPosition->isVisible() && m_TransformControlsPosition->handleSelection(entity)) {
             return;

@@ -1,5 +1,7 @@
 #include "SkeletPanel.hpp"
 
+#include "ImGuiWidgets.hpp"
+
 #include "Application.hpp"
 #include "SkinnedModel.hpp"
 
@@ -14,8 +16,16 @@ void SkeletPanel::onAttach() {}
 void SkeletPanel::onUpdate() {}
 
 void SkeletPanel::onDraw(int x, int y) {
-    ImGui::Begin("Skelet");
+    static bool expanded = false;
+    ImGuiWidgets::Collapse("Skelet", expanded);
+    if (!expanded) {
+        return;
+    }
 
+    ImGui::PushItemWidth(120.0f);
+    float padding = 10.0f;
+
+    ImGuiWidgets::PaddingLeft(padding);
     if (ImGui::BeginCombo("animation", m_Model.animation().c_str())) {
 
         const auto &model = Application::get().getModels().GetModel<SkinnedModel>(m_Model.model());
@@ -29,7 +39,8 @@ void SkeletPanel::onDraw(int x, int y) {
         ImGui::EndCombo();
     }
 
-    ImGui::End();
+    ImGui::PopItemWidth();
+    ImGui::NewLine();
 }
 
 } // namespace Engine

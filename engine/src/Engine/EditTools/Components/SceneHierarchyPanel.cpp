@@ -2,6 +2,7 @@
 
 #include "imgui/imgui.h"
 
+#include "BehaviourComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "EditToolComponent.hpp"
@@ -84,6 +85,10 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
             coordinator.AddComponent<CameraComponent>(entity, CameraComponent());
         }
 
+        if (!coordinator.HasComponent<BehaviourComponent>(entity) && ImGui::MenuItem("Add Behaviour")) {
+            coordinator.AddComponent<BehaviourComponent>(entity, BehaviourComponent());
+        }
+
         if (ImGui::MenuItem("Delete Entity")) {
             coordinator.DestroyEntity(entity);
             if (model.entity() == entity)
@@ -137,6 +142,11 @@ void SceneHierarchyPanel::onDraw(int x, int y) {
     SceneHierarchyNode hierarchy;
     std::unordered_map<Entity, SceneHierarchyNode> entityToNode;
     for (auto entity : entities) {
+        if (gameCordinator.HasComponent<EditToolComponent>(entity) &&
+            !gameCordinator.GetComponent<EditToolComponent>(entity).canSelect) {
+            continue;
+        }
+
         auto &node = entityToNode[entity];
         node.entity = entity;
         node.title = gameCordinator.GetEntityName(entity);

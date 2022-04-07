@@ -1,5 +1,7 @@
 #include "TransformPanel.hpp"
 
+#include "ImGuiWidgets.hpp"
+
 #include "imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
@@ -11,12 +13,22 @@ namespace Engine {
 TransformPanel::TransformPanel(GameObjectModel &model) : m_Model(model) {}
 
 void TransformPanel::onDraw(int x, int y) {
-    ImGui::Begin("Transform");
+    static bool expanded = false;
+    ImGuiWidgets::Collapse("Transform", expanded);
+    if (!expanded) {
+        return;
+    }
 
     auto currentOrientation =
         m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local ? "Local" : "Global";
 
-    if (ImGui::BeginCombo("orientation", currentOrientation)) {
+    float padding = 10.0f;
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::Text("Orientation");
+    ImGui::PushItemWidth(120.0f);
+    ImGuiWidgets::PaddingLeft(padding);
+    if (ImGui::BeginCombo("##orientation", currentOrientation)) {
         if (ImGui::Selectable("Global",
                               m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Global)) {
             m_Model.transformOrientation(GameObjectModel::TransformOrientation::Global);
@@ -34,10 +46,23 @@ void TransformPanel::onDraw(int x, int y) {
         glm::vec3 prevPosition = m_Model.localPosition();
         glm::vec3 position = prevPosition;
 
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::Text("Location: ");
-        ImGui::InputFloat("x", &position.x, 0.1f, 0.01f);
-        ImGui::InputFloat("y", &position.y, 0.1f, 0.01f);
-        ImGui::InputFloat("z", &position.z, 0.1f, 0.01f);
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##locationX", &position.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##locationY", &position.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##locationZ", &position.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
 
         if (position != prevPosition) {
             m_Model.localPosition(position);
@@ -48,45 +73,61 @@ void TransformPanel::onDraw(int x, int y) {
         glm::vec3 prevRotation = m_Model.localRotation();
         glm::vec3 rotation = prevRotation;
 
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::Text("Rotation: ");
-        ImGui::InputFloat("x1", &rotation.x, 0.1f, 0.01f);
-        ImGui::InputFloat("y1", &rotation.y, 0.1f, 0.01f);
-        ImGui::InputFloat("z1", &rotation.z, 0.1f, 0.01f);
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##rotationX", &rotation.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##rotationY", &rotation.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##rotationZ", &rotation.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
 
         if (rotation != prevRotation) {
             m_Model.localRotation(rotation);
         }
     }
 
-    {
-        glm::vec3 prevRotation = m_Model.renderRotation();
-        glm::vec3 rotation = prevRotation;
-
-        ImGui::Text("Render Rotation: ");
-        ImGui::InputFloat("lx", &rotation.x, 0.1f, 0.01f);
-        ImGui::InputFloat("ly", &rotation.y, 0.1f, 0.01f);
-        ImGui::InputFloat("lz", &rotation.z, 0.1f, 0.01f);
-
-        if (rotation != prevRotation) {
-            m_Model.renderRotation(rotation);
-        }
-    }
 
     {
         glm::vec3 prevScale = m_Model.scale();
         glm::vec3 scale = prevScale;
 
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::Text("Scale: ");
-        ImGui::InputFloat3("xyz", glm::value_ptr(scale));
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##scaleX", &scale.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##scaleY", &scale.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##scaleZ", &scale.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
 
         if (scale != prevScale) {
             m_Model.scale(scale);
         }
     }
 
-    // ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::PopItemWidth();
+    ImGui::NewLine();
 
-    ImGui::End();
+    // ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
 
 } // namespace Engine

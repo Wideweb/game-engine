@@ -1,6 +1,7 @@
 #include "TerrainPanel.hpp"
 
 #include "Application.hpp"
+#include "ImGuiWidgets.hpp"
 #include "Math.hpp"
 #include "ModelFactory.hpp"
 #include "Render3DComponent.hpp"
@@ -126,16 +127,31 @@ void TerrainPanel::onUpdate() {
 }
 
 void TerrainPanel::onDraw(int x, int y) {
-    ImGui::Begin("Terrain");
+    static bool expanded = false;
+    ImGuiWidgets::Collapse("Terrain", expanded);
+    if (!expanded) {
+        return;
+    }
+
+    ImGui::PushItemWidth(120.0f);
+    float padding = 10.0f;
 
     {
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::InputInt("columns", &m_Columns, 1, 10);
+
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::InputInt("rows", &m_Rows, 1, 10);
     }
 
     {
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::Text("Brush: ");
+
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::InputFloat("radius", &brushRadius, 0.1f, 0.01f);
+
+        ImGuiWidgets::PaddingLeft(padding);
         ImGui::InputFloat("strength", &brushStrength, 0.01f, 0.001f);
     }
 
@@ -147,7 +163,8 @@ void TerrainPanel::onDraw(int x, int y) {
         m_Rows = 1;
     }
 
-    ImGui::End();
+    ImGui::PopItemWidth();
+    ImGui::NewLine();
 }
 
 } // namespace Engine

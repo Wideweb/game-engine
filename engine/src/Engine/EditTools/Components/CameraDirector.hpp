@@ -18,6 +18,7 @@ class CameraDirector : public BaseView {
 
     void onAttach() override;
     void onUpdate() override;
+    bool handleSelection(Entity entity) override;
 
     void show() override;
     void hide() override;

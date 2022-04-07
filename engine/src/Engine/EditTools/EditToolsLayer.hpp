@@ -15,14 +15,15 @@
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
-#include "SkyboxPanel.hpp"
 #include "MaterialPanel.hpp"
 #include "MeshBody.hpp"
+#include "ModelTransformPanel.hpp"
 #include "ParticlesPanel.hpp"
 #include "RenderPanel.hpp"
 #include "RigitBodyPanel.hpp"
 #include "SceneHierarchyPanel.hpp"
 #include "SkeletPanel.hpp"
+#include "SkyboxPanel.hpp"
 #include "TerrainPanel.hpp"
 #include "TerrainTransform.hpp"
 #include "TransformControlsPosition.hpp"
@@ -48,6 +49,7 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;
     std::unique_ptr<TransformControlsScale> m_TransformControlsScale;
     std::unique_ptr<TransformPanel> m_TransformPanel;
+    std::unique_ptr<ModelTransformPanel> m_ModelTransformPanel;
     std::unique_ptr<DirectedLightPanel> m_DirectedLightPanel;
     std::unique_ptr<ParticlesPanel> m_ParticlesPanel;
     std::unique_ptr<SceneHierarchyPanel> m_SceneHierarchyPanel;

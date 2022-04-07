@@ -40,7 +40,7 @@ void ContentBrowserPanel::onDraw(int x, int y) {
         ImGui::PushID(filenameString.c_str());
         uint32_t icon = directoryEntry.is_directory() ? m_DirectoryIcon.id : m_FileIcon.id;
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-        ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+        ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), {thumbnailSize, thumbnailSize}, {0, 0}, {1, 1});
 
         if (ImGui::BeginDragDropSource()) {
             const char *itemPath = relativePath.c_str();
@@ -63,8 +63,8 @@ void ContentBrowserPanel::onDraw(int x, int y) {
 
     ImGui::Columns(1);
 
-    ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
-    ImGui::SliderFloat("Padding", &padding, 0, 32);
+    // ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
+    // ImGui::SliderFloat("Padding", &padding, 0, 32);
 
     // TODO: status bar
     ImGui::End();

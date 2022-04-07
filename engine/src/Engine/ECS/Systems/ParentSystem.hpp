@@ -16,8 +16,9 @@ class ParentSystem : public BaseSystem {
   public:
     using BaseSystem::BaseSystem;
 
+    virtual void Attach(ComponentManager &components) const override;
     virtual void Update(ComponentManager &components) const override;
-    void RemoveNode(Entity entity) const;
+    void RemoveNode(ComponentManager &components, Entity entity) const;
 };
 
 } // namespace Engine

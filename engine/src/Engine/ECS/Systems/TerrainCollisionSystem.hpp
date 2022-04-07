@@ -13,9 +13,6 @@ class TerrainCollisionSystem : public BaseSystem {
   public:
     using BaseSystem::BaseSystem;
     virtual void Update(ComponentManager &components) const override;
-
-    glm::mat4x4 GetTransform(Entity entity, ComponentManager &components, const Render3DComponent &render,
-                             const LocationComponent location) const;
 };
 
 } // namespace Engine

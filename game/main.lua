@@ -8,7 +8,17 @@ function main(app)
                   "./assets/models/skybox-2/back.png",
                   "./assets/models/skybox-2/front.png");
 
-    local box = app:createEntity("box");
+    local camera = app:createEntity("Camera");
+    local cameraLocation = Core.LocationComponent(0.0, 3.0, 5.0);
+    cameraLocation.rotation = Core.vec3(-0.5, 0.0, 0.0);
+    camera:addLocationComponent(cameraLocation);
+    camera:addCameraComponent(Core.CameraComponent(0.0, 0.0, 0.0));
+
+    local light = app:createEntity("Directed Light");
+    light:addLocationComponent(Core.LocationComponent(0.0, 3.0, -5.0));
+    light:addDirectedLightComponent(Core.DirectedLightComponent(Core.DirectedLight()));
+
+    local box = app:createEntity("Box");
     box:addLocationComponent(Core.LocationComponent(0.0, 0.0, 0.0));
     box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
     box:addTagComponent(Core.TagComponent("platform"));

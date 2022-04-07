@@ -22,7 +22,7 @@ void Render3DSystem::Attach(ComponentManager &components) const {
             scene.removeOverlayObject(entity, render.model);
         } else {
             scene.removeObject(entity, render.model);
-        } 
+        }
     });
 }
 
@@ -34,7 +34,8 @@ void Render3DSystem::Update(ComponentManager &components) const {
         auto &location = components.GetComponent<LocationComponent>(entity);
 
         if (!render.instanced) {
-            auto transform = GetTransform(entity, components, render, location);
+            auto transform = LocationComponent::getFullTransform(entity, components) *
+                             glm::scale(glm::mat4(1.0), render.scale) * glm::toMat4(glm::quat(render.rotation));
 
             if (render.overlay()) {
                 scene.addOverlayObject(entity, render.model, transform, render.shader);
@@ -43,7 +44,8 @@ void Render3DSystem::Update(ComponentManager &components) const {
             }
             render.instanced = true;
         } else if (location.isUpdated(entity, components) || render.isUpdated(entity, components)) {
-            auto transform = GetTransform(entity, components, render, location);
+            auto transform = LocationComponent::getFullTransform(entity, components) *
+                             glm::scale(glm::mat4(1.0), render.scale) * glm::toMat4(glm::quat(render.rotation));
 
             if (render.overlay()) {
                 scene.updateOverlayObject(entity, render.model, transform, render.shader);
@@ -58,34 +60,6 @@ void Render3DSystem::Update(ComponentManager &components) const {
             render.updated = false;
         }
     }
-}
-
-glm::mat4x4 Render3DSystem::GetTransform(Entity entity, ComponentManager &components, const Render3DComponent &render,
-                                         const LocationComponent location) const {
-    glm::mat4 worldTransform(1);
-
-    std::vector<Entity> ancestors;
-    Entity current = entity;
-    while (components.HasComponent<ParentComponent>(current)) {
-        current = components.GetComponent<ParentComponent>(current).entity;
-        ancestors.push_back(current);
-    }
-
-    for (int i = ancestors.size() - 1; i >= 0; i--) {
-        Entity parent = ancestors[i];
-        auto parentLocation = components.GetComponent<LocationComponent>(parent);
-        auto parentRender = components.GetComponent<Render3DComponent>(parent);
-
-        worldTransform = glm::translate(worldTransform, parentLocation.position);
-        worldTransform = worldTransform * glm::toMat4(glm::quat(parentLocation.rotation));
-        worldTransform = glm::scale(worldTransform, parentRender.scale);
-    }
-
-    worldTransform = glm::translate(worldTransform, location.position);
-    worldTransform = worldTransform * glm::toMat4(glm::quat(location.rotation) * glm::quat(render.rotation));
-    worldTransform = glm::scale(worldTransform, render.scale);
-
-    return worldTransform;
 }
 
 } // namespace Engine

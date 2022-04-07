@@ -5,7 +5,6 @@
 #include "Render3DComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <vector>
@@ -31,7 +30,7 @@ void TerrainCollisionSystem::Update(ComponentManager &components) const {
         auto &render = components.GetComponent<Render3DComponent>(entity);
         auto renderModel = models.GetModel<InstancedModel>(render.model);
 
-        auto model = GetTransform(entity, components, render, location);
+        auto model = LocationComponent::getFullTransform(entity, components);
 
         std::vector<glm::vec3> vertices;
         for (auto &mesh : renderModel->meshes) {
@@ -51,18 +50,6 @@ void TerrainCollisionSystem::Update(ComponentManager &components) const {
 
         // coordinator.RemoveComponent<TerrainCollisionComponent>(entity);
     }
-}
-
-glm::mat4x4 TerrainCollisionSystem::GetTransform(Entity entity, ComponentManager &components,
-                                                 const Render3DComponent &render,
-                                                 const LocationComponent location) const {
-    glm::mat4 worldTransform(1);
-    worldTransform = glm::translate(worldTransform, location.getFullPosition(entity, components));
-    worldTransform = worldTransform *
-                     glm::toMat4(glm::quat(location.getFullRotation(entity, components)) * glm::quat(render.rotation));
-    worldTransform = glm::scale(worldTransform, render.getFullScale(entity, components));
-
-    return worldTransform;
 }
 
 } // namespace Engine

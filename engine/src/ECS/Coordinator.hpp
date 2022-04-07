@@ -83,6 +83,8 @@ class Coordinator {
         }
     }
 
+    ComponentManager &GetComponentManager() { return *m_ComponentManager; }
+
   private:
     std::unique_ptr<ComponentManager> m_ComponentManager;
     std::unique_ptr<EntityManager> m_EntityManager;
