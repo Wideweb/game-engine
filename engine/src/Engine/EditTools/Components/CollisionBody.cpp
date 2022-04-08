@@ -61,8 +61,6 @@ void CollisionBody::onAttach() {
     });
 }
 
-void CollisionBody::onUpdate() {}
-
 void CollisionBody::show() {
     auto &coordinator = toolsLayer().getCoordinator();
 

@@ -11,6 +11,7 @@
 #include "BehaviourComponent.hpp"
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
+#include "DestroyComponent.hpp"
 #include "DirectedLightComponent.hpp"
 #include "EditToolComponent.hpp"
 #include "LocationComponent.hpp"
@@ -30,6 +31,7 @@
 #include "BehaviourSystem.hpp"
 #include "CameraSystem.hpp"
 #include "CollisionSystem.hpp"
+#include "DestroySystem.hpp"
 #include "DirectedLightSystem.hpp"
 #include "MoveSystem.hpp"
 #include "ParentSystem.hpp"
@@ -63,6 +65,7 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<TagComponent>();
     m_Coordinator.RegisterComponent<ParentComponent>();
     m_Coordinator.RegisterComponent<EditToolComponent>();
+    m_Coordinator.RegisterComponent<DestroyComponent>();
 
     {
         Signature signature;
@@ -181,6 +184,13 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
 
         m_Coordinator.RegisterSystem<ParticlesSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<DestroyComponent>());
+
+        m_Coordinator.RegisterSystem<DestroySystem>(signature, m_Name);
     }
 }
 

@@ -19,7 +19,6 @@ class CollisionBody : public BaseView {
     CollisionBody(GameObjectModel &model);
 
     void onAttach() override;
-    void onUpdate() override;
 
     void onDraw(int x, int y) override;
 

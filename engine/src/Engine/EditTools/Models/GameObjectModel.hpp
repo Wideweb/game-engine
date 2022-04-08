@@ -3,6 +3,7 @@
 #include "Application.hpp"
 #include "BehaviourComponent.hpp"
 #include "CollisionComponent.hpp"
+#include "DestroyComponent.hpp"
 #include "DirectedLight.hpp"
 #include "DirectedLightComponent.hpp"
 #include "Entity.hpp"
@@ -716,6 +717,18 @@ class GameObjectModel {
         positionChange$.dispatch(localPosition());
         rotationChange$.dispatch(localRotation());
         scaleChange$.dispatch(scale(), scale());
+    }
+
+    void destroy() {
+        if (!coordinator().HasComponent<DestroyComponent>(m_Entity)) {
+            coordinator().AddComponent<DestroyComponent>(m_Entity, DestroyComponent());
+        }
+    }
+
+    void update() {
+        if (!coordinator().HasEntity(m_Entity)) {
+            m_Entity = c_NoEntity;
+        }
     }
 
   private:

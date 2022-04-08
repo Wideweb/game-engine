@@ -12,6 +12,7 @@
 #include "ContentBrowserPanel.hpp"
 #include "DirectedLightDirector.hpp"
 #include "DirectedLightPanel.hpp"
+#include "EditToolsEvent.hpp"
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
@@ -44,6 +45,8 @@ class EditToolsLayer : public Layer {
     ImguiImpl m_Imgui;
 
     glm::vec3 m_Pivot;
+
+    EditToolsEventPool m_EventPool;
 
     std::unique_ptr<TransformControlsPosition> m_TransformControlsPosition;
     std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;

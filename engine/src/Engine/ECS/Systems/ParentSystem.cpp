@@ -1,6 +1,7 @@
 #include "ParentSystem.hpp"
 
 #include "Application.hpp"
+#include "DestroyComponent.hpp"
 #include "ParentComponent.hpp"
 
 namespace Engine {
@@ -20,7 +21,8 @@ void ParentSystem::Update(ComponentManager &components) const {
     for (const auto entity : m_Entities) {
         auto &parent = components.GetComponent<ParentComponent>(entity);
 
-        if (parent.entity != c_NoEntity && !getCoordinator().HasEntity(parent.entity)) {
+        if (components.HasComponent<DestroyComponent>(parent.entity) ||
+            (parent.entity != c_NoEntity && !getCoordinator().HasEntity(parent.entity))) {
             m_ToRemove[toRemoveIndex++] = entity;
         }
 
@@ -44,7 +46,7 @@ void ParentSystem::Update(ComponentManager &components) const {
 void ParentSystem::RemoveNode(ComponentManager &components, Entity entity) const {
     auto &parent = components.GetComponent<ParentComponent>(entity);
     if (!parent.destroyWithParent) {
-        parent.setEntity(c_NoEntity);
+        getCoordinator().RemoveComponent<ParentComponent>(entity);
         return;
     }
 
@@ -56,7 +58,9 @@ void ParentSystem::RemoveNode(ComponentManager &components, Entity entity) const
         m_EntityChildren.erase(entity);
     }
 
-    getCoordinator().DestroyEntity(entity);
+    if (!components.HasComponent<DestroyComponent>(entity)) {
+        getCoordinator().AddComponent<DestroyComponent>(entity, DestroyComponent());
+    }
 }
 
 } // namespace Engine
