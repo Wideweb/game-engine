@@ -16,9 +16,8 @@
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
-#include "MaterialPanel.hpp"
 #include "MeshBody.hpp"
-#include "ModelTransformPanel.hpp"
+#include "ModelRenderPanel.hpp"
 #include "ParticlesPanel.hpp"
 #include "RenderPanel.hpp"
 #include "RigitBodyPanel.hpp"
@@ -52,13 +51,12 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;
     std::unique_ptr<TransformControlsScale> m_TransformControlsScale;
     std::unique_ptr<TransformPanel> m_TransformPanel;
-    std::unique_ptr<ModelTransformPanel> m_ModelTransformPanel;
+    std::unique_ptr<ModelRenderPanel> m_ModelRenderPanel;
     std::unique_ptr<DirectedLightPanel> m_DirectedLightPanel;
     std::unique_ptr<ParticlesPanel> m_ParticlesPanel;
     std::unique_ptr<SceneHierarchyPanel> m_SceneHierarchyPanel;
     std::unique_ptr<ContentBrowserPanel> m_ContentBrowserPanel;
     std::unique_ptr<SkyboxPanel> m_SkyboxPanel;
-    std::unique_ptr<MaterialPanel> m_MaterialPanel;
     std::unique_ptr<BehaviourPanel> m_BehaviourPanel;
     std::unique_ptr<CameraDirector> m_CameraDirector;
     std::unique_ptr<GamePanel> m_GamePanel;

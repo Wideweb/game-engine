@@ -51,7 +51,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/EditToolsLayer.cpp
     src/Engine/EditTools/Components/BaseView.cpp
     src/Engine/EditTools/Components/RenderPanel.cpp
-    src/Engine/EditTools/Components/ModelTransformPanel.cpp
+    src/Engine/EditTools/Components/ModelRenderPanel.cpp
     src/Engine/EditTools/Components/TransformPanel.cpp
     src/Engine/EditTools/Components/TransformControlsPosition.cpp
     src/Engine/EditTools/Components/TransformControlsRotation.cpp
@@ -60,7 +60,6 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/ParticlesPanel.cpp
     src/Engine/EditTools/Components/SceneHierarchyPanel.cpp
     src/Engine/EditTools/Components/ContentBrowserPanel.cpp
-    src/Engine/EditTools/Components/MaterialPanel.cpp
     src/Engine/EditTools/Components/BehaviourPanel.cpp
     src/Engine/EditTools/Components/CameraDirector.cpp
     src/Engine/EditTools/Components/GamePanel.cpp

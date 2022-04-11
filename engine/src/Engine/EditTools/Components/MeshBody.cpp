@@ -58,10 +58,21 @@ void MeshBody::onAttach() {
 void MeshBody::onUpdate() {}
 
 void MeshBody::show() {
+    if (m_Render.model.empty()) {
+        return;
+    }
+
     auto &coordinator = gameLayer().getCoordinator();
 
-    if (!coordinator.HasComponent<Render3DComponent>(m_MeshBody) && !m_Render.model.empty()) {
+    if (!coordinator.HasComponent<Render3DComponent>(m_MeshBody)) {
         coordinator.AddComponent(m_MeshBody, m_Render);
+    } else if (!coordinator.IsComponentActive<Render3DComponent>(m_MeshBody)) {
+        coordinator.SetComponentActive<Render3DComponent>(m_MeshBody, true);
+    }
+
+    if (coordinator.HasComponent<ParentComponent>(m_MeshBody) &&
+        !coordinator.IsComponentActive<ParentComponent>(m_MeshBody)) {
+        coordinator.SetComponentActive<ParentComponent>(m_MeshBody, true);
     }
 
     BaseView::show();
@@ -81,13 +92,11 @@ void MeshBody::hide() {
 
     if (coordinator.HasComponent<Render3DComponent>(m_MeshBody)) {
         m_Render = coordinator.GetComponent<Render3DComponent>(m_MeshBody);
-        m_Render.model = "";
-        m_Render.instanced = false;
-        coordinator.RemoveComponent<Render3DComponent>(m_MeshBody);
+        coordinator.SetComponentActive<Render3DComponent>(m_MeshBody, false);
     }
 
     if (coordinator.HasComponent<ParentComponent>(m_MeshBody)) {
-        coordinator.RemoveComponent<ParentComponent>(m_MeshBody);
+        coordinator.SetComponentActive<ParentComponent>(m_MeshBody, false);
     }
 
     BaseView::hide();

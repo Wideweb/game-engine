@@ -60,6 +60,20 @@ class Coordinator {
         m_SystemManager->EntitySignatureChanged(entity, signature);
     }
 
+    template <typename T> void SetComponentActive(Entity entity, bool isActive) {
+        auto signature = m_EntityManager->GetSignature(entity);
+        signature.set(m_ComponentManager->GetComponentType<T>(), isActive);
+        m_EntityManager->SetSignature(entity, signature);
+
+        m_SystemManager->EntitySignatureChanged(entity, signature);
+
+        m_ComponentManager->GetComponentArray<T>()->active$.dispatch(entity, isActive);
+    }
+
+    template <typename T> bool IsComponentActive(Entity entity) {
+        return m_EntityManager->GetSignature(entity).test(m_ComponentManager->GetComponentType<T>());
+    }
+
     template <typename T> T &GetComponent(Entity entity) { return m_ComponentManager->GetComponent<T>(entity); }
 
     template <typename T> bool HasComponent(Entity entity) { return m_ComponentManager->HasComponent<T>(entity); }

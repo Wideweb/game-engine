@@ -9,19 +9,28 @@
 
 namespace Engine {
 
+void Render3DSystem::OnRemoveComponent(Entity entity) const {
+    auto &scene = getScene();
+    auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
+
+    if (!render.instanced) {
+        return;
+    }
+
+    if (render.overlay()) {
+        scene.removeOverlayObject(entity, render.model);
+    } else {
+        scene.removeObject(entity, render.model);
+    }
+    render.instanced = false;
+}
+
 void Render3DSystem::Attach(ComponentManager &components) const {
-    components.GetComponentArray<Render3DComponent>()->beforeRemove$.addEventCallback([this](Entity entity) {
-        auto &scene = getScene();
-        auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
-
-        if (!render.instanced) {
-            return;
-        }
-
-        if (render.overlay()) {
-            scene.removeOverlayObject(entity, render.model);
-        } else {
-            scene.removeObject(entity, render.model);
+    const auto cmpArray = components.GetComponentArray<Render3DComponent>();
+    cmpArray->beforeRemove$.addEventCallback([this](Entity entity) { OnRemoveComponent(entity); });
+    cmpArray->active$.addEventCallback([this](Entity entity, bool isActive) {
+        if (!isActive) {
+            OnRemoveComponent(entity);
         }
     });
 }

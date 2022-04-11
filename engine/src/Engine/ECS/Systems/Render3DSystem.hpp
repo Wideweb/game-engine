@@ -16,6 +16,9 @@ class Render3DSystem : public BaseSystem {
 
     virtual void Attach(ComponentManager &components) const override;
     virtual void Update(ComponentManager &components) const override;
+
+  private:
+    void OnRemoveComponent(Entity entity) const;
 };
 
 } // namespace Engine

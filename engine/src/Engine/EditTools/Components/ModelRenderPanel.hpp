@@ -5,12 +5,12 @@
 
 namespace Engine {
 
-class ModelTransformPanel : public BaseView {
+class ModelRenderPanel : public BaseView {
   private:
     GameObjectModel &m_Model;
 
   public:
-    ModelTransformPanel(GameObjectModel &model);
+    ModelRenderPanel(GameObjectModel &model);
 
     void onDraw(int x, int y) override;
 };

@@ -1,29 +1,43 @@
-#include "MaterialPanel.hpp"
+#include "ModelRenderPanel.hpp"
 
 #include "Configs.hpp"
 #include "File.hpp"
 #include "ImGuiWidgets.hpp"
+#include "Render3DComponent.hpp"
 #include "Texture.hpp"
 #include "TextureLoader.hpp"
 
 #include "imgui/imgui.h"
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec3.hpp>
+
 #include <filesystem>
 #include <memory>
 
 namespace Engine {
 
-MaterialPanel::MaterialPanel(GameObjectModel &model) : m_Model(model) {}
+ModelRenderPanel::ModelRenderPanel(GameObjectModel &model) : m_Model(model) {}
 
-void MaterialPanel::onDraw(int x, int y) {
+void ModelRenderPanel::onDraw(int x, int y) {
+    auto &coordinator = gameLayer().getCoordinator();
+
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Material", expanded);
+    bool prevToggle = gameLayer().getCoordinator().IsComponentActive<Render3DComponent>(m_Model.entity());
+    bool toggle = prevToggle;
+    ImGuiWidgets::ToggledCollapse("Model Render", expanded, toggle);
+    if (prevToggle != toggle) {
+        coordinator.SetComponentActive<Render3DComponent>(m_Model.entity(), toggle);
+    }
+
     if (!expanded) {
         return;
     }
 
     ImGui::PushItemWidth(120.0f);
-
     float padding = 10.0f;
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::Text("Material");
 
     {
         float prevShininess = m_Model.material().shininess;
@@ -96,8 +110,64 @@ void MaterialPanel::onDraw(int x, int y) {
         }
     }
 
+    {
+        glm::vec3 prevRotation = m_Model.renderRotation();
+        glm::vec3 rotation = prevRotation;
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::Text("Rotation: ");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##renderRotationX", &rotation.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##renderRotationY", &rotation.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##renderRotationZ", &rotation.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
+
+        if (rotation != prevRotation) {
+            m_Model.renderRotation(rotation);
+        }
+    }
+
+    {
+        glm::vec3 prevScale = m_Model.renderScale();
+        glm::vec3 scale = prevScale;
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::Text("Scale: ");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##renderScaleX", &scale.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##renderScaleY", &scale.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
+        ImGuiWidgets::PaddingLeft(padding);
+        ImGui::InputFloat("##renderScaleZ", &scale.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
+
+        if (scale != prevScale) {
+            m_Model.renderScale(scale);
+        }
+    }
+
     ImGui::PopItemWidth();
     ImGui::NewLine();
+
+    // ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
 
 } // namespace Engine

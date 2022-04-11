@@ -17,6 +17,7 @@ class IComponentArray {
 template <typename T> class ComponentArray : public IComponentArray {
   public:
     EventDispatcher<Entity> beforeRemove$;
+    EventDispatcher<Entity, bool> active$;
 
     void Add(Entity entity, T component) { m_Components.add(entity, component); }
 
