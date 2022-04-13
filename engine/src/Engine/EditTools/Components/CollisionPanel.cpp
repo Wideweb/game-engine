@@ -36,16 +36,22 @@ void CollisionPanel::onUpdate() {
         auto next = StaticCollisionComponent();
         next.vertices = current.vertices;
 
+        bool isActive = coordinator.IsComponentActive<CollisionComponent>(entity);
+
         coordinator.RemoveComponent<CollisionComponent>(entity);
         coordinator.AddComponent<StaticCollisionComponent>(entity, next);
+        coordinator.SetComponentActive<StaticCollisionComponent>(entity, isActive);
 
     } else if (!m_Static && coordinator.HasComponent<StaticCollisionComponent>(entity)) {
         auto &current = coordinator.GetComponent<StaticCollisionComponent>(entity);
         auto next = CollisionComponent();
         next.vertices = current.vertices;
 
+        bool isActive = coordinator.IsComponentActive<StaticCollisionComponent>(entity);
+
         coordinator.RemoveComponent<StaticCollisionComponent>(entity);
         coordinator.AddComponent<CollisionComponent>(entity, next);
+        coordinator.SetComponentActive<CollisionComponent>(entity, isActive);
     }
 
     std::vector<glm::vec3> vertices = m_Model.collisionBox();
@@ -67,7 +73,14 @@ void CollisionPanel::onUpdate() {
 
 void CollisionPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Box Collider", expanded);
+    if (m_Static) {
+        ImGuiWidgets::ComponentPanel<StaticCollisionComponent>("Box Collider", expanded, m_Model.entity(),
+                                                               gameLayer().getCoordinator(), true);
+    } else {
+        ImGuiWidgets::ComponentPanel<CollisionComponent>("Box Collider", expanded, m_Model.entity(),
+                                                         gameLayer().getCoordinator(), true);
+    }
+
     if (!expanded) {
         return;
     }

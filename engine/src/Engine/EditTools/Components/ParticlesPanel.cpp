@@ -1,6 +1,7 @@
 #include "ParticlesPanel.hpp"
 
 #include "ImGuiWidgets.hpp"
+#include "ParticlesComponent.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -29,7 +30,8 @@ void ParticlesPanel::onDraw(int x, int y) {
     // bool looped = true;
 
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Particles", expanded);
+    ImGuiWidgets::ComponentPanel<ParticlesComponent>("Particles", expanded, m_Model.entity(),
+                                                     gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

@@ -1,6 +1,7 @@
 #include "VelocityPanel.hpp"
 
 #include "ImGuiWidgets.hpp"
+#include "VelocityComponent.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/vec3.hpp>
@@ -11,7 +12,8 @@ VelocityPanel::VelocityPanel(GameObjectModel &model) : m_Model(model) {}
 
 void VelocityPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Velocity", expanded);
+    ImGuiWidgets::ComponentPanel<VelocityComponent>("Velocity", expanded, m_Model.entity(),
+                                                    gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

@@ -15,7 +15,8 @@ BehaviourPanel::BehaviourPanel(GameObjectModel &model) : m_Model(model) {}
 
 void BehaviourPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Behaviour", expanded);
+    ImGuiWidgets::ComponentPanel<BehaviourComponent>("Behaviour", expanded, m_Model.entity(),
+                                                    gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

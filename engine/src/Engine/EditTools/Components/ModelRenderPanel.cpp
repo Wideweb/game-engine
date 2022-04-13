@@ -19,16 +19,9 @@ namespace Engine {
 ModelRenderPanel::ModelRenderPanel(GameObjectModel &model) : m_Model(model) {}
 
 void ModelRenderPanel::onDraw(int x, int y) {
-    auto &coordinator = gameLayer().getCoordinator();
-
     static bool expanded = false;
-    bool prevToggle = gameLayer().getCoordinator().IsComponentActive<Render3DComponent>(m_Model.entity());
-    bool toggle = prevToggle;
-    ImGuiWidgets::ToggledCollapse("Model Render", expanded, toggle);
-    if (prevToggle != toggle) {
-        coordinator.SetComponentActive<Render3DComponent>(m_Model.entity(), toggle);
-    }
-
+    ImGuiWidgets::ComponentPanel<Render3DComponent>("Model Render", expanded, m_Model.entity(),
+                                                    gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

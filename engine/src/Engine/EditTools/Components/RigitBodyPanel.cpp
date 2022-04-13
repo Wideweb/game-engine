@@ -1,6 +1,7 @@
 #include "RigitBodyPanel.hpp"
 
 #include "ImGuiWidgets.hpp"
+#include "PhysicsComponent.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -11,7 +12,8 @@ RigitBodyPanel::RigitBodyPanel(GameObjectModel &model) : m_Model(model) {}
 
 void RigitBodyPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Rigitbody", expanded);
+    ImGuiWidgets::ComponentPanel<PhysicsComponent>("Rigitbody", expanded, m_Model.entity(),
+                                                   gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

@@ -1,6 +1,7 @@
 #include "SkeletPanel.hpp"
 
 #include "ImGuiWidgets.hpp"
+#include "SkeletComponent.hpp"
 
 #include "Application.hpp"
 #include "SkinnedModel.hpp"
@@ -17,7 +18,8 @@ void SkeletPanel::onUpdate() {}
 
 void SkeletPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Skelet", expanded);
+    ImGuiWidgets::ComponentPanel<SkeletComponent>("Skelet", expanded, m_Model.entity(), gameLayer().getCoordinator(),
+                                                  true);
     if (!expanded) {
         return;
     }

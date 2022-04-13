@@ -8,12 +8,21 @@
 
 namespace Engine {
 
-void ParticlesSystem::Attach(ComponentManager &components) const {
-    components.GetComponentArray<ParticlesComponent>()->beforeRemove$.addEventCallback([this](Entity entity) {
-        auto &scene = getScene();
-        auto &particles = getCoordinator().GetComponent<ParticlesComponent>(entity);
+void ParticlesSystem::OnRemoveComponent(Entity entity) const {
+    auto &scene = getScene();
+    auto &particles = getCoordinator().GetComponent<ParticlesComponent>(entity);
 
-        scene.removeParticlesEmitter(entity);
+    scene.removeParticlesEmitter(entity);
+    particles.instanced = false;
+}
+
+void ParticlesSystem::Attach(ComponentManager &components) const {
+    const auto cmpArray = components.GetComponentArray<ParticlesComponent>();
+    cmpArray->beforeRemove$.addEventCallback([this](Entity entity) { OnRemoveComponent(entity); });
+    cmpArray->active$.addEventCallback([this](Entity entity, bool isActive) {
+        if (!isActive) {
+            OnRemoveComponent(entity);
+        }
     });
 }
 

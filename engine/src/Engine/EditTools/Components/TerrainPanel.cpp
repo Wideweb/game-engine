@@ -128,7 +128,8 @@ void TerrainPanel::onUpdate() {
 
 void TerrainPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Terrain", expanded);
+    ImGuiWidgets::ComponentPanel<TerrainCollisionComponent>("Terrain", expanded, m_Model.entity(),
+                                                            gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

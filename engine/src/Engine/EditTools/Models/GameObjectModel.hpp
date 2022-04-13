@@ -543,6 +543,8 @@ class GameObjectModel {
 
     bool hasMaterial() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
 
+    bool isMaterialActive() { return coordinator().IsComponentActive<Render3DComponent>(m_Entity); }
+
     const Material &material() {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
@@ -630,9 +632,16 @@ class GameObjectModel {
 
     bool hasTerrainCollision() { return coordinator().HasComponent<TerrainCollisionComponent>(m_Entity); }
 
+    bool isTerrainCollisionActive() { return coordinator().IsComponentActive<TerrainCollisionComponent>(m_Entity); }
+
     bool hasCollision() {
         return coordinator().HasComponent<StaticCollisionComponent>(m_Entity) ||
                coordinator().HasComponent<CollisionComponent>(m_Entity);
+    }
+
+    bool isCollisionActive() {
+        return coordinator().IsComponentActive<StaticCollisionComponent>(m_Entity) ||
+               coordinator().IsComponentActive<CollisionComponent>(m_Entity);
     }
 
     std::vector<glm::vec3> collisionBox() {

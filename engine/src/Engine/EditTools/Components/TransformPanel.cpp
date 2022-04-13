@@ -1,6 +1,7 @@
 #include "TransformPanel.hpp"
 
 #include "ImGuiWidgets.hpp"
+#include "LocationComponent.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -14,7 +15,8 @@ TransformPanel::TransformPanel(GameObjectModel &model) : m_Model(model) {}
 
 void TransformPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Transform", expanded);
+    ImGuiWidgets::ComponentPanel<LocationComponent>("Transform", expanded, m_Model.entity(),
+                                                    gameLayer().getCoordinator());
     if (!expanded) {
         return;
     }
@@ -95,7 +97,6 @@ void TransformPanel::onDraw(int x, int y) {
             m_Model.localRotation(rotation);
         }
     }
-
 
     {
         glm::vec3 prevScale = m_Model.scale();

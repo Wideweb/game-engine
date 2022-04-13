@@ -11,7 +11,6 @@ class CollisionBody : public BaseView {
   private:
     Entity m_CollisionBody;
     GameObjectModel &m_Model;
-    Render3DComponent m_Render;
 
     std::shared_ptr<Shader> m_Shader;
 

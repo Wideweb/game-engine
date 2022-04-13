@@ -1,5 +1,6 @@
 #include "DirectedLightPanel.hpp"
 
+#include "DirectedLightComponent.hpp"
 #include "ImGuiWidgets.hpp"
 
 #include "imgui/imgui.h"
@@ -11,7 +12,8 @@ DirectedLightPanel::DirectedLightPanel(GameObjectModel &model) : m_Model(model) 
 
 void DirectedLightPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::Collapse("Directed Light", expanded);
+    ImGuiWidgets::ComponentPanel<DirectedLightComponent>("Directed Light", expanded, m_Model.entity(),
+                                                         gameLayer().getCoordinator(), true);
     if (!expanded) {
         return;
     }

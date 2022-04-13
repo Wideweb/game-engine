@@ -25,25 +25,22 @@ void CollisionBody::onAttach() {
     coordinator.AddComponent(collisionBody, LocationComponent());
     m_CollisionBody = collisionBody;
 
-    m_Render = Render3DComponent("collision-body", 1.0f, true);
-    m_Render.shader = m_Shader;
+    auto render = Render3DComponent("collision-body", 1.0f, true);
+    render.shader = m_Shader;
+    coordinator.AddComponent(m_CollisionBody, render);
 
     m_Model.positionChange$.addEventCallback([this, &coordinator](glm::vec3 position) {
         auto &location = coordinator.GetComponent<LocationComponent>(m_CollisionBody);
         location.position = m_Model.position();
 
-        if (coordinator.HasComponent<Render3DComponent>(m_CollisionBody)) {
-            coordinator.GetComponent<Render3DComponent>(m_CollisionBody).updated = true;
-        }
+        coordinator.GetComponent<Render3DComponent>(m_CollisionBody).updated = true;
     });
 
     m_Model.rotationChange$.addEventCallback([this, &coordinator](glm::vec3 rotation) {
         auto &location = coordinator.GetComponent<LocationComponent>(m_CollisionBody);
         location.rotation = m_Model.rotation();
 
-        if (coordinator.HasComponent<Render3DComponent>(m_CollisionBody)) {
-            coordinator.GetComponent<Render3DComponent>(m_CollisionBody).updated = true;
-        }
+        coordinator.GetComponent<Render3DComponent>(m_CollisionBody).updated = true;
     });
 
     m_Model.collisionChange$.addEventCallback([this, &coordinator](const std::vector<glm::vec3> &vertices) {
@@ -51,22 +48,16 @@ void CollisionBody::onAttach() {
         float height = std::abs(vertices[0].y);
         float depth = std::abs(vertices[0].z);
 
-        if (coordinator.HasComponent<Render3DComponent>(m_CollisionBody)) {
-            auto &render = coordinator.GetComponent<Render3DComponent>(m_CollisionBody);
-            render.scale = glm::vec3(width, height, depth);
-            render.updated = true;
-        } else {
-            m_Render.scale = glm::vec3(width, height, depth);
-        }
+        auto &render = coordinator.GetComponent<Render3DComponent>(m_CollisionBody);
+        render.scale = glm::vec3(width, height, depth);
+        render.updated = true;
     });
 }
 
 void CollisionBody::show() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    if (!coordinator.HasComponent<Render3DComponent>(m_CollisionBody)) {
-        coordinator.AddComponent(m_CollisionBody, m_Render);
-    }
+    coordinator.SetComponentActive<Render3DComponent>(m_CollisionBody, true);
 
     BaseView::show();
 }
@@ -83,11 +74,7 @@ void CollisionBody::onDraw(int x, int y) {
 void CollisionBody::hide() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    if (coordinator.HasComponent<Render3DComponent>(m_CollisionBody)) {
-        m_Render = coordinator.GetComponent<Render3DComponent>(m_CollisionBody);
-        m_Render.instanced = false;
-        coordinator.RemoveComponent<Render3DComponent>(m_CollisionBody);
-    }
+    coordinator.SetComponentActive<Render3DComponent>(m_CollisionBody, false);
 
     BaseView::hide();
 }

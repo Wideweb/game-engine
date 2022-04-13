@@ -9,9 +9,25 @@
 
 namespace Engine {
 
+void StaticCollisionSystem::OnRemoveComponent(Entity entity) const {
+    auto &collision = getCoordinator().GetComponent<StaticCollisionComponent>(entity);
+
+    if (!collision.added) {
+        return;
+    }
+
+    getCollision().DestroyShape(entity);
+    collision.added = false;
+}
+
 void StaticCollisionSystem::Attach(ComponentManager &components) const {
-    components.GetComponentArray<StaticCollisionComponent>()->beforeRemove$.addEventCallback(
-        [this](Entity entity) { getCollision().DestroyShape(entity); });
+    const auto cmpArray = components.GetComponentArray<StaticCollisionComponent>();
+    cmpArray->beforeRemove$.addEventCallback([this](Entity entity) { OnRemoveComponent(entity); });
+    cmpArray->active$.addEventCallback([this](Entity entity, bool isActive) {
+        if (!isActive) {
+            OnRemoveComponent(entity);
+        }
+    });
 }
 
 void StaticCollisionSystem::Update(ComponentManager &components) const {

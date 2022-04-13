@@ -278,14 +278,14 @@ void EditToolsLayer::onUpdate() {
         m_TransformPanel->hide();
     }
 
-    if (m_GameObject.isActive() && m_GameObject.hasMaterial()) {
+    if (m_GameObject.isActive() && m_GameObject.hasMaterial() && m_GameObject.isMaterialActive()) {
         m_MeshBody->show();
         m_MeshBody->onUpdate();
     } else {
         m_MeshBody->hide();
     }
 
-    if (m_GameObject.isActive() && m_GameObject.hasTerrainCollision()) {
+    if (m_GameObject.isActive() && m_GameObject.hasTerrainCollision() && m_GameObject.isTerrainCollisionActive()) {
         m_TerrainTransform->show();
         m_TerrainTransform->onUpdate();
     } else {
@@ -320,7 +320,7 @@ void EditToolsLayer::onUpdate() {
         m_TransformControlsScale->hide();
     }
 
-    if (m_GameObject.isActive() && (m_GameObject.hasCollision())) {
+    if (m_GameObject.isActive() && m_GameObject.hasCollision() && m_GameObject.isCollisionActive()) {
         m_CollisionBody->show();
         m_CollisionBody->onUpdate();
     } else {
