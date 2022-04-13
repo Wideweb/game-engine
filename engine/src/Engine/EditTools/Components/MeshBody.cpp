@@ -29,7 +29,7 @@ void MeshBody::onAttach() {
     m_MeshBody = coordinator.CreateEntity("mesh-body");
     coordinator.AddComponent(m_MeshBody, LocationComponent());
     coordinator.AddComponent(m_MeshBody, EditToolComponent());
-    coordinator.AddComponent(m_MeshBody, ParentComponent());
+    coordinator.AddComponent(m_MeshBody, ParentComponent(c_NoEntity, false));
 
     auto render = Render3DComponent("", 1.0f, true);
     render.shader = m_Shader;

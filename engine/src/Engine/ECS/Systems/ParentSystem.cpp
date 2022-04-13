@@ -46,7 +46,6 @@ void ParentSystem::Update(ComponentManager &components) const {
 void ParentSystem::RemoveNode(ComponentManager &components, Entity entity) const {
     auto &parent = components.GetComponent<ParentComponent>(entity);
     if (!parent.destroyWithParent) {
-        getCoordinator().RemoveComponent<ParentComponent>(entity);
         return;
     }
 
