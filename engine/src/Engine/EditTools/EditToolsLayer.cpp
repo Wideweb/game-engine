@@ -494,6 +494,10 @@ void EditToolsLayer::onDraw() {
         m_ModelRenderPanel->onDraw(0, 0);
     }
 
+    if (m_SkeletPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasSkelet()) {
+        m_SkeletPanel->onDraw(0, 250);
+    }
+
     if (m_CollisionPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasCollision()) {
         m_CollisionPanel->onDraw(0, 0);
     }
@@ -510,10 +514,6 @@ void EditToolsLayer::onDraw() {
         m_BehaviourPanel->onDraw(0, 250);
     }
 
-    if (m_SkeletPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasSkelet()) {
-        m_SkeletPanel->onDraw(0, 250);
-    }
-
     if (m_ParticlesPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasParticles()) {
         m_ParticlesPanel->onDraw(0, 450);
     }
@@ -522,6 +522,7 @@ void EditToolsLayer::onDraw() {
         m_DirectedLightPanel->onDraw(0, 0);
     }
 
+    ImGui::NewLine();
     ImGui::End();
 
     m_Imgui.End();

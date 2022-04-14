@@ -12,10 +12,11 @@ static void PaddingLeft(float value) { ImGui::SetCursorPosX(ImGui::GetCursorPosX
 static void PaddingTop(float value) { ImGui::SetCursorPosY(ImGui::GetCursorPosY() + value); }
 
 template <typename TComponent>
-static void ComponentPanel(std::string label, bool &expanded, Entity entity, Coordinator &coordinator,
+static bool ComponentPanel(std::string label, bool &expanded, Entity entity, Coordinator &coordinator,
                            bool canBeToggled = false) {
     bool prevToggle = coordinator.IsComponentActive<TComponent>(entity);
     bool toggle = prevToggle;
+    bool removed = false;
 
     std::string id = (std::string("##") + label);
 
@@ -38,15 +39,21 @@ static void ComponentPanel(std::string label, bool &expanded, Entity entity, Coo
         ImGui::SameLine();
         ImGuiWidgets::PaddingLeft(-5.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {.5f, .5f});
+        std::string deleteButtonId = id + "x";
+        ImGui::PushID(deleteButtonId.c_str());
         if (ImGui::Button("x", {20.0f, 20.0f})) {
             coordinator.RemoveComponent<TComponent>(entity);
+            removed = true;
         }
+        ImGui::PopID();
         ImGui::PopStyleVar();
     }
 
     if (prevToggle != toggle) {
         coordinator.SetComponentActive<TComponent>(entity, toggle);
     }
+
+    return expanded && !removed;
 }
 
 } // namespace Engine::ImGuiWidgets

@@ -18,19 +18,18 @@ void SkeletPanel::onUpdate() {}
 
 void SkeletPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::ComponentPanel<SkeletComponent>("Skelet", expanded, m_Model.entity(), gameLayer().getCoordinator(),
-                                                  true);
-    if (!expanded) {
+    if (!ImGuiWidgets::ComponentPanel<SkeletComponent>("Skelet", expanded, m_Model.entity(),
+                                                       gameLayer().getCoordinator(), true)) {
         return;
     }
 
-    ImGui::PushItemWidth(120.0f);
     float padding = 10.0f;
 
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::Text("Animation");
 
     ImGuiWidgets::PaddingLeft(padding);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - padding);
     if (ImGui::BeginCombo("##SkeletAnimation", m_Model.animation().c_str())) {
 
         const auto &model = Application::get().getModels().GetModel<SkinnedModel>(m_Model.model());

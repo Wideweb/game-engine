@@ -25,16 +25,18 @@ void ModelRenderPanel::onDraw(int x, int y) {
     auto &render = m_Model.render();
 
     static bool expanded = false;
-    ImGuiWidgets::ComponentPanel<Render3DComponent>("3D Model", expanded, m_Model.entity(), coordinator, true);
-    if (!expanded) {
+    if (!ImGuiWidgets::ComponentPanel<Render3DComponent>("3D Model", expanded, m_Model.entity(), coordinator, true)) {
         return;
     }
 
-    ImGui::PushItemWidth(120.0f);
     float padding = 10.0f;
 
     ImGuiWidgets::PaddingLeft(padding);
-    if (ImGui::BeginCombo("Model", render.model.c_str())) {
+    ImGui::Text("Model");
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - padding);
+    if (ImGui::BeginCombo("##ModelRender_model", render.model.c_str())) {
         const auto &models = Application::get().getModels().keys();
         for (const auto &model : models) {
             bool isSelected = model == render.model;
@@ -44,6 +46,8 @@ void ModelRenderPanel::onDraw(int x, int y) {
         }
         ImGui::EndCombo();
     }
+
+    ImGui::PushItemWidth(120.0f);
 
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
@@ -149,17 +153,17 @@ void ModelRenderPanel::onDraw(int x, int y) {
             ImGui::Text("Rotation: ");
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("##renderRotationX", &rotation.x, 0.1f, 0.01f);
+            ImGui::InputFloat("##ModelRender_rotationX", &rotation.x, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("X");
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("##renderRotationY", &rotation.y, 0.1f, 0.01f);
+            ImGui::InputFloat("##ModelRender_rotationY", &rotation.y, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Y");
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("##renderRotationZ", &rotation.z, 0.1f, 0.01f);
+            ImGui::InputFloat("##ModelRender_rotationZ", &rotation.z, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Z");
 
@@ -176,17 +180,17 @@ void ModelRenderPanel::onDraw(int x, int y) {
             ImGui::Text("Scale: ");
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("##renderScaleX", &scale.x, 0.1f, 0.01f);
+            ImGui::InputFloat("##ModelRender_scaleX", &scale.x, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("X");
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("##renderScaleY", &scale.y, 0.1f, 0.01f);
+            ImGui::InputFloat("##ModelRender_scaleY", &scale.y, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Y");
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("##renderScaleZ", &scale.z, 0.1f, 0.01f);
+            ImGui::InputFloat("##ModelRender_scaleZ", &scale.z, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Z");
 

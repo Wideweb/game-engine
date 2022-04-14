@@ -9,6 +9,7 @@
 #include "FlatDictionary.hpp"
 #include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
+#include "SkeletComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -61,6 +62,10 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
 
         if (!coordinator.HasComponent<Render3DComponent>(entity) && ImGui::MenuItem("Add 3D Model")) {
             coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent());
+        }
+
+        if (!coordinator.HasComponent<SkeletComponent>(entity) && ImGui::MenuItem("Add Skelet Animation")) {
+            coordinator.AddComponent<SkeletComponent>(entity, SkeletComponent());
         }
 
         if (!coordinator.HasComponent<PhysicsComponent>(entity) && ImGui::MenuItem("Add Rigitbody")) {
