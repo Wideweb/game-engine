@@ -312,6 +312,19 @@ void ImguiImpl::Begin() {
     }
 
     if (ImGui::BeginPopupContextWindow()) {
+        if (ImGui::MenuItem("Create Empty")) {
+            std::string name;
+            size_t index = coordinator().GetEntities().size();
+            do {
+                name = std::string("entity") + std::to_string(index);
+                index++;
+            } while (coordinator().HasEntity(name));
+            auto entity = coordinator().CreateEntity(name);
+
+            coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
+            coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
+        }
+
         if (ImGui::MenuItem("Add Box")) {
             std::string model = "primitive-box";
             auto &models = Application::get().getModels();

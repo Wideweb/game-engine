@@ -98,7 +98,7 @@ void TerrainTransform::show() {
     const auto terrainRender = coordinator.GetComponent<Render3DComponent>(m_Model.entity());
     if (coordinator.HasComponent<Render3DComponent>(m_Brush)) {
         auto &brushRender = coordinator.GetComponent<Render3DComponent>(m_Brush);
-        brushRender.model = terrainRender.model;
+        brushRender.setModel(terrainRender.model);
     } else {
         auto brushRender = Render3DComponent(terrainRender.model, 1.0, true);
         brushRender.shader = m_Shader;

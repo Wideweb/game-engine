@@ -28,7 +28,10 @@ void SkeletPanel::onDraw(int x, int y) {
     float padding = 10.0f;
 
     ImGuiWidgets::PaddingLeft(padding);
-    if (ImGui::BeginCombo("animation", m_Model.animation().c_str())) {
+    ImGui::Text("Animation");
+
+    ImGuiWidgets::PaddingLeft(padding);
+    if (ImGui::BeginCombo("##SkeletAnimation", m_Model.animation().c_str())) {
 
         const auto &model = Application::get().getModels().GetModel<SkinnedModel>(m_Model.model());
         for (auto &[key, value] : model->skelet.animations) {

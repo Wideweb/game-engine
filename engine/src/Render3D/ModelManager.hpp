@@ -1,55 +1,42 @@
 #pragma once
 
-#include <map>
 #include <memory>
 #include <type_traits>
 #include <vector>
 
+#include "FlatDictionary.hpp"
 #include "Model.hpp"
 
 namespace Engine {
 
 class ModelManager {
   public:
-    void RegisterModel(const std::string &name, const std::shared_ptr<Model> &model) {
-        m_Models.push_back(model);
-        m_NameToModel[name] = model;
-    }
+    void RegisterModel(const std::string &name, const std::shared_ptr<Model> &model) { m_Data.add(name, model); }
 
     std::shared_ptr<Model> GetModel(const std::string &name) const {
-        const auto &it = m_NameToModel.find(name);
-
-        assert(it != m_NameToModel.end() && "no model.");
-
-        return it->second;
+        assert(m_Data.hasKey(name) && "no model.");
+        return m_Data[name];
     }
 
     template <typename TModel, typename = std::enable_if_t<std::is_base_of_v<Model, TModel>>>
     std::shared_ptr<TModel> GetModel(const std::string &name) const {
-        const auto &it = m_NameToModel.find(name);
-
-        assert(it != m_NameToModel.end() && "no model.");
-
-        return std::static_pointer_cast<TModel>(it->second);
+        assert(m_Data.hasKey(name) && "no model.");
+        return std::static_pointer_cast<TModel>(m_Data[name]);
     }
 
     template <typename TModel, typename = std::enable_if_t<std::is_base_of_v<Model, TModel>>>
     bool Is(const std::string &name) const {
-        const auto &it = m_NameToModel.find(name);
+        assert(m_Data.hasKey(name) && "no model.");
 
-        assert(it != m_NameToModel.end() && "no model.");
-
-        return typeid(TModel).name() == typeid(*(it->second)).name();
+        return typeid(TModel).name() == typeid(*(m_Data[name])).name();
     }
 
-    bool HasModel(const std::string &name) const {
-        const auto &it = m_NameToModel.find(name);
-        return it != m_NameToModel.end();
-    }
+    bool HasModel(const std::string &name) const { return m_Data.hasKey(name); }
+
+    const std::vector<std::string> &keys() { return m_Data.keys(); }
 
   private:
-    std::vector<std::shared_ptr<Model>> m_Models;
-    std::unordered_map<std::string, std::shared_ptr<Model>> m_NameToModel;
+    FlatDictionary<std::string, std::shared_ptr<Model>> m_Data;
 };
 
 } // namespace Engine

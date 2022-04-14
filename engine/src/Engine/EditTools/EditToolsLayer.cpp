@@ -278,7 +278,7 @@ void EditToolsLayer::onUpdate() {
         m_TransformPanel->hide();
     }
 
-    if (m_GameObject.isActive() && m_GameObject.hasMaterial() && m_GameObject.isMaterialActive()) {
+    if (m_GameObject.isActive() && m_GameObject.hasRender() && m_GameObject.isRenderActive()) {
         m_MeshBody->show();
         m_MeshBody->onUpdate();
     } else {
@@ -348,7 +348,7 @@ void EditToolsLayer::onUpdate() {
         m_VelocityPanel->hide();
     }
 
-    if (m_GameObject.isActive() && m_GameObject.hasMaterial()) {
+    if (m_GameObject.isActive() && m_GameObject.hasRender()) {
         m_ModelRenderPanel->show();
         m_ModelRenderPanel->onUpdate();
     } else {
@@ -461,7 +461,7 @@ void EditToolsLayer::onDraw() {
         m_TerrainTransform->onDraw(0, 0);
     }
 
-    if (m_MeshBody->isVisible() && m_GameObject.isActive() && m_GameObject.hasMaterial()) {
+    if (m_MeshBody->isVisible() && m_GameObject.isActive() && m_GameObject.hasRender()) {
         m_MeshBody->onDraw(0, 0);
     }
 
@@ -490,7 +490,7 @@ void EditToolsLayer::onDraw() {
         m_VelocityPanel->onDraw(0, 0);
     }
 
-    if (m_TransformPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasMaterial()) {
+    if (m_TransformPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasRender()) {
         m_ModelRenderPanel->onDraw(0, 0);
     }
 

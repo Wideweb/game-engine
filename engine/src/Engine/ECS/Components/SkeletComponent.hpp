@@ -36,8 +36,8 @@ class SkeletState {
 
     std::string animation() { return m_CurrentAnimation; }
 
-    void play(std::string animation) {
-        if (m_CurrentAnimation.empty()) {
+    void play(std::string animation, bool force = false) {
+        if (m_CurrentAnimation.empty() || force) {
             m_CurrentAnimation = animation;
             m_NextAnimation = animation;
             return;

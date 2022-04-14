@@ -67,7 +67,7 @@ class GameObjectModel {
         renderRotationChange$.dispatch(renderRotation());
         scaleChange$.dispatch(scale(), scale());
 
-        if (hasMaterial()) {
+        if (hasRender()) {
             materialSpecularChange$.dispatch(material().specular);
             materialShininessChange$.dispatch(material().shininess);
         }
@@ -445,7 +445,7 @@ class GameObjectModel {
     bool hasSkelet() { return coordinator().HasComponent<SkeletComponent>(m_Entity); }
 
     void animation(std::string animation) {
-        coordinator().GetComponent<SkeletComponent>(m_Entity).state.play(animation);
+        coordinator().GetComponent<SkeletComponent>(m_Entity).state.play(animation, true);
     }
 
     std::string animation() { return coordinator().GetComponent<SkeletComponent>(m_Entity).state.animation(); }
@@ -541,9 +541,11 @@ class GameObjectModel {
         materialShininessChange$.dispatch(value);
     }
 
-    bool hasMaterial() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
+    bool hasRender() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
 
-    bool isMaterialActive() { return coordinator().IsComponentActive<Render3DComponent>(m_Entity); }
+    bool isRenderActive() { return coordinator().IsComponentActive<Render3DComponent>(m_Entity); }
+
+    auto &render() { return coordinator().GetComponent<Render3DComponent>(m_Entity); }
 
     const Material &material() {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);

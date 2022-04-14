@@ -20,11 +20,12 @@ class Render3DComponent {
 
   public:
     std::string model;
+    std::string prevModel;
+    bool modelChanged = false;
     glm::vec3 scale = glm::vec3(1.0f);
     glm::vec3 rotation = glm::vec3(0.0f);
     bool instanced = false;
     bool updated = false;
-    bool prevUpdated = false;
     std::shared_ptr<Shader> shader;
 
     Render3DComponent() {}
@@ -33,24 +34,13 @@ class Render3DComponent {
 
     bool overlay() const { return m_Overlay; }
 
-    glm::vec3 getFullScale(Entity entityId, ComponentManager &components) const {
-        auto scale = this->scale;
-        while (components.HasComponent<ParentComponent>(entityId)) {
-            entityId = components.GetComponent<ParentComponent>(entityId).entity;
-            auto parentCmp = components.GetComponent<Render3DComponent>(entityId);
-            scale = scale * parentCmp.scale;
+    void setModel(const std::string &model) {
+        if (this->model == model) {
+            return;
         }
-        return scale;
-    }
-
-    bool isUpdated(Entity entityId, ComponentManager &components) const {
-        bool updated = this->updated;
-        while (components.HasComponent<ParentComponent>(entityId)) {
-            entityId = components.GetComponent<ParentComponent>(entityId).entity;
-            auto parentCmp = components.GetComponent<Render3DComponent>(entityId);
-            updated = updated || parentCmp.prevUpdated;
-        }
-        return updated;
+        this->prevModel = this->model;
+        this->model = model;
+        modelChanged = true;
     }
 };
 

@@ -19,6 +19,7 @@ class Render3DSystem : public BaseSystem {
 
   private:
     void OnRemoveComponent(Entity entity) const;
+    void OnModelChange(Entity entity, Render3DComponent &render) const;
 };
 
 } // namespace Engine

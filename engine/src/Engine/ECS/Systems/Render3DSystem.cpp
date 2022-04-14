@@ -10,18 +10,35 @@
 namespace Engine {
 
 void Render3DSystem::OnRemoveComponent(Entity entity) const {
-    auto &scene = getScene();
     auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
 
     if (!render.instanced) {
         return;
     }
 
+    auto &scene = getScene();
     if (render.overlay()) {
         scene.removeOverlayObject(entity, render.model);
     } else {
         scene.removeObject(entity, render.model);
     }
+    render.instanced = false;
+}
+
+void Render3DSystem::OnModelChange(Entity entity, Render3DComponent &render) const {
+    if (!render.instanced) {
+        return;
+    }
+
+    if (!render.prevModel.empty()) {
+        auto &scene = getScene();
+        if (render.overlay()) {
+            scene.removeOverlayObject(entity, render.prevModel);
+        } else {
+            scene.removeObject(entity, render.prevModel);
+        }
+    }
+
     render.instanced = false;
 }
 
@@ -36,10 +53,18 @@ void Render3DSystem::Attach(ComponentManager &components) const {
 }
 
 void Render3DSystem::Update(ComponentManager &components) const {
-    auto &scene = getScene();
-
     for (auto entity : m_Entities) {
         auto &render = components.GetComponent<Render3DComponent>(entity);
+        if (render.modelChanged) {
+            OnModelChange(entity, render);
+            render.modelChanged = false;
+        }
+
+        if (render.model.empty()) {
+            continue;
+        }
+
+        auto &scene = getScene();
         auto &location = components.GetComponent<LocationComponent>(entity);
 
         if (!render.instanced) {
@@ -52,7 +77,7 @@ void Render3DSystem::Update(ComponentManager &components) const {
                 scene.addObject(entity, render.model, transform, render.shader);
             }
             render.instanced = true;
-        } else if (location.isUpdated(entity, components) || render.isUpdated(entity, components)) {
+        } else if (render.updated || location.isUpdated(entity, components)) {
             auto transform = LocationComponent::getFullTransform(entity, components) *
                              glm::scale(glm::mat4(1.0), render.scale) * glm::toMat4(glm::quat(render.rotation));
 
@@ -65,7 +90,6 @@ void Render3DSystem::Update(ComponentManager &components) const {
             location.prevUpdated = location.updated;
             location.updated = false;
 
-            render.prevUpdated = render.updated;
             render.updated = false;
         }
     }

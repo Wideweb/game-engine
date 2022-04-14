@@ -59,6 +59,10 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
             coordinator.AddComponent<VelocityComponent>(entity, VelocityComponent());
         }
 
+        if (!coordinator.HasComponent<Render3DComponent>(entity) && ImGui::MenuItem("Add 3D Model")) {
+            coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent());
+        }
+
         if (!coordinator.HasComponent<PhysicsComponent>(entity) && ImGui::MenuItem("Add Rigitbody")) {
             coordinator.AddComponent<PhysicsComponent>(entity, PhysicsComponent());
         }
@@ -76,17 +80,30 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
             coordinator.AddComponent<ParticlesComponent>(entity, ParticlesComponent());
         }
 
+        if (!coordinator.HasComponent<BehaviourComponent>(entity) && ImGui::MenuItem("Add Behaviour")) {
+            coordinator.AddComponent<BehaviourComponent>(entity, BehaviourComponent());
+        }
+
         if (!coordinator.HasComponent<CameraComponent>(entity) && ImGui::MenuItem("Bind Camera")) {
-            auto cameraArray = coordinator.GetComponentArray<CameraComponent>();
-            if (cameraArray->size() > 0) {
-                Entity entity = cameraArray->entities()[0];
+            auto cmpArray = coordinator.GetComponentArray<CameraComponent>();
+            CameraComponent cmp;
+            if (cmpArray->size() > 0) {
+                Entity entity = cmpArray->entities()[0];
+                cmp = coordinator.GetComponent<CameraComponent>(entity);
                 coordinator.RemoveComponent<CameraComponent>(entity);
             }
             coordinator.AddComponent<CameraComponent>(entity, CameraComponent());
         }
 
-        if (!coordinator.HasComponent<BehaviourComponent>(entity) && ImGui::MenuItem("Add Behaviour")) {
-            coordinator.AddComponent<BehaviourComponent>(entity, BehaviourComponent());
+        if (!coordinator.HasComponent<DirectedLightComponent>(entity) && ImGui::MenuItem("Bind Directed Light")) {
+            auto cmpArray = coordinator.GetComponentArray<DirectedLightComponent>();
+            DirectedLightComponent cmp;
+            if (cmpArray->size() > 0) {
+                Entity entity = cmpArray->entities()[0];
+                cmp = coordinator.GetComponent<DirectedLightComponent>(entity);
+                coordinator.RemoveComponent<DirectedLightComponent>(entity);
+            }
+            coordinator.AddComponent<DirectedLightComponent>(entity, cmp);
         }
 
         if (ImGui::MenuItem("Delete Entity")) {

@@ -45,8 +45,7 @@ void MeshBody::onAttach() {
         }
 
         coordinator.GetComponent<ParentComponent>(m_MeshBody).setEntity(entity);
-        coordinator.GetComponent<Render3DComponent>(m_MeshBody).model =
-            coordinator.GetComponent<Render3DComponent>(entity).model;
+        coordinator.GetComponent<Render3DComponent>(m_MeshBody).setModel(coordinator.GetComponent<Render3DComponent>(entity).model);
 
         show();
     });
