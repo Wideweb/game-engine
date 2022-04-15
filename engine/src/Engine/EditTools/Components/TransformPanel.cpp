@@ -15,9 +15,8 @@ TransformPanel::TransformPanel(GameObjectModel &model) : m_Model(model) {}
 
 void TransformPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::ComponentPanel<LocationComponent>("Transform", expanded, m_Model.entity(),
-                                                    gameLayer().getCoordinator());
-    if (!expanded) {
+    if (!ImGuiWidgets::ComponentPanel<LocationComponent>("Transform", expanded, m_Model.entity(),
+                                                         gameLayer().getCoordinator())) {
         return;
     }
 

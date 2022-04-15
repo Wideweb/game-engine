@@ -36,22 +36,19 @@ void MeshBody::onAttach() {
     coordinator.AddComponent(m_MeshBody, render);
 
     hide();
-
-    m_Model.entityChange$.addEventCallback([&](Entity entity) {
-        if (!coordinator.HasComponent<Render3DComponent>(entity) ||
-            coordinator.HasComponent<EditToolComponent>(entity)) {
-            hide();
-            return;
-        }
-
-        coordinator.GetComponent<ParentComponent>(m_MeshBody).setEntity(entity);
-        coordinator.GetComponent<Render3DComponent>(m_MeshBody).setModel(coordinator.GetComponent<Render3DComponent>(entity).model);
-
-        show();
-    });
 }
 
-void MeshBody::onUpdate() {}
+void MeshBody::onUpdate() {
+    auto &coordinator = gameLayer().getCoordinator();
+
+    if (m_Model.hasRender() && !coordinator.HasComponent<EditToolComponent>(m_Model.entity())) {
+        coordinator.GetComponent<Render3DComponent>(m_MeshBody)
+            .setModel(coordinator.GetComponent<Render3DComponent>(m_Model.entity()).model);
+        coordinator.GetComponent<ParentComponent>(m_MeshBody).setEntity(m_Model.entity());
+    } else {
+        hide();
+    }
+}
 
 void MeshBody::show() {
     auto &coordinator = gameLayer().getCoordinator();

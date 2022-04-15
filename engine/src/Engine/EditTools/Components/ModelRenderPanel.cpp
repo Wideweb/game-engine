@@ -37,11 +37,14 @@ void ModelRenderPanel::onDraw(int x, int y) {
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - padding);
     if (ImGui::BeginCombo("##ModelRender_model", render.model.c_str())) {
+        if (ImGui::Selectable("", render.model.empty())) {
+            m_Model.set3DModel("");
+        }
         const auto &models = Application::get().getModels().keys();
         for (const auto &model : models) {
             bool isSelected = model == render.model;
             if (ImGui::Selectable(model.c_str(), isSelected)) {
-                render.setModel(model);
+                m_Model.set3DModel(model);
             }
         }
         ImGui::EndCombo();
@@ -59,11 +62,7 @@ void ModelRenderPanel::onDraw(int x, int y) {
                     models.RegisterModel(path, ModelLoader::load(modelSrc));
                 }
 
-                render.setModel(path);
-
-                if (models.Is<SkinnedModel>(path)) {
-                    coordinator.AddComponent<SkeletComponent>(m_Model.entity(), SkeletComponent());
-                }
+                m_Model.set3DModel(path);
             }
         }
         ImGui::EndDragDropTarget();

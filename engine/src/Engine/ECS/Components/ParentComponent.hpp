@@ -10,7 +10,10 @@ class ParentComponent {
     bool isDirty = true, destroyWithParent = true;
 
     void setEntity(Entity entity) {
-        this->prevEntity = entity;
+        if (this->entity == entity) {
+            return;
+        }
+        this->prevEntity = this->entity;
         this->entity = entity;
         this->isDirty = true;
     }

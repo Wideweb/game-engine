@@ -23,6 +23,9 @@ class VelocityComponent {
         auto velocity = this->velocity;
         while (components.HasComponent<ParentComponent>(entityId)) {
             entityId = components.GetComponent<ParentComponent>(entityId).entity;
+            if (entityId == c_NoEntity) {
+                break;
+            }
             auto parentCmp = components.GetComponent<VelocityComponent>(entityId);
             velocity += parentCmp.velocity;
         }
@@ -33,6 +36,9 @@ class VelocityComponent {
         auto rotation = glm::quat(this->rotation);
         while (components.HasComponent<ParentComponent>(entityId)) {
             entityId = components.GetComponent<ParentComponent>(entityId).entity;
+            if (entityId == c_NoEntity) {
+                break;
+            }
             auto parentCmp = components.GetComponent<VelocityComponent>(entityId);
             rotation = glm::quat(parentCmp.rotation) * rotation;
         }

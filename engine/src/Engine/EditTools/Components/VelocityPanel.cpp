@@ -12,9 +12,8 @@ VelocityPanel::VelocityPanel(GameObjectModel &model) : m_Model(model) {}
 
 void VelocityPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::ComponentPanel<VelocityComponent>("Velocity", expanded, m_Model.entity(),
-                                                    gameLayer().getCoordinator(), true);
-    if (!expanded) {
+    if (!ImGuiWidgets::ComponentPanel<VelocityComponent>("Velocity", expanded, m_Model.entity(),
+                                                         gameLayer().getCoordinator(), true)) {
         return;
     }
 

@@ -30,9 +30,8 @@ void ParticlesPanel::onDraw(int x, int y) {
     // bool looped = true;
 
     static bool expanded = false;
-    ImGuiWidgets::ComponentPanel<ParticlesComponent>("Particles", expanded, m_Model.entity(),
-                                                     gameLayer().getCoordinator(), true);
-    if (!expanded) {
+    if (!ImGuiWidgets::ComponentPanel<ParticlesComponent>("Particles", expanded, m_Model.entity(),
+                                                          gameLayer().getCoordinator(), true)) {
         return;
     }
 

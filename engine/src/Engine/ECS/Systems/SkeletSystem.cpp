@@ -19,6 +19,10 @@ void SkeletSystem::Update(ComponentManager &components) const {
         auto &skeletCmp = components.GetComponent<SkeletComponent>(entity);
         auto &renderCmp = components.GetComponent<Render3DComponent>(entity);
 
+        if (renderCmp.model.empty() || !models.Is<SkinnedModel>(renderCmp.model)) {
+            continue;
+        }
+
         auto model = models.GetModel<SkinnedModel>(renderCmp.model);
         auto &skelet = model->skelet;
 

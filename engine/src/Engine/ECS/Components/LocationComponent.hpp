@@ -35,6 +35,9 @@ class LocationComponent {
         bool updated = this->updated;
         while (components.HasComponent<ParentComponent>(entityId)) {
             entityId = components.GetComponent<ParentComponent>(entityId).entity;
+            if (entityId == c_NoEntity) {
+                break;
+            }
             auto parentCmp = components.GetComponent<LocationComponent>(entityId);
             updated = updated || parentCmp.prevUpdated;
         }
@@ -47,6 +50,9 @@ class LocationComponent {
         Entity current = entity;
         while (components.HasComponent<ParentComponent>(current)) {
             current = components.GetComponent<ParentComponent>(current).entity;
+            if (current == c_NoEntity) {
+                break;
+            }
 
             auto &location = components.GetComponent<LocationComponent>(current);
 

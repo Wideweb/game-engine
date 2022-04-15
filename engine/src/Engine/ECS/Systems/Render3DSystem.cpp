@@ -12,6 +12,11 @@ namespace Engine {
 void Render3DSystem::OnRemoveComponent(Entity entity) const {
     auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
 
+    if (render.modelChanged) {
+        OnModelChange(entity, render);
+        render.modelChanged = false;
+    }
+
     if (!render.instanced) {
         return;
     }

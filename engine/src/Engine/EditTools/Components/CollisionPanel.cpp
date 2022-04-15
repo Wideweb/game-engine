@@ -74,11 +74,11 @@ void CollisionPanel::onUpdate() {
 void CollisionPanel::onDraw(int x, int y) {
     static bool expanded = false;
     if (m_Static) {
-        ImGuiWidgets::ComponentPanel<StaticCollisionComponent>("Box Collider", expanded, m_Model.entity(),
-                                                               gameLayer().getCoordinator(), true);
+        expanded = ImGuiWidgets::ComponentPanel<StaticCollisionComponent>("Box Collider", expanded, m_Model.entity(),
+                                                                          gameLayer().getCoordinator(), true);
     } else {
-        ImGuiWidgets::ComponentPanel<CollisionComponent>("Box Collider", expanded, m_Model.entity(),
-                                                         gameLayer().getCoordinator(), true);
+        expanded = ImGuiWidgets::ComponentPanel<CollisionComponent>("Box Collider", expanded, m_Model.entity(),
+                                                                    gameLayer().getCoordinator(), true);
     }
 
     if (!expanded) {

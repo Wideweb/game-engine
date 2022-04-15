@@ -12,9 +12,8 @@ DirectedLightPanel::DirectedLightPanel(GameObjectModel &model) : m_Model(model) 
 
 void DirectedLightPanel::onDraw(int x, int y) {
     static bool expanded = false;
-    ImGuiWidgets::ComponentPanel<DirectedLightComponent>("Directed Light", expanded, m_Model.entity(),
-                                                         gameLayer().getCoordinator(), true);
-    if (!expanded) {
+    if (!ImGuiWidgets::ComponentPanel<DirectedLightComponent>("Directed Light", expanded, m_Model.entity(),
+                                                              gameLayer().getCoordinator(), true)) {
         return;
     }
 

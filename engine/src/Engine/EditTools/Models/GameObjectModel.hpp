@@ -18,6 +18,7 @@
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
+#include "SkinnedModel.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "TBN.hpp"
 #include "TerrainCollisionComponent.hpp"
@@ -67,7 +68,7 @@ class GameObjectModel {
         renderRotationChange$.dispatch(renderRotation());
         scaleChange$.dispatch(scale(), scale());
 
-        if (hasRender()) {
+        if (hasRender() && hasModel()) {
             materialSpecularChange$.dispatch(material().specular);
             materialShininessChange$.dispatch(material().shininess);
         }
@@ -543,9 +544,24 @@ class GameObjectModel {
 
     bool hasRender() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
 
+    bool hasModel() { return hasRender() && !coordinator().GetComponent<Render3DComponent>(m_Entity).model.empty(); }
+
     bool isRenderActive() { return coordinator().IsComponentActive<Render3DComponent>(m_Entity); }
 
     auto &render() { return coordinator().GetComponent<Render3DComponent>(m_Entity); }
+
+    void set3DModel(const std::string &model) {
+        const auto &models = Application::get().getModels();
+
+        render().setModel(model);
+
+        if (hasSkelet() && !models.Is<SkinnedModel>(model)) {
+            animation("");
+        }
+        if (!hasSkelet() && models.Is<SkinnedModel>(model)) {
+            coordinator().AddComponent<SkeletComponent>(m_Entity, SkeletComponent());
+        }
+    }
 
     const Material &material() {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);

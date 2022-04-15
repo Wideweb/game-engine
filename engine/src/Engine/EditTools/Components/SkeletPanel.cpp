@@ -31,6 +31,9 @@ void SkeletPanel::onDraw(int x, int y) {
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - padding);
     if (ImGui::BeginCombo("##SkeletAnimation", m_Model.animation().c_str())) {
+        if (ImGui::Selectable("", m_Model.animation().empty())) {
+            m_Model.animation("");
+        }
 
         const auto &model = Application::get().getModels().GetModel<SkinnedModel>(m_Model.model());
         for (auto &[key, value] : model->skelet.animations) {
