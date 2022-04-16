@@ -35,11 +35,15 @@ void SkeletPanel::onDraw(int x, int y) {
             m_Model.animation("");
         }
 
-        const auto &model = Application::get().getModels().GetModel<SkinnedModel>(m_Model.model());
-        for (auto &[key, value] : model->skelet.animations) {
-            bool isSelected = key == m_Model.animation();
-            if (ImGui::Selectable(key.c_str(), isSelected)) {
-                m_Model.animation(key);
+        const auto &models = Application::get().getModels();
+
+        if (m_Model.hasRender() && models.Is<SkinnedModel>(m_Model.model())) {
+            const auto &model = models.GetModel<SkinnedModel>(m_Model.model());
+            for (auto &[key, value] : model->skelet.animations) {
+                bool isSelected = key == m_Model.animation();
+                if (ImGui::Selectable(key.c_str(), isSelected)) {
+                    m_Model.animation(key);
+                }
             }
         }
 
