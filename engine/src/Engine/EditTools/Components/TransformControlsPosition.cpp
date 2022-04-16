@@ -1,6 +1,7 @@
 #include "TransformControlsPosition.hpp"
 
 #include "Application.hpp"
+#include "Configs.hpp"
 #include "InstancedModel.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
@@ -15,17 +16,20 @@ TransformControlsPosition::TransformControlsPosition(GameObjectModel &model) : m
 void TransformControlsPosition::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    Application::get().getModels().RegisterModel("arrow-x", ModelLoader::load("./assets/models/box/arrow-x.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-x",
+                                                 ModelLoader::load("./assets/models/box/arrow-x.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-y", ModelLoader::load("./assets/models/box/arrow-y.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-y",
+                                                 ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-z", ModelLoader::load("./assets/models/box/arrow-z.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-z",
+                                                 ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
     auto controlX = coordinator.CreateEntity("arrow-x");
     auto locationX = LocationComponent();
     locationX.rotation = glm::vec3(0.0f, 1.57f, 0.0f);
     coordinator.AddComponent(controlX, locationX);
-    coordinator.AddComponent(controlX, Render3DComponent("arrow-x", 0.1f, true));
+    coordinator.AddComponent(controlX, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-x", 0.1f, true));
     coordinator.AddComponent(controlX, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlX, TagComponent("arrow"));
     m_ControlX = controlX;
@@ -34,7 +38,7 @@ void TransformControlsPosition::onAttach() {
     auto locationY = LocationComponent();
     locationY.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, locationY);
-    coordinator.AddComponent(controlY, Render3DComponent("arrow-y", 0.1f, true));
+    coordinator.AddComponent(controlY, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-y", 0.1f, true));
     coordinator.AddComponent(controlY, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlY, TagComponent("arrow"));
     m_ControlY = controlY;
@@ -43,7 +47,7 @@ void TransformControlsPosition::onAttach() {
     auto locationZ = LocationComponent();
     locationZ.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, locationZ);
-    coordinator.AddComponent(controlZ, Render3DComponent("arrow-z", 0.1f, true));
+    coordinator.AddComponent(controlZ, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-z", 0.1f, true));
     coordinator.AddComponent(controlZ, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlZ, TagComponent("arrow"));
     m_ControlZ = controlZ;

@@ -20,6 +20,8 @@ class Texture : public GfxImage {
 
     void resize(unsigned int width, unsigned int height) override;
 
+    static Texture getEmpty();
+
     static Texture createDepthBuffer(int width, int height);
 
     static Texture createRGBA8FBuffer(int width, int height);

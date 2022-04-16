@@ -187,7 +187,7 @@ Texture ModelMapper::loadMaterialTexture(aiMaterial *materialSrc, aiTextureType 
             return TextureLoader::loadTexture(std::string(str.C_Str()));
         }
     }
-    return TextureLoader::placeholder();
+    return Texture::getEmpty();
 }
 
 void ModelMapper::addJoint(aiBone *joint) {

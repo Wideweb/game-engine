@@ -1,6 +1,7 @@
 #include "TransformControlsScale.hpp"
 
 #include "Application.hpp"
+#include "Configs.hpp"
 #include "InstancedModel.hpp"
 #include "LocationComponent.hpp"
 #include "Math.hpp"
@@ -20,9 +21,11 @@ void TransformControlsScale::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
     {
-        Application::get().getModels().RegisterModel("scale-x", ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "scale-x",
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
-        auto model = Application::get().getModels().GetModel<InstancedModel>("scale-x");
+        auto model =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "scale-x");
         auto &vertices = model->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -31,9 +34,11 @@ void TransformControlsScale::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-y", ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "scale-y",
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
-        auto model = Application::get().getModels().GetModel<InstancedModel>("scale-y");
+        auto model =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "scale-y");
         auto &vertices = model->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -42,9 +47,11 @@ void TransformControlsScale::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-z", ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "scale-z",
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
-        auto model = Application::get().getModels().GetModel<InstancedModel>("scale-z");
+        auto model =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "scale-z");
         auto &vertices = model->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -53,7 +60,7 @@ void TransformControlsScale::onAttach() {
     }
 
     auto controlX = coordinator.CreateEntity("modelAxis-x");
-    auto renderX = Render3DComponent("scale-x", 0.1f, true);
+    auto renderX = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-x", 0.1f, true);
     renderX.rotation = glm::vec3(0.0f, 0.0f, -1.57f);
     coordinator.AddComponent(controlX, renderX);
     coordinator.AddComponent(controlX, LocationComponent());
@@ -62,7 +69,7 @@ void TransformControlsScale::onAttach() {
     m_ControlX = controlX;
 
     auto controlY = coordinator.CreateEntity("modelAxis-y");
-    auto renderY = Render3DComponent("scale-y", 0.1f, true);
+    auto renderY = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-y", 0.1f, true);
     renderY.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, renderY);
     coordinator.AddComponent(controlY, LocationComponent());
@@ -71,7 +78,7 @@ void TransformControlsScale::onAttach() {
     m_ControlY = controlY;
 
     auto controlZ = coordinator.CreateEntity("modelAxis-z");
-    auto renderZ = Render3DComponent("scale-z", 0.1f, true);
+    auto renderZ = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-z", 0.1f, true);
     renderZ.rotation = glm::vec3(1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, renderZ);
     coordinator.AddComponent(controlZ, LocationComponent());

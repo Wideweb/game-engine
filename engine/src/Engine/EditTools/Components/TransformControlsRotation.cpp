@@ -1,6 +1,7 @@
 #include "TransformControlsRotation.hpp"
 
 #include "Application.hpp"
+#include "Configs.hpp"
 #include "InstancedModel.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
@@ -18,9 +19,11 @@ TransformControlsRotation::TransformControlsRotation(GameObjectModel &model) : m
 void TransformControlsRotation::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    Application::get().getModels().RegisterModel("arc-x", ModelLoader::load("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-x",
+                                                 ModelLoader::load("./assets/models/box/arc.obj"));
     {
-        auto arcXModel = Application::get().getModels().GetModel<InstancedModel>("arc-x");
+        auto arcXModel =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "arc-x");
         auto &vertices = arcXModel->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -28,9 +31,11 @@ void TransformControlsRotation::onAttach() {
         arcXModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-y", ModelLoader::load("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-y",
+                                                 ModelLoader::load("./assets/models/box/arc.obj"));
     {
-        auto arcYModel = Application::get().getModels().GetModel<InstancedModel>("arc-y");
+        auto arcYModel =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "arc-y");
         auto &vertices = arcYModel->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -38,9 +43,11 @@ void TransformControlsRotation::onAttach() {
         arcYModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-z", ModelLoader::load("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-z",
+                                                 ModelLoader::load("./assets/models/box/arc.obj"));
     {
-        auto arcZModel = Application::get().getModels().GetModel<InstancedModel>("arc-z");
+        auto arcZModel =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "arc-z");
         auto &vertices = arcZModel->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -49,7 +56,7 @@ void TransformControlsRotation::onAttach() {
     }
 
     auto controlX = coordinator.CreateEntity("arc-x");
-    auto renderX = Render3DComponent("arc-x", 0.1f, true);
+    auto renderX = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-x", 0.1f, true);
     renderX.rotation = glm::vec3(1.57f, 1.57f, 0.0f);
     coordinator.AddComponent(controlX, renderX);
     coordinator.AddComponent(controlX, LocationComponent());
@@ -58,7 +65,7 @@ void TransformControlsRotation::onAttach() {
     m_ControlX = controlX;
 
     auto controlY = coordinator.CreateEntity("arc-y");
-    auto renderY = Render3DComponent("arc-y", 0.1f, true);
+    auto renderY = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-y", 0.1f, true);
     renderY.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, renderY);
     coordinator.AddComponent(controlY, LocationComponent());
@@ -67,7 +74,7 @@ void TransformControlsRotation::onAttach() {
     m_ControlY = controlY;
 
     auto controlZ = coordinator.CreateEntity("arc-z");
-    auto renderZ = Render3DComponent("arc-z", 0.1f, true);
+    auto renderZ = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-z", 0.1f, true);
     renderZ.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, renderZ);
     coordinator.AddComponent(controlZ, LocationComponent());

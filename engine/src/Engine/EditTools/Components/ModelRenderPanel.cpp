@@ -20,6 +20,23 @@ namespace Engine {
 
 ModelRenderPanel::ModelRenderPanel(GameObjectModel &model) : m_Model(model) {}
 
+void ModelRenderPanel::onUpdate() {
+    if (m_FreeDiffuseMap) {
+        m_Model.setDiffuseMap(Texture::getEmpty());
+        m_FreeDiffuseMap = false;
+    }
+
+    if (m_FreeSpecularMap) {
+        m_Model.setSpecularMap(Texture::getEmpty());
+        m_FreeSpecularMap = false;
+    }
+
+    if (m_FreeNormalMap) {
+        m_Model.setNormalMap(Texture::getEmpty());
+        m_FreeNormalMap = false;
+    }
+}
+
 void ModelRenderPanel::onDraw(int x, int y) {
     auto &coordinator = gameLayer().getCoordinator();
     auto &render = m_Model.render();
@@ -42,6 +59,9 @@ void ModelRenderPanel::onDraw(int x, int y) {
         }
         const auto &models = Application::get().getModels().keys();
         for (const auto &model : models) {
+            if (model.rfind(Configs::c_EditToolsModelPrefix, 0) == 0) {
+                continue;
+            }
             bool isSelected = model == render.model;
             if (ImGui::Selectable(model.c_str(), isSelected)) {
                 m_Model.set3DModel(model);
@@ -112,6 +132,17 @@ void ModelRenderPanel::onDraw(int x, int y) {
                 }
                 ImGui::EndDragDropTarget();
             }
+            if (!material.diffuseMap.empty()) {
+                ImGui::SameLine();
+                ImGuiWidgets::PaddingLeft(-24.0f);
+                ImGuiWidgets::PaddingTop(2.0f);
+                ImGui::PushID("##ModelRender_diffuseMap_clear");
+                if (ImGui::SmallButton("x")) {
+                    m_FreeDiffuseMap = true;
+                }
+                ImGui::PopID();
+                ImGuiWidgets::PaddingTop(-2.0f);
+            }
 
             ImGuiWidgets::PaddingLeft(padding);
             ImGui::Text("Specular map");
@@ -127,6 +158,17 @@ void ModelRenderPanel::onDraw(int x, int y) {
                 }
                 ImGui::EndDragDropTarget();
             }
+            if (!material.specularMap.empty()) {
+                ImGui::SameLine();
+                ImGuiWidgets::PaddingLeft(-24.0f);
+                ImGuiWidgets::PaddingTop(2.0f);
+                ImGui::PushID("##ModelRender_specularMap_clear");
+                if (ImGui::SmallButton("x")) {
+                    m_FreeSpecularMap = true;
+                }
+                ImGui::PopID();
+                ImGuiWidgets::PaddingTop(-2.0f);
+            }
 
             ImGuiWidgets::PaddingLeft(padding);
             ImGui::Text("Noraml map");
@@ -141,6 +183,17 @@ void ModelRenderPanel::onDraw(int x, int y) {
                     }
                 }
                 ImGui::EndDragDropTarget();
+            }
+            if (!material.normalMap.empty()) {
+                ImGui::SameLine();
+                ImGuiWidgets::PaddingLeft(-24.0f);
+                ImGuiWidgets::PaddingTop(2.0f);
+                ImGui::PushID("##ModelRender_normalMap_clear");
+                if (ImGui::SmallButton("x")) {
+                    m_FreeNormalMap = true;
+                }
+                ImGui::PopID();
+                ImGuiWidgets::PaddingTop(-2.0f);
             }
         }
 

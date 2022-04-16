@@ -10,4 +10,6 @@ const std::array<std::string, 2> c_SceneObjectExtensions = {"obj", "fbx"};
 const std::array<std::string, 2> c_3DModelExtensions = {"obj", "fbx"};
 const std::array<std::string, 1> c_ScriptExtensions = {"lua"};
 
+const std::string c_EditToolsModelPrefix = "##Edit_Tools##";
+
 }

@@ -1,6 +1,7 @@
 #include "CollisionBody.hpp"
 
 #include "Application.hpp"
+#include "Configs.hpp"
 #include "File.hpp"
 #include "LocationComponent.hpp"
 #include "ModelFactory.hpp"
@@ -17,7 +18,8 @@ void CollisionBody::onAttach() {
     auto geometrySrc = File::read("./shaders/overlay-geometry-shader.glsl");
     m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
 
-    Application::get().getModels().RegisterModel("collision-body", ModelFactory::createCube());
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "collision-body",
+                                                 ModelFactory::createCube());
 
     auto &coordinator = toolsLayer().getCoordinator();
 
@@ -25,7 +27,7 @@ void CollisionBody::onAttach() {
     coordinator.AddComponent(collisionBody, LocationComponent());
     m_CollisionBody = collisionBody;
 
-    auto render = Render3DComponent("collision-body", 1.0f, true);
+    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "collision-body", 1.0f, true);
     render.shader = m_Shader;
     coordinator.AddComponent(m_CollisionBody, render);
 

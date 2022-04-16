@@ -22,6 +22,7 @@
 #include "StaticCollisionComponent.hpp"
 #include "TBN.hpp"
 #include "TerrainCollisionComponent.hpp"
+#include "TextureLoader.hpp"
 #include "VelocityComponent.hpp"
 
 #include <glm/gtx/matrix_decompose.hpp>
@@ -472,17 +473,12 @@ class GameObjectModel {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {
+            if (mesh.material.diffuseMap.id != TextureLoader::placeholder().id) {
+                mesh.material.diffuseMap.free();
+            }
             mesh.material.diffuseMap = texture;
-
-            // if (mesh.material.specularMap.empty()) {
-            //     mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
-            // }
-
-            // if (mesh.material.normalMap.empty()) {
-            //     mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
-            // }
-
-            mesh.hasMaterial = true;
+            mesh.hasMaterial = !mesh.material.diffuseMap.empty() || !mesh.material.specularMap.empty() ||
+                               !mesh.material.normalMap.empty();
         }
     }
 
@@ -490,17 +486,12 @@ class GameObjectModel {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {
+            if (mesh.material.specularMap.id != TextureLoader::placeholder().id) {
+                mesh.material.specularMap.free();
+            }
             mesh.material.specularMap = texture;
-
-            // if (mesh.material.diffuseMap.empty()) {
-            //     mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
-            // }
-
-            // if (mesh.material.normalMap.empty()) {
-            //     mesh.material.normalMap = Application::get().getTextures().get("engine_placeholder");
-            // }
-
-            mesh.hasMaterial = true;
+            mesh.hasMaterial = !mesh.material.diffuseMap.empty() || !mesh.material.specularMap.empty() ||
+                               !mesh.material.normalMap.empty();
         }
     }
 
@@ -508,17 +499,12 @@ class GameObjectModel {
         auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
         const auto &model = Application::get().getModels().GetModel<InstancedModel>(render.model);
         for (auto &mesh : model->meshes) {
+            if (mesh.material.normalMap.id != TextureLoader::placeholder().id) {
+                mesh.material.normalMap.free();
+            }
             mesh.material.normalMap = texture;
-
-            // if (mesh.material.diffuseMap.empty()) {
-            //     mesh.material.diffuseMap = Application::get().getTextures().get("engine_placeholder");
-            // }
-
-            // if (mesh.material.specularMap.empty()) {
-            //     mesh.material.specularMap = Application::get().getTextures().get("engine_placeholder");
-            // }
-
-            mesh.hasMaterial = true;
+            mesh.hasMaterial = !mesh.material.diffuseMap.empty() || !mesh.material.specularMap.empty() ||
+                               !mesh.material.normalMap.empty();
         }
     }
 
@@ -555,10 +541,10 @@ class GameObjectModel {
 
         render().setModel(model);
 
-        if (hasSkelet() && !models.Is<SkinnedModel>(model)) {
+        if (hasSkelet() && (!hasModel() || !models.Is<SkinnedModel>(model))) {
             animation("");
         }
-        if (!hasSkelet() && models.Is<SkinnedModel>(model)) {
+        if (!hasSkelet() && hasModel() && models.Is<SkinnedModel>(model)) {
             coordinator().AddComponent<SkeletComponent>(m_Entity, SkeletComponent());
         }
     }

@@ -6,6 +6,7 @@
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
 #include "TagComponent.hpp"
+#include "Configs.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/gtx/quaternion.hpp>
@@ -16,7 +17,7 @@ namespace Engine {
 CameraDirector::CameraDirector(GameObjectModel &model) : m_Model(model) {}
 
 void CameraDirector::onAttach() {
-    Application::get().getModels().RegisterModel("EditTool::Camera",
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Camera",
                                                  ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
     auto &toolsCoordinator = toolsLayer().getCoordinator();
@@ -77,7 +78,7 @@ bool CameraDirector::handleSelection(Entity entity) {
 void CameraDirector::show() {
     auto &coordinator = toolsLayer().getCoordinator();
     if (!coordinator.HasComponent<Render3DComponent>(m_Camera)) {
-        auto render = Render3DComponent("EditTool::Camera", 0.1f, true);
+        auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", 0.1f, true);
         render.rotation.y = 3.14f;
         coordinator.AddComponent(m_Camera, render);
     }

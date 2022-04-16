@@ -1,6 +1,7 @@
 #include "TransformControls.hpp"
 
 #include "Application.hpp"
+#include "Configs.hpp"
 #include "InstancedModel.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
@@ -18,17 +19,20 @@ TransformControls::TransformControls(GameObjectModel &model) : m_Model(model) {}
 void TransformControls::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
 
-    Application::get().getModels().RegisterModel("arrow-x", ModelLoader::load("./assets/models/box/arrow-x.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-x",
+                                                 ModelLoader::load("./assets/models/box/arrow-x.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-y", ModelLoader::load("./assets/models/box/arrow-y.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-y",
+                                                 ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
-    Application::get().getModels().RegisterModel("arrow-z", ModelLoader::load("./assets/models/box/arrow-z.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-z",
+                                                 ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
     auto arrowX = coordinator.CreateEntity("arrow-x");
     auto arrowXLocation = LocationComponent();
     arrowXLocation.rotation = glm::vec3(0.0f, 1.57f, 0.0f);
     coordinator.AddComponent(arrowX, arrowXLocation);
-    coordinator.AddComponent(arrowX, Render3DComponent("arrow-x", 0.1f, true));
+    coordinator.AddComponent(arrowX, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-x", 0.1f, true));
     coordinator.AddComponent(arrowX, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(arrowX, TagComponent("arrow"));
     m_ArrowX = arrowX;
@@ -37,7 +41,7 @@ void TransformControls::onAttach() {
     auto arrowYLocation = LocationComponent();
     arrowYLocation.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(arrowY, arrowYLocation);
-    coordinator.AddComponent(arrowY, Render3DComponent("arrow-y", 0.1f, true));
+    coordinator.AddComponent(arrowY, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-y", 0.1f, true));
     coordinator.AddComponent(arrowY, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(arrowY, TagComponent("arrow"));
     m_ArrowY = arrowY;
@@ -46,12 +50,13 @@ void TransformControls::onAttach() {
     auto arrowZLocation = LocationComponent();
     arrowZLocation.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(arrowZ, arrowZLocation);
-    coordinator.AddComponent(arrowZ, Render3DComponent("arrow-z", 0.1f, true));
+    coordinator.AddComponent(arrowZ, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-z", 0.1f, true));
     coordinator.AddComponent(arrowZ, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(arrowZ, TagComponent("arrow"));
     m_ArrowZ = arrowZ;
 
-    Application::get().getModels().RegisterModel("arc-x", ModelLoader::load("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-x",
+                                                 ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcXModel = Application::get().getModels().GetModel<InstancedModel>("arc-x");
         auto &vertices = arcXModel->meshes[0].vertices;
@@ -61,7 +66,8 @@ void TransformControls::onAttach() {
         arcXModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-y", ModelLoader::load("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-y",
+                                                 ModelLoader::load("./assets/models/box/arc.obj"));
     {
         auto arcYModel = Application::get().getModels().GetModel<InstancedModel>("arc-y");
         auto &vertices = arcYModel->meshes[0].vertices;
@@ -71,9 +77,11 @@ void TransformControls::onAttach() {
         arcYModel->update();
     }
 
-    Application::get().getModels().RegisterModel("arc-z", ModelLoader::load("./assets/models/box/arc.obj"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-z",
+                                                 ModelLoader::load("./assets/models/box/arc.obj"));
     {
-        auto arcZModel = Application::get().getModels().GetModel<InstancedModel>("arc-z");
+        auto arcZModel =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "arc-z");
         auto &vertices = arcZModel->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -82,7 +90,7 @@ void TransformControls::onAttach() {
     }
 
     auto arcX = coordinator.CreateEntity("arc-x");
-    auto arcXRender = Render3DComponent("arc-x", 0.1f, true);
+    auto arcXRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-x", 0.1f, true);
     arcXRender.rotation = glm::vec3(1.57f, 1.57f, 0.0f);
     coordinator.AddComponent(arcX, arcXRender);
     coordinator.AddComponent(arcX, LocationComponent());
@@ -91,7 +99,7 @@ void TransformControls::onAttach() {
     m_ArcX = arcX;
 
     auto arcY = coordinator.CreateEntity("arc-y");
-    auto arcYRender = Render3DComponent("arc-y", 0.1f, true);
+    auto arcYRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-y", 0.1f, true);
     arcYRender.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(arcY, arcYRender);
     coordinator.AddComponent(arcY, LocationComponent());
@@ -100,7 +108,7 @@ void TransformControls::onAttach() {
     m_ArcY = arcY;
 
     auto arcZ = coordinator.CreateEntity("arc-z");
-    auto arcZRender = Render3DComponent("arc-z", 0.1f, true);
+    auto arcZRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-z", 0.1f, true);
     arcZRender.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(arcZ, arcZRender);
     coordinator.AddComponent(arcZ, LocationComponent());
@@ -109,7 +117,8 @@ void TransformControls::onAttach() {
     m_ArcZ = arcZ;
 
     {
-        Application::get().getModels().RegisterModel("scale-x", ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "scale-x",
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
         auto model = Application::get().getModels().GetModel<InstancedModel>("scale-x");
         auto &vertices = model->meshes[0].vertices;
@@ -120,9 +129,11 @@ void TransformControls::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-y", ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "scale-y",
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
-        auto model = Application::get().getModels().GetModel<InstancedModel>("scale-y");
+        auto model =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "scale-y");
         auto &vertices = model->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -131,9 +142,11 @@ void TransformControls::onAttach() {
     }
 
     {
-        Application::get().getModels().RegisterModel("scale-z", ModelLoader::load("./assets/models/box/scale.obj"));
+        Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "scale-z",
+                                                     ModelLoader::load("./assets/models/box/scale.obj"));
 
-        auto model = Application::get().getModels().GetModel<InstancedModel>("scale-z");
+        auto model =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "scale-z");
         auto &vertices = model->meshes[0].vertices;
         for (auto &vertex : vertices) {
             vertex.color = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -143,7 +156,7 @@ void TransformControls::onAttach() {
 
     {
         auto modelAxisX = coordinator.CreateEntity("modelAxis-x");
-        auto modelAxisXRender = Render3DComponent("scale-x", 0.1f, true);
+        auto modelAxisXRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-x", 0.1f, true);
         modelAxisXRender.rotation = glm::vec3(0.0f, 0.0f, -1.57f);
         coordinator.AddComponent(modelAxisX, modelAxisXRender);
         coordinator.AddComponent(modelAxisX, LocationComponent());
@@ -152,7 +165,7 @@ void TransformControls::onAttach() {
         m_ModelAxisX = modelAxisX;
 
         auto modelAxisY = coordinator.CreateEntity("modelAxis-y");
-        auto modelAxisYRender = Render3DComponent("scale-y", 0.1f, true);
+        auto modelAxisYRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-y", 0.1f, true);
         modelAxisYRender.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
         coordinator.AddComponent(modelAxisY, modelAxisYRender);
         coordinator.AddComponent(modelAxisY, LocationComponent());
@@ -161,7 +174,7 @@ void TransformControls::onAttach() {
         m_ModelAxisY = modelAxisY;
 
         auto modelAxisZ = coordinator.CreateEntity("modelAxis-z");
-        auto modelAxisZRender = Render3DComponent("scale-z", 0.1f, true);
+        auto modelAxisZRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-z", 0.1f, true);
         modelAxisZRender.rotation = glm::vec3(1.57f, 0.0f, 0.0f);
         coordinator.AddComponent(modelAxisZ, modelAxisZRender);
         coordinator.AddComponent(modelAxisZ, LocationComponent());

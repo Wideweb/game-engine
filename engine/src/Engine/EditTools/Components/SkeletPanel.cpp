@@ -37,7 +37,7 @@ void SkeletPanel::onDraw(int x, int y) {
 
         const auto &models = Application::get().getModels();
 
-        if (m_Model.hasRender() && models.Is<SkinnedModel>(m_Model.model())) {
+        if (m_Model.hasModel() && models.Is<SkinnedModel>(m_Model.model())) {
             const auto &model = models.GetModel<SkinnedModel>(m_Model.model());
             for (auto &[key, value] : model->skelet.animations) {
                 bool isSelected = key == m_Model.animation();

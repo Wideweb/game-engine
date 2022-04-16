@@ -1,6 +1,7 @@
 #include "DirectedLightDirector.hpp"
 
 #include "Application.hpp"
+#include "Configs.hpp"
 #include "DirectedLightComponent.hpp"
 #include "EditToolComponent.hpp"
 #include "LocationComponent.hpp"
@@ -15,7 +16,7 @@ namespace Engine {
 DirectedLightDirector::DirectedLightDirector(GameObjectModel &model) : m_Model(model) {}
 
 void DirectedLightDirector::onAttach() {
-    Application::get().getModels().RegisterModel("EditTool::Directional Light",
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Directional Light",
                                                  ModelLoader::load("./assets/models/box/arrow-y.fbx"));
 
     auto &coordinator = toolsLayer().getCoordinator();
@@ -74,7 +75,7 @@ bool DirectedLightDirector::handleSelection(Entity entity) {
 void DirectedLightDirector::show() {
     auto &coordinator = toolsLayer().getCoordinator();
     if (!coordinator.HasComponent<Render3DComponent>(m_Sun)) {
-        auto render = Render3DComponent("EditTool::Directional Light", 0.2f, true);
+        auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Directional Light", 0.2f, true);
         render.rotation.x = 1.57f;
         coordinator.AddComponent(m_Sun, render);
     }

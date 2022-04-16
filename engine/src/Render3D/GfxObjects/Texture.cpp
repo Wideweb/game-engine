@@ -37,6 +37,12 @@ void Texture::free() {
     }
 }
 
+Texture Texture::getEmpty() {
+    Texture texture;
+    texture.setEmpty();
+    return texture;
+}
+
 Texture Texture::createDepthBuffer(int width, int height) {
     Texture texture;
     texture.width = width;
