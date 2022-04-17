@@ -33,6 +33,7 @@ void SkyboxRenderer::draw(Camera &camera, Scene &scene, RenderSettings &settings
         m_Shader.setMatrix4("u_view", fixedView);
         m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
         m_Shader.setFloat4("u_clipPlane", settings.clipPlane);
+        m_Shader.setInt("u_fog", settings.fog);
         m_Shader.setFloat3("u_fogColor", settings.fogColor);
         m_Shader.setFloat("u_threshold", settings.threshold);
         m_Shader.setFloat("u_lowerLimit", skybox->lowerLimit);

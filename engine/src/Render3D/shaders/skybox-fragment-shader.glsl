@@ -6,6 +6,7 @@
 uniform samplerCube u_skybox;
 uniform float u_threshold;
 uniform vec4 u_clipPlane;
+uniform int u_fog;
 uniform vec3 u_fogColor;
 uniform float u_lowerLimit;
 uniform float u_upperLimit;
@@ -35,7 +36,10 @@ void main() {
     float factor = (v_texCoord.y - u_lowerLimit) / (u_upperLimit - u_lowerLimit);
     factor = clamp(factor, 0.0, 1.0);
 
-    o_fragColor = mix(vec4(u_fogColor, 1.0), color, factor);
+    o_fragColor = color;
+    if (u_fog > 0) {
+        o_fragColor = mix(vec4(u_fogColor, 1.0), color, factor);
+    }
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)

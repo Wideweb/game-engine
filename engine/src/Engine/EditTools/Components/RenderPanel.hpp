@@ -19,6 +19,7 @@ class RenderPanel : public BaseView {
   private:
     void onDrawHdrPanel();
     void onDrawSSAOPanel();
+    void onDrawFogPanel();
 };
 
 } // namespace Engine

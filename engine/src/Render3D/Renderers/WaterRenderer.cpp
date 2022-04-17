@@ -156,6 +156,7 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
 
     m_Shader.setFloat("u_threshold", settings.threshold);
 
+    m_Shader.setInt("u_fog", settings.fog);
     m_Shader.setFloat3("u_fogColor", settings.fogColor);
     m_Shader.setFloat("u_density", settings.fogDensity);
     m_Shader.setFloat("u_gradient", settings.fogGradient);

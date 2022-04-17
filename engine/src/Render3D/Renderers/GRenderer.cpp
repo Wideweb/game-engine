@@ -25,6 +25,7 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
     m_Shader.setFloat4("u_clipPlane", settings.clipPlane);
     m_Shader.setInt("u_hasNormalMapping", settings.normalMapping);
 
+    m_Shader.setInt("u_fog", settings.fog);
     m_Shader.setFloat3("u_fogColor", settings.fogColor);
     m_Shader.setFloat("u_density", settings.fogDensity);
     m_Shader.setFloat("u_gradient", settings.fogGradient);

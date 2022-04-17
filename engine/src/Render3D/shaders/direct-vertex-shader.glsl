@@ -48,7 +48,7 @@ out vec3 v_normal;
 out vec2 v_texCoord;
 out vec3 v_fragPos;
 out vec2 v_fragScreenPos;
-out float v_visibility;
+out float v_fragVisibility;
 out mat3 v_TBN;
 
 /////////////////////////////////////////////////////////////
@@ -82,8 +82,8 @@ void main() {
     gl_Position = screenPos;
 
     float distanceToCamera = length(positionRelativeToCamera.xyz);
-    v_visibility = exp(-pow(distanceToCamera * u_density, u_gradient));
-    v_visibility = clamp(v_visibility, 0.0, 1.0);
+    v_fragVisibility = exp(-pow(distanceToCamera * u_density, u_gradient));
+    v_fragVisibility = clamp(v_fragVisibility, 0.0, 1.0);
 }
 
 mat4 getVertexTransform() {

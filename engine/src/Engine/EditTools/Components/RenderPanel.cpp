@@ -32,6 +32,7 @@ void RenderPanel::onDraw() {
 
     onDrawHdrPanel();
     onDrawSSAOPanel();
+    onDrawFogPanel();
 
     ImGuiWidgets::PaddingLeft(2.0f);
     ImGui::Checkbox("NormalMapping", &gameLayer().renderSettings.normalMapping);
@@ -105,6 +106,32 @@ void RenderPanel::onDrawSSAOPanel() {
 
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::InputFloat("Bias", &gameLayer().renderSettings.ssaoBias, 0.01f, 0.001f);
+
+    ImGui::NewLine();
+}
+
+void RenderPanel::onDrawFogPanel() {
+    static bool expanded = false;
+    if (!ImGuiWidgets::CollapsePanel("Fog", expanded, gameLayer().renderSettings.fog)) {
+        return;
+    }
+
+    float padding = 10.0f;
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::PushID("#Render_Panel_Fog_Color");
+    ImGui::ColorEdit3("Color", glm::value_ptr(gameLayer().renderSettings.fogColor));
+    ImGui::PopID();
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::PushID("#Render_Panel_Fog_Density");
+    ImGui::InputFloat("Density", &gameLayer().renderSettings.fogDensity, 0.01f, 0.01f);
+    ImGui::PopID();
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::PushID("#Render_Panel_Fog_Gradient");
+    ImGui::InputFloat("Gradient", &gameLayer().renderSettings.fogGradient, 0.01f, 0.01f);
+    ImGui::PopID();
 
     ImGui::NewLine();
 }

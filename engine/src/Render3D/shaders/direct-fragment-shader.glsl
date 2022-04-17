@@ -83,6 +83,7 @@ uniform int u_hasSSAO;
 uniform sampler2D u_ssao;
 uniform int u_hasNormalMapping;
 
+uniform int u_fog;
 uniform vec3 u_fogColor;
 
 /////////////////////////////////////////////////////////////
@@ -94,7 +95,7 @@ in vec3 v_normal;
 in vec2 v_texCoord;
 in vec3 v_fragPos;
 in vec2 v_fragScreenPos;
-in float v_visibility;
+in float v_fragVisibility;
 in mat3 v_TBN;
 
 /////////////////////////////////////////////////////////////
@@ -145,7 +146,9 @@ void main() {
     // }
 
     o_fragColor = vec4(result, 1.0);
-    o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_visibility);
+    if (u_fog > 0) {
+        o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_fragVisibility);
+    }
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)

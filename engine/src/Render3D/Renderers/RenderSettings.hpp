@@ -58,7 +58,7 @@ struct RenderSettings {
     bool bloom = true;
     ToneMapping toneMapping = ToneMapping::LinearToneMapping;
     float exposure = 1.0f;
-    float gamma = 2.2f;
+    float gamma = 1.0f;
     float threshold = 1.0f;
     int bloomScale = 4;
     int blur = 4;
@@ -72,6 +72,7 @@ struct RenderSettings {
 
     bool normalMapping = true;
 
+    bool fog = true;
     glm::vec3 fogColor = glm::vec3(0.55, 0.69, 0.73);
     float fogDensity = 0.03;
     float fogGradient = 5.0;

@@ -32,6 +32,7 @@ uniform float u_moveFactor;
 uniform DirectedLight u_directedLight;
 uniform vec3 u_viewPos;
 uniform float u_threshold;
+uniform int u_fog;
 uniform vec3 u_fogColor;
 
 uniform mat4 u_view;
@@ -122,7 +123,9 @@ void main() {
     o_fragColor = vec4((ambient + diffuse + specular), 1.0) * o_fragColor;
 
     // o_fragColor.a = clamp(waterDepth * 2.0, 0.0, 1.0);
-    // o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_visibility);
+    // if (u_fog > 0) {
+    //     o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_visibility);
+    // }
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)
