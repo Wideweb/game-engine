@@ -16,7 +16,7 @@ void SkeletPanel::onAttach() {}
 
 void SkeletPanel::onUpdate() {}
 
-void SkeletPanel::onDraw(int x, int y) {
+void SkeletPanel::onDraw() {
     static bool expanded = false;
     if (!ImGuiWidgets::ComponentPanel<SkeletComponent>("Skelet", expanded, m_Model.entity(),
                                                        gameLayer().getCoordinator(), true)) {

@@ -9,8 +9,6 @@ mat4 getVertexTransform();
 //////////////////////// DEFINES ////////////////////////////
 /////////////////////////////////////////////////////////////
 const int c_maxJoints = 100;
-const float c_density = 0.03;
-const float c_gradient = 5.0;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// ATTRIBUTES /////////////////////////
@@ -37,6 +35,9 @@ uniform mat4 u_projection;
 uniform mat4 u_joints[c_maxJoints];
 uniform int u_jointsNumber;
 uniform int u_hasNormalMapping;
+
+uniform float u_density;
+uniform float u_gradient;
 
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
@@ -81,7 +82,7 @@ void main() {
     gl_Position = screenPos;
 
     float distanceToCamera = length(positionRelativeToCamera.xyz);
-    v_visibility = exp(-pow(distanceToCamera * c_density, c_gradient));
+    v_visibility = exp(-pow(distanceToCamera * u_density, u_gradient));
     v_visibility = clamp(v_visibility, 0.0, 1.0);
 }
 

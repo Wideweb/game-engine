@@ -59,7 +59,7 @@ void MeshBody::show() {
     BaseView::show();
 }
 
-void MeshBody::onDraw(int x, int y) {
+void MeshBody::onDraw() {
     const auto &camera = Application::get().getCamera();
 
     m_Shader->bind();

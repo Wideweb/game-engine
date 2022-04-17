@@ -56,4 +56,47 @@ static bool ComponentPanel(std::string label, bool &expanded, Entity entity, Coo
     return expanded && !removed;
 }
 
+static bool CollapsePanel(std::string label, bool &expanded, bool &toggle) {
+    std::string id = (std::string("##") + label);
+
+    ImGuiWidgets::PaddingLeft(2.0f);
+
+    std::string toggleId = id + "_toggle";
+    ImGui::PushID(toggleId.c_str());
+    ImGui::Checkbox(id.c_str(), &toggle);
+    ImGui::PopID();
+    ImGui::SameLine();
+    ImGuiWidgets::PaddingLeft(-5.0f);
+
+    std::string collapeLabel = (expanded ? "-  " : "+ ") + label;
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {0, .5f});
+    std::string collapseId = id + "_collapse";
+    ImGui::PushID(collapseId.c_str());
+    if (ImGui::Button(collapeLabel.c_str(), {ImGui::GetContentRegionAvailWidth() - 2.0f, 20.0f})) {
+        expanded = !expanded;
+    }
+    ImGui::PopID();
+    ImGui::PopStyleVar();
+
+    return expanded;
+}
+
+static bool CollapsePanel(std::string label, bool &expanded) {
+    std::string id = (std::string("##") + label);
+
+    ImGuiWidgets::PaddingLeft(2.0f);
+
+    std::string collapeLabel = (expanded ? "-  " : "+ ") + label;
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {0, .5f});
+    std::string collapseId = id + "_collapse";
+    ImGui::PushID(collapseId.c_str());
+    if (ImGui::Button(collapeLabel.c_str(), {ImGui::GetContentRegionAvailWidth() - 2.0f, 20.0f})) {
+        expanded = !expanded;
+    }
+    ImGui::PopID();
+    ImGui::PopStyleVar();
+
+    return expanded;
+}
+
 } // namespace Engine::ImGuiWidgets

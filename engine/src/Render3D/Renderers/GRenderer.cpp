@@ -25,6 +25,10 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
     m_Shader.setFloat4("u_clipPlane", settings.clipPlane);
     m_Shader.setInt("u_hasNormalMapping", settings.normalMapping);
 
+    m_Shader.setFloat3("u_fogColor", settings.fogColor);
+    m_Shader.setFloat("u_density", settings.fogDensity);
+    m_Shader.setFloat("u_gradient", settings.fogGradient);
+
     m_ModelRenderer.draw(m_Shader, scene, models);
     m_SkyboxRenderer.draw(camera, scene, settings);
 

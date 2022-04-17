@@ -34,7 +34,7 @@ class TerrainTransform : public BaseView {
 
     void onAttach() override;
     void onUpdate() override;
-    void onDraw(int x, int y) override;
+    void onDraw() override;
     void onMouseEvent(MouseEvent &event) override;
     void hide() override;
     void show() override;

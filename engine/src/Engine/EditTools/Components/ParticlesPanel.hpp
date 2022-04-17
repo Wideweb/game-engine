@@ -12,8 +12,8 @@ class ParticlesPanel : public BaseView {
 
   public:
     ParticlesPanel(GameObjectModel &model);
-    
-    void onDraw(int x, int y) override;
+
+    void onDraw() override;
 };
 
 } // namespace Engine

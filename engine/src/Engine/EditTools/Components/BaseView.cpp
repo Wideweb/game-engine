@@ -11,7 +11,7 @@ void BaseView::onAttach() {}
 
 void BaseView::onUpdate() {}
 
-void BaseView::onDraw(int, int) {}
+void BaseView::onDraw() {}
 
 void BaseView::onDetach() {}
 

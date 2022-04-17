@@ -62,7 +62,6 @@ float directedLightShadowCalculation(DirectedLight light, vec3 fragPos, float bi
 //////////////////////// DEFINES ////////////////////////////
 /////////////////////////////////////////////////////////////
 const int c_maxSpotLights = 4;
-const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 
 const vec3 c_sampleOffsetDirections[20] = vec3[](
     vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1), vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1),
@@ -83,6 +82,8 @@ uniform float u_threshold;
 uniform int u_hasSSAO;
 uniform sampler2D u_ssao;
 uniform int u_hasNormalMapping;
+
+uniform vec3 u_fogColor;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -144,7 +145,7 @@ void main() {
     // }
 
     o_fragColor = vec4(result, 1.0);
-    o_fragColor = mix(vec4(c_fogColor, 1.0), o_fragColor, v_visibility);
+    o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_visibility);
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)

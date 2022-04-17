@@ -10,7 +10,7 @@ namespace Engine {
 
 DirectedLightPanel::DirectedLightPanel(GameObjectModel &model) : m_Model(model) {}
 
-void DirectedLightPanel::onDraw(int x, int y) {
+void DirectedLightPanel::onDraw() {
     static bool expanded = false;
     if (!ImGuiWidgets::ComponentPanel<DirectedLightComponent>("Directed Light", expanded, m_Model.entity(),
                                                               gameLayer().getCoordinator(), true)) {
@@ -40,10 +40,10 @@ void DirectedLightPanel::onDraw(int x, int y) {
         ImGui::Text("Plane: ");
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("near", &light.nearPlane, 0.1f, 0.01f);
+        ImGui::InputFloat("Near", &light.nearPlane, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("far", &light.farPlane, 0.1f, 0.01f);
+        ImGui::InputFloat("Far", &light.farPlane, 0.1f, 0.01f);
     }
 
     {
@@ -51,13 +51,13 @@ void DirectedLightPanel::onDraw(int x, int y) {
         ImGui::Text("Shadow: ");
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputDouble("bias factor", &light.biasFactor, 0.1f, 0.01f);
+        ImGui::InputDouble("Bias Factor", &light.biasFactor, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputDouble("bias min", &light.biasMin, 0.1f, 0.01f);
+        ImGui::InputDouble("Bias Min", &light.biasMin, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputInt("pcf", &light.pcf);
+        ImGui::InputInt("PCF", &light.pcf);
     }
 
     ImGui::PopItemWidth();

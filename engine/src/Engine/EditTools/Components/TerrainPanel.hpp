@@ -18,7 +18,7 @@ class TerrainPanel : public BaseView {
 
     void onAttach() override;
     void onUpdate() override;
-    void onDraw(int x, int y) override;
+    void onDraw() override;
 
     float brushRadius = 1.0f;
     float brushStrength = 0.1f;

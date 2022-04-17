@@ -20,6 +20,8 @@ class Skybox {
     std::vector<SkyboxVertex> vertices;
     CubeMapTexture cubemapTexture;
     float rotation, rotationSpeed = 0.0f;
+    float lowerLimit = -1.0f;
+    float upperLimit = 1.0f;
 
     Skybox(std::vector<SkyboxVertex> vertices, CubeMapTexture cubemapTexture);
     ~Skybox();

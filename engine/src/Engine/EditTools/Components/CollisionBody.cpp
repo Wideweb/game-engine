@@ -64,7 +64,7 @@ void CollisionBody::show() {
     BaseView::show();
 }
 
-void CollisionBody::onDraw(int x, int y) {
+void CollisionBody::onDraw() {
     const auto &camera = Application::get().getCamera();
 
     m_Shader->bind();

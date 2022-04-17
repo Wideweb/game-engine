@@ -15,7 +15,7 @@ class DirectedLightPanel : public BaseView {
   public:
     DirectedLightPanel(GameObjectModel &model);
 
-    void onDraw(int x, int y) override;
+    void onDraw() override;
 };
 
 } // namespace Engine

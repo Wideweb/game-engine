@@ -14,7 +14,7 @@ class RigitBodyPanel : public BaseView {
   public:
     RigitBodyPanel(GameObjectModel &model);
 
-    void onDraw(int x, int y) override;
+    void onDraw() override;
 };
 
 } // namespace Engine

@@ -203,7 +203,7 @@
 //     collision.updated = true;
 // }
 
-// void TransformControls::onDraw(int x, int y) {
+// void TransformControls::onDraw() {
 //     auto &gameCordinator = gameLayer().getCoordinator();
 //     auto &coordinator = toolsLayer().getCoordinator();
 //     auto &location = gameCordinator.GetComponent<Engine::LocationComponent>(m_Target);

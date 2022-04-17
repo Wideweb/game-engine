@@ -12,7 +12,7 @@ ContentBrowserPanel::ContentBrowserPanel(std::string path)
     m_FileIcon = TextureLoader::loadTexture("assets/icons/file.png");
 }
 
-void ContentBrowserPanel::onDraw(int x, int y) {
+void ContentBrowserPanel::onDraw() {
     ImGui::Begin("Content Browser");
 
     if (m_CurrentDirectory != std::filesystem::path(m_AssetPath)) {

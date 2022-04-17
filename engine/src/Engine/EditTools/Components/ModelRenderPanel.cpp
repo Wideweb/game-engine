@@ -37,7 +37,7 @@ void ModelRenderPanel::onUpdate() {
     }
 }
 
-void ModelRenderPanel::onDraw(int x, int y) {
+void ModelRenderPanel::onDraw() {
     auto &coordinator = gameLayer().getCoordinator();
     auto &render = m_Model.render();
 

@@ -49,7 +49,7 @@ void GamePanel::onUpdate() {
     }
 }
 
-void GamePanel::onDraw(int x, int y) {
+void GamePanel::onDraw() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Camera");
 

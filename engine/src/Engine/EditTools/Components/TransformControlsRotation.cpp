@@ -85,7 +85,7 @@ void TransformControlsRotation::onAttach() {
 
 void TransformControlsRotation::onUpdate() {}
 
-void TransformControlsRotation::onDraw(int, int) {
+void TransformControlsRotation::onDraw() {
     auto &gameCordinator = gameLayer().getCoordinator();
     auto &coordinator = toolsLayer().getCoordinator();
 

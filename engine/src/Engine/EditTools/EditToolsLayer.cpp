@@ -112,10 +112,6 @@ void EditToolsLayer::onAttach() {
     m_CollisionBody->onAttach();
     m_CollisionBody->hide();
 
-    m_SkyboxPanel = std::make_unique<SkyboxPanel>();
-    m_SkyboxPanel->onAttach();
-    m_SkyboxPanel->show();
-
     m_GamePanel = std::make_unique<GamePanel>();
     m_GamePanel->onAttach();
     m_GamePanel->show();
@@ -261,10 +257,6 @@ void EditToolsLayer::onUpdate() {
 
     if (m_RenderPanel->isVisible()) {
         m_RenderPanel->onUpdate();
-    }
-
-    if (m_SkyboxPanel->isVisible()) {
-        m_SkyboxPanel->onUpdate();
     }
 
     if (!Application::get().getTime().poused()) {
@@ -415,54 +407,50 @@ void EditToolsLayer::onDraw() {
             m_MeshBody->hide();
         }
 
-        m_GamePanel->onDraw(0, 0);
+        m_GamePanel->onDraw();
 
         if (meshBodyVisible) {
             m_MeshBody->show();
         }
     }
 
-    m_CameraDirector->onDraw(0, 0);
-    m_DirectedLightDirector->onDraw(0, 0);
+    m_CameraDirector->onDraw();
+    m_DirectedLightDirector->onDraw();
 
     if (m_RenderPanel->isVisible()) {
-        m_RenderPanel->onDraw(0, 0);
+        m_RenderPanel->onDraw();
     }
 
     if (m_ContentBrowserPanel->isVisible()) {
-        m_ContentBrowserPanel->onDraw(0, 0);
+        m_ContentBrowserPanel->onDraw();
     }
 
     if (m_SceneHierarchyPanel->isVisible()) {
-        m_SceneHierarchyPanel->onDraw(0, 0);
-    }
-
-    if (m_SkyboxPanel->isVisible()) {
-        m_SkyboxPanel->onDraw(0, 0);
+        m_SceneHierarchyPanel->onDraw();
     }
 
     if (m_TransformControlsPosition->isVisible() && m_GameObject.isActive() && m_GameObject.hasPosition()) {
-        m_TransformControlsPosition->onDraw(0, 0);
+        m_TransformControlsPosition->onDraw();
     }
 
     if (m_TransformControlsRotation->isVisible() && m_GameObject.isActive() && m_GameObject.hasRotation()) {
-        m_TransformControlsRotation->onDraw(0, 0);
+        m_TransformControlsRotation->onDraw();
     }
 
     if (m_TransformControlsScale->isVisible() && m_GameObject.isActive() && m_GameObject.hasScale()) {
-        m_TransformControlsScale->onDraw(0, 0);
+        m_TransformControlsScale->onDraw();
     }
 
     if (m_CollisionBody->isVisible() && m_GameObject.isActive() && m_GameObject.hasCollision()) {
-        m_CollisionBody->onDraw(0, 0);
+        m_CollisionBody->onDraw();
     }
 
     if (m_TerrainTransform->isVisible() && m_GameObject.isActive() && m_GameObject.hasTerrainCollision()) {
-        m_TerrainTransform->onDraw(0, 0);
+        m_TerrainTransform->onDraw();
     }
 
     if (m_MeshBody->isVisible() && m_GameObject.isActive() && m_GameObject.hasRender()) {
-        m_MeshBody->onDraw(0, 0);
+        m_MeshBody->onDraw();
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -483,43 +471,43 @@ void EditToolsLayer::onDraw() {
     }
 
     if (m_TransformPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasPosition()) {
-        m_TransformPanel->onDraw(0, 0);
+        m_TransformPanel->onDraw();
     }
 
     if (m_VelocityPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasVelocity()) {
-        m_VelocityPanel->onDraw(0, 0);
+        m_VelocityPanel->onDraw();
     }
 
     if (m_TransformPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasRender()) {
-        m_ModelRenderPanel->onDraw(0, 0);
+        m_ModelRenderPanel->onDraw();
     }
 
     if (m_SkeletPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasSkelet()) {
-        m_SkeletPanel->onDraw(0, 250);
+        m_SkeletPanel->onDraw();
     }
 
     if (m_CollisionPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasCollision()) {
-        m_CollisionPanel->onDraw(0, 0);
+        m_CollisionPanel->onDraw();
     }
 
     if (m_RigitBodyPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasPhysics()) {
-        m_RigitBodyPanel->onDraw(0, 0);
+        m_RigitBodyPanel->onDraw();
     }
 
     if (m_TerrainPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasTerrainCollision()) {
-        m_TerrainPanel->onDraw(0, 250);
+        m_TerrainPanel->onDraw();
     }
 
     if (m_BehaviourPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasBehaviour()) {
-        m_BehaviourPanel->onDraw(0, 250);
+        m_BehaviourPanel->onDraw();
     }
 
     if (m_ParticlesPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasParticles()) {
-        m_ParticlesPanel->onDraw(0, 450);
+        m_ParticlesPanel->onDraw();
     }
 
     if (m_DirectedLightPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasDirectedLight()) {
-        m_DirectedLightPanel->onDraw(0, 0);
+        m_DirectedLightPanel->onDraw();
     }
 
     ImGui::NewLine();
@@ -544,7 +532,6 @@ void EditToolsLayer::onDetach() {
     m_VelocityPanel->onDetach();
     m_ParticlesPanel->onDetach();
     m_DirectedLightPanel->onDetach();
-    m_SkyboxPanel->onDetach();
     m_ModelRenderPanel->onDetach();
     m_BehaviourPanel->onDetach();
     m_MeshBody->onDetach();

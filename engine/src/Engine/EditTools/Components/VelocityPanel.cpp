@@ -10,7 +10,7 @@ namespace Engine {
 
 VelocityPanel::VelocityPanel(GameObjectModel &model) : m_Model(model) {}
 
-void VelocityPanel::onDraw(int x, int y) {
+void VelocityPanel::onDraw() {
     static bool expanded = false;
     if (!ImGuiWidgets::ComponentPanel<VelocityComponent>("Velocity", expanded, m_Model.entity(),
                                                          gameLayer().getCoordinator(), true)) {

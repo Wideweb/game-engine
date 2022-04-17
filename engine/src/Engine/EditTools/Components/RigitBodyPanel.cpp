@@ -10,7 +10,7 @@ namespace Engine {
 
 RigitBodyPanel::RigitBodyPanel(GameObjectModel &model) : m_Model(model) {}
 
-void RigitBodyPanel::onDraw(int x, int y) {
+void RigitBodyPanel::onDraw() {
     static bool expanded = false;
     if (!ImGuiWidgets::ComponentPanel<PhysicsComponent>("Rigitbody", expanded, m_Model.entity(),
                                                         gameLayer().getCoordinator(), true)) {

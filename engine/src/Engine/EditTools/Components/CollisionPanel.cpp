@@ -71,7 +71,7 @@ void CollisionPanel::onUpdate() {
     }
 }
 
-void CollisionPanel::onDraw(int x, int y) {
+void CollisionPanel::onDraw() {
     static bool expanded = false;
     if (m_Static) {
         expanded = ImGuiWidgets::ComponentPanel<StaticCollisionComponent>("Box Collider", expanded, m_Model.entity(),

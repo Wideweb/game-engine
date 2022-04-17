@@ -15,7 +15,7 @@ class ModelRenderPanel : public BaseView {
     ModelRenderPanel(GameObjectModel &model);
 
     void onUpdate() override;
-    void onDraw(int x, int y) override;
+    void onDraw() override;
 };
 
 } // namespace Engine

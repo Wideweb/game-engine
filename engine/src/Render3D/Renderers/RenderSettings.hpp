@@ -71,6 +71,10 @@ struct RenderSettings {
     int ssaoNoiseScale = 4;
 
     bool normalMapping = true;
+
+    glm::vec3 fogColor = glm::vec3(0.55, 0.69, 0.73);
+    float fogDensity = 0.03;
+    float fogGradient = 5.0;
 };
 
 } // namespace Engine

@@ -154,7 +154,7 @@ void SceneHierarchyNode::display(GameObjectModel &model, Coordinator &coordinato
 
 SceneHierarchyPanel::SceneHierarchyPanel(GameObjectModel &model) : m_Model(model) {}
 
-void SceneHierarchyPanel::onDraw(int x, int y) {
+void SceneHierarchyPanel::onDraw() {
     auto &gameCordinator = gameLayer().getCoordinator();
 
     ImGui::Begin("Scene Hierarchy");

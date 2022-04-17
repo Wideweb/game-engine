@@ -10,7 +10,7 @@ namespace Engine {
 
 ParticlesPanel::ParticlesPanel(GameObjectModel &model) : m_Model(model) {}
 
-void ParticlesPanel::onDraw(int x, int y) {
+void ParticlesPanel::onDraw() {
     // ImGui::SetNextWindowSize(ImVec2(250, 200));
     // ImGui::SetNextWindowPos(ImVec2(x, y));
 

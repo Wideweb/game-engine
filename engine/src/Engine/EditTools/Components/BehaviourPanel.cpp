@@ -13,7 +13,7 @@ namespace Engine {
 
 BehaviourPanel::BehaviourPanel(GameObjectModel &model) : m_Model(model) {}
 
-void BehaviourPanel::onDraw(int x, int y) {
+void BehaviourPanel::onDraw() {
     static bool expanded = false;
     if (!ImGuiWidgets::ComponentPanel<BehaviourComponent>("Behaviour", expanded, m_Model.entity(),
                                                           gameLayer().getCoordinator(), true)) {

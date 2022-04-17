@@ -2,12 +2,23 @@
 
 #include "BaseView.hpp"
 #include "RenderSettings.hpp"
+#include "SkyboxPanel.hpp"
 
 namespace Engine {
 
 class RenderPanel : public BaseView {
+  private:
+    std::unique_ptr<SkyboxPanel> m_SkyboxPanel;
+
   public:
-    void onDraw(int x, int y) override;
+    void onAttach() override;
+    void onUpdate() override;
+    void onDraw() override;
+    void onDetach() override;
+
+  private:
+    void onDrawHdrPanel();
+    void onDrawSSAOPanel();
 };
 
 } // namespace Engine

@@ -186,7 +186,7 @@ void TransformControls::onAttach() {
 
 void TransformControls::onUpdate() {}
 
-void TransformControls::onDraw(int, int) {
+void TransformControls::onDraw() {
     auto &gameCordinator = gameLayer().getCoordinator();
     auto &coordinator = toolsLayer().getCoordinator();
 

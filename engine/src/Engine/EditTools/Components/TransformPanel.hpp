@@ -12,7 +12,7 @@ class TransformPanel : public BaseView {
   public:
     TransformPanel(GameObjectModel &model);
 
-    void onDraw(int x, int y) override;
+    void onDraw() override;
 };
 
 } // namespace Engine

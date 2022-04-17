@@ -213,6 +213,10 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
     m_Shader.setInt("u_hasNormalMapping", settings.normalMapping);
 
+    m_Shader.setFloat3("u_fogColor", settings.fogColor);
+    m_Shader.setFloat("u_density", settings.fogDensity);
+    m_Shader.setFloat("u_gradient", settings.fogGradient);
+
     m_Shader.setInt("u_hasDirectedLight", 0);
     m_Shader.setInt("u_spotLightsNumber", 0);
 

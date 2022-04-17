@@ -89,7 +89,7 @@ void TransformControlsScale::onAttach() {
 
 void TransformControlsScale::onUpdate() {}
 
-void TransformControlsScale::onDraw(int, int) {
+void TransformControlsScale::onDraw() {
     auto &gameCordinator = gameLayer().getCoordinator();
     auto &coordinator = toolsLayer().getCoordinator();
 

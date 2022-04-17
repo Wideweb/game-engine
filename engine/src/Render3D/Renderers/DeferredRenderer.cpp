@@ -42,6 +42,10 @@ void DeferredRenderer::doDraw(Texture &colorMap, Texture &positionMap, Texture &
     m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
     m_Shader.setFloat("u_threshold", settings.threshold);
 
+    m_Shader.setFloat3("u_fogColor", settings.fogColor);
+    m_Shader.setFloat("u_density", settings.fogDensity);
+    m_Shader.setFloat("u_gradient", settings.fogGradient);
+
     m_Shader.setInt("u_hasDirectedLight", 0);
     if (scene.hasDirectedLight()) {
         m_Shader.setInt("u_hasDirectedLight", 1);

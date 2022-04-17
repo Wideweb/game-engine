@@ -16,7 +16,6 @@ struct DirectedLight {
 const float c_waveStrength = 0.02;
 const float c_near = 0.01;
 const float c_far = 100.0;
-const vec3 c_fogColor = vec3(0.55, 0.69, 0.73);
 const vec4 c_waterColor = vec4(0.0, 0.3, 0.5, 1.0);
 
 /////////////////////////////////////////////////////////////
@@ -33,6 +32,7 @@ uniform float u_moveFactor;
 uniform DirectedLight u_directedLight;
 uniform vec3 u_viewPos;
 uniform float u_threshold;
+uniform vec3 u_fogColor;
 
 uniform mat4 u_view;
 uniform mat4 u_projection;
@@ -122,7 +122,7 @@ void main() {
     o_fragColor = vec4((ambient + diffuse + specular), 1.0) * o_fragColor;
 
     // o_fragColor.a = clamp(waterDepth * 2.0, 0.0, 1.0);
-    // o_fragColor = mix(vec4(c_fogColor, 1.0), o_fragColor, v_visibility);
+    // o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_visibility);
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)

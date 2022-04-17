@@ -10,7 +10,7 @@ class SkyboxPanel : public BaseView {
   public:
     using BaseView::BaseView;
 
-    void onDraw(int x, int y) override;
+    void onDraw() override;
 
   private:
     void showFace(size_t index);

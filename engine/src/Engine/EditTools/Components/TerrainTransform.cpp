@@ -67,7 +67,7 @@ void TerrainTransform::onUpdate() {
     }
 }
 
-void TerrainTransform::onDraw(int x, int y) {
+void TerrainTransform::onDraw() {
     const auto &camera = Application::get().getCamera();
 
     m_Shader->bind();
