@@ -30,7 +30,6 @@ in vec3 v_normal;
 in vec2 v_texCoord;
 in vec4 v_fragPos;
 in mat3 v_TBN;
-in float v_visibility;
 
 /////////////////////////////////////////////////////////////
 //////////////////////////// OUT ////////////////////////////
@@ -71,7 +70,7 @@ void main() {
         shininess = u_material.shininess;
     }
 
-    o_gColor = vec4(diffuse, v_visibility);
+    o_gColor = vec4(diffuse, 1.0);
     o_gPosition = v_fragPos.xyz;
     o_gNormal = normal;
     o_gSpecular.rgb = specular;

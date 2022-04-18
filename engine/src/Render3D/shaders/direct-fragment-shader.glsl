@@ -85,6 +85,8 @@ uniform int u_hasNormalMapping;
 
 uniform int u_fog;
 uniform vec3 u_fogColor;
+uniform float u_density;
+uniform float u_gradient;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -94,8 +96,8 @@ in vec3 v_color;
 in vec3 v_normal;
 in vec2 v_texCoord;
 in vec3 v_fragPos;
+in vec3 v_fragCameraPos;
 in vec2 v_fragScreenPos;
-in float v_fragVisibility;
 in mat3 v_TBN;
 
 /////////////////////////////////////////////////////////////
@@ -147,7 +149,10 @@ void main() {
 
     o_fragColor = vec4(result, 1.0);
     if (u_fog > 0) {
-        o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, v_fragVisibility);
+        float distanceToCamera = length(v_fragCameraPos.xyz);
+        float fragVisibility = exp(-pow(distanceToCamera * u_density, u_gradient));
+        fragVisibility = clamp(fragVisibility, 0.0, 1.0);
+        o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, fragVisibility);
     }
 
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));

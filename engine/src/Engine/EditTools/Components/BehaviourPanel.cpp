@@ -23,8 +23,17 @@ void BehaviourPanel::onDraw() {
     ImGui::PushItemWidth(120.0f);
     float padding = 10.0f;
 
+    std::string id = "##BehaviourPanel";
+
     ImGuiWidgets::PaddingLeft(padding);
-    ImGui::Button("script", ImVec2(100.0f, 0.0f));
+    ImGui::Text("Script");
+
+    bool hasScript = !m_Model.behaviour().script.empty();
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {0, .5f});
+    ImGui::Button(m_Model.behaviour().script.c_str(),
+                  {ImGui::GetContentRegionAvailWidth() - padding - (hasScript ? 25.0f : 0.0f), 20.0f});
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
             const char *path = static_cast<const char *>(payload->Data);
@@ -34,6 +43,21 @@ void BehaviourPanel::onDraw() {
             }
         }
         ImGui::EndDragDropTarget();
+    }
+    ImGui::PopStyleVar();
+
+    if (hasScript) {
+        ImGui::SameLine();
+        ImGuiWidgets::PaddingLeft(-5.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {.5f, .5f});
+        std::string deleteButtonId = id + "x";
+        ImGui::PushID(deleteButtonId.c_str());
+        if (ImGui::Button("x", {20.0f, 20.0f})) {
+            m_Model.behaviour("");
+            gameLayer().getScripts().remove(m_Model.entity());
+        }
+        ImGui::PopID();
+        ImGui::PopStyleVar();
     }
 
     ImGui::PopItemWidth();

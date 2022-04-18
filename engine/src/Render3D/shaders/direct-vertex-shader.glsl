@@ -36,9 +36,6 @@ uniform mat4 u_joints[c_maxJoints];
 uniform int u_jointsNumber;
 uniform int u_hasNormalMapping;
 
-uniform float u_density;
-uniform float u_gradient;
-
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
@@ -47,8 +44,8 @@ out vec3 v_color;
 out vec3 v_normal;
 out vec2 v_texCoord;
 out vec3 v_fragPos;
+out vec3 v_fragCameraPos;
 out vec2 v_fragScreenPos;
-out float v_fragVisibility;
 out mat3 v_TBN;
 
 /////////////////////////////////////////////////////////////
@@ -63,6 +60,7 @@ void main() {
     v_color = a_vertexColor;
     v_texCoord = vec2(a_vertexTextureCoord.x, a_vertexTextureCoord.y);
     v_fragPos = vec3(worldPosition);
+    v_fragCameraPos = vec3(u_view * worldPosition);
     v_normal = normalize(mat3(transpose(inverse(modelMatrix))) * a_vertexNormal);
 
     v_TBN = mat3(0);
@@ -76,14 +74,9 @@ void main() {
         v_TBN = mat3(T, B, N);
     }
 
-    vec4 positionRelativeToCamera = u_view * worldPosition;
-    vec4 screenPos = u_projection * positionRelativeToCamera;
+    vec4 screenPos = u_projection * vec4(v_fragCameraPos, 1.0);
     v_fragScreenPos = (screenPos / screenPos.w).xy;
     gl_Position = screenPos;
-
-    float distanceToCamera = length(positionRelativeToCamera.xyz);
-    v_fragVisibility = exp(-pow(distanceToCamera * u_density, u_gradient));
-    v_fragVisibility = clamp(v_fragVisibility, 0.0, 1.0);
 }
 
 mat4 getVertexTransform() {

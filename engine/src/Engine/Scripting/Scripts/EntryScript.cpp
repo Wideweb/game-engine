@@ -40,6 +40,7 @@ EntryScript::EntryScript(std::string path, LuaLayer layer) : m_Layer(layer) {
     }
 
     m_EntryRef = entryRef;
+    name = path;
 }
 
 void EntryScript::run() { m_EntryRef(m_Layer); }

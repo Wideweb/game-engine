@@ -12,6 +12,8 @@ namespace Engine {
 
 class ScriptBase {
   public:
+    std::string name;
+
     virtual ~ScriptBase() {}
 };
 

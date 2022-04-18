@@ -64,6 +64,8 @@ const vec3 c_sampleOffsetDirections[20] = vec3[](
 /////////////////////////////////////////////////////////////
 uniform int u_hasDirectedLight;
 uniform DirectedLight u_directedLight;
+
+uniform mat4 u_view;
 uniform vec3 u_viewPos;
 uniform float u_threshold;
 
@@ -78,6 +80,8 @@ uniform sampler2D u_ssaoMap;
 
 uniform int u_fog;
 uniform vec3 u_fogColor;
+uniform float u_density;
+uniform float u_gradient;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -100,7 +104,6 @@ void main() {
     vec3 fragSpecular = texture(u_specularMap, v_texCoord).rgb;
     float fragShininess = texture(u_specularMap, v_texCoord).a;
     // vec3 fragDepth = texture(u_depthMap, v_texCoord).rgb;
-    float fragVisibility = texture(u_colorMap, v_texCoord).a;
 
     vec3 viewDir = normalize(u_viewPos - fragPos);
 
@@ -114,6 +117,10 @@ void main() {
 
     o_fragColor = vec4(result, 1.0);
     if (u_fog > 0) {
+        vec4 fragCameraPos = u_view * vec4(fragPos, 1.0);
+        float distanceToCamera = length(fragCameraPos.xyz);
+        float fragVisibility = exp(-pow(distanceToCamera * u_density, u_gradient));
+        fragVisibility = clamp(fragVisibility, 0.0, 1.0);
         o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, fragVisibility);
     }
 

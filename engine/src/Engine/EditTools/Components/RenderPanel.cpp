@@ -125,12 +125,12 @@ void RenderPanel::onDrawFogPanel() {
 
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::PushID("#Render_Panel_Fog_Density");
-    ImGui::InputFloat("Density", &gameLayer().renderSettings.fogDensity, 0.01f, 0.01f);
+    ImGui::InputFloat("Density", &gameLayer().renderSettings.fogDensity, 0.01f);
     ImGui::PopID();
 
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::PushID("#Render_Panel_Fog_Gradient");
-    ImGui::InputFloat("Gradient", &gameLayer().renderSettings.fogGradient, 0.01f, 0.01f);
+    ImGui::InputFloat("Gradient", &gameLayer().renderSettings.fogGradient, 0.1f);
     ImGui::PopID();
 
     ImGui::NewLine();

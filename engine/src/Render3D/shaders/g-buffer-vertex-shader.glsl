@@ -35,9 +35,6 @@ uniform mat4 u_joints[c_maxJoints];
 uniform int u_jointsNumber;
 uniform int u_hasNormalMapping;
 
-uniform float u_density;
-uniform float u_gradient;
-
 /////////////////////////////////////////////////////////////
 ///////////////////////// VARYING ///////////////////////////
 /////////////////////////////////////////////////////////////
@@ -45,7 +42,6 @@ out vec3 v_color;
 out vec3 v_normal;
 out vec2 v_texCoord;
 out vec4 v_fragPos;
-out float v_visibility;
 out mat3 v_TBN;
 
 /////////////////////////////////////////////////////////////
@@ -68,10 +64,6 @@ void main() {
         vec3 N = normalize(vec3(worldPos * vec4(a_vertexNormal, 0.0)));
         v_TBN = mat3(T, B, N);
     }
-
-    float distanceToCamera = length(positionRelativeToCamera.xyz);
-    v_visibility = exp(-pow(distanceToCamera * u_density, u_gradient));
-    v_visibility = clamp(v_visibility, 0.0, 1.0);
 }
 
 mat4 getVertexTransform() {

@@ -57,8 +57,8 @@ EntityScript::EntityScript(std::string path, LuaEntity entity) : m_Entity(entity
     }
 
     m_UpdateRef = updateRef;
-
     m_CollideRef = luabridge::getGlobal(L, "collide");
+    name = path;
 }
 
 void EntityScript::init() {
