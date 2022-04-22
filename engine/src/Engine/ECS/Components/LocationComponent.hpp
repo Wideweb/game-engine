@@ -20,7 +20,6 @@ class LocationComponent {
     glm::vec3 scale = glm::vec3(1.0f);
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
     bool updated = false;
-    bool prevUpdated = false;
 
     LocationComponent() {}
 
@@ -39,7 +38,7 @@ class LocationComponent {
                 break;
             }
             auto parentCmp = components.GetComponent<LocationComponent>(entityId);
-            updated = updated || parentCmp.prevUpdated;
+            updated = updated || parentCmp.updated;
         }
         return updated;
     }

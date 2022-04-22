@@ -16,6 +16,7 @@
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
+#include "Text2DPanel.hpp"
 #include "MeshBody.hpp"
 #include "ModelRenderPanel.hpp"
 #include "ParticlesPanel.hpp"
@@ -25,6 +26,7 @@
 #include "SkeletPanel.hpp"
 #include "TerrainPanel.hpp"
 #include "TerrainTransform.hpp"
+#include "Transform2DPanel.hpp"
 #include "TransformControlsPosition.hpp"
 #include "TransformControlsRotation.hpp"
 #include "TransformControlsScale.hpp"
@@ -50,6 +52,7 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;
     std::unique_ptr<TransformControlsScale> m_TransformControlsScale;
     std::unique_ptr<TransformPanel> m_TransformPanel;
+    std::unique_ptr<Transform2DPanel> m_Transform2DPanel;
     std::unique_ptr<ModelRenderPanel> m_ModelRenderPanel;
     std::unique_ptr<DirectedLightPanel> m_DirectedLightPanel;
     std::unique_ptr<ParticlesPanel> m_ParticlesPanel;
@@ -68,6 +71,7 @@ class EditToolsLayer : public Layer {
     std::unique_ptr<TerrainPanel> m_TerrainPanel;
     std::unique_ptr<TerrainTransform> m_TerrainTransform;
     std::unique_ptr<MeshBody> m_MeshBody;
+    std::unique_ptr<Text2DPanel> m_Text2DPanel;
 
     Layer &gameLayer();
 

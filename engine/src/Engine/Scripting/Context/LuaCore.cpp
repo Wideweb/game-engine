@@ -5,7 +5,9 @@
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
+#include "Location2DComponent.hpp"
 #include "LocationComponent.hpp"
+#include "ParentComponent.hpp"
 #include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
@@ -15,13 +17,24 @@
 #include "StaticRender3DComponent.hpp"
 #include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
+#include "Text2DComponent.hpp"
 #include "VelocityComponent.hpp"
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace Engine {
 
 void LuaCore::add(lua_State *state) {
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<glm::vec2>("vec2")
+        .addConstructor<void (*)(float, float)>()
+        .addProperty("x", &glm::vec2::x)
+        .addProperty("y", &glm::vec2::y)
+        .endClass()
+        .endNamespace();
+
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
         .beginClass<glm::vec3>("vec3")
@@ -46,6 +59,8 @@ void LuaCore::add(lua_State *state) {
         .addConstructor<void (*)(float, float, float)>()
         .addProperty("position", &LocationComponent::position)
         .addProperty("rotation", &LocationComponent::rotation)
+        .addProperty("scale", &LocationComponent::scale)
+        .addProperty("updated", &LocationComponent::updated)
         .endClass()
         .endNamespace();
 
@@ -195,6 +210,37 @@ void LuaCore::add(lua_State *state) {
         .beginNamespace("Core")
         .beginClass<ParticlesComponent>("ParticlesComponent")
         .addConstructor<void (*)(ParticlesConfiguration)>()
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<Text2DComponent>("Text2DComponent")
+        .addConstructor<void (*)(std::string, std::string)>()
+        .addProperty("color", &Text2DComponent::color)
+        .addProperty("font", &Text2DComponent::font)
+        .addProperty("text", &Text2DComponent::text)
+        .addProperty("updated", &Text2DComponent::updated)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<Location2DComponent>("Location2DComponent")
+        .addConstructor<void (*)(float, float)>()
+        .addProperty("position", &Location2DComponent::position)
+        .addProperty("rotation", &Location2DComponent::rotation)
+        .addProperty("scale", &Location2DComponent::scale)
+        .addProperty("updated", &Location2DComponent::updated)
+        .addProperty("ndc", &Location2DComponent::ndc)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<ParentComponent>("ParentComponent")
+        .addConstructor<void (*)(Entity)>()
+        .addProperty("entity", &ParentComponent::entity)
         .endClass()
         .endNamespace();
 }

@@ -53,6 +53,10 @@ void EditToolsLayer::onAttach() {
     m_TransformPanel->onAttach();
     m_TransformPanel->hide();
 
+    m_Transform2DPanel = std::make_unique<Transform2DPanel>(m_GameObject);
+    m_Transform2DPanel->onAttach();
+    m_Transform2DPanel->hide();
+
     m_TerrainPanel = std::make_unique<TerrainPanel>(m_GameObject);
     m_TerrainPanel->onAttach();
     m_TerrainPanel->hide();
@@ -87,6 +91,10 @@ void EditToolsLayer::onAttach() {
     m_SkeletPanel = std::make_unique<SkeletPanel>(m_GameObject);
     m_SkeletPanel->onAttach();
     m_SkeletPanel->hide();
+
+    m_Text2DPanel = std::make_unique<Text2DPanel>(m_GameObject);
+    m_Text2DPanel->onAttach();
+    m_Text2DPanel->hide();
 
     m_TerrainTransform = std::make_unique<TerrainTransform>(m_GameObject, *m_TerrainPanel);
     m_TerrainTransform->onAttach();
@@ -270,6 +278,13 @@ void EditToolsLayer::onUpdate() {
         m_TransformPanel->hide();
     }
 
+    if (m_GameObject.isActive() && m_GameObject.hasTransform2D()) {
+        m_Transform2DPanel->show();
+        m_Transform2DPanel->onUpdate();
+    } else {
+        m_Transform2DPanel->hide();
+    }
+
     if (m_GameObject.isActive() && m_GameObject.hasRender() && m_GameObject.isRenderActive()) {
         m_MeshBody->show();
         m_MeshBody->onUpdate();
@@ -374,6 +389,13 @@ void EditToolsLayer::onUpdate() {
         m_SkeletPanel->hide();
     }
 
+    if (m_GameObject.isActive() && m_GameObject.hasText2D()) {
+        m_Text2DPanel->show();
+        m_Text2DPanel->onUpdate();
+    } else {
+        m_Text2DPanel->hide();
+    }
+
     if (Application::get().getTime().poused()) {
         m_CameraDirector->show();
         m_CameraDirector->onUpdate();
@@ -474,16 +496,24 @@ void EditToolsLayer::onDraw() {
         m_TransformPanel->onDraw();
     }
 
+    if (m_Transform2DPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasTransform2D()) {
+        m_Transform2DPanel->onDraw();
+    }
+
     if (m_VelocityPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasVelocity()) {
         m_VelocityPanel->onDraw();
     }
 
-    if (m_TransformPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasRender()) {
+    if (m_ModelRenderPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasRender()) {
         m_ModelRenderPanel->onDraw();
     }
 
     if (m_SkeletPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasSkelet()) {
         m_SkeletPanel->onDraw();
+    }
+
+    if (m_Text2DPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasText2D()) {
+        m_Text2DPanel->onDraw();
     }
 
     if (m_CollisionPanel->isVisible() && m_GameObject.isActive() && m_GameObject.hasCollision()) {
@@ -528,6 +558,7 @@ void EditToolsLayer::onDetach() {
     m_CollisionPanel->onDetach();
     m_RigitBodyPanel->onDetach();
     m_TransformPanel->onDetach();
+    m_Transform2DPanel->onDetach();
     m_TerrainPanel->onDetach();
     m_VelocityPanel->onDetach();
     m_ParticlesPanel->onDetach();
@@ -536,6 +567,7 @@ void EditToolsLayer::onDetach() {
     m_BehaviourPanel->onDetach();
     m_MeshBody->onDetach();
     m_SkeletPanel->onDetach();
+    m_Text2DPanel->onDetach();
     m_Imgui.OnDetach();
 }
 

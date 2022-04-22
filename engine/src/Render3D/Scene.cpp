@@ -109,6 +109,26 @@ void Scene::updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &co
 
 const std::vector<SceneParticles> &Scene::getParticleEmitters() const { return m_ParticleEmitters.values(); }
 
+uint32_t Scene::addText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
+                        glm::mat4 ndcTransform, glm::vec3 color) {
+    m_Texts.add(id, {id, text, font, transform, ndcTransform, color});
+    return id;
+}
+
+void Scene::removeText(uint32_t id) { m_Texts.remove(id); }
+
+void Scene::updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
+                       glm::mat4 ndcTransform, glm::vec3 color) {
+    auto &instance = m_Texts[id];
+    instance.text = text;
+    instance.font = font;
+    instance.transform = transform;
+    instance.ndcTransform = ndcTransform;
+    instance.color = color;
+}
+
+const std::vector<SceneText> &Scene::getTexts() const { return m_Texts.values(); }
+
 void Scene::clear() { m_HasDirectedLight = false; }
 
 } // namespace Engine

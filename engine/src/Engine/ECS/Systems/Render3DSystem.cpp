@@ -92,9 +92,6 @@ void Render3DSystem::Update(ComponentManager &components) const {
                 scene.updateObject(entity, render.model, transform, render.shader);
             }
 
-            location.prevUpdated = location.updated;
-            location.updated = false;
-
             render.updated = false;
         }
     }

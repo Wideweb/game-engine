@@ -12,6 +12,7 @@ void LuaLayer::add(lua_State *state) {
         .addFunction("load3D", &LuaLayer::load3D)
         .addFunction("load3D_v2", &LuaLayer::load3D_v2)
         .addFunction("loadTerrain", &LuaLayer::loadTerrain)
+        .addFunction("loadFont", &LuaLayer::loadFont)
         .addFunction("setSkybox", &LuaLayer::setSkybox)
         .addFunction("createEntity", &LuaLayer::createEntity)
         .addFunction("getEntity", &LuaLayer::getEntity)
@@ -50,5 +51,7 @@ void LuaLayer::loadTerrain(std::string name, std::string path, unsigned int widt
     auto model = ModelLoader::loadTerrain(path, width, height, maxHeight);
     Application::get().getModels().RegisterModel(name, model);
 }
+
+void LuaLayer::loadFont(std::string name, std::string path) { Application::get().getFonts().Add(name, path); }
 
 } // namespace Engine

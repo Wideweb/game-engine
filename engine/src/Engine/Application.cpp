@@ -29,7 +29,9 @@ Application::Application(ApplicationSettings settings) {
 
     m_CameraController = std::make_unique<CameraController>(*m_Camera);
 
-    m_Texture = std::unique_ptr<TextureManager>(new TextureManager());
+    m_Texture = std::make_unique<TextureManager>();
+
+    m_Fonts = std::make_unique<FontManager>();
 
     m_EventHandler = std::make_unique<EventHandler>();
 

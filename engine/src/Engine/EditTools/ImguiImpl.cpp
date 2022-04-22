@@ -18,6 +18,7 @@
 #include "ModelFactory.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
+#include "Location2DComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "SkinnedModel.hpp"
 #include "TagComponent.hpp"
@@ -322,6 +323,19 @@ void ImguiImpl::Begin() {
             auto entity = coordinator().CreateEntity(name);
 
             coordinator().AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
+            coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
+        }
+
+        if (ImGui::MenuItem("Create Empty 2D")) {
+            std::string name;
+            size_t index = coordinator().GetEntities().size();
+            do {
+                name = std::string("entity") + std::to_string(index);
+                index++;
+            } while (coordinator().HasEntity(name));
+            auto entity = coordinator().CreateEntity(name);
+
+            coordinator().AddComponent<Location2DComponent>(entity, Location2DComponent());
             coordinator().AddComponent<TagComponent>(entity, TagComponent(name));
         }
 

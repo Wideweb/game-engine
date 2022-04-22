@@ -67,6 +67,7 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_WaterRenderer = std::make_unique<WaterRenderer>(m_Viewport, *m_GRenderer, *m_DeferredRenderer);
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
     m_Renderer2D = std::make_unique<Renderer2D>();
+    m_FontRenderer = std::make_unique<FontRenderer>(m_Viewport);
 
     vertexSrc = File::read("./shaders/ssao-vertex-shader.glsl");
     fragmentSrc = File::read("./shaders/ssao-fragment-shader.glsl");
@@ -290,6 +291,10 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     }
 
     m_OverlayRenderer->draw(camera, scene, models);
+
+    for (const auto &text : scene.getTexts()) {
+        m_FontRenderer->draw(text.id, text.text, *text.font, text.transform, text.ndcTransform, text.color);
+    }
 
     m_Framebuffer.unbind();
 }

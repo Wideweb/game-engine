@@ -24,8 +24,11 @@ set(SOURCE_EXE
     src/Engine/Application.cpp
     src/Engine/Layer.cpp
     src/Engine/TextureManager.cpp
+    src/Engine/FontManager.cpp
     src/Engine/MousePicker.cpp
     src/Engine/ECS/Systems/MoveSystem.cpp
+    src/Engine/ECS/Systems/LocationSystem.cpp
+    src/Engine/ECS/Systems/Location2DSystem.cpp
     src/Engine/ECS/Systems/DirectedLightSystem.cpp
     src/Engine/ECS/Systems/SpotLightSystem.cpp
     src/Engine/ECS/Systems/Render3DSystem.cpp
@@ -40,10 +43,12 @@ set(SOURCE_EXE
     src/Engine/ECS/Systems/BehaviourSystem.cpp
     src/Engine/ECS/Systems/ParticlesSystem.cpp
     src/Engine/ECS/Systems/ParentSystem.cpp
+    src/Engine/ECS/Systems/Text2DSystem.cpp
     src/Engine/ECS/Systems/DestroySystem.cpp
     src/Engine/Scripting/Context/LuaCore.cpp
     src/Engine/Scripting/Context/LuaEntity.cpp
     src/Engine/Scripting/Context/LuaInput.cpp
+    src/Engine/Scripting/Context/LuaRender.cpp
     src/Engine/Scripting/Context/LuaLayer.cpp
     src/Engine/Scripting/Scripts/EntityScript.cpp
     src/Engine/Scripting/Scripts/EntryScript.cpp
@@ -52,6 +57,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/BaseView.cpp
     src/Engine/EditTools/Components/RenderPanel.cpp
     src/Engine/EditTools/Components/ModelRenderPanel.cpp
+    src/Engine/EditTools/Components/Transform2DPanel.cpp
     src/Engine/EditTools/Components/TransformPanel.cpp
     src/Engine/EditTools/Components/TransformControlsPosition.cpp
     src/Engine/EditTools/Components/TransformControlsRotation.cpp
@@ -73,6 +79,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/TerrainTransform.cpp
     src/Engine/EditTools/Components/MeshBody.cpp
     src/Engine/EditTools/Components/SkyboxPanel.cpp
+    src/Engine/EditTools/Components/Text2DPanel.cpp
     src/ECS/EntityManager.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
@@ -94,6 +101,7 @@ set(SOURCE_EXE
     src/Render3D/Renderers/SpotLightRenderer.cpp
     src/Render3D/Renderers/WaterRenderer.cpp
     src/Render3D/Renderers/FlareRenderer.cpp
+    src/Render3D/Renderers/FontRenderer.cpp
     src/Render3D/Renderers/GRenderer.cpp
     src/Render3D/Renderers/ParticlesRenderer.cpp
     src/Render3D/Renderers/Renderer2D.cpp
@@ -110,6 +118,7 @@ set(SOURCE_EXE
     src/Render3D/Scene.cpp
     src/Render3D/TextureLoader.cpp
     src/Render3D/CubeMap.cpp
+    src/Render3D/Font.cpp
     src/Collision/NarrowPhaseAlgorithm.cpp
     src/Collision/AABBOverlap.cpp
     src/Sound/SoundMixer.cpp
@@ -162,7 +171,7 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-conan_cmake_configure(REQUIRES sdl/2.0.14 assimp/5.0.1 glm/0.9.9.8 lua/5.4.1
+conan_cmake_configure(REQUIRES sdl/2.0.14 assimp/5.0.1 glm/0.9.9.8 lua/5.4.1 freetype/2.11.1 zlib/1.2.12
                       GENERATORS cmake_find_package)
 
 conan_cmake_autodetect(settings)
@@ -183,6 +192,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE assimp::assimp)
 
 find_package(lua REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE lua::lua)
+
+find_package(Freetype REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui)
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui)

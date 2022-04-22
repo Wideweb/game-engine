@@ -12,6 +12,7 @@
 #include "SkeletComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "Text2DComponent.hpp"
 
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -87,6 +88,10 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
 
         if (!coordinator.HasComponent<BehaviourComponent>(entity) && ImGui::MenuItem("Add Behaviour")) {
             coordinator.AddComponent<BehaviourComponent>(entity, BehaviourComponent());
+        }
+
+        if (!coordinator.HasComponent<Text2DComponent>(entity) && ImGui::MenuItem("Add 2D Text")) {
+            coordinator.AddComponent<Text2DComponent>(entity, Text2DComponent());
         }
 
         if (!coordinator.HasComponent<CameraComponent>(entity) && ImGui::MenuItem("Bind Camera")) {

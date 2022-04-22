@@ -38,6 +38,8 @@ class Texture : public GfxImage {
     static Texture createR8Buffer(int width, int height);
     static Texture createR16FBuffer(int width, int height);
     static Texture createR32FBuffer(int width, int height);
+
+    static Texture createTrueTypeGlyph(int width, int height, unsigned char *data);
 };
 
 class CubeMapTexture : public Texture {

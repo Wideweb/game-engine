@@ -400,4 +400,31 @@ Texture Texture::createR32FBuffer(int width, int height) {
     return texture;
 }
 
+Texture Texture::createTrueTypeGlyph(int width, int height, unsigned char *data) {
+    Texture texture;
+    texture.width = width;
+    texture.height = height;
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = Texture::InternalFormat::R8F;
+    texture.dataFormat = Texture::DataFormat::RED;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
+
+    return texture;
+}
+
 } // namespace Engine

@@ -1,4 +1,6 @@
 function main(app)
+    app:loadFont("orange juice 2.0.ttf", "assets/fonts/orange-juice-2.0.ttf");
+
     app:load3D_v2("box", "./assets/models/box/box.fbx");
 
     app:setSkybox("./assets/models/skybox-2/right.png",
@@ -23,4 +25,16 @@ function main(app)
     box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
     box:addTagComponent(Core.TagComponent("platform"));
     box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+
+    local messageContainer = app:createEntity("MessageContainer");
+    local messageContainerLocation = Core.Location2DComponent(0.0, 1.0);
+    messageContainerLocation.ndc = true;
+    messageContainer:addLocation2DComponent(messageContainerLocation);
+
+    local message = app:createEntity("Message");
+    message:addLocation2DComponent(Core.Location2DComponent(0.0, -40.0));
+    message:addParentComponent(Core.ParentComponent(messageContainer:getId()));
+    local messageText = Core.Text2DComponent("Hello World", "orange juice 2.0.ttf");
+    messageText.color = Core.vec3(0.0, 0.0, 1.0);
+    message:addText2DComponent(messageText);
 end

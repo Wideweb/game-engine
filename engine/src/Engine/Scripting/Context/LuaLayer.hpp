@@ -7,6 +7,7 @@
 
 #include "LuaBridge/LuaBridge.h"
 
+#include <glm/vec2.hpp>
 #include <string>
 
 namespace Engine {
@@ -31,6 +32,8 @@ class LuaLayer {
     void load3D_v2(std::string name, std::string path);
 
     void loadTerrain(std::string name, std::string path, unsigned int width, unsigned int height, float maxHeight);
+
+    void loadFont(std::string name, std::string path);
 
     void static add(lua_State *state);
 };

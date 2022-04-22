@@ -24,6 +24,7 @@
 #include "SkyboxRenderer.hpp"
 #include "SpotLightRenderer.hpp"
 #include "WaterRenderer.hpp"
+#include "FontRenderer.hpp"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
@@ -49,6 +50,7 @@ class MasterRenderer {
     std::unique_ptr<ParticlesRenderer> m_ParticlesRenderer;
     std::unique_ptr<Renderer2D> m_Renderer2D;
     std::unique_ptr<DeferredRenderer> m_DeferredRenderer;
+    std::unique_ptr<FontRenderer> m_FontRenderer;
 
     Viewport m_Viewport;
     RendererState m_State;

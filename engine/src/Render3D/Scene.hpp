@@ -9,6 +9,7 @@
 
 #include "DirectedLight.hpp"
 #include "FlatDictionary.hpp"
+#include "Font.hpp"
 #include "IteratorRange.hpp"
 #include "Model.hpp"
 #include "Particles.hpp"
@@ -24,6 +25,15 @@ constexpr uint32_t c_MaxSceneLights = 4;
 struct SceneSpotLight {
     SpotLight light;
     glm::vec3 position;
+};
+
+struct SceneText {
+    uint32_t id;
+    std::string text;
+    std::shared_ptr<Font> font;
+    glm::mat4 transform;
+    glm::mat4 ndcTransform;
+    glm::vec3 color;
 };
 
 struct SceneParticles {
@@ -78,6 +88,11 @@ class Scene {
                                 double deltaTime);
     const std::vector<SceneParticles> &getParticleEmitters() const;
 
+    uint32_t addText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,  glm::mat4 ndcTransform, glm::vec3 color);
+    void removeText(uint32_t id);
+    void updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform, glm::mat4 ndcTransform, glm::vec3 color);
+    const std::vector<SceneText> &getTexts() const;
+
     void clear();
 
   private:
@@ -91,6 +106,7 @@ class Scene {
 
     FlatDictionary<uint32_t, SceneParticles> m_ParticleEmitters;
     FlatDictionary<uint32_t, SceneSpotLight> m_SpotLights;
+    FlatDictionary<uint32_t, SceneText> m_Texts;
 };
 
 } // namespace Engine

@@ -14,6 +14,7 @@
 #include "DestroyComponent.hpp"
 #include "DirectedLightComponent.hpp"
 #include "EditToolComponent.hpp"
+#include "Location2DComponent.hpp"
 #include "LocationComponent.hpp"
 #include "ParentComponent.hpp"
 #include "ParticlesComponent.hpp"
@@ -25,6 +26,7 @@
 #include "StaticRender3DComponent.hpp"
 #include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
+#include "Text2DComponent.hpp"
 #include "VelocityComponent.hpp"
 
 #include "AISystem.hpp"
@@ -33,6 +35,8 @@
 #include "CollisionSystem.hpp"
 #include "DestroySystem.hpp"
 #include "DirectedLightSystem.hpp"
+#include "Location2DSystem.hpp"
+#include "LocationSystem.hpp"
 #include "MoveSystem.hpp"
 #include "ParentSystem.hpp"
 #include "ParticlesSystem.hpp"
@@ -43,6 +47,7 @@
 #include "StaticCollisionSystem.hpp"
 #include "StaticRender3DSystem.hpp"
 #include "TerrainCollisionSystem.hpp"
+#include "Text2DSystem.hpp"
 
 namespace Engine {
 
@@ -65,6 +70,8 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<TagComponent>();
     m_Coordinator.RegisterComponent<ParentComponent>();
     m_Coordinator.RegisterComponent<EditToolComponent>();
+    m_Coordinator.RegisterComponent<Text2DComponent>();
+    m_Coordinator.RegisterComponent<Location2DComponent>();
     m_Coordinator.RegisterComponent<DestroyComponent>();
 
     {
@@ -184,6 +191,28 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
         signature.set(m_Coordinator.GetComponentType<LocationComponent>());
 
         m_Coordinator.RegisterSystem<ParticlesSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<Text2DComponent>());
+        signature.set(m_Coordinator.GetComponentType<Location2DComponent>());
+
+        m_Coordinator.RegisterSystem<Text2DSystem>(signature, m_Name);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<Location2DComponent>());
+
+        m_Coordinator.RegisterSystem<Location2DSystem>(signature);
+    }
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<LocationComponent>());
+
+        m_Coordinator.RegisterSystem<LocationSystem>(signature);
     }
 
     {

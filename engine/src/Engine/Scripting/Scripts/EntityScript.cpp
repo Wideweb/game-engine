@@ -1,6 +1,7 @@
 #include "EntityScript.hpp"
 #include "LuaCore.hpp"
 #include "LuaInput.hpp"
+#include "LuaRender.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -13,6 +14,7 @@ EntityScript::EntityScript(std::string path, LuaEntity entity) : m_Entity(entity
 
     LuaCore::add(L);
     LuaInput::add(L);
+    LuaRender::add(L);
     LuaEntity::add(L);
 
     int error = luaL_loadfile(L, path.c_str());

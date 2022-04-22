@@ -9,6 +9,7 @@
 #include "Entity.hpp"
 #include "EventDispatcher.hpp"
 #include "InstancedModel.hpp"
+#include "Location2DComponent.hpp"
 #include "LocationComponent.hpp"
 #include "Material.hpp"
 #include "Math.hpp"
@@ -22,6 +23,7 @@
 #include "StaticCollisionComponent.hpp"
 #include "TBN.hpp"
 #include "TerrainCollisionComponent.hpp"
+#include "Text2DComponent.hpp"
 #include "TextureLoader.hpp"
 #include "VelocityComponent.hpp"
 
@@ -110,38 +112,43 @@ class GameObjectModel {
 
     TransformOrientation transformOrientation() { return m_TransformOrientation; }
 
-    bool hasPosition() {
-        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return true;
-        }
+    bool hasTransform2D() { return coordinator().HasComponent<Location2DComponent>(m_Entity); }
 
-        return false;
-    }
+    bool hasPosition() { return coordinator().HasComponent<LocationComponent>(m_Entity); }
 
     glm::mat4 parentTransform() {
         glm::mat4 transform(1);
 
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return transform;
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return LocationComponent::getParentTransform(m_Entity, coordinator().GetComponentManager());
         }
 
-        return LocationComponent::getParentTransform(m_Entity, coordinator().GetComponentManager());
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            return Location2DComponent::getParentTransform(m_Entity, coordinator().GetComponentManager());
+        }
+
+        return transform;
     }
 
     glm::mat4 localTransform() {
         glm::mat4 transform(1);
 
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return transform;
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return LocationComponent::getLocalTransform(m_Entity, coordinator().GetComponentManager());
         }
 
-        return LocationComponent::getLocalTransform(m_Entity, coordinator().GetComponentManager());
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            return Location2DComponent::getLocalTransform(m_Entity, coordinator().GetComponentManager());
+        }
+
+        return transform;
     }
 
     glm::mat4 transform() {
         glm::mat4 transform(1);
 
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity) &&
+            !coordinator().HasComponent<Location2DComponent>(m_Entity)) {
             return transform;
         }
 
@@ -149,7 +156,8 @@ class GameObjectModel {
     }
 
     glm::vec3 position() {
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity) &&
+            !coordinator().HasComponent<Location2DComponent>(m_Entity)) {
             return glm::vec3(0.0f);
         }
 
@@ -181,10 +189,17 @@ class GameObjectModel {
     }
 
     void localPosition(glm::vec3 value) {
-        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<Location2DComponent>(m_Entity);
+            location.position = value;
+            location.updated = true;
+        }
 
-        location.position = value;
-        location.updated = true;
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+            location.position = value;
+            location.updated = true;
+        }
 
         if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
             coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
@@ -198,16 +213,18 @@ class GameObjectModel {
     }
 
     glm::vec3 localPosition() {
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return glm::vec3(0.0f);
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return coordinator().GetComponent<LocationComponent>(m_Entity).position;
         }
 
-        return coordinator().GetComponent<LocationComponent>(m_Entity).position;
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            return glm::vec3(coordinator().GetComponent<Location2DComponent>(m_Entity).position, 0.0f);
+        }
+
+        return glm::vec3(0.0f);
     }
 
     void move(glm::vec3 value) {
-        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
-
         glm::mat4 transform = glm::inverse(parentTransform());
         glm::vec3 scale;
         glm::quat rotation;
@@ -217,9 +234,21 @@ class GameObjectModel {
         glm::decompose(transform, scale, rotation, position, skew, perspective);
 
         value = rotation * value;
+        glm::vec3 newPosition;
 
-        location.position += value;
-        location.updated = true;
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+            location.position += value;
+            location.updated = true;
+            newPosition = location.position;
+        }
+
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<Location2DComponent>(m_Entity);
+            location.position += glm::vec2(value);
+            location.updated = true;
+            newPosition = glm::vec3(location.position, 0.0f);
+        }
 
         if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
             coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
@@ -229,14 +258,25 @@ class GameObjectModel {
             coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
         }
 
-        positionChange$.dispatch(location.position);
+        positionChange$.dispatch(newPosition);
     }
 
     void moveLocal(glm::vec3 value) {
-        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+        glm::vec3 newPosition;
 
-        location.position += value;
-        location.updated = true;
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+            location.position += value;
+            location.updated = true;
+            newPosition = location.position;
+        }
+
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<Location2DComponent>(m_Entity);
+            location.position += glm::vec2(value);
+            location.updated = true;
+            newPosition = glm::vec3(location.position, 0.0f);
+        }
 
         if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
             coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
@@ -246,7 +286,7 @@ class GameObjectModel {
             coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
         }
 
-        positionChange$.dispatch(location.position);
+        positionChange$.dispatch(newPosition);
     }
 
     bool hasRotation() {
@@ -262,7 +302,8 @@ class GameObjectModel {
     }
 
     glm::vec3 rotation() {
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity) &&
+            !coordinator().HasComponent<Location2DComponent>(m_Entity)) {
             return glm::vec3(0.0f);
         }
 
@@ -300,11 +341,15 @@ class GameObjectModel {
     }
 
     glm::vec3 localRotation() {
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return glm::vec3(0.0f);
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            return coordinator().GetComponent<LocationComponent>(m_Entity).rotation;
         }
 
-        return coordinator().GetComponent<LocationComponent>(m_Entity).rotation;
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            return glm::vec3(0.0f, 0.0f, coordinator().GetComponent<Location2DComponent>(m_Entity).rotation);
+        }
+
+        return glm::vec3(0.0f);
     }
 
     void localRotation(glm::vec3 value) {
@@ -317,14 +362,25 @@ class GameObjectModel {
 
             location.rotation = value;
             location.updated = true;
+        }
 
-            if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
-                coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<Location2DComponent>(m_Entity);
+
+            if (location.rotation == value.z) {
+                return;
             }
 
-            if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
-                coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
-            }
+            location.rotation = value.z;
+            location.updated = true;
+        }
+
+        if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
+        }
+
+        if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
+            coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
         }
 
         rotationChange$.dispatch(value);
@@ -351,7 +407,8 @@ class GameObjectModel {
     }
 
     glm::vec3 scale() {
-        if (!coordinator().HasComponent<LocationComponent>(m_Entity)) {
+        if (!coordinator().HasComponent<LocationComponent>(m_Entity) &&
+            !coordinator().HasComponent<Location2DComponent>(m_Entity)) {
             return glm::vec3(0.0f);
         }
 
@@ -375,6 +432,10 @@ class GameObjectModel {
             return coordinator().GetComponent<LocationComponent>(m_Entity).scale;
         }
 
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            return glm::vec3(coordinator().GetComponent<Location2DComponent>(m_Entity).scale, 1.0f);
+        }
+
         return glm::vec3(0.0f);
     }
 
@@ -391,11 +452,25 @@ class GameObjectModel {
             value.z = 0.01;
         }
 
-        auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+        glm::vec3 oldValue, newValue;
 
-        glm::vec3 oldValue = scale();
-        location.scale = value;
-        glm::vec3 newValue = scale();
+        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
+
+            oldValue = scale();
+            location.scale = value;
+            newValue = scale();
+            location.updated = true;
+        }
+
+        if (coordinator().HasComponent<Location2DComponent>(m_Entity)) {
+            auto &location = coordinator().GetComponent<Location2DComponent>(m_Entity);
+
+            oldValue = scale();
+            location.scale = glm::vec2(value);
+            newValue = scale();
+            location.updated = true;
+        }
 
         if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
             auto &collision = coordinator().GetComponent<StaticCollisionComponent>(m_Entity);
@@ -418,8 +493,6 @@ class GameObjectModel {
         if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
             coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
         }
-
-        location.updated = true;
 
         if (coordinator().HasComponent<Render3DComponent>(m_Entity)) {
             coordinator().GetComponent<Render3DComponent>(m_Entity).updated = true;
@@ -584,6 +657,8 @@ class GameObjectModel {
     }
 
     bool hasRender() { return coordinator().HasComponent<Render3DComponent>(m_Entity); }
+
+    bool hasText2D() { return coordinator().HasComponent<Text2DComponent>(m_Entity); }
 
     bool hasModel() { return hasRender() && !coordinator().GetComponent<Render3DComponent>(m_Entity).model.empty(); }
 

@@ -11,6 +11,7 @@
 #include "glad/glad.h"
 #include "imgui/imgui.h"
 #include <filesystem>
+#include <glm/gtc/type_ptr.hpp>
 #include <memory>
 
 namespace Engine {

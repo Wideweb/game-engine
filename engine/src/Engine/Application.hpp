@@ -3,6 +3,7 @@
 #include "Camera.hpp"
 #include "CameraController.hpp"
 #include "EventHandler.hpp"
+#include "FontManager.hpp"
 #include "Input.hpp"
 #include "Layer.hpp"
 #include "MasterRenderer.hpp"
@@ -44,6 +45,7 @@ class Application {
     std::unique_ptr<Camera> m_Camera;
     std::unique_ptr<CameraController> m_CameraController;
     std::unique_ptr<TextureManager> m_Texture;
+    std::unique_ptr<FontManager> m_Fonts;
     std::unique_ptr<EventHandler> m_EventHandler;
     std::unique_ptr<SoundMixer> m_Sound;
     std::unique_ptr<MousePicker> m_MousePicker;
@@ -97,6 +99,7 @@ class Application {
     Time &getTime() { return m_Time; }
     Time &getGlobalTime() { return m_GlobalTime; }
     TextureManager &getTextures() { return *m_Texture; }
+    FontManager &getFonts() { return *m_Fonts; }
     ModelManager &getModels() { return m_Models; }
     EventHandler &getEventHandler() { return *m_EventHandler; }
     Layer &getLayer(const std::string &label) { return **m_NameToLayer[label]; }

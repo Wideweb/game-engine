@@ -5,7 +5,9 @@
 #include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
+#include "Location2DComponent.hpp"
 #include "LocationComponent.hpp"
+#include "ParentComponent.hpp"
 #include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
@@ -15,6 +17,7 @@
 #include "StaticRender3DComponent.hpp"
 #include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
+#include "Text2DComponent.hpp"
 #include "VelocityComponent.hpp"
 
 namespace Engine {
@@ -44,6 +47,12 @@ void LuaEntity::add(lua_State *state) {
         .addFunction("getSkeletComponent", &LuaEntity::getComponent<SkeletComponent>)
         .addFunction("addSkeletComponent", &LuaEntity::addComponent<SkeletComponent>)
         .addFunction("addParticlesComponent", &LuaEntity::addComponent<ParticlesComponent>)
+        .addFunction("addText2DComponent", &LuaEntity::addComponent<Text2DComponent>)
+        .addFunction("getText2DComponent", &LuaEntity::getComponent<Text2DComponent>)
+        .addFunction("addLocation2DComponent", &LuaEntity::addComponent<Location2DComponent>)
+        .addFunction("getLocation2DComponent", &LuaEntity::getComponent<Location2DComponent>)
+        .addFunction("addParentComponent", &LuaEntity::addComponent<ParentComponent>)
+        .addFunction("getParentComponent", &LuaEntity::getComponent<ParentComponent>)
         .addFunction("getId", &LuaEntity::getId)
         .endClass();
 }
