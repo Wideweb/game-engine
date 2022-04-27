@@ -19,7 +19,7 @@ class CollisionBody : public BaseView {
 
     void onAttach() override;
 
-    void onDraw() override;
+    void onUpdate() override;
 
     void show() override;
     void hide() override;

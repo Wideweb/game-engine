@@ -6,6 +6,7 @@
 #include "Render3DComponent.hpp"
 #include "Shader.hpp"
 #include "TerrainPanel.hpp"
+#include "Window.hpp"
 
 #include <memory>
 #include <vector>
@@ -34,7 +35,6 @@ class TerrainTransform : public BaseView {
 
     void onAttach() override;
     void onUpdate() override;
-    void onDraw() override;
     void onMouseEvent(MouseEvent &event) override;
     void hide() override;
     void show() override;

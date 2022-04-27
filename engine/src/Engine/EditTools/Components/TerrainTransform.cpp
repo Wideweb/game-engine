@@ -65,10 +65,6 @@ void TerrainTransform::onUpdate() {
             m_Edit = true;
         }
     }
-}
-
-void TerrainTransform::onDraw() {
-    const auto &camera = Application::get().getCamera();
 
     m_Shader->bind();
     m_Shader->setMatrix4("u_view", camera.viewMatrix());

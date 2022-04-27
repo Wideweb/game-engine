@@ -48,6 +48,13 @@ void MeshBody::onUpdate() {
     } else {
         hide();
     }
+
+    const auto &camera = Application::get().getCamera();
+
+    m_Shader->bind();
+    m_Shader->setMatrix4("u_view", camera.viewMatrix());
+    m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
+    m_Shader->unbind();
 }
 
 void MeshBody::show() {
@@ -57,15 +64,6 @@ void MeshBody::show() {
     coordinator.SetComponentActive<ParentComponent>(m_MeshBody, true);
 
     BaseView::show();
-}
-
-void MeshBody::onDraw() {
-    const auto &camera = Application::get().getCamera();
-
-    m_Shader->bind();
-    m_Shader->setMatrix4("u_view", camera.viewMatrix());
-    m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-    m_Shader->unbind();
 }
 
 void MeshBody::hide() {

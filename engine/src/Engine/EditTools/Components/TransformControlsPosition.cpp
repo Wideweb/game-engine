@@ -53,9 +53,7 @@ void TransformControlsPosition::onAttach() {
     m_ControlZ = controlZ;
 }
 
-void TransformControlsPosition::onUpdate() {}
-
-void TransformControlsPosition::onDraw() {
+void TransformControlsPosition::onUpdate() {
     auto &gameCordinator = gameLayer().getCoordinator();
     auto &coordinator = toolsLayer().getCoordinator();
 

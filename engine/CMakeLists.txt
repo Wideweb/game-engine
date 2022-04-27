@@ -55,6 +55,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/ImguiImpl.cpp
     src/Engine/EditTools/EditToolsLayer.cpp
     src/Engine/EditTools/Components/BaseView.cpp
+    src/Engine/EditTools/Components/ToolbarPanel.cpp
     src/Engine/EditTools/Components/RenderPanel.cpp
     src/Engine/EditTools/Components/ModelRenderPanel.cpp
     src/Engine/EditTools/Components/Transform2DPanel.cpp
@@ -68,7 +69,10 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/ContentBrowserPanel.cpp
     src/Engine/EditTools/Components/BehaviourPanel.cpp
     src/Engine/EditTools/Components/CameraDirector.cpp
+    src/Engine/EditTools/Components/ScenePanel.cpp
     src/Engine/EditTools/Components/GamePanel.cpp
+    src/Engine/EditTools/Components/ConsolePanel.cpp
+    src/Engine/EditTools/Components/InspectorPanel.cpp
     src/Engine/EditTools/Components/VelocityPanel.cpp
     src/Engine/EditTools/Components/DirectedLightDirector.cpp
     src/Engine/EditTools/Components/SkeletPanel.cpp

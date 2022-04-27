@@ -11,6 +11,7 @@ namespace Engine {
 class IComponentArray {
   public:
     virtual ~IComponentArray() = default;
+    virtual bool Has(Entity entity) = 0;
     virtual void Remove(Entity entity) = 0;
 };
 

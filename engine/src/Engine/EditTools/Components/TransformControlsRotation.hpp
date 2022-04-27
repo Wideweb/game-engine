@@ -21,7 +21,6 @@ class TransformControlsRotation : public BaseView {
 
     void onAttach() override;
     void onUpdate() override;
-    void onDraw() override;
     void onDetach() override;
     void onMouseEvent(MouseEvent &event) override;
     bool handleSelection(Entity entity) override;

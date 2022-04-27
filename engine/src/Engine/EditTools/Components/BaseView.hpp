@@ -17,6 +17,8 @@ class BaseView {
     virtual void onAttach();
     virtual void onUpdate();
     virtual void onDraw();
+    virtual void onBeforeGameDraw();
+    virtual void onAfterGameDraw();
     virtual void onDetach();
     virtual void onMouseEvent(MouseEvent &event);
     virtual bool handleSelection(Entity entity);

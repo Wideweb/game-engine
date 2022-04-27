@@ -114,7 +114,7 @@ class GameObjectModel {
 
     bool hasTransform2D() { return coordinator().HasComponent<Location2DComponent>(m_Entity); }
 
-    bool hasPosition() { return coordinator().HasComponent<LocationComponent>(m_Entity); }
+    bool hasTransform() { return coordinator().HasComponent<LocationComponent>(m_Entity); }
 
     glm::mat4 parentTransform() {
         glm::mat4 transform(1);
@@ -289,18 +289,6 @@ class GameObjectModel {
         positionChange$.dispatch(newPosition);
     }
 
-    bool hasRotation() {
-        if (coordinator().HasComponent<DirectedLightComponent>(m_Entity)) {
-            return true;
-        }
-
-        if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
-            return true;
-        }
-
-        return false;
-    }
-
     glm::vec3 rotation() {
         if (!coordinator().HasComponent<LocationComponent>(m_Entity) &&
             !coordinator().HasComponent<Location2DComponent>(m_Entity)) {
@@ -315,29 +303,6 @@ class GameObjectModel {
         glm::decompose(transform(), scale, rotation, position, skew, perspective);
 
         return glm::eulerAngles(rotation);
-    }
-
-    void rotation(glm::vec3 value) {
-        // if (coordinator().HasComponent<LocationComponent>(m_Entity)) {
-        //     auto &location = coordinator().GetComponent<LocationComponent>(m_Entity);
-
-        //     if (location.rotation == value) {
-        //         return;
-        //     }
-
-        //     location.rotation = value;
-        //     location.updated = true;
-
-        //     if (coordinator().HasComponent<StaticCollisionComponent>(m_Entity)) {
-        //         coordinator().GetComponent<StaticCollisionComponent>(m_Entity).updated = true;
-        //     }
-
-        //     if (coordinator().HasComponent<TerrainCollisionComponent>(m_Entity)) {
-        //         coordinator().GetComponent<TerrainCollisionComponent>(m_Entity).updated = true;
-        //     }
-        // }
-
-        // rotationChange$.dispatch(value);
     }
 
     glm::vec3 localRotation() {
@@ -880,8 +845,8 @@ class GameObjectModel {
         }
     }
 
-  private:
     Layer &layer() { return Application::get().getLayer("game_area"); }
+
     Coordinator &coordinator() { return layer().getCoordinator(); }
 };
 

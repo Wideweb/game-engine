@@ -74,33 +74,29 @@ class Coordinator {
         return m_EntityManager->GetSignature(entity).test(m_ComponentManager->GetComponentType<T>());
     }
 
-    template <typename TFirst, typename TSecond, typename... TRest> bool IsAnyComponentActive(Entity entity) {
-        return IsComponentActive<TFirst>(entity) || IsAnyComponentActive<TSecond, TRest...>(entity);
+    template <typename THead, typename... TRest> bool IsAnyComponentActive(Entity entity) {
+        return IsComponentActive<THead>(entity) || IsAnyComponentActive<TRest...>(entity);
     }
 
-    template <typename T> bool IsAnyComponentActive(Entity entity) { return IsComponentActive<T>(entity); }
-
-    template <typename TFirst, typename TSecond, typename... TRest> bool IsAllComponentActive(Entity entity) {
-        return IsComponentActive<TFirst>(entity) && IsAllComponentActive<TSecond, TRest...>(entity);
+    template <typename THead, typename... TRest> bool IsAllComponentActive(Entity entity) {
+        return IsComponentActive<THead>(entity) && IsAllComponentActive<TRest...>(entity);
     }
-
-    template <typename T> bool IsAllComponentActive(Entity entity) { return IsComponentActive<T>(entity); }
 
     template <typename T> T &GetComponent(Entity entity) { return m_ComponentManager->GetComponent<T>(entity); }
 
     template <typename T> bool HasComponent(Entity entity) { return m_ComponentManager->HasComponent<T>(entity); }
 
-    template <typename TFirst, typename TSecond, typename... TRest> bool HasAnyComponent(Entity entity) {
-        return HasComponent<TFirst>(entity) || HasAnyComponent<TSecond, TRest...>(entity);
+    template <typename THead, typename... TRest> bool HasAnyComponent(Entity entity) {
+        return HasComponent<THead>(entity) || HasAnyComponent<TRest...>(entity);
     }
 
-    template <typename T> bool HasAnyComponent(Entity entity) { return HasComponent<T>(entity); }
+    template <> bool HasAnyComponent(Entity entity) { return true; }
 
-    template <typename TFirst, typename TSecond, typename... TRest> bool HasAllComponent(Entity entity) {
-        return HasComponent<TFirst>(entity) && HasAllComponent<TSecond, TRest...>(entity);
+    template <typename THead, typename... TRest> bool HasAllComponent(Entity entity) {
+        return HasComponent<THead>(entity) && HasAllComponent<TRest...>(entity);
     }
 
-    template <typename T> bool HasAllComponent(Entity entity) { return HasComponent<T>(entity); }
+    template <> bool HasAllComponent(Entity entity) { return true; }
 
     template <typename T> ComponentType GetComponentType() { return m_ComponentManager->GetComponentType<T>(); }
 

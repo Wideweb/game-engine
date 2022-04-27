@@ -1,77 +1,51 @@
 #pragma once
 
+#include <array>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <functional>
 #include <memory>
-#include <string>
 
-#include "BehaviourPanel.hpp"
 #include "CameraDirector.hpp"
-#include "CollisionBody.hpp"
-#include "CollisionPanel.hpp"
+#include "ConsolePanel.hpp"
 #include "ContentBrowserPanel.hpp"
 #include "DirectedLightDirector.hpp"
-#include "DirectedLightPanel.hpp"
 #include "EditToolsEvent.hpp"
 #include "GameObjectModel.hpp"
 #include "GamePanel.hpp"
 #include "ImguiImpl.hpp"
-#include "Text2DPanel.hpp"
-#include "MeshBody.hpp"
-#include "ModelRenderPanel.hpp"
-#include "ParticlesPanel.hpp"
+#include "InspectorPanel.hpp"
 #include "RenderPanel.hpp"
-#include "RigitBodyPanel.hpp"
 #include "SceneHierarchyPanel.hpp"
-#include "SkeletPanel.hpp"
-#include "TerrainPanel.hpp"
-#include "TerrainTransform.hpp"
-#include "Transform2DPanel.hpp"
-#include "TransformControlsPosition.hpp"
-#include "TransformControlsRotation.hpp"
-#include "TransformControlsScale.hpp"
-#include "TransformPanel.hpp"
-#include "VelocityPanel.hpp"
+#include "ScenePanel.hpp"
+#include "ToolbarPanel.hpp"
 #include "Window.hpp"
 
 namespace Engine {
+
+struct EditToolsView {
+    std::unique_ptr<BaseView> view;
+    std::function<bool(void)> visible;
+};
 
 class EditToolsLayer : public Layer {
   private:
     GameObjectModel m_GameObject;
     glm::vec2 m_MousePos;
-    std::string m_Logs;
-
     ImguiImpl m_Imgui;
-
     glm::vec3 m_Pivot;
-
     EditToolsEventPool m_EventPool;
+    std::array<EditToolsView, 2> m_SceneTools;
+    std::array<bool, 2> m_SceneToolsVisibility = {false};
 
-    std::unique_ptr<TransformControlsPosition> m_TransformControlsPosition;
-    std::unique_ptr<TransformControlsRotation> m_TransformControlsRotation;
-    std::unique_ptr<TransformControlsScale> m_TransformControlsScale;
-    std::unique_ptr<TransformPanel> m_TransformPanel;
-    std::unique_ptr<Transform2DPanel> m_Transform2DPanel;
-    std::unique_ptr<ModelRenderPanel> m_ModelRenderPanel;
-    std::unique_ptr<DirectedLightPanel> m_DirectedLightPanel;
-    std::unique_ptr<ParticlesPanel> m_ParticlesPanel;
     std::unique_ptr<SceneHierarchyPanel> m_SceneHierarchyPanel;
     std::unique_ptr<ContentBrowserPanel> m_ContentBrowserPanel;
-    std::unique_ptr<BehaviourPanel> m_BehaviourPanel;
-    std::unique_ptr<CameraDirector> m_CameraDirector;
-    std::unique_ptr<GamePanel> m_GamePanel;
-    std::unique_ptr<VelocityPanel> m_VelocityPanel;
-    std::unique_ptr<DirectedLightDirector> m_DirectedLightDirector;
-    std::unique_ptr<SkeletPanel> m_SkeletPanel;
     std::unique_ptr<RenderPanel> m_RenderPanel;
-    std::unique_ptr<CollisionBody> m_CollisionBody;
-    std::unique_ptr<RigitBodyPanel> m_RigitBodyPanel;
-    std::unique_ptr<CollisionPanel> m_CollisionPanel;
-    std::unique_ptr<TerrainPanel> m_TerrainPanel;
-    std::unique_ptr<TerrainTransform> m_TerrainTransform;
-    std::unique_ptr<MeshBody> m_MeshBody;
-    std::unique_ptr<Text2DPanel> m_Text2DPanel;
+    std::unique_ptr<ScenePanel> m_ScenePanel;
+    std::unique_ptr<ToolbarPanel> m_ToolbarPanel;
+    std::unique_ptr<GamePanel> m_GamePanel;
+    std::unique_ptr<InspectorPanel> m_InspectorPanel;
+    std::unique_ptr<ConsolePanel> m_ConsolePanel;
 
     Layer &gameLayer();
 
@@ -85,6 +59,8 @@ class EditToolsLayer : public Layer {
     virtual void onMouseEvent(MouseEvent &event) override;
 
     void handleSelection();
+    void onBeforeGameDraw();
+    void onAfterGameDraw();
 };
 
 } // namespace Engine

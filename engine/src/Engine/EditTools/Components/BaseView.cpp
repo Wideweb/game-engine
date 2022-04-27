@@ -13,6 +13,10 @@ void BaseView::onUpdate() {}
 
 void BaseView::onDraw() {}
 
+void BaseView::onBeforeGameDraw() {}
+
+void BaseView::onAfterGameDraw() {}
+
 void BaseView::onDetach() {}
 
 void BaseView::onMouseEvent(MouseEvent &) {}

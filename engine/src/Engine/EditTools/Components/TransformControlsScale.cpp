@@ -87,9 +87,7 @@ void TransformControlsScale::onAttach() {
     m_ControlZ = controlZ;
 }
 
-void TransformControlsScale::onUpdate() {}
-
-void TransformControlsScale::onDraw() {
+void TransformControlsScale::onUpdate() {
     auto &gameCordinator = gameLayer().getCoordinator();
     auto &coordinator = toolsLayer().getCoordinator();
 

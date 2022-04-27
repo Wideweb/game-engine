@@ -40,8 +40,8 @@ bool EntityManager::ChangeName(Entity entity, std::string name) {
         return false;
     }
 
-    m_EntityName.update(entity, name);
     m_NameToEntity.changeKey(GetName(entity), name);
+    m_EntityName.update(entity, name);
 
     return true;
 }
