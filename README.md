@@ -3,13 +3,13 @@
 By default, the editor consist of the following tabs:
 - Scene
 - Scene Hierarchy
-- Camera View Port
+- Scene Settings
+- Camera
 - Content Browser
-- Console Logs
-- Render Settings
-- Skybox
+- Console
+- Inspector
 
-<img width="1440" alt="interface" src="https://user-images.githubusercontent.com/3997537/161746054-ffd1e0d9-a338-4e9f-993b-75e01e2ba094.png">
+<img width="1000" alt="start-screen" src="https://user-images.githubusercontent.com/3997537/165629117-2fbad3c9-8cbc-418c-be7f-67bd6c255452.png">
 
 ### Scene
 In the scene tab you can directly edit the contents of the scene: move, scale, rotate, add and remove objects. By default, the scene has directional light (green arrow), camera (blue arrow), and box.
