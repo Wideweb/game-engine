@@ -11,8 +11,8 @@
 #include "PhysicsComponent.hpp"
 #include "SkeletComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
-#include "VelocityComponent.hpp"
 #include "Text2DComponent.hpp"
+#include "VelocityComponent.hpp"
 
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>

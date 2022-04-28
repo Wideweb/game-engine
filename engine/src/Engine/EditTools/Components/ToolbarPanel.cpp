@@ -10,8 +10,8 @@ namespace Engine {
 ToolbarPanel::ToolbarPanel() {}
 
 void ToolbarPanel::onAttach() {
-    m_IconPlay = TextureLoader::loadTexture("assets/icons/play.png");
-    m_IconStop = TextureLoader::loadTexture("assets/icons/stop.png");
+    m_IconPlay = TextureLoader::loadTexture("assets/textures/icons/play.png");
+    m_IconStop = TextureLoader::loadTexture("assets/textures/icons/stop.png");
 }
 
 void ToolbarPanel::onDraw() {
@@ -27,9 +27,10 @@ void ToolbarPanel::onDraw() {
     ImGui::Begin("##toolbar", nullptr,
                  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-    float size = ImGui::GetWindowHeight() - 4.0f;
+    float size = ImGui::GetWindowHeight() - 10.0f;
     Texture &icon = Application::get().getTime().poused() ? m_IconPlay : m_IconStop;
     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+    ImGui::SetCursorPosY((ImGui::GetWindowContentRegionMax().y * 0.5f) - (size * 0.5f));
 
     if (ImGui::ImageButton((ImTextureID)icon.id, ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
         if (Application::get().getTime().poused()) {
@@ -46,6 +47,11 @@ void ToolbarPanel::onDraw() {
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(3);
     ImGui::End();
+}
+
+void ToolbarPanel::onDetach() {
+    m_IconPlay.free();
+    m_IconStop.free();
 }
 
 } // namespace Engine

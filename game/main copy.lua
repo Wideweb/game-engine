@@ -28,7 +28,7 @@ function main(app)
     -- player:addCameraComponent(Core.CameraComponent(-4.0, 1.0, 0.0));
     player:addSkeletComponent(Core.SkeletComponent("Armature|Idle"));
 
-    app:loadTerrain("terrain", "./assets/heightmap.png", 50, 50, 5.0);
+    app:loadTerrain("terrain", "./assets/textures/heightmap.png", 50, 50, 5.0);
     local terrain = app:createEntity("terrain");
     terrain:addTagComponent(Core.TagComponent("terrain"));
     terrain:addLocationComponent(Core.LocationComponent(-50.0, 0.0, -50.0));

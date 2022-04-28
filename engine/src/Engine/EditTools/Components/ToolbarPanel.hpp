@@ -19,6 +19,7 @@ class ToolbarPanel : public BaseView {
 
     void onAttach() override;
     void onDraw() override;
+    void onDetach() override;
 };
 
 } // namespace Engine

@@ -1,6 +1,7 @@
 #include "ImguiImpl.hpp"
 
 #include "Application.hpp"
+#include "TextureLoader.hpp"
 
 #include "glad/glad.h"
 #include "imgui_impl_opengl3.h"
@@ -21,13 +22,15 @@ void ImguiImpl::OnAttach() {
     io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Bold.ttf", fontSize);
     io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Regular.ttf", fontSize);
 
-    ImGui::StyleColorsDark();
-
     ImGuiStyle &style = ImGui::GetStyle();
-    style.WindowRounding = 0.0f;
     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
-    auto &colors = ImGui::GetStyle().Colors;
+    style.TabRounding = 0;
+    style.TabBorderSize = 0;
+    style.WindowRounding = 0.0f;
+    style.WindowBorderSize = 0;
+
+    auto &colors = style.Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
 
     // Headers
@@ -46,16 +49,16 @@ void ImguiImpl::OnAttach() {
     colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
     // Tabs
-    colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TabHovered] = ImVec4{0.38f, 0.3805f, 0.381f, 1.0f};
-    colors[ImGuiCol_TabActive] = ImVec4{0.28f, 0.2805f, 0.281f, 1.0f};
-    colors[ImGuiCol_TabUnfocused] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_Tab] = ImVec4{0.14f, 0.14f, 0.14f, 1.0f};
+    colors[ImGuiCol_TabHovered] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
+    colors[ImGuiCol_TabActive] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
+    colors[ImGuiCol_TabUnfocused] = ImVec4{0.14f, 0.14f, 0.14f, 1.0f};
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
 
     // Title
-    colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TitleBg] = ImVec4{0.14f, 0.14f, 0.14f, 1.0f};
+    colors[ImGuiCol_TitleBgActive] = ImVec4{0.14f, 0.14f, 0.14f, 1.0f};
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.14f, 0.14f, 0.14f, 1.0f};
 
     ImGui_ImplSDL2_InitForOpenGL(static_cast<SDL_Window *>(window.getNaviteWindow()), window.getContext());
     ImGui_ImplOpenGL3_Init("#version 330 core");
@@ -82,7 +85,7 @@ void ImguiImpl::Begin() {
 
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
     // because it would be confusing to have two docking targets within each others.
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     if (opt_fullscreen) {
         ImGuiViewport *viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
