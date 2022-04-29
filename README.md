@@ -9,7 +9,7 @@ By default, the editor consist of the following tabs:
 - Console
 - Inspector
 
-<img width="1000" alt="Main Screen" src="https://user-images.githubusercontent.com/3997537/165744439-68edd082-adce-42da-b7d8-97ee243552d5.png">
+<img width="1000" alt="Screenshot 2022-04-29 at 14 29 08" src="https://user-images.githubusercontent.com/3997537/165936202-43c64b20-e7ce-418c-8a4d-0caccb493052.png">
 
 ### Scene
 In the scene tab you can directly edit the contents of the scene: move, scale, rotate, add and remove objects. By default, the scene has directional light (green arrow), camera (blue arrow), and box.
