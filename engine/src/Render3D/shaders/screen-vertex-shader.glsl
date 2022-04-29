@@ -10,6 +10,7 @@ layout(location = 2) in vec4 a_vertexColor;
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
+uniform mat4 u_projection;
 uniform mat4 u_model;
 
 /////////////////////////////////////////////////////////////
@@ -24,5 +25,5 @@ out vec4 v_color;
 void main() {
     v_texCoord = vec2(a_vertexTextureCoord.x, a_vertexTextureCoord.y);
     v_color = a_vertexColor;
-    gl_Position = u_model * vec4(a_vertexPosition, 0.0, 1.0);
+    gl_Position = u_projection * u_model * vec4(a_vertexPosition, 0.0, 1.0);
 }

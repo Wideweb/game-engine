@@ -85,10 +85,10 @@ void GamePanel::onDraw() {
 
         camera.setPosition(position);
         camera.setRotation(rotation);
+        camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
 
         render.setFramebuffer(m_Framebuffer);
         render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
-        camera.setSize(m_ViewportSize.x, m_ViewportSize.y);
         render.clear();
         render.draw(camera, scene, models, renderSettings);
         render.setFramebuffer(lastFBO);

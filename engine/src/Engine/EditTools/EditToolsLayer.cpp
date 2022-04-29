@@ -190,14 +190,6 @@ void EditToolsLayer::onUpdate() {
     }
 
     m_ScenePanel->onUpdate();
-    m_SceneHierarchyPanel->onUpdate();
-    m_GamePanel->onUpdate();
-    m_ToolbarPanel->onUpdate();
-    m_RenderPanel->onUpdate();
-    m_InspectorPanel->onUpdate();
-    m_ConsolePanel->onUpdate();
-    m_ContentBrowserPanel->onUpdate();
-
     for (auto &tool : m_SceneTools) {
         if (tool.visible()) {
             tool.view->show();
@@ -206,6 +198,14 @@ void EditToolsLayer::onUpdate() {
             tool.view->hide();
         }
     }
+
+    m_SceneHierarchyPanel->onUpdate();
+    m_GamePanel->onUpdate();
+    m_ToolbarPanel->onUpdate();
+    m_RenderPanel->onUpdate();
+    m_InspectorPanel->onUpdate();
+    m_ConsolePanel->onUpdate();
+    m_ContentBrowserPanel->onUpdate();
 }
 
 void EditToolsLayer::onDraw() {
@@ -217,6 +217,11 @@ void EditToolsLayer::onDraw() {
     m_Imgui.Begin();
 
     m_ScenePanel->onDraw();
+    for (auto &tool : m_SceneTools) {
+        if (tool.view->isVisible() && tool.visible()) {
+            tool.view->onDraw();
+        }
+    }
 
     onBeforeGameDraw();
     m_GamePanel->onDraw();
@@ -228,12 +233,6 @@ void EditToolsLayer::onDraw() {
     m_InspectorPanel->onDraw();
     m_ConsolePanel->onDraw();
     m_ContentBrowserPanel->onDraw();
-
-    for (auto &tool : m_SceneTools) {
-        if (tool.view->isVisible() && tool.visible()) {
-            tool.view->onDraw();
-        }
-    }
 
     m_Imgui.End();
 }

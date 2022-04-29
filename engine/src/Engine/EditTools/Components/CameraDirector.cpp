@@ -2,15 +2,16 @@
 
 #include "Application.hpp"
 #include "CameraComponent.hpp"
+#include "Configs.hpp"
 #include "LocationComponent.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
 #include "TagComponent.hpp"
-#include "Configs.hpp"
+#include "TextureLoader.hpp"
 
 #include "imgui/imgui.h"
-#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace Engine {
 
@@ -20,12 +21,17 @@ void CameraDirector::onAttach() {
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Camera",
                                                  ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
+    m_CameraIcon = TextureLoader::loadTexture("assets/textures/icons/camera.png");
+
     auto &toolsCoordinator = toolsLayer().getCoordinator();
     auto &gameCoordinator = gameLayer().getCoordinator();
 
     auto camera = toolsCoordinator.CreateEntity("Camera");
     toolsCoordinator.AddComponent(camera, LocationComponent(glm::vec3(0.0f, 3.0f, 5.0f), glm::vec3(-0.5f, 0.0f, 0.0f)));
     toolsCoordinator.AddComponent(camera, TagComponent("Camera"));
+    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", 0.1f, true);
+    render.rotation.y = 3.14f;
+    toolsCoordinator.AddComponent(camera, render);
     m_Camera = camera;
 }
 
@@ -48,17 +54,37 @@ void CameraDirector::onUpdate() {
 
     glm::vec3 scale;
     glm::quat rotation;
-    glm::vec3 position;
     glm::vec3 skew;
     glm::vec4 perspective;
-    glm::decompose(model, scale, rotation, position, skew, perspective);
+    glm::decompose(model, scale, rotation, m_CameraPosition, skew, perspective);
 
     auto &toolsCoordinator = toolsLayer().getCoordinator();
 
     auto &location = toolsCoordinator.GetComponent<LocationComponent>(m_Camera);
-    location.position = position;
+    location.position = m_CameraPosition;
     location.rotation = glm::eulerAngles(rotation);
     toolsCoordinator.GetComponent<Render3DComponent>(m_Camera).updated = true;
+
+    m_CameraSelected = gameLayer().getCoordinator().HasComponent<CameraComponent>(m_Model.entity());
+    if (m_isVisible) {
+        toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Camera, m_CameraSelected);
+    }
+}
+
+void CameraDirector::onDraw() {
+    if (m_CameraSelected) {
+        return;
+    }
+
+    auto &camera = Application::get().getCamera();
+    auto &viewport = Application::get().getRender().getViewport();
+
+    glm::vec4 projection = camera.projectionMatrix() * camera.viewMatrix() * glm::vec4(m_CameraPosition, 1.0f);
+    projection /= projection.w;
+    glm::vec2 screenPos = (glm::vec2(projection) + glm::vec2(1.0f)) * 0.5f * glm::vec2(viewport.width, viewport.height);
+
+    Application::get().getRender().draw2D(m_CameraIcon, screenPos, glm::vec2(50.0f, 50.0f),
+                                          glm::vec4(0.75f, 0.75f, 0.75f, 1.0f), m_Camera);
 }
 
 bool CameraDirector::handleSelection(Entity entity) {
@@ -76,21 +102,12 @@ bool CameraDirector::handleSelection(Entity entity) {
 }
 
 void CameraDirector::show() {
-    auto &coordinator = toolsLayer().getCoordinator();
-    if (!coordinator.HasComponent<Render3DComponent>(m_Camera)) {
-        auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", 0.1f, true);
-        render.rotation.y = 3.14f;
-        coordinator.AddComponent(m_Camera, render);
-    }
-
+    toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Camera, true);
     BaseView::show();
 }
 
 void CameraDirector::hide() {
-    auto &coordinator = toolsLayer().getCoordinator();
-    if (coordinator.HasComponent<Render3DComponent>(m_Camera)) {
-        coordinator.RemoveComponent<Render3DComponent>(m_Camera);
-    }
+    toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Camera, false);
     BaseView::hide();
 }
 

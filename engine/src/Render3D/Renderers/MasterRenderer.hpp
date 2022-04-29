@@ -13,6 +13,7 @@
 #include "DeferredRenderer.hpp"
 #include "DirectedLightRenderer.hpp"
 #include "FlareRenderer.hpp"
+#include "FontRenderer.hpp"
 #include "GRenderer.hpp"
 #include "ModelRenderer.hpp"
 #include "OverlayRenderer.hpp"
@@ -24,7 +25,6 @@
 #include "SkyboxRenderer.hpp"
 #include "SpotLightRenderer.hpp"
 #include "WaterRenderer.hpp"
-#include "FontRenderer.hpp"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
@@ -89,8 +89,10 @@ class MasterRenderer {
 
     void drawQuad();
 
-    void draw2D(const std::vector<Mesh2D::Vertex> &vertices, std::vector<uint32_t> &indices, const Texture *texture,
-                const glm::mat4 &model);
+    void draw2D(Texture &texture, glm::vec2 position, glm::vec2 size, glm::vec4 color = glm::vec4(1.0f),
+                uint32_t id = 0);
+    void draw2D(const std::vector<Mesh2D::Vertex> &vertices, std::vector<uint32_t> &indices, Texture &texture,
+                const glm::mat4 &model, uint32_t id = 0);
 
     const std::unique_ptr<DirectedLightRenderer> &directedLightRenderer() { return m_DirectedLightRenderer; }
 

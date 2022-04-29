@@ -3,9 +3,12 @@
 #include "File.hpp"
 #include "glad/glad.h"
 
+#include <glm/gtx/transform.hpp>
+#include <glm/mat4x4.hpp>
+
 namespace Engine {
 
-Renderer2D::Renderer2D() {
+Renderer2D::Renderer2D(Viewport &viewport) : m_Viewport(viewport) {
     auto vertexSrc = File::read("./shaders/screen-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
@@ -53,8 +56,24 @@ Renderer2D::~Renderer2D() {
     m_Shader.free();
 }
 
+void Renderer2D::draw(Texture &texture, glm::vec2 position, glm::vec2 size, glm::vec4 color, uint32_t id) {
+    std::vector<Mesh2D::Vertex> vertices;
+    vertices.push_back(Mesh2D::Vertex(glm::vec2(-.5f, -.5f), glm::vec2(0.0f, 1.0f), color));
+    vertices.push_back(Mesh2D::Vertex(glm::vec2(-.5f, 0.5f), glm::vec2(0.0f, 0.0f), color));
+    vertices.push_back(Mesh2D::Vertex(glm::vec2(0.5f, 0.5f), glm::vec2(1.0f, 0.0f), color));
+    vertices.push_back(Mesh2D::Vertex(glm::vec2(0.5f, -.5f), glm::vec2(1.0f, 1.0f), color));
+
+    std::vector<uint32_t> indices{0, 2, 1, 0, 3, 2};
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(position, 0.0f));
+    model = glm::scale(model, glm::vec3(size, 1.0f));
+
+    draw(vertices, indices, texture, model, id);
+}
+
 void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::vector<uint32_t> &indices,
-                      const Texture *texture, const glm::mat4 &model) {
+                      Texture &texture, const glm::mat4 &model, uint32_t id) {
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Mesh2D::Vertex) * vertices.size()), vertices.data(),
                  GL_STREAM_DRAW);
@@ -65,12 +84,14 @@ void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::ve
                  GL_STREAM_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    m_Shader.bind();
-    m_Shader.setMatrix4("u_model", model);
+    glm::mat4 projection =
+        glm::ortho(0.0f, static_cast<float>(m_Viewport.width), 0.0f, static_cast<float>(m_Viewport.height));
 
-    glActiveTexture(GL_TEXTURE0);
-    texture->bind();
-    m_Shader.setInt("u_colorMap", 0);
+    m_Shader.bind();
+    m_Shader.setInt("u_id", id);
+    m_Shader.setMatrix4("u_projection", projection);
+    m_Shader.setMatrix4("u_model", model);
+    m_Shader.setTexture("u_colorMap", texture);
 
     GLint last_scissor_box[4];
     glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);

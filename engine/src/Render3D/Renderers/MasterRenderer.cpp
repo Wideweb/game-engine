@@ -66,7 +66,7 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_SpotLightRenderer = std::make_unique<SpotLightRenderer>(m_Viewport, *m_ModelRenderer);
     m_WaterRenderer = std::make_unique<WaterRenderer>(m_Viewport, *m_GRenderer, *m_DeferredRenderer);
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
-    m_Renderer2D = std::make_unique<Renderer2D>();
+    m_Renderer2D = std::make_unique<Renderer2D>(m_Viewport);
     m_FontRenderer = std::make_unique<FontRenderer>(m_Viewport);
 
     vertexSrc = File::read("./shaders/ssao-vertex-shader.glsl");
@@ -390,9 +390,17 @@ void MasterRenderer::clear() {
     m_Framebuffer.unbind();
 }
 
+void MasterRenderer::draw2D(Texture &texture, glm::vec2 position, glm::vec2 size, glm::vec4 color, uint32_t id) {
+    m_Framebuffer.bind();
+    m_Renderer2D->draw(texture, position, size, color, id);
+    m_Framebuffer.unbind();
+}
+
 void MasterRenderer::draw2D(const std::vector<Mesh2D::Vertex> &vertices, std::vector<uint32_t> &indices,
-                            const Texture *texture, const glm::mat4 &model) {
-    m_Renderer2D->draw(vertices, indices, texture, model);
+                            Texture &texture, const glm::mat4 &model, uint32_t id) {
+    m_Framebuffer.bind();
+    m_Renderer2D->draw(vertices, indices, texture, model, id);
+    m_Framebuffer.unbind();
 }
 
 } // namespace Engine

@@ -32,6 +32,7 @@ class ScenePanel : public BaseView {
 
     Entity entity() { return m_Entity; }
     bool blockEvents() { return m_BlockEvents; }
+    glm::vec2 viewport() { return m_ViewportSize; }
 };
 
 } // namespace Engine
