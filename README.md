@@ -12,7 +12,7 @@ By default, the editor consist of the following tabs:
 <img width="1000" alt="Screenshot 2022-04-29 at 14 29 08" src="https://user-images.githubusercontent.com/3997537/165936202-43c64b20-e7ce-418c-8a4d-0caccb493052.png">
 
 ### Scene
-In the scene tab you can directly edit the contents of the scene: move, scale, rotate, add and remove objects. By default, the scene has directional light (green arrow), camera (blue arrow), and box.
+In the scene tab you can directly edit the contents of the scene: move, scale, rotate, add and remove objects. By default, the scene has directional light, camera and box.
 
   <img width="695" alt="Screenshot 2022-04-05 at 14 54 34" src="https://user-images.githubusercontent.com/3997537/161748346-c0ad915c-2376-463d-b516-69e2498072e1.png">
   
@@ -34,7 +34,11 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  - Shift+Z - point camera towards the negative z-axis
  - Space - rotate camera around the selected object
 
-**Primitives.** To add a primitive, right-click on the scene and select the one you want. Only cube and plane are available at the moment.
+**Adding objects.** To add an object, right-click on the scene and select from the following list:
+ - Cube
+ - Plane
+ - Empty
+ - Empty 2D
 
 ### Scene Hierarchy
  All scene objects are listed in the scene hierarchy tab as a tree.
@@ -49,21 +53,34 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  
  <img width="214" alt="sh-3" src="https://user-images.githubusercontent.com/3997537/161751022-e66b732f-2ff0-4177-a4cf-48ab0ab72681.png">
  
- Once you have added the behaviour to the scene object, it's settings can be edited in the right section of the editor.
+ To add additional behavior (component), right click on the object and select from the list:
+
+<Image>
+
+ Once you have added the behaviour to the scene object, it's settings will appear in the inspector section.
  
  <img width="383" alt="sh-4" src="https://user-images.githubusercontent.com/3997537/161751821-c415a2d0-fefa-461e-b16b-a36b2ca2109b.png">
 
- ### Camera View Port
+ ### Camera
  
  Draws the scene from the game camera's view point
  
  ### Content Browser
  
- Displays files in the ./assets folder. Can be used to add objects (.fbx, .obj) to the scene. As well as textures (.png, .jpg, .jpeg) to materials. To add an object to the scene, simply drag it from the content browser onto the scene tab.
+ Displays files in the ./assets folder. Can be used to add:
+ - Objects (.fbx, .obj) to the scene. To add an object to the scene, simply drag it from the content browser onto the scene tab.
+ - Textures (.png, .jpg, .jpeg) to materials.
+ - Fonts (.ttf).
+ - Scripts (.Lua).
  
- ### Render Settings
+ ### Scene Settings
  
- In the render settings you can switch off/on Hdr, SSAO and Normal Mapping. 
+ In the scene settings you can switch off/on and edit: 
+ - Hdr
+ - SSAO
+ - Normal Mapping
+ - Fog
+ - Skybox
  
  For Hdr you can select tone mapping function, set exposure, gamma and threshold values, edit bloom and blur settings:
  
