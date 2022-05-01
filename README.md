@@ -49,13 +49,11 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  
  <img width="369" alt="sh-2" src="https://user-images.githubusercontent.com/3997537/161749791-568cf6a3-4a63-4ce0-a0d3-00dd4cdd844f.png">
  
- Once you have made the camera as a child object next to the box, the camera will move, rotate and scale with the box. it is possible to add additional behaviour to the object:
+ Once you have made the camera as a child object next to the box, the camera will move, rotate and scale with the box. 
+
+ To add an additional behavior (component) to the object, right click on the object and select component from the list:
  
  <img width="214" alt="sh-3" src="https://user-images.githubusercontent.com/3997537/161751022-e66b732f-2ff0-4177-a4cf-48ab0ab72681.png">
- 
- To add additional behavior (component), right click on the object and select from the list:
-
-<Image>
 
  Once you have added the behaviour to the scene object, it's settings will appear in the inspector section.
  
