@@ -13,8 +13,8 @@ By default, the editor consist of the following tabs:
 
 ### Scene
 In the scene tab you can directly edit the contents of the scene: move, scale, rotate, add and remove objects. By default, the scene has directional light, camera and box.
-
-  <img width="695" alt="Screenshot 2022-04-05 at 14 54 34" src="https://user-images.githubusercontent.com/3997537/161748346-c0ad915c-2376-463d-b516-69e2498072e1.png">
+  
+  <img width="626" alt="Scene" src="https://user-images.githubusercontent.com/3997537/166137960-0a431aaf-b427-40db-b198-eae0bfde719b.png">
   
  **Selection.** Left-click on a scene object to select. Once it is selected you can see it's mesh and gizmo tools for edit. You can remove the selected object by backspace.
   
