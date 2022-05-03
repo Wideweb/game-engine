@@ -10,6 +10,7 @@
 #include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "SkeletComponent.hpp"
+#include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "Text2DComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -80,6 +81,7 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
 
         if (!coordinator.HasComponent<TerrainCollisionComponent>(entity) && ImGui::MenuItem("Add Terrain Collision")) {
             coordinator.AddComponent<TerrainCollisionComponent>(entity, TerrainCollisionComponent());
+            coordinator.AddComponent<TagComponent>(entity, TagComponent("platform"));
         }
 
         if (!coordinator.HasComponent<ParticlesComponent>(entity) && ImGui::MenuItem("Add Particles")) {

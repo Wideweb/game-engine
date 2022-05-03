@@ -10,10 +10,10 @@ function update(entity)
     local rotate = false;
 
     if Input.isKeyPressed(Input.Key.W) then
-        velocity.speed = 2.5;
+        velocity.speed = -4.0;
         run = true;
     elseif Input.isKeyPressed(Input.Key.S) then
-        velocity.speed = -2.5;
+        velocity.speed = 4.0;
         run = true;
     else
         velocity.speed = 0;
@@ -21,10 +21,10 @@ function update(entity)
     end
 
     if Input.isKeyPressed(Input.Key.D) then
-        velocity.rotation.y = -0.03;
+        velocity.rotation.y = -1.0;
         rotate = true;
     elseif Input.isKeyPressed(Input.Key.A) then
-        velocity.rotation.y = 0.03;
+        velocity.rotation.y = 1.0;
         rotate = true;
     else
         velocity.rotation.y = 0;
@@ -46,8 +46,6 @@ end
 function collide(entity, other)
     local tag = other:getTagComponent().tag;
     if (tag == "platform") then
-        local location = entity:getLocationComponent();
-        location.parent = other:getId();
         canJump = true;
     end
 end
