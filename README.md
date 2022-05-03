@@ -129,8 +129,15 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   <img width="430" alt="Skybox - cubemap" src="https://user-images.githubusercontent.com/3997537/166562430-34b087f0-8f1b-413e-8aec-820a82379b8d.png">
 
   <img width="364" alt="Skybox - cubemap scene" src="https://user-images.githubusercontent.com/3997537/166562324-b966a7df-0edd-48f7-8460-750f0dbf9750.png">
+    
+### 6. Console
 
-### Inspector
+Displays errors:
+
+<img width="630" alt="Console" src="https://user-images.githubusercontent.com/3997537/166566093-abe3c6da-b1e7-4026-8707-20bf4b50a400.png">
+
+
+### 7. Inspector
 
 Components:
 
