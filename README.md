@@ -82,7 +82,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  4. Fog
  5. Skybox
 
- **5.1 HDR.** For Hdr you can select tone mapping function, set exposure, gamma and threshold values, edit bloom and blur settings:
+ **5.1 HDR.**
  
  <img width="434" alt="HDR - Settings" src="https://user-images.githubusercontent.com/3997537/166564867-8b0ce852-47f0-41b6-a262-4757bd9166df.png">
  
@@ -90,7 +90,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 
  <img width="300" alt="HDR - On" src="https://user-images.githubusercontent.com/3997537/166564306-28584d0f-d381-4d0a-a156-18574f3a4cae.png">
 
- **5.2 SSAO.** When SSAO is enabled it is possible to edit it's settings:
+ **5.2 SSAO.**
  
  <img width="433" alt="SSAO" src="https://user-images.githubusercontent.com/3997537/166560378-ee68ff65-3817-442e-96aa-ac53e32388f1.png">
 
