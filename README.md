@@ -120,7 +120,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 <img width="300" alt="Fog-2" src="https://user-images.githubusercontent.com/3997537/166561689-7d39df1a-f585-4954-b99c-ea9d618986db.png">
 <img width="300" alt="Fog-3" src="https://user-images.githubusercontent.com/3997537/166561772-072d6c0b-6fe0-4977-b158-3b7ce9d5e62d.png">
 
-  **5.5 Skybix.** In the skybox tab you can set the background color:
+  **5.5 Skybox.** In the skybox tab you can set the background color:
   
   <img width="434" alt="Skybox - background color" src="https://user-images.githubusercontent.com/3997537/166562497-f2f38df2-e725-4297-a785-d8f6b09883ae.png">
 
