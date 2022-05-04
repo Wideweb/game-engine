@@ -76,58 +76,76 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  <img width="436" alt="Scene Settings" src="https://user-images.githubusercontent.com/3997537/166557606-2ee5e094-b407-4d89-a691-81e7e57ca1e7.png">
 
  In the scene settings you can switch off/on and edit: 
- 1. Hdr
+ 1. HDR
  2. SSAO
  3. Normal Mapping
  4. Fog
  5. Skybox
 
- **5.1 HDR.**
+ **5.1 HDR.** Use a wide range of brightness values to collect information about both bright and dark details of the scene.
+ 
+ UI for HDR:
  
  <img width="434" alt="HDR - Settings" src="https://user-images.githubusercontent.com/3997537/166564867-8b0ce852-47f0-41b6-a262-4757bd9166df.png">
  
+ ***Tone mapping*** is an algorithm for converting color values to fit them in the range from 0 to 1 without losing image details. ***Exposure*** allows you to choose the balance between the display quality of dark and bright areas of the image.
+ 
+ Scene when exposure is 1.0:
+ 
  <img width="300" alt="HDR - Off" src="https://user-images.githubusercontent.com/3997537/166564237-ae157e94-725f-48ea-bc49-343234c21723.png">
+
+  Scene when exposure is 0.3:
 
  <img width="300" alt="HDR - On" src="https://user-images.githubusercontent.com/3997537/166564306-28584d0f-d381-4d0a-a156-18574f3a4cae.png">
 
- **5.2 SSAO.**
- 
- <img width="433" alt="SSAO" src="https://user-images.githubusercontent.com/3997537/166560378-ee68ff65-3817-442e-96aa-ac53e32388f1.png">
+ **5.2 SSAO.** Screen-Space Ambient Occlusion.
 
- OFF:
+ UI For SSAO:
+
+ <img width="433" alt="SSAO" src="https://user-images.githubusercontent.com/3997537/166560378-ee68ff65-3817-442e-96aa-ac53e32388f1.png">
+ 
+ ***Radius*** and ***Kernel size*** are settings for the normal-oriented hemisphere, which is used to shift the coordinate of a fragment in the view space to obtain information about the surrounding geometry. ***Noise scale*** is tiling of texture that contains a set of random hemisphere rotation vectors. ***Bias*** is added to the original fragment depth. Allows to control how the SSAO effect looks, and also, in certain situations, removes problems with ripples in shadow areas.
+
+ Scene without SSAO:
  
  <img width="483" alt="Screenshot 2022-05-03 at 23 26 34" src="https://user-images.githubusercontent.com/3997537/166560219-8eb48525-df32-4de3-888e-728eb04caf6f.png">
  
- ON:
+ Scene with SSAO:
 
 <img width="483" alt="Screenshot 2022-05-03 at 23 26 50" src="https://user-images.githubusercontent.com/3997537/166560251-3f2791fc-5cf0-44a1-bf62-4341b7e008be.png">
 
-  **5.3 Normal Mapping.**
+  **5.3 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
   
-  OFF:
+  Scene with Normal Mapping:
   
   <img width="200" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/161758022-3b652197-e0b9-4822-b261-9ad6edaee3d7.png"> 
   
-  ON:
+  Scene without Normal Mapping:
   
   <img width="200" alt="Normal Mapping On" src="https://user-images.githubusercontent.com/3997537/161758033-af2a06f4-5b34-481c-b1aa-8db8d1268053.png">
 
-  **5.4 Fog.**
+  **5.4 Fog.** Fog is the effect of overlaying a color onto objects dependant on the distance from the camera. Can be used to hide clipping of objects when a camera’s far clip plane has been moved forward for performance.
   
-  <img width="433" alt="Screenshot 2022-05-03 at 23 33 43" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
+  UI for Fog:
+  
+  <img width="433" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
+  
+  Scene with Fog:
+  
+  <img width="381" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166641803-cf91d64b-49d2-485f-b6f9-d0f413b22b51.png">
 
-<img width="300" alt="Fog-1" src="https://user-images.githubusercontent.com/3997537/166561610-71104daa-9411-4c74-8786-43f5d607dce8.png">
-<img width="300" alt="Fog-2" src="https://user-images.githubusercontent.com/3997537/166561689-7d39df1a-f585-4954-b99c-ea9d618986db.png">
-<img width="300" alt="Fog-3" src="https://user-images.githubusercontent.com/3997537/166561772-072d6c0b-6fe0-4977-b158-3b7ce9d5e62d.png">
+  **5.5 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
 
-  **5.5 Skybox.** In the skybox tab you can set the background color:
+  UI for Skybox:
   
   <img width="434" alt="Skybox - background color" src="https://user-images.githubusercontent.com/3997537/166562497-f2f38df2-e725-4297-a785-d8f6b09883ae.png">
 
-  When CubeMap is enabled you can set the skybox textures, it's rotation and rotation speed:
+  UI for Skybox When CubeMap is enabled:
   
   <img width="430" alt="Skybox - cubemap" src="https://user-images.githubusercontent.com/3997537/166562430-34b087f0-8f1b-413e-8aec-820a82379b8d.png">
 
+  Scene with Skybox:
+  
   <img width="364" alt="Skybox - cubemap scene" src="https://user-images.githubusercontent.com/3997537/166562324-b966a7df-0edd-48f7-8460-750f0dbf9750.png">
     
 ### 6. Console
