@@ -88,7 +88,12 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  
  <img width="434" alt="HDR - Settings" src="https://user-images.githubusercontent.com/3997537/166564867-8b0ce852-47f0-41b6-a262-4757bd9166df.png">
  
- ***Tone mapping*** is an algorithm for converting color values to fit them in the range from 0 to 1 without losing image details. ***Exposure*** allows you to choose the balance between the display quality of dark and bright areas of the image.
+ | Property | Function |
+ | :--- | :--- |
+ | **Tone mapping**  | Algorithm for converting color values to fit them in the range from 0 to 1 without losing image details. |
+ | **Exposure**  | Controls the balance between the display quality of dark and bright areas of the image. |
+ | **Bloom Scale**  | Сontrols the degree of bloom. |
+ | **Blur**  | Сontrols the degree of blur. |
  
  Scene when exposure is 1.0:
  
@@ -104,9 +109,14 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 
  <img width="433" alt="SSAO" src="https://user-images.githubusercontent.com/3997537/166560378-ee68ff65-3817-442e-96aa-ac53e32388f1.png">
  
- ***Radius*** and ***Kernel size*** are settings for the normal-oriented hemisphere, which is used to shift the coordinate of a fragment in the view space to obtain information about the surrounding geometry. ***Noise scale*** is tiling of texture that contains a set of random hemisphere rotation vectors. ***Bias*** is added to the original fragment depth. Allows to control how the SSAO effect looks, and also, in certain situations, removes problems with ripples in shadow areas.
+| Property | Function |
+| :--- | :--- |
+| **Kernel size**  | The number of sample points located inside a hemisphere oriented along the normal to the surface. Each sample point is used as an offset to the fragment's position in view space to obtain information about the surrounding geometry. |
+| **Radius**       | Controls the radius of the hemisphere. |
+| **Noise scale**  | Controls the tiling of texture that contains a set of random hemisphere rotation vectors around Z axis. |
+| **Bias**         | The value is added to the original fragment depth. Allows to control how the SSAO effect looks, and also, in certain situations, removes problems with ripples in shadow areas. |
 
- Scene without SSAO:
+Scene without SSAO:
  
  <img width="483" alt="Screenshot 2022-05-03 at 23 26 34" src="https://user-images.githubusercontent.com/3997537/166560219-8eb48525-df32-4de3-888e-728eb04caf6f.png">
  
@@ -130,6 +140,12 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   <img width="433" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
   
+  | Property | Function |
+  | :--- | :--- |
+  | **Color**     | The fog color in RGB. |
+  | **Dencity**   | Controls the dencity of the fog. |
+  | **Gradient**  | Controls the rate at which objects disappear in the fog. |
+  
   Scene with Fog:
   
   <img width="381" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166641803-cf91d64b-49d2-485f-b6f9-d0f413b22b51.png">
@@ -139,10 +155,21 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   UI for Skybox:
   
   <img width="434" alt="Skybox - background color" src="https://user-images.githubusercontent.com/3997537/166562497-f2f38df2-e725-4297-a785-d8f6b09883ae.png">
+  
+  | Property | Function |
+  | :--- | :--- |
+  | **Color**     | The background color in RGB. |
 
   UI for Skybox When CubeMap is enabled:
   
   <img width="430" alt="Skybox - cubemap" src="https://user-images.githubusercontent.com/3997537/166562430-34b087f0-8f1b-413e-8aec-820a82379b8d.png">
+  
+  | Property | Function |
+  | :--- | :--- |
+  | **Upper Limit**     | The boundary up to which the fog is fade. Can take values [-1; 1]. Applicable if the fog is enabled. |
+  | **Lower Limit**   | The boundary after which the fog begins to fade. Can take values [-1; 1]. Applicable if the fog is enabled. |
+  | **Rotation**  | The initial value of the skybox rotation around the Y-axis. |
+  | **Rotation Speed**  | The speed in degrees at which the skybox should rotate around the Y-axis. |
 
   Scene with Skybox:
   
