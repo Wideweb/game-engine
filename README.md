@@ -92,6 +92,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  | :--- | :--- |
  | **Tone mapping**  | Algorithm for converting color values to fit them in the range from 0 to 1 without losing image details. |
  | **Exposure**  | Controls the balance between the display quality of dark and bright areas of the image. |
+ | **Brightness Threshold**  | Brightness threshold, above which the fragment is considered bright. Bloom and Blur are applied to fragments that exceed this threshold. |
  | **Bloom Scale**  | Сontrols the degree of bloom. |
  | **Blur**  | Сontrols the degree of blur. |
  
