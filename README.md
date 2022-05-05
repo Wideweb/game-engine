@@ -118,12 +118,12 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 | **Bias**         | The value is added to the original fragment depth. Allows to control how the SSAO effect looks, and also, in certain situations, removes problems with ripples in shadow areas. |
 
 Scene without SSAO:
- 
- <img width="483" alt="Screenshot 2022-05-03 at 23 26 34" src="https://user-images.githubusercontent.com/3997537/166560219-8eb48525-df32-4de3-888e-728eb04caf6f.png">
+
+ <img width="590" alt="Scene without SSAO" src="https://user-images.githubusercontent.com/3997537/166872443-c4396811-3d6c-4c29-a80d-aa3d8a1e33b2.png">
  
  Scene with SSAO:
 
-<img width="483" alt="Screenshot 2022-05-03 at 23 26 50" src="https://user-images.githubusercontent.com/3997537/166560251-3f2791fc-5cf0-44a1-bf62-4341b7e008be.png">
+ <img width="590" alt="Scene with SSAO" src="https://user-images.githubusercontent.com/3997537/166872482-53cf1d73-db38-405c-ac1d-989ccb1ea1bb.png">
 
   **5.3 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
   
@@ -140,7 +140,7 @@ Scene without SSAO:
   UI for Fog:
   
   <img width="433" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
-  
+
   | Property | Function |
   | :--- | :--- |
   | **Color**     | The fog color in RGB. |
@@ -149,8 +149,8 @@ Scene without SSAO:
   
   Scene with Fog:
   
-  <img width="381" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166641803-cf91d64b-49d2-485f-b6f9-d0f413b22b51.png">
-
+  <img width="400" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166873290-90f89899-81cd-4a73-826b-3917df33c63b.png">
+  
   **5.5 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
 
   UI for Skybox:
