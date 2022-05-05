@@ -73,16 +73,33 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  
  ### 5 Scene Settings
  
- <img width="436" alt="Scene Settings" src="https://user-images.githubusercontent.com/3997537/166557606-2ee5e094-b407-4d89-a691-81e7e57ca1e7.png">
+ UI for Scene Settings:
+ 
+ <img width="436" alt="Scene Settings UI" src="https://user-images.githubusercontent.com/3997537/166978347-bc567641-4c3e-4a1d-9e8b-663b6ae82834.png">
 
- In the scene settings you can switch off/on and edit: 
- 1. HDR
- 2. SSAO
- 3. Normal Mapping
- 4. Fog
- 5. Skybox
+ In the scene settings you can switch off/on and edit:
+ 1. Gamma Correction
+ 2. HDR
+ 3. SSAO
+ 4. Normal Mapping
+ 5. Fog
+ 6. Skybox
 
- **5.1 HDR.** Use a wide range of brightness values to collect information about both bright and dark details of the scene.
+ **5.1 Gamma Correction.** Allows you to apply monitor gamma inversion to the final color before displaying it on the monitor. A gamma of 2.2 is the default value and approximates the average gamma of most displays.
+ 
+ UI for Gamma Correction:
+ 
+ <img width="435" alt="Gamma Correction - UI" src="https://user-images.githubusercontent.com/3997537/166992870-903c5c10-6095-47d5-b782-4bc51d3c0e79.png">
+ `
+Scene when gamma is 1.0:
+
+ <img width="500" alt="Screenshot 2022-05-05 at 21 33 19" src="https://user-images.githubusercontent.com/3997537/166995356-f794936c-c4ef-4230-9653-89f32018b54f.png">
+ 
+ Scene when gamma is 2.2:
+ 
+ <img width="500" alt="Screenshot 2022-05-05 at 21 33 03" src="https://user-images.githubusercontent.com/3997537/166995204-ae5d9acc-40cf-4cf0-8fc0-c8fb237b83cf.png">
+
+ **5.2 HDR.** Use a wide range of brightness values to collect information about both bright and dark details of the scene.
  
  UI for HDR:
  
@@ -104,7 +121,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   <img width="500" alt="HDR - exposure 0.2" src="https://user-images.githubusercontent.com/3997537/166876715-460315c8-2371-4b50-88a3-ae9556ca63c0.png">
 
- **5.2 SSAO.** Screen-Space Ambient Occlusion.
+ **5.3 SSAO.** Screen-Space Ambient Occlusion.
 
  UI For SSAO:
 
@@ -117,7 +134,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 | **Noise scale**  | Controls the tiling of texture that contains a set of random hemisphere rotation vectors around Z axis. |
 | **Bias**         | The value is added to the original fragment depth. Allows to control how the SSAO effect looks, and also, in certain situations, removes problems with ripples in shadow areas. |
 
-Scene without SSAO:
+ Scene without SSAO:
 
  <img width="590" alt="Scene without SSAO" src="https://user-images.githubusercontent.com/3997537/166872443-c4396811-3d6c-4c29-a80d-aa3d8a1e33b2.png">
  
@@ -125,17 +142,17 @@ Scene without SSAO:
 
  <img width="590" alt="Scene with SSAO" src="https://user-images.githubusercontent.com/3997537/166872482-53cf1d73-db38-405c-ac1d-989ccb1ea1bb.png">
 
-  **5.3 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
+ **5.4 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
   
-  Scene without Normal Mapping:
+ Scene without Normal Mapping:
   
-  <img width="300" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/166877677-44d68545-293d-4080-8ae8-4f10ccb1d968.png">
+ <img width="300" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/166877677-44d68545-293d-4080-8ae8-4f10ccb1d968.png">
   
   Scene with Normal Mapping:
   
   <img width="300" alt="Normal Mapping On" src="https://user-images.githubusercontent.com/3997537/166877707-924a143d-6fe7-4772-956a-c65e43686b9d.png">
   
-  **5.4 Fog.** Fog is the effect of overlaying a color onto objects dependant on the distance from the camera. Can be used to hide clipping of objects when a camera’s far clip plane has been moved forward for performance.
+  **5.5 Fog.** Fog is the effect of overlaying a color onto objects dependant on the distance from the camera. Can be used to hide clipping of objects when a camera’s far clip plane has been moved forward for performance.
   
   UI for Fog:
   
@@ -151,7 +168,7 @@ Scene without SSAO:
   
   <img width="400" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166873290-90f89899-81cd-4a73-826b-3917df33c63b.png">
   
-  **5.5 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
+  **5.6 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
 
   UI for Skybox:
   
