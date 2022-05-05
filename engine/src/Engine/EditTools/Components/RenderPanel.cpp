@@ -30,6 +30,7 @@ void RenderPanel::onDraw() {
 
     ImGuiWidgets::PaddingTop(4.0f);
 
+    onDrawGammaCorrectionPanel();
     onDrawHdrPanel();
     onDrawSSAOPanel();
     onDrawFogPanel();
@@ -43,6 +44,20 @@ void RenderPanel::onDraw() {
 
     ImGui::PopItemWidth();
     ImGui::End();
+}
+
+void RenderPanel::onDrawGammaCorrectionPanel() {
+    static bool expanded = false;
+    if (!ImGuiWidgets::CollapsePanel("Gamma Correction", expanded, gameLayer().renderSettings.gamma)) {
+        return;
+    }
+
+    float padding = 10.0f;
+
+    ImGuiWidgets::PaddingLeft(padding);
+    ImGui::InputFloat("Gamma Value", &gameLayer().renderSettings.gammaValue, 0.1f);
+
+    ImGui::NewLine();
 }
 
 void RenderPanel::onDrawHdrPanel() {
@@ -68,9 +83,6 @@ void RenderPanel::onDrawHdrPanel() {
 
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::InputFloat("Exposure", &gameLayer().renderSettings.exposure, 0.1f, 0.01f);
-
-    ImGuiWidgets::PaddingLeft(padding);
-    ImGui::InputFloat("Gamma", &gameLayer().renderSettings.gamma, 0.1f, 0.01f);
 
     ImGuiWidgets::PaddingLeft(padding);
     ImGui::InputFloat("Threshold", &gameLayer().renderSettings.threshold, 0.1f, 0.01f);

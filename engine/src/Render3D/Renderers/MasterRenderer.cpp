@@ -12,13 +12,28 @@ namespace Engine {
 
 MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     : m_Viewport{width, height}, m_Framebuffer(Framebuffer::createDefault()), m_State{.framebuffer = m_Framebuffer} {
+    m_OutFramebuffer = m_Framebuffer;
+
     auto vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/direct-fragment-shader.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
 
+    vertexSrc = File::read("./shaders/gamma-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/gamma-fragment-shader.glsl");
+    m_GammaShader = Shader(vertexSrc, fragmentSrc);
+
     vertexSrc = File::read("./shaders/hdr-vertex-shader.glsl");
     fragmentSrc = File::read("./shaders/hdr-fragment-shader.glsl");
     m_HdrShader = Shader(vertexSrc, fragmentSrc);
+
+    m_TmpFramebuffer = Framebuffer::create();
+    m_TmpFramebuffer.bind();
+    m_TmpColorBuffer = Texture::createRGBA16FBuffer(width, height);
+    m_TmpEntityBuffer = Texture::createR32IBuffer(width, height);
+    m_TmpFramebuffer.addAttachment(m_TmpColorBuffer);
+    m_TmpFramebuffer.addAttachment(m_TmpEntityBuffer);
+    m_TmpFramebuffer.setDepthAttachment(
+        Renderbuffer::create(width, height, Renderbuffer::InternalFormat::DEPTH_COMPONENT), true);
 
     m_HdrFramebuffer = Framebuffer::create();
     m_HdrFramebuffer.bind();
@@ -143,7 +158,11 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
 
 MasterRenderer::~MasterRenderer() {
     m_Framebuffer.free();
+    m_TmpFramebuffer.free();
     m_HdrFramebuffer.free();
+
+    m_TmpColorBuffer.free();
+    m_TmpEntityBuffer.free();
 
     m_PingpongFramebuffer[0].free();
     m_PingpongFramebuffer[1].free();
@@ -167,6 +186,10 @@ MasterRenderer::~MasterRenderer() {
 }
 
 void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings) {
+    if (settings.gamma) {
+        m_State.framebuffer = m_TmpFramebuffer;
+    }
+
     m_Viewport.use();
 
     if (settings.ssao) {
@@ -276,7 +299,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
             m_Viewport.resize(lastViewportWidth, lastViewportHeight);
         }
 
-        m_State.framebuffer = m_Framebuffer;
+        m_State.framebuffer = settings.gamma ? m_TmpFramebuffer : m_Framebuffer;
         m_State.framebuffer.bind();
 
         m_HdrShader.bind();
@@ -284,7 +307,6 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_HdrShader.setTexture("u_blurBuffer", m_PingpongColorBuffer[horizontal]);
         m_HdrShader.setTexture("u_id", m_EntityBuffer);
         m_HdrShader.setFloat("u_exposure", settings.exposure);
-        m_HdrShader.setFloat("u_gamma", settings.gamma);
         m_HdrShader.setInt("u_toneMapping", static_cast<int>(settings.toneMapping));
 
         m_QuadRenderer->draw();
@@ -292,11 +314,21 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
     m_OverlayRenderer->draw(camera, scene, models);
 
+    if (settings.gamma) {
+        m_Framebuffer.bind();
+        m_GammaShader.bind();
+        m_GammaShader.setTexture("u_colorBuffer", m_TmpColorBuffer);
+        m_GammaShader.setTexture("u_id", m_TmpEntityBuffer);
+        m_GammaShader.setFloat("u_gamma", settings.gammaValue);
+        m_QuadRenderer->draw();
+    }
+
+    m_State.framebuffer = m_Framebuffer;
+    m_State.framebuffer.bind();
     for (const auto &text : scene.getTexts()) {
         m_FontRenderer->draw(text.id, text.text, *text.font, text.transform, text.ndcTransform, text.color);
     }
-
-    m_Framebuffer.unbind();
+    m_State.framebuffer.unbind();
 }
 
 void MasterRenderer::setClearColor(glm::vec4 color) {
@@ -310,6 +342,12 @@ void MasterRenderer::setViewport(int width, int height) {
     m_Viewport.width = width;
     m_Viewport.height = height;
     m_DirectedLightRenderer->resize();
+
+    m_TmpColorBuffer.bind();
+    m_TmpColorBuffer.resize(width, height);
+
+    m_TmpEntityBuffer.bind();
+    m_TmpEntityBuffer.resize(width, height);
 
     m_ColorBuffer[0].bind();
     m_ColorBuffer[0].resize(width, height);
@@ -373,8 +411,12 @@ void MasterRenderer::clear() {
     m_PingpongFramebuffer[1].bind();
     m_PingpongFramebuffer[1].clear();
 
+    m_TmpFramebuffer.bind();
+    m_TmpFramebuffer.clear();
+
     m_HdrFramebuffer.bind();
     m_HdrFramebuffer.clear();
+    m_HdrFramebuffer[2].clear({0.0f, 0.0f, 0.0f, 1.0f});
 
     m_GFramebuffer.bind();
     m_GFramebuffer.clear();

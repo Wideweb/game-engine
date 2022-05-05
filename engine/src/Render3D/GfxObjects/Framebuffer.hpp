@@ -4,6 +4,7 @@
 #include "Texture.hpp"
 
 #include <array>
+#include <glm/vec4.hpp>
 
 namespace Engine {
 
@@ -31,6 +32,7 @@ class Framebuffer : public GfxObject {
         void resize(unsigned int width, unsigned int height) override;
 
         void read(int x, int y, int width, int height, void *buffer);
+        void clear(glm::vec4 color);
     };
 
     unsigned int m_AttachmentsIndex = 0;
@@ -41,6 +43,8 @@ class Framebuffer : public GfxObject {
 
   public:
     Attachment &operator[](unsigned int index);
+
+    bool operator==(Framebuffer &other) { return other.id == id; };
 
     void bind() const override;
     void unbind() const override;

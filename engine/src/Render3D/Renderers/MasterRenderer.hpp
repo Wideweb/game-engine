@@ -36,7 +36,7 @@ class MasterRenderer {
   private:
     unsigned int m_BloomScale = 4;
 
-    Shader m_Shader, m_HdrShader, m_BlurGaussianShader, m_SSAOShader, m_BlurSimpleShader;
+    Shader m_Shader, m_HdrShader, m_BlurGaussianShader, m_SSAOShader, m_BlurSimpleShader, m_GammaShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -55,10 +55,10 @@ class MasterRenderer {
     Viewport m_Viewport;
     RendererState m_State;
 
-    Texture m_ColorBuffer[2], m_EntityBuffer;
+    Texture m_ColorBuffer[2], m_EntityBuffer, m_TmpColorBuffer, m_TmpEntityBuffer;
     Renderbuffer m_DepthRenderbuffer;
 
-    Framebuffer m_Framebuffer, m_HdrFramebuffer;
+    Framebuffer m_Framebuffer, m_TmpFramebuffer, m_HdrFramebuffer, m_OutFramebuffer;
 
     Framebuffer m_PingpongFramebuffer[2];
     Texture m_PingpongColorBuffer[2];

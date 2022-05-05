@@ -17,6 +17,7 @@ class RenderPanel : public BaseView {
     void onDetach() override;
 
   private:
+    void onDrawGammaCorrectionPanel();
     void onDrawHdrPanel();
     void onDrawSSAOPanel();
     void onDrawFogPanel();

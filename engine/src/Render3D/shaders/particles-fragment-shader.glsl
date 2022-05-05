@@ -5,11 +5,16 @@
 /////////////////////////////////////////////////////////////
 uniform sampler2D u_colorMap;
 uniform float u_threshold;
+uniform int u_fog;
+uniform vec3 u_fogColor;
+uniform float u_density;
+uniform float u_gradient;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
 /////////////////////////////////////////////////////////////
 in vec4 v_color;
+in float v_distanceToCamera;
 
 /////////////////////////////////////////////////////////////
 /////////////////////////// OUT /////////////////////////////
@@ -22,6 +27,12 @@ layout(location = 2) out vec4 o_brightColor;
 /////////////////////////////////////////////////////////////
 void main() {
     o_fragColor = v_color;
+    if (u_fog > 0) {
+        float fragVisibility = exp(-pow(v_distanceToCamera * u_density, u_gradient));
+        fragVisibility = clamp(fragVisibility, 0.0, 1.0);
+        o_fragColor = mix(vec4(u_fogColor, 1.0), o_fragColor, fragVisibility);
+    }
+
     float brightness = dot(o_fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > u_threshold)
         o_brightColor = vec4(o_fragColor.rgb, 1.0);

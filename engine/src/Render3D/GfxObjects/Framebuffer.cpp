@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Engine {
 
 Framebuffer Framebuffer::createDefault() {
@@ -184,6 +186,8 @@ void Framebuffer::Attachment::read(int x, int y, int width, int height, void *bu
                  GfxImage::getNativeDataType(GfxImage::formatToDataType(format)), buffer);
     glReadBuffer(GL_NONE);
 }
+
+void Framebuffer::Attachment::clear(glm::vec4 color) { glClearBufferfv(GL_COLOR, m_Index, glm::value_ptr(color)); }
 
 Framebuffer::Attachment &Framebuffer::operator[](unsigned int index) { return m_Attachments[index]; }
 

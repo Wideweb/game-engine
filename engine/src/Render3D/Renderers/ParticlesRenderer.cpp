@@ -30,6 +30,10 @@ void ParticlesRenderer::draw(const Particles &particles, const glm::mat4 &model,
     m_Shader.setFloat3("u_viewPos", camera.positionVec());
     m_Shader.setMatrix4("u_model", model);
     m_Shader.setFloat("u_threshold", settings.threshold);
+    m_Shader.setInt("u_fog", settings.fog);
+    m_Shader.setFloat3("u_fogColor", settings.fogColor);
+    m_Shader.setFloat("u_density", settings.fogDensity);
+    m_Shader.setFloat("u_gradient", settings.fogGradient);
 
     // VERTEX_PROGRAM_POINT_SIZE
     glEnable(0x8642);

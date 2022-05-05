@@ -58,7 +58,8 @@ struct RenderSettings {
     bool bloom = true;
     ToneMapping toneMapping = ToneMapping::LinearToneMapping;
     float exposure = 1.0f;
-    float gamma = 1.0f;
+    bool gamma = false;
+    float gammaValue = 1.0f;
     float threshold = 1.0f;
     int bloomScale = 4;
     int blur = 4;

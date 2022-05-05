@@ -43,6 +43,7 @@ out vec3 v_startVelocity;
 out vec3 v_position;
 out vec3 v_velocity;
 out float v_startTime;
+out float v_distanceToCamera;
 
 out vec4 v_color = vec4(0);
 
@@ -95,9 +96,9 @@ void render() {
 
     float lifePart = (u_time - a_startTime) / u_lifetime;
     vec4 worldPos = vec4(a_position, 1.0);
-    float distanceToCamera = length(u_viewPos - vec3(worldPos));
+    v_distanceToCamera = length(u_viewPos - vec3(worldPos));
 
     v_color = vec4(mix(u_colorFrom, u_colorTo, lifePart), 1.0);
-    gl_PointSize = mix(u_sizeFrom, u_sizeTo, lifePart) * clamp(1 / distanceToCamera, 0.0, 1.0);
+    gl_PointSize = mix(u_sizeFrom, u_sizeTo, lifePart) * clamp(1 / v_distanceToCamera, 0.0, 1.0);
     gl_Position = u_projection * u_view * worldPos;
 }

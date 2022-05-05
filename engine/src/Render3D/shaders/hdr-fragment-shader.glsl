@@ -18,7 +18,6 @@ uniform sampler2D u_hdrBuffer;
 uniform sampler2D u_blurBuffer;
 uniform usampler2D u_id;
 uniform float u_exposure;
-uniform float u_gamma;
 uniform int u_toneMapping;
 
 /////////////////////////////////////////////////////////////
@@ -34,13 +33,11 @@ layout(location = 1) out uint o_id;
 
 vec3 linearToneMapping(vec3 color) {
     color = clamp(u_exposure * color, 0.0, 1.0);
-    color = pow(color, vec3(1.0 / u_gamma));
     return color;
 }
 
 vec3 simpleReinhardToneMapping(vec3 color) {
     color *= u_exposure / (1.0 + color / u_exposure);
-    color = pow(color, vec3(1.0 / u_gamma));
     return color;
 }
 
@@ -48,7 +45,6 @@ vec3 lumaBasedReinhardToneMapping(vec3 color) {
     float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
     float toneMappedLuma = luma / (1. + luma);
     color *= toneMappedLuma / luma;
-    color = pow(color, vec3(1. / u_gamma));
     return color;
 }
 
@@ -57,7 +53,6 @@ vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color) {
     float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
     float toneMappedLuma = luma * (1. + luma / (white * white)) / (1. + luma);
     color *= toneMappedLuma / luma;
-    color = pow(color, vec3(1. / u_gamma));
     return color;
 }
 
@@ -69,7 +64,6 @@ vec3 filmicToneMapping(vec3 color) {
 
 vec3 romBinDaHouseToneMapping(vec3 color) {
     color = exp(-1.0 / (2.72 * color + 0.15));
-    color = pow(color, vec3(1. / u_gamma));
     return color;
 }
 
@@ -85,7 +79,6 @@ vec3 uncharted2ToneMapping(vec3 color) {
     color = ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - E / F;
     float white = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
     color /= white;
-    color = pow(color, vec3(1. / u_gamma));
     return color;
 }
 
@@ -117,13 +110,6 @@ void main() {
     vec3 hdrColor = texture(u_hdrBuffer, v_texCoord).rgb;
     vec3 blurColor = texture(u_blurBuffer, v_texCoord).rgb;
     hdrColor += blurColor;
-    // reinhard
-    // vec3 result = hdrColor / (hdrColor + vec3(1.0));
-    // exposure
-    // vec3 result = vec3(1.0) - exp(-hdrColor * u_exposure);
-    // also gamma correct while we're at it
-    // result = pow(result, vec3(1.0 / u_gamma));
-    // o_fragColor = vec4(result, 1.0);
 
     o_fragColor = vec4(toneMapping(hdrColor), 1.0);
 }
