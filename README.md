@@ -98,11 +98,11 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  
  Scene when exposure is 1.0:
  
- <img width="300" alt="HDR - Off" src="https://user-images.githubusercontent.com/3997537/166564237-ae157e94-725f-48ea-bc49-343234c21723.png">
+ <img width="500" alt="HDR - exposure 1.0" src="https://user-images.githubusercontent.com/3997537/166876630-6b5ea840-b838-4f92-a97f-46b7de42ed1f.png">
 
-  Scene when exposure is 0.3:
-
- <img width="300" alt="HDR - On" src="https://user-images.githubusercontent.com/3997537/166564306-28584d0f-d381-4d0a-a156-18574f3a4cae.png">
+  Scene when exposure is 0.2:
+  
+  <img width="500" alt="HDR - exposure 0.2" src="https://user-images.githubusercontent.com/3997537/166876715-460315c8-2371-4b50-88a3-ae9556ca63c0.png">
 
  **5.2 SSAO.** Screen-Space Ambient Occlusion.
 
@@ -127,14 +127,14 @@ Scene without SSAO:
 
   **5.3 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
   
-  Scene with Normal Mapping:
-  
-  <img width="200" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/161758022-3b652197-e0b9-4822-b261-9ad6edaee3d7.png"> 
-  
   Scene without Normal Mapping:
   
-  <img width="200" alt="Normal Mapping On" src="https://user-images.githubusercontent.com/3997537/161758033-af2a06f4-5b34-481c-b1aa-8db8d1268053.png">
-
+  <img width="300" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/166877677-44d68545-293d-4080-8ae8-4f10ccb1d968.png">
+  
+  Scene with Normal Mapping:
+  
+  <img width="300" alt="Normal Mapping On" src="https://user-images.githubusercontent.com/3997537/166877707-924a143d-6fe7-4772-956a-c65e43686b9d.png">
+  
   **5.4 Fog.** Fog is the effect of overlaying a color onto objects dependant on the distance from the camera. Can be used to hide clipping of objects when a camera’s far clip plane has been moved forward for performance.
   
   UI for Fog:
