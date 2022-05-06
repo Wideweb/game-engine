@@ -156,7 +156,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   UI for Fog:
   
-  <img width="500" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
+  <img width="430" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
 
   | Property | Function |
   | :--- | :--- |
@@ -166,7 +166,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   Scene with Fog:
   
-  <img width="400" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166873290-90f89899-81cd-4a73-826b-3917df33c63b.png">
+  <img width="500" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166873290-90f89899-81cd-4a73-826b-3917df33c63b.png">
   
   **5.6 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
 
