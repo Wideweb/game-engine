@@ -136,11 +136,11 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 
  Scene without SSAO:
 
- <img width="590" alt="Scene without SSAO" src="https://user-images.githubusercontent.com/3997537/166872443-c4396811-3d6c-4c29-a80d-aa3d8a1e33b2.png">
+ <img width="500" alt="Scene without SSAO" src="https://user-images.githubusercontent.com/3997537/166872443-c4396811-3d6c-4c29-a80d-aa3d8a1e33b2.png">
  
  Scene with SSAO:
 
- <img width="590" alt="Scene with SSAO" src="https://user-images.githubusercontent.com/3997537/166872482-53cf1d73-db38-405c-ac1d-989ccb1ea1bb.png">
+ <img width="500" alt="Scene with SSAO" src="https://user-images.githubusercontent.com/3997537/166872482-53cf1d73-db38-405c-ac1d-989ccb1ea1bb.png">
 
  **5.4 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
   
@@ -156,7 +156,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   UI for Fog:
   
-  <img width="433" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
+  <img width="500" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
 
   | Property | Function |
   | :--- | :--- |
