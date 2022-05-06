@@ -90,8 +90,8 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  UI for Gamma Correction:
  
  <img width="435" alt="Gamma Correction - UI" src="https://user-images.githubusercontent.com/3997537/166992870-903c5c10-6095-47d5-b782-4bc51d3c0e79.png">
- `
-Scene when gamma is 1.0:
+ 
+ Scene when gamma is 1.0:
 
  <img width="500" alt="Screenshot 2022-05-05 at 21 33 19" src="https://user-images.githubusercontent.com/3997537/166995356-f794936c-c4ef-4230-9653-89f32018b54f.png">
  
