@@ -314,3 +314,12 @@ Perspective Projection:
 UI for Directed Light:
 
 <img width="350" alt="Screenshot 2022-05-06 at 13 48 47" src="https://user-images.githubusercontent.com/3997537/167117827-0c606dd3-1d5a-46af-9a74-c3211c8e98b8.png">
+
+Object inside Shadow Frustum:
+
+<img width="500" alt="Screenshot 2022-05-08 at 23 51 58" src="https://user-images.githubusercontent.com/3997537/167315385-bb56c51f-f25a-4b84-aec8-420ce04f5f03.png">
+
+Object outside Shadow Frustum:
+
+<img width="500" alt="Screenshot 2022-05-08 at 23 58 28" src="https://user-images.githubusercontent.com/3997537/167315563-885a2c13-c236-4360-acc9-9dcc30a63161.png">
+
