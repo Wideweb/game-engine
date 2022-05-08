@@ -214,5 +214,80 @@ Components:
   8. Particles
   9. Behaviour (Script)
   10. 2D Text
-  11. Camera
-  12. Directed Light
+  11. Transform 2D
+  12. Camera
+  13. Directed Light
+
+**7.1 Transform.**
+
+UI for Transform:
+
+<img width="350" alt="Transform UI" src="https://user-images.githubusercontent.com/3997537/167080674-6d3bc752-bdc5-4801-a50f-c71193c9405e.png">
+
+**7.2 Velocity.**
+
+UI for Velocity:
+
+<img width="350" alt="Velocity UI" src="https://user-images.githubusercontent.com/3997537/167081953-266969ff-5cfe-4e51-b044-b598c852e74d.png">
+
+**7.3 Render 3D.**
+
+UI for Render 3D:
+
+<img width="350" alt="Render 3D UI" src="https://user-images.githubusercontent.com/3997537/167114204-3a02a70d-4683-4fd9-8ec4-d9c818df66b9.png">
+
+**7.4 Skelet.**
+
+UI for Skelet:
+
+<img width="350" alt="Skelet UI" src="https://user-images.githubusercontent.com/3997537/167114739-421bfe89-ad5a-4df2-a850-b137c7406d1f.png">
+
+**7.5 Rigitbody.**
+
+UI for Rigitbody:
+
+<img width="350" alt="Rigitbody UI" src="https://user-images.githubusercontent.com/3997537/167080813-cc00af74-74d2-4887-8e2d-9994aa901475.png">
+
+**7.6 Box Collision.**
+
+UI for Box Collision:
+
+<img width="350" alt="Box Collision UI" src="https://user-images.githubusercontent.com/3997537/167115247-6be19b44-6a19-40fa-b386-a92481e3fd05.png">
+
+**7.7 Terrain Collision.**
+
+UI for Terrain Collision:
+
+<img width="350" alt="Terrain Collision UI" src="https://user-images.githubusercontent.com/3997537/167114421-dcb78454-20ab-4129-b577-23a649ff1fa4.png">
+
+**7.8 Particles.**
+
+UI for Particles:
+
+<img width="350" alt="Particles UI" src="https://user-images.githubusercontent.com/3997537/167082053-e20e2b3e-00e2-4a38-88cc-f0da9cb35a40.png">
+
+**7.9 Behaviour (Script).**
+
+UI for Behaviour:
+
+<img width="350" alt="Behaviour UI" src="https://user-images.githubusercontent.com/3997537/167117908-3def9e50-1f68-4c95-896a-81cdc0750bb3.png">
+
+**7.10 2D Text**
+
+UI for 2D Text:
+
+<img width="350" alt="2D Text UI" src="https://user-images.githubusercontent.com/3997537/167117690-ec647125-ab7a-4a19-8db3-f1a4033a6270.png">
+
+**7.11 Transform 2D**
+
+UI for Transform 2D
+
+**7.12 Camera**
+
+UI for Camera:
+
+**7.13 Directed Light**
+
+UI for Directed Light:
+
+<img width="350" alt="Screenshot 2022-05-06 at 13 48 47" src="https://user-images.githubusercontent.com/3997537/167117827-0c606dd3-1d5a-46af-9a74-c3211c8e98b8.png">
