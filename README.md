@@ -284,7 +284,30 @@ UI for Transform 2D
 
 **7.12 Camera**
 
-UI for Camera:
+UI for Camera with perspective projection:
+
+<img width="350" alt="Screenshot 2022-05-08 at 20 13 54" src="https://user-images.githubusercontent.com/3997537/167307535-0f794d7c-dbe1-4a03-9e63-5c1c7dc3ad33.png">
+
+UI for Camera with orthographic projection:
+
+<img width="358" alt="Screenshot 2022-05-08 at 20 36 52" src="https://user-images.githubusercontent.com/3997537/167308430-76723361-7c2e-42d0-ab21-5b90b8ef49f0.png">
+
+
+| Property | Function |
+| :--- | :--- |
+| **Projection**         | Projection type (perspective/orthographic). |
+| **Near and Far Plane** | Near and far planes of a view frustum. All vertices located between the near and far plane and falling into the volume of the view frustum will be rendered. |
+| **Field of View/Zoom**      | Determines how large the visible area is. Field of view is used for the perspective projection, zoom for orthographic. There is an inverse relationship between the two fields: fieldOfView = 2 * atan(1.0f / zoom). |
+
+
+Orthographic Projection:
+
+<img width="500" alt="Screenshot 2022-05-08 at 20 07 56" src="https://user-images.githubusercontent.com/3997537/167307281-971f88a0-77ff-409c-8638-4385e0f33c03.png">
+
+Perspective Projection:
+
+<img width="500" alt="Screenshot 2022-05-08 at 20 10 41" src="https://user-images.githubusercontent.com/3997537/167307408-ec64474c-def6-4b06-8545-6fe10c32a84d.png">
+
 
 **7.13 Directed Light**
 
