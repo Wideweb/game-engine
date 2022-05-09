@@ -73,16 +73,33 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  
  ### 5 Scene Settings
  
- <img width="436" alt="Scene Settings" src="https://user-images.githubusercontent.com/3997537/166557606-2ee5e094-b407-4d89-a691-81e7e57ca1e7.png">
+ UI for Scene Settings:
+ 
+ <img width="436" alt="Scene Settings UI" src="https://user-images.githubusercontent.com/3997537/166978347-bc567641-4c3e-4a1d-9e8b-663b6ae82834.png">
 
- In the scene settings you can switch off/on and edit: 
- 1. HDR
- 2. SSAO
- 3. Normal Mapping
- 4. Fog
- 5. Skybox
+ In the scene settings you can switch off/on and edit:
+ 1. Gamma Correction
+ 2. HDR
+ 3. SSAO
+ 4. Normal Mapping
+ 5. Fog
+ 6. Skybox
 
- **5.1 HDR.** Use a wide range of brightness values to collect information about both bright and dark details of the scene.
+ **5.1 Gamma Correction.** Allows you to apply monitor gamma inversion to the final color before displaying it on the monitor. A gamma of 2.2 is the default value and approximates the average gamma of most displays.
+ 
+ UI for Gamma Correction:
+ 
+ <img width="435" alt="Gamma Correction - UI" src="https://user-images.githubusercontent.com/3997537/166992870-903c5c10-6095-47d5-b782-4bc51d3c0e79.png">
+ 
+ Scene when gamma is 1.0:
+
+ <img width="500" alt="Screenshot 2022-05-05 at 21 33 19" src="https://user-images.githubusercontent.com/3997537/166995356-f794936c-c4ef-4230-9653-89f32018b54f.png">
+ 
+ Scene when gamma is 2.2:
+ 
+ <img width="500" alt="Screenshot 2022-05-05 at 21 33 03" src="https://user-images.githubusercontent.com/3997537/166995204-ae5d9acc-40cf-4cf0-8fc0-c8fb237b83cf.png">
+
+ **5.2 HDR.** Use a wide range of brightness values to collect information about both bright and dark details of the scene.
  
  UI for HDR:
  
@@ -104,7 +121,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   <img width="500" alt="HDR - exposure 0.2" src="https://user-images.githubusercontent.com/3997537/166876715-460315c8-2371-4b50-88a3-ae9556ca63c0.png">
 
- **5.2 SSAO.** Screen-Space Ambient Occlusion.
+ **5.3 SSAO.** Screen-Space Ambient Occlusion.
 
  UI For SSAO:
 
@@ -117,29 +134,29 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
 | **Noise scale**  | Controls the tiling of texture that contains a set of random hemisphere rotation vectors around Z axis. |
 | **Bias**         | The value is added to the original fragment depth. Allows to control how the SSAO effect looks, and also, in certain situations, removes problems with ripples in shadow areas. |
 
-Scene without SSAO:
+ Scene without SSAO:
 
- <img width="590" alt="Scene without SSAO" src="https://user-images.githubusercontent.com/3997537/166872443-c4396811-3d6c-4c29-a80d-aa3d8a1e33b2.png">
+ <img width="500" alt="Scene without SSAO" src="https://user-images.githubusercontent.com/3997537/166872443-c4396811-3d6c-4c29-a80d-aa3d8a1e33b2.png">
  
  Scene with SSAO:
 
- <img width="590" alt="Scene with SSAO" src="https://user-images.githubusercontent.com/3997537/166872482-53cf1d73-db38-405c-ac1d-989ccb1ea1bb.png">
+ <img width="500" alt="Scene with SSAO" src="https://user-images.githubusercontent.com/3997537/166872482-53cf1d73-db38-405c-ac1d-989ccb1ea1bb.png">
 
-  **5.3 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
+ **5.4 Normal Mapping.** Allows you to provide the lighting algorithm with normals that are unique for each fragment.
   
-  Scene without Normal Mapping:
+ Scene without Normal Mapping:
   
-  <img width="300" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/166877677-44d68545-293d-4080-8ae8-4f10ccb1d968.png">
+ <img width="300" alt="Normal Mapping Off" src="https://user-images.githubusercontent.com/3997537/166877677-44d68545-293d-4080-8ae8-4f10ccb1d968.png">
   
   Scene with Normal Mapping:
   
   <img width="300" alt="Normal Mapping On" src="https://user-images.githubusercontent.com/3997537/166877707-924a143d-6fe7-4772-956a-c65e43686b9d.png">
   
-  **5.4 Fog.** Fog is the effect of overlaying a color onto objects dependant on the distance from the camera. Can be used to hide clipping of objects when a camera’s far clip plane has been moved forward for performance.
+  **5.5 Fog.** Fog is the effect of overlaying a color onto objects dependant on the distance from the camera. Can be used to hide clipping of objects when a camera’s far clip plane has been moved forward for performance.
   
   UI for Fog:
   
-  <img width="433" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
+  <img width="430" alt="Fog - Settings" src="https://user-images.githubusercontent.com/3997537/166561298-db2b74cc-db30-4ace-a440-4f83f6db0511.png">
 
   | Property | Function |
   | :--- | :--- |
@@ -149,9 +166,9 @@ Scene without SSAO:
   
   Scene with Fog:
   
-  <img width="400" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166873290-90f89899-81cd-4a73-826b-3917df33c63b.png">
+  <img width="500" alt="Fog - Scene" src="https://user-images.githubusercontent.com/3997537/166873290-90f89899-81cd-4a73-826b-3917df33c63b.png">
   
-  **5.5 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
+  **5.6 Skybox.** Skybox is a wrapper around entire scene that shows what the world looks like beyond geometry. Here you can specify the background color or set six faces of a cube.
 
   UI for Skybox:
   
@@ -197,5 +214,188 @@ Components:
   8. Particles
   9. Behaviour (Script)
   10. 2D Text
-  11. Camera
-  12. Directed Light
+  11. Transform 2D
+  12. Camera
+  13. Directed Light
+
+**7.1 Transform.**
+
+UI for Transform:
+
+<img width="350" alt="Transform UI" src="https://user-images.githubusercontent.com/3997537/167080674-6d3bc752-bdc5-4801-a50f-c71193c9405e.png">
+
+**7.2 Velocity.**
+
+UI for Velocity:
+
+<img width="350" alt="Velocity UI" src="https://user-images.githubusercontent.com/3997537/167081953-266969ff-5cfe-4e51-b044-b598c852e74d.png">
+
+**7.3 Render 3D.**
+
+UI for Render 3D:
+
+<img width="350" alt="Render 3D UI" src="https://user-images.githubusercontent.com/3997537/167114204-3a02a70d-4683-4fd9-8ec4-d9c818df66b9.png">
+
+**7.4 Skelet.**
+
+UI for Skelet:
+
+<img width="350" alt="Skelet UI" src="https://user-images.githubusercontent.com/3997537/167114739-421bfe89-ad5a-4df2-a850-b137c7406d1f.png">
+
+**7.5 Rigitbody.**
+
+UI for Rigitbody:
+
+<img width="350" alt="Rigitbody UI" src="https://user-images.githubusercontent.com/3997537/167080813-cc00af74-74d2-4887-8e2d-9994aa901475.png">
+
+| Callback | Function |
+| :--- | :--- |
+| **Mass** | Quantity that determines the inertial and gravitational properties of the body. |
+
+**7.6 Box Collision.**
+
+UI for Box Collision:
+
+<img width="350" alt="Box Collision UI" src="https://user-images.githubusercontent.com/3997537/167115247-6be19b44-6a19-40fa-b386-a92481e3fd05.png">
+
+**7.7 Terrain Collision.**
+
+UI for Terrain Collision:
+
+<img width="350" alt="Terrain Collision UI" src="https://user-images.githubusercontent.com/3997537/167114421-dcb78454-20ab-4129-b577-23a649ff1fa4.png">
+
+ Field | Function |
+| :--- | :--- |
+| **Coulms and Rows**            | Controls the detail (number of polygons) of the terrain. |
+| **Brush Radius and Strength**  | Brush settings for terrain editing. |
+
+Terrain editing with brush:
+
+<img width="500" alt="Terrain Edit" src="https://user-images.githubusercontent.com/3997537/167357287-3a3cb43b-dd8e-404d-b15d-9e063404283e.png">
+
+**7.8 Particles.**
+
+UI for Particles:
+
+<img width="350" alt="Particles UI" src="https://user-images.githubusercontent.com/3997537/167082053-e20e2b3e-00e2-4a38-88cc-f0da9cb35a40.png">
+
+**7.9 Behaviour (Script).** Updating an object in the game loop, the engine makes callbacks written in the form of a lua script. This gives you the ability to influence how game objects update over time.
+
+| Callback | Function |
+| :--- | :--- |
+| **init**         | - |
+| **update**       | On every game loop update. |
+| **collide**      | On colliding with other objects in the game scene. |
+
+UI for Behaviour:
+
+<img width="350" alt="Behaviour UI" src="https://user-images.githubusercontent.com/3997537/167117908-3def9e50-1f68-4c95-896a-81cdc0750bb3.png">
+
+To assign a lua script to a game object, drag the lua file from the content manager to the Script field. Example of lua script:
+
+```lua
+canJump = true;
+
+function init(entity)
+    canJump = true;
+end
+
+function update(entity)
+    velocity = entity:getVelocityComponent();
+    skelet = entity:getSkeletComponent();
+    local run = false;
+    local rotate = false;
+
+    if Input.isKeyPressed(Input.Key.W) then
+        velocity.speed = -4.0;
+        run = true;
+    elseif Input.isKeyPressed(Input.Key.S) then
+        velocity.speed = 4.0;
+        run = true;
+    else
+        velocity.speed = 0;
+        run = false;
+    end
+
+    if Input.isKeyPressed(Input.Key.D) then
+        velocity.rotation.y = -1.0;
+        rotate = true;
+    elseif Input.isKeyPressed(Input.Key.A) then
+        velocity.rotation.y = 1.0;
+        rotate = true;
+    else
+        velocity.rotation.y = 0;
+        rotate = false;
+    end
+
+    if (Input.isKeyPressed(Input.Key.Space) and canJump) then
+        velocity.velocity.y = 2.0;
+        canJump = false;
+    end
+
+    if (run or rotate or not canJump) then
+        skelet.state:play("Armature|Run");
+    else
+        skelet.state:play("Armature|Idle");
+    end
+end
+
+function collide(entity, other)
+    local tag = other:getTagComponent().tag;
+    if (tag == "platform") then
+        canJump = true;
+    end
+end
+```
+
+**7.10 2D Text**
+
+UI for 2D Text:
+
+<img width="350" alt="2D Text UI" src="https://user-images.githubusercontent.com/3997537/167117690-ec647125-ab7a-4a19-8db3-f1a4033a6270.png">
+
+**7.11 Transform 2D**
+
+UI for Transform 2D
+
+**7.12 Camera**
+
+UI for Camera with perspective projection:
+
+<img width="350" alt="Screenshot 2022-05-08 at 20 13 54" src="https://user-images.githubusercontent.com/3997537/167307535-0f794d7c-dbe1-4a03-9e63-5c1c7dc3ad33.png">
+
+UI for Camera with orthogonal projection:
+
+<img width="358" alt="Screenshot 2022-05-08 at 20 36 52" src="https://user-images.githubusercontent.com/3997537/167308430-76723361-7c2e-42d0-ab21-5b90b8ef49f0.png">
+
+
+| Property | Function |
+| :--- | :--- |
+| **Projection**         | Projection type (perspective/orthogonal). |
+| **Near and Far Plane** | Near and far planes of a view frustum. All vertices located between the near and far plane and falling into the volume of the view frustum will be rendered. |
+| **Field of View/Zoom**      | Determines how large the visible area is. Field of view is used for the perspective projection, zoom for orthogonal. There is an inverse relationship between the two fields: fieldOfView = 2 * atan(1.0f / zoom). |
+
+
+Orthogonal Projection:
+
+<img width="500" alt="Screenshot 2022-05-08 at 20 07 56" src="https://user-images.githubusercontent.com/3997537/167307281-971f88a0-77ff-409c-8638-4385e0f33c03.png">
+
+Perspective Projection:
+
+<img width="500" alt="Screenshot 2022-05-08 at 20 10 41" src="https://user-images.githubusercontent.com/3997537/167307408-ec64474c-def6-4b06-8545-6fe10c32a84d.png">
+
+
+**7.13 Directed Light**
+
+UI for Directed Light:
+
+<img width="350" alt="Screenshot 2022-05-06 at 13 48 47" src="https://user-images.githubusercontent.com/3997537/167117827-0c606dd3-1d5a-46af-9a74-c3211c8e98b8.png">
+
+Object inside Shadow Frustum:
+
+<img width="500" alt="Screenshot 2022-05-08 at 23 51 58" src="https://user-images.githubusercontent.com/3997537/167315385-bb56c51f-f25a-4b84-aec8-420ce04f5f03.png">
+
+Object outside Shadow Frustum:
+
+<img width="500" alt="Screenshot 2022-05-08 at 23 58 28" src="https://user-images.githubusercontent.com/3997537/167315563-885a2c13-c236-4360-acc9-9dcc30a63161.png">
+
