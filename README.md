@@ -248,6 +248,10 @@ UI for Rigitbody:
 
 <img width="350" alt="Rigitbody UI" src="https://user-images.githubusercontent.com/3997537/167080813-cc00af74-74d2-4887-8e2d-9994aa901475.png">
 
+| Callback | Function |
+| :--- | :--- |
+| **Mass** | Quantity that determines the inertial and gravitational properties of the body. |
+
 **7.6 Box Collision.**
 
 UI for Box Collision:
