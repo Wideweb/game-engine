@@ -356,7 +356,15 @@ UI for 2D Text:
 
 **7.11 Transform 2D**
 
-UI for Transform 2D
+UI for Transform 2D:
+
+<img width="350" alt="Transform 2D - UI" src="https://user-images.githubusercontent.com/3997537/167364827-520fa3a2-c207-4515-b492-83e11754ee4e.png">
+
+| Property | Function |
+| :--- | :--- |
+| **NDC**              | Allows you to specify the position of the object in normalized device coordinates. This means that the coordinates must be between -1.0 and 1.0. |
+| **Location X and Y** | Object coordinates in screen space. |
+| **Scale X and Y**    | Сontrols the stretching of the object along the coordinate axes. |
 
 **7.12 Camera**
 
