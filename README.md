@@ -242,6 +242,9 @@ UI for Skelet:
 
 <img width="350" alt="Skelet UI" src="https://user-images.githubusercontent.com/3997537/167114739-421bfe89-ad5a-4df2-a850-b137c7406d1f.png">
 
+<img width="350" alt="Screenshot 2022-05-09 at 18 11 18" src="https://user-images.githubusercontent.com/3997537/167440589-4ef95b4f-6fb6-4082-8e42-7d5de4d68711.png">
+
+
 **7.5 Rigitbody.**
 
 UI for Rigitbody:
@@ -278,6 +281,9 @@ Terrain editing with brush:
 UI for Particles:
 
 <img width="350" alt="Particles UI" src="https://user-images.githubusercontent.com/3997537/167082053-e20e2b3e-00e2-4a38-88cc-f0da9cb35a40.png">
+
+<img width="300" alt="Screenshot 2022-05-09 at 17 54 09" src="https://user-images.githubusercontent.com/3997537/167437255-3ffe6d38-fcb0-4c9a-afbe-54519eba7217.png">
+
 
 **7.9 Behaviour (Script).** Updating an object in the game loop, the engine makes callbacks written in the form of a lua script. This gives you the ability to influence how game objects update over time.
 
@@ -353,6 +359,8 @@ end
 UI for 2D Text:
 
 <img width="350" alt="2D Text UI" src="https://user-images.githubusercontent.com/3997537/167117690-ec647125-ab7a-4a19-8db3-f1a4033a6270.png">
+
+<img width="350" alt="Screenshot 2022-05-09 at 18 09 10" src="https://user-images.githubusercontent.com/3997537/167440191-686d9fac-91bb-4349-8df9-0037a7635980.png">
 
 **7.11 Transform 2D**
 
