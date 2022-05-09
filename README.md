@@ -260,17 +260,89 @@ UI for Terrain Collision:
 
 <img width="350" alt="Terrain Collision UI" src="https://user-images.githubusercontent.com/3997537/167114421-dcb78454-20ab-4129-b577-23a649ff1fa4.png">
 
+ Field | Function |
+| :--- | :--- |
+| **Coulms and Rows**            | Controls the detail (number of polygons) of the terrain. |
+| **Brush Radius and Strength**  | Brush settings for terrain editing. |
+
+Terrain editing with brush:
+
+<img width="500" alt="Terrain Edit" src="https://user-images.githubusercontent.com/3997537/167357287-3a3cb43b-dd8e-404d-b15d-9e063404283e.png">
+
 **7.8 Particles.**
 
 UI for Particles:
 
 <img width="350" alt="Particles UI" src="https://user-images.githubusercontent.com/3997537/167082053-e20e2b3e-00e2-4a38-88cc-f0da9cb35a40.png">
 
-**7.9 Behaviour (Script).**
+**7.9 Behaviour (Script).** Updating an object in the game loop, the engine makes callbacks written in the form of a lua script. This gives you the ability to influence how game objects update over time.
+
+| Callback | Function |
+| :--- | :--- |
+| **init**         | - |
+| **update**       | On every game loop update. |
+| **collide**      | On colliding with other objects in the game scene. |
 
 UI for Behaviour:
 
 <img width="350" alt="Behaviour UI" src="https://user-images.githubusercontent.com/3997537/167117908-3def9e50-1f68-4c95-896a-81cdc0750bb3.png">
+
+To assign a lua script to a game object, drag the lua file from the content manager to the Script field. Example of lua script:
+
+```lua
+canJump = true;
+
+function init(entity)
+    canJump = true;
+end
+
+function update(entity)
+    velocity = entity:getVelocityComponent();
+    skelet = entity:getSkeletComponent();
+    local run = false;
+    local rotate = false;
+
+    if Input.isKeyPressed(Input.Key.W) then
+        velocity.speed = -4.0;
+        run = true;
+    elseif Input.isKeyPressed(Input.Key.S) then
+        velocity.speed = 4.0;
+        run = true;
+    else
+        velocity.speed = 0;
+        run = false;
+    end
+
+    if Input.isKeyPressed(Input.Key.D) then
+        velocity.rotation.y = -1.0;
+        rotate = true;
+    elseif Input.isKeyPressed(Input.Key.A) then
+        velocity.rotation.y = 1.0;
+        rotate = true;
+    else
+        velocity.rotation.y = 0;
+        rotate = false;
+    end
+
+    if (Input.isKeyPressed(Input.Key.Space) and canJump) then
+        velocity.velocity.y = 2.0;
+        canJump = false;
+    end
+
+    if (run or rotate or not canJump) then
+        skelet.state:play("Armature|Run");
+    else
+        skelet.state:play("Armature|Idle");
+    end
+end
+
+function collide(entity, other)
+    local tag = other:getTagComponent().tag;
+    if (tag == "platform") then
+        canJump = true;
+    end
+end
+```
 
 **7.10 2D Text**
 
