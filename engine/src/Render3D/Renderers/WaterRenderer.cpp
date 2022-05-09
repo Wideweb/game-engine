@@ -164,8 +164,9 @@ void WaterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &model
     m_Shader.setFloat("u_moveFactor", m_WaterMoveFactor);
     m_WaterMoveFactor += 0.001f;
 
-    auto &light = scene.getDirectedLight();
-    glm::vec3 lightDir = glm::quat(light.rotation) * glm::vec3(0.0f, -1.0f, 0.0f);
+    const auto &lightObj = scene.getDirectedLight();
+    const auto &light = lightObj.light;
+    glm::vec3 lightDir = glm::quat(lightObj.rotation) * glm::vec3(0.0f, -1.0f, 0.0f);
     m_Shader.setFloat3("u_directedLight.direction", lightDir);
     m_Shader.setFloat3("u_directedLight.ambient", light.ambient * light.intensity);
     m_Shader.setFloat3("u_directedLight.diffuse", light.diffuse * light.intensity);

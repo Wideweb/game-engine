@@ -11,9 +11,9 @@ namespace Engine {
 
 class ModelManager {
   public:
-    void RegisterModel(const std::string &name, const std::shared_ptr<Model> &model) { 
-      m_Data.add(name, model);
-    }
+    void RegisterModel(const std::string &name, const std::shared_ptr<Model> &model) { m_Data.add(name, model); }
+
+    void UpdateModel(const std::string &name, const std::shared_ptr<Model> &model) { m_Data[name] = model; }
 
     std::shared_ptr<Model> GetModel(const std::string &name) const {
         assert(m_Data.hasKey(name) && "no model.");

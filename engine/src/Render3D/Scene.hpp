@@ -2,6 +2,7 @@
 
 #include <array>
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -21,6 +22,12 @@
 namespace Engine {
 
 constexpr uint32_t c_MaxSceneLights = 4;
+
+struct SceneDirectedLight {
+    DirectedLight light;
+    glm::vec3 position;
+    glm::quat rotation;
+};
 
 struct SceneSpotLight {
     SpotLight light;
@@ -73,9 +80,9 @@ class Scene {
     void updateObject(uint32_t id, const std::string &model, std::shared_ptr<Shader> shader = nullptr);
     ObjectsRange getObjects();
 
-    void setDirectedLight(const DirectedLight &light);
+    void setDirectedLight(const DirectedLight &light, glm::vec3 position, glm::quat rotation);
     bool hasDirectedLight();
-    DirectedLight &getDirectedLight();
+    SceneDirectedLight &getDirectedLight();
 
     uint32_t addSpotLight(uint32_t id, const SpotLight &light, glm::vec3 position);
     void removeSpotLight(uint32_t id);
@@ -88,9 +95,11 @@ class Scene {
                                 double deltaTime);
     const std::vector<SceneParticles> &getParticleEmitters() const;
 
-    uint32_t addText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,  glm::mat4 ndcTransform, glm::vec3 color);
+    uint32_t addText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
+                     glm::mat4 ndcTransform, glm::vec3 color);
     void removeText(uint32_t id);
-    void updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform, glm::mat4 ndcTransform, glm::vec3 color);
+    void updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
+                    glm::mat4 ndcTransform, glm::vec3 color);
     const std::vector<SceneText> &getTexts() const;
 
     void clear();
@@ -102,7 +111,7 @@ class Scene {
     std::shared_ptr<Skybox> m_Skybox;
 
     bool m_HasDirectedLight = false;
-    DirectedLight m_DirectedLight;
+    SceneDirectedLight m_DirectedLight;
 
     FlatDictionary<uint32_t, SceneParticles> m_ParticleEmitters;
     FlatDictionary<uint32_t, SceneSpotLight> m_SpotLights;

@@ -3,6 +3,7 @@
 #include "ImGuiWidgets.hpp"
 
 #include "BehaviourPanel.hpp"
+#include "CameraPanel.hpp"
 #include "CollisionPanel.hpp"
 #include "DirectedLightPanel.hpp"
 #include "ModelRenderPanel.hpp"
@@ -23,6 +24,7 @@
 #include "TransformControlsScale.hpp"
 
 #include "BehaviourComponent.hpp"
+#include "CameraComponent.hpp"
 #include "CollisionComponent.hpp"
 #include "DirectedLightComponent.hpp"
 #include "Location2DComponent.hpp"
@@ -62,6 +64,7 @@ void InspectorPanel::onAttach() {
     auto terrainTransformTool = std::make_shared<TerrainTransform>(m_GameObject, *terrainPanel);
     auto collisionBodyTool = std::make_shared<CollisionBody>(m_GameObject);
     auto meshBodyTool = std::make_shared<MeshBody>(m_GameObject);
+    auto cameraPanel = std::make_shared<CameraPanel>(m_GameObject);
 
     addPanel<LocationComponent>(transformPanel);
     addPanel<Location2DComponent>(transform2DPanel);
@@ -75,6 +78,7 @@ void InspectorPanel::onAttach() {
     addPanel<SkeletComponent>(skeletPanel);
     addPanel<Text2DComponent>(text2DPanel);
     addPanel<TerrainCollisionComponent>(terrainPanel);
+    addPanel<CameraComponent>(cameraPanel);
 
     addSceneTool<LocationComponent>(transformPositionTool);
     addSceneTool<LocationComponent>(TransformRotationTool);

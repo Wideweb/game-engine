@@ -29,7 +29,7 @@ class Render3DComponent {
     std::shared_ptr<Shader> shader;
 
     Render3DComponent() {}
-    Render3DComponent(std::string model, float scale, bool overlay = false)
+    Render3DComponent(std::string model, float scale = 1.0f, bool overlay = false)
         : scale(scale), model(std::move(model)), m_Overlay(overlay) {}
 
     bool overlay() const { return m_Overlay; }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Camera.hpp"
-#include "DirectedLight.hpp"
 #include "Framebuffer.hpp"
 #include "ModelManager.hpp"
 #include "ModelRenderer.hpp"
@@ -26,8 +25,7 @@ class DirectedLightRenderer {
     DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRender);
     ~DirectedLightRenderer();
 
-    void apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene, const ModelManager &models,
-               RendererState &state);
+    void apply(Camera &camera, Shader &shader, Scene &scene, const ModelManager &models, RendererState &state);
     void resize();
 
     const Texture &depthMap() { return m_DepthMap; }

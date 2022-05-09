@@ -132,8 +132,8 @@ void LuaCore::add(lua_State *state) {
         .addProperty("ambient", &DirectedLight::ambient)
         .addProperty("diffuse", &DirectedLight::diffuse)
         .addProperty("specular", &DirectedLight::specular)
-        .addProperty("nearPlane", &DirectedLight::nearPlane)
-        .addProperty("farPlane", &DirectedLight::farPlane)
+        .addProperty("nearPlane", &DirectedLight::shadowFrustumNearPlane)
+        .addProperty("farPlane", &DirectedLight::shadowFrustumFarPlane)
         .endClass()
         .endNamespace();
 
@@ -175,7 +175,7 @@ void LuaCore::add(lua_State *state) {
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
         .beginClass<CameraComponent>("CameraComponent")
-        .addConstructor<void (*)(float, float, float)>()
+        .addConstructor<void (*)()>()
         .endClass()
         .endNamespace();
 

@@ -49,8 +49,7 @@ void CameraDirector::onUpdate() {
     auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
     auto &entityCamera = coordinator.GetComponent<CameraComponent>(entity);
 
-    auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager()) *
-                 glm::translate(glm::mat4(1.0), entityCamera.offset) * glm::toMat4(glm::quat(entityCamera.rotation));
+    auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager());
 
     glm::vec3 scale;
     glm::quat rotation;

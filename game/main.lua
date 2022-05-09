@@ -14,11 +14,19 @@ function main(app)
     local cameraLocation = Core.LocationComponent(0.0, 3.0, 5.0);
     cameraLocation.rotation = Core.vec3(-0.5, 0.0, 0.0);
     camera:addLocationComponent(cameraLocation);
-    camera:addCameraComponent(Core.CameraComponent(0.0, 0.0, 0.0));
+    camera:addCameraComponent(Core.CameraComponent());
 
     local light = app:createEntity("Directed Light");
     light:addLocationComponent(Core.LocationComponent(0.0, 3.0, -5.0));
     light:addDirectedLightComponent(Core.DirectedLightComponent(Core.DirectedLight()));
+
+    -- for i = 1, 5 do
+    --     local box = app:createEntity("Box");
+    --     box:addLocationComponent(Core.LocationComponent(2.0 * i, 0.0, 0.0));
+    --     box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
+    --     box:addTagComponent(Core.TagComponent("platform"));
+    --     box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+    -- end
 
     local box = app:createEntity("Box");
     box:addLocationComponent(Core.LocationComponent(0.0, 0.0, 0.0));

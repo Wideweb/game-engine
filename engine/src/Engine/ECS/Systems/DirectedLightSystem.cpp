@@ -14,22 +14,16 @@ void DirectedLightSystem::Update(ComponentManager &components) const {
 
     for (auto entity : m_Entities) {
         auto light = components.GetComponent<DirectedLightComponent>(entity).light;
+        auto model = LocationComponent::getFullTransform(entity, components);
 
-        if (components.HasComponent<LocationComponent>(entity)) {
-            auto model =
-                LocationComponent::getFullTransform(entity, components) * glm::toMat4(glm::quat(light.rotation));
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 position;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(model, scale, rotation, position, skew, perspective);
 
-            glm::vec3 scale;
-            glm::quat rotation;
-            glm::vec3 position;
-            glm::vec3 skew;
-            glm::vec4 perspective;
-            glm::decompose(model, scale, rotation, position, skew, perspective);
-
-            light.rotation = glm::eulerAngles(rotation);
-        }
-
-        scene.setDirectedLight(light);
+        scene.setDirectedLight(light, position, rotation);
     }
 }
 

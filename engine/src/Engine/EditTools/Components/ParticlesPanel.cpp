@@ -42,43 +42,43 @@ void ParticlesPanel::onDraw() {
     ImGui::PushItemWidth(120.0f);
     {
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputInt("count", &particles.count, 1, 10);
+        ImGui::InputInt("Count", &particles.count, 1, 10);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("rate", &particles.rate, 0.001f, 0.01f);
+        ImGui::InputFloat("Rate", &particles.rate, 0.001f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("lifetime", &particles.lifeTime, 0.1f, 0.01f);
+        ImGui::InputFloat("Lifetime", &particles.lifeTime, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("radius", &particles.spawnRadius, 0.1f, 0.01f);
+        ImGui::InputFloat("Radius", &particles.spawnRadius, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("vel min", &particles.velocityMin, 0.1f, 0.01f);
+        ImGui::InputFloat("Velocity Min", &particles.velocityMin, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("vel max", &particles.velocityMax, 0.1f, 0.01f);
+        ImGui::InputFloat("Velocity Max", &particles.velocityMax, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("polar", &particles.velocityPolarAngle, 0.01f, 0.01f);
+        ImGui::InputFloat("Polar", &particles.velocityPolarAngle, 0.01f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("azimuth", &particles.velocityAzimuthalAngle, 0.01f, 0.01f);
+        ImGui::InputFloat("Azimuth", &particles.velocityAzimuthalAngle, 0.01f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("size from", &particles.sizeFrom, 0.1f, 0.01f);
+        ImGui::InputFloat("Size From", &particles.sizeFrom, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("size to", &particles.sizeTo, 0.1f, 0.01f);
+        ImGui::InputFloat("Size To", &particles.sizeTo, 0.1f, 0.01f);
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::ColorEdit3("color from", glm::value_ptr(particles.colorFrom));
+        ImGui::ColorEdit3("Color From", glm::value_ptr(particles.colorFrom));
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::ColorEdit3("color to", glm::value_ptr(particles.colorTo));
+        ImGui::ColorEdit3("Color To", glm::value_ptr(particles.colorTo));
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat3("gravity", glm::value_ptr(particles.gravity));
+        ImGui::InputFloat3("Gravity", glm::value_ptr(particles.gravity));
     }
 
     ImGui::PopItemWidth();

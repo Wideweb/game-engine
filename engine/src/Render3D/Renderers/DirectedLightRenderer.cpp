@@ -31,8 +31,11 @@ DirectedLightRenderer::~DirectedLightRenderer() {
     m_DepthMap.free();
 }
 
-void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Shader &shader, Scene &scene,
-                                  const ModelManager &models, RendererState &state) {
+void DirectedLightRenderer::apply(Camera &camera, Shader &shader, Scene &scene, const ModelManager &models,
+                                  RendererState &state) {
+    const auto &lightObj = scene.getDirectedLight();
+    const auto light = lightObj.light;
+
     unsigned int lastViewportWidth = m_Viewport.width;
     unsigned int lastViewportHeight = m_Viewport.height;
 
@@ -40,13 +43,15 @@ void DirectedLightRenderer::apply(Camera &camera, const DirectedLight &light, Sh
     m_Viewport.resize(m_Viewport.width * 2.0f, m_Viewport.height * 2.0f);
     m_DepthMapFramebuffer.clearDepth();
 
-    float farHalf = light.farPlane / 2.0f;
-    glm::vec3 direction = glm::quat(light.rotation) * glm::vec3(0.0f, -1.0f, 0.0f);
+    // float farHalf = light.shadowFrustumFarPlane / 2.0f;
+    glm::vec3 direction = lightObj.rotation * glm::vec3(0.0f, -1.0f, 0.0f);
 
-    glm::vec3 position = camera.positionVec() - direction * farHalf + camera.frontVec() * farHalf;
+    // glm::vec3 position = camera.positionVec() - direction * farHalf + camera.frontVec() * farHalf;
 
-    glm::mat4 lightProjection = glm::ortho(-farHalf, farHalf, -farHalf, farHalf, light.nearPlane, light.farPlane);
-    glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 lightProjection =
+        glm::ortho(light.shadowFrustumWidth * -0.5f, light.shadowFrustumWidth * 0.5f, light.shadowFrustumHeight * -0.5f,
+                   light.shadowFrustumHeight * 0.5f, light.shadowFrustumNearPlane, light.shadowFrustumFarPlane);
+    glm::mat4 lightView = glm::lookAt(lightObj.position, lightObj.position + direction, glm::vec3(0.0f, 0.0f, 1.0f));
 
     m_DepthShader.bind();
     m_DepthShader.setMatrix4("u_view", lightView);

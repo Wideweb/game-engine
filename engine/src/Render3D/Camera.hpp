@@ -30,11 +30,18 @@ class Camera {
     void setSize(int width, int height);
     void setPerspective(float fieldOfView, float zNear, float zFar);
     void setFieldOfView(float fieldOfView);
-    void setOrthogonal(float zNear, float zFar);
+    void setZoom(float zoom);
+    void setOrthogonal(float zNear, float zFar, float zoom);
     void setProjection(Projection mode);
     void setPosition(glm::vec3 position);
     void setRotation(glm::quat rotation);
     void inversePitch();
+
+    Projection getProjection() { return mode; }
+    float getFieldOfView() { return fieldOfView; }
+    float getZNear() { return zNear; }
+    float getZFar() { return zFar; }
+    float getZoom() { return zoom; }
 
   private:
     int width;
@@ -50,6 +57,7 @@ class Camera {
     glm::mat4 perspective;
 
     float fieldOfView, zNear, zFar;
+    float zoom = 1.0f;
 };
 
 } // namespace Engine

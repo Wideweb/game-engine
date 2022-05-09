@@ -247,7 +247,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
     if (scene.hasDirectedLight()) {
         m_Shader.setInt("u_hasDirectedLight", 1);
-        m_DirectedLightRenderer->apply(camera, scene.getDirectedLight(), m_Shader, scene, models, m_State);
+        m_DirectedLightRenderer->apply(camera, m_Shader, scene, models, m_State);
     }
 
     // for (const auto &obj : scene.getSpotLights()) {

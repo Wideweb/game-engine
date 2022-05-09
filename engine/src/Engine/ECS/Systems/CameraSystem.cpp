@@ -21,8 +21,7 @@ void CameraSystem::Update(ComponentManager &components) const {
         auto &location = components.GetComponent<LocationComponent>(entity);
         auto &cameraCmp = components.GetComponent<CameraComponent>(entity);
 
-        auto model = LocationComponent::getFullTransform(entity, components) *
-                     glm::translate(glm::mat4(1.0), cameraCmp.offset) * glm::toMat4(glm::quat(cameraCmp.rotation));
+        auto model = LocationComponent::getFullTransform(entity, components);
 
         glm::vec3 scale;
         glm::quat rotation;
@@ -33,7 +32,6 @@ void CameraSystem::Update(ComponentManager &components) const {
 
         camera.setPosition(position);
         camera.setRotation(rotation);
-        // camera.move(cameraCmp.offset);
     }
 }
 

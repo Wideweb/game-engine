@@ -10,22 +10,21 @@
 
 namespace Engine {
 
-std::shared_ptr<Model> ModelFactory::createCube(float size) {
+std::shared_ptr<Model> ModelFactory::createCube(float size) { return createCube(size, size, size, size, size, size); }
+
+std::shared_ptr<Model> ModelFactory::createCube(float left, float right, float bottom, float top, float back,
+                                                float front) {
     // clang-format off
     std::vector<glm::vec3> positions = {
-        glm::vec3(-1.0f, 1.0f, 1.0f), // 0
-        glm::vec3(-1.0f, -1.0f, 1.0f), // 1
-        glm::vec3(-1.0f, 1.0f, -1.0f), // 2
-        glm::vec3(-1.0f, -1.0f, -1.0f), // 3
-        glm::vec3(1.0f, 1.0f, 1.0f), // 4
-        glm::vec3(1.0f, -1.0f, 1.0f), // 5
-        glm::vec3(1.0f, 1.0f, -1.0f), // 6
-        glm::vec3(1.0f, -1.0f, -1.0f), // 7
+        glm::vec3(-left, top, front), // 0
+        glm::vec3(-left, -bottom, front), // 1
+        glm::vec3(-left, top, -back), // 2
+        glm::vec3(-left, -bottom, -back), // 3
+        glm::vec3(right, top, front), // 4
+        glm::vec3(right, -bottom, front), // 5
+        glm::vec3(right, top, -back), // 6
+        glm::vec3(right, -bottom, -back), // 7
     };
-
-    for (unsigned int i = 0; i < positions.size(); i++) {
-        positions[i] *= size;
-    }
 
     std::vector<Mesh::Vertex> vertices;
     vertices.emplace_back(positions[4], glm::vec3(0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.8f, 0.6f, 0.1f));

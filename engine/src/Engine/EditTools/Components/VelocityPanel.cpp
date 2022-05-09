@@ -26,12 +26,21 @@ void VelocityPanel::onDraw() {
 
         ImGuiWidgets::PaddingLeft(padding);
         ImGui::Text("Velocity: ");
+
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("vx", &velocity.x, 0.1f, 0.01f);
+        ImGui::InputFloat("##velocity_x", &velocity.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("vy", &velocity.y, 0.1f, 0.01f);
+        ImGui::InputFloat("##velocity_y", &velocity.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("vz", &velocity.z, 0.1f, 0.01f);
+        ImGui::InputFloat("##velocity_z", &velocity.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
 
         if (prevVelocity != velocity) {
             m_Model.velocity(velocity);
@@ -44,12 +53,21 @@ void VelocityPanel::onDraw() {
 
         ImGuiWidgets::PaddingLeft(padding);
         ImGui::Text("Rotation: ");
+
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("rx", &rotation.x, 0.1f, 0.01f);
+        ImGui::InputFloat("##rotation_x", &rotation.x, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("X");
+
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("ry", &rotation.y, 0.1f, 0.01f);
+        ImGui::InputFloat("##rotation_y", &rotation.y, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Y");
+
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("rz", &rotation.z, 0.1f, 0.01f);
+        ImGui::InputFloat("##rotation_z", &rotation.z, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Z");
 
         if (prevRotation != rotation) {
             m_Model.rotationVelocity(rotation);
@@ -61,9 +79,9 @@ void VelocityPanel::onDraw() {
         float speed = prevSpeed;
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::Text("Directional speed: ");
+        ImGui::Text("Directional Speed: ");
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("value", &speed, 0.1f, 0.01f);
+        ImGui::InputFloat("##Directional_Speed", &speed, 0.1f, 0.01f);
 
         if (prevSpeed != speed) {
             m_Model.directionalSpeed(speed);

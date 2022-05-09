@@ -93,11 +93,19 @@ void CollisionPanel::onDraw() {
     ImGui::Checkbox("Static", &m_Static);
 
     ImGuiWidgets::PaddingLeft(padding);
-    ImGui::InputFloat("width", &m_Size.x, 0.1f, 0.01f);
+    ImGui::InputFloat("##Box_colider_width", &m_Size.x, 0.1f, 0.01f);
+    ImGui::SameLine();
+    ImGui::Text("Width");
+
     ImGuiWidgets::PaddingLeft(padding);
-    ImGui::InputFloat("height", &m_Size.y, 0.1f, 0.01f);
+    ImGui::InputFloat("##Box_colider_height", &m_Size.y, 0.1f, 0.01f);
+    ImGui::SameLine();
+    ImGui::Text("Height");
+
     ImGuiWidgets::PaddingLeft(padding);
-    ImGui::InputFloat("depth", &m_Size.z, 0.1f, 0.01f);
+    ImGui::InputFloat("##Box_colider_depth", &m_Size.z, 0.1f, 0.01f);
+    ImGui::SameLine();
+    ImGui::Text("Depth");
 
     ImGui::PopItemWidth();
     ImGui::NewLine();

@@ -53,14 +53,14 @@ void Scene::updateObject(uint32_t id, const std::string &model, std::shared_ptr<
 
 Scene::ObjectsRange Scene::getObjects() { return {m_Objects.begin(), m_Objects.end()}; }
 
-void Scene::setDirectedLight(const DirectedLight &light) {
-    m_DirectedLight = light;
+void Scene::setDirectedLight(const DirectedLight &light, glm::vec3 position, glm::quat rotation) {
+    m_DirectedLight = {light, position, rotation};
     m_HasDirectedLight = true;
 }
 
 bool Scene::hasDirectedLight() { return m_HasDirectedLight; }
 
-DirectedLight &Scene::getDirectedLight() { return m_DirectedLight; }
+SceneDirectedLight &Scene::getDirectedLight() { return m_DirectedLight; }
 
 uint32_t Scene::addSpotLight(uint32_t id, const SpotLight &light, glm::vec3 position) {
     m_SpotLights.emplace(id);

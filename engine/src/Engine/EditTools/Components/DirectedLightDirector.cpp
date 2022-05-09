@@ -4,8 +4,11 @@
 #include "Configs.hpp"
 #include "DirectedLightComponent.hpp"
 #include "EditToolComponent.hpp"
+#include "File.hpp"
 #include "LocationComponent.hpp"
+#include "ModelFactory.hpp"
 #include "ModelLoader.hpp"
+#include "ParentComponent.hpp"
 #include "TagComponent.hpp"
 
 #include "imgui/imgui.h"
@@ -16,8 +19,15 @@ namespace Engine {
 DirectedLightDirector::DirectedLightDirector(GameObjectModel &model) : m_Model(model) {}
 
 void DirectedLightDirector::onAttach() {
+    auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
+    auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
+    auto geometrySrc = File::read("./shaders/overlay-geometry-shader.glsl");
+    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
+
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Directional Light",
                                                  ModelLoader::load("./assets/models/box/arrow-y.fbx"));
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "sun-frustum",
+                                                 ModelFactory::createCube(1.0f));
 
     m_SunIcon = TextureLoader::loadTexture("assets/textures/icons/light.png");
 
@@ -30,6 +40,16 @@ void DirectedLightDirector::onAttach() {
     render.rotation.x = 1.57f;
     coordinator.AddComponent(sun, render);
     m_Sun = sun;
+
+    auto frustum = coordinator.CreateEntity("Directional Light Frustum");
+    auto frustumLocation = LocationComponent(glm::vec3(0.0f));
+    frustumLocation.rotation.x = 1.57f;
+    coordinator.AddComponent(frustum, frustumLocation);
+    coordinator.AddComponent(frustum, ParentComponent(m_Sun));
+    auto frustumRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "sun-frustum", 1.0);
+    frustumRender.shader = m_Shader;
+    coordinator.AddComponent(frustum, frustumRender);
+    m_Frustum = frustum;
 }
 
 void DirectedLightDirector::onUpdate() {
@@ -44,9 +64,9 @@ void DirectedLightDirector::onUpdate() {
     Entity entity = lightArray->entities()[0];
     auto &entityLocation = coordinator.GetComponent<LocationComponent>(entity);
     auto &entityLight = coordinator.GetComponent<DirectedLightComponent>(entity);
+    auto &light = entityLight.light;
 
-    auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager()) *
-                 glm::toMat4(glm::quat(entityLight.light.rotation));
+    auto model = LocationComponent::getFullTransform(entity, coordinator.GetComponentManager());
 
     glm::vec3 scale;
     glm::quat rotation;
@@ -59,11 +79,28 @@ void DirectedLightDirector::onUpdate() {
     auto &location = toolsCoordinator.GetComponent<LocationComponent>(m_Sun);
     location.position = m_SunPosition;
     location.rotation = glm::eulerAngles(rotation);
+    location.updated = true;
     toolsCoordinator.GetComponent<Render3DComponent>(m_Sun).updated = true;
+
+    auto &frustumRender = toolsCoordinator.GetComponent<Render3DComponent>(m_Frustum);
+    frustumRender.scale = glm::vec3(light.shadowFrustumWidth, light.shadowFrustumHeight,
+                                    light.shadowFrustumFarPlane - light.shadowFrustumNearPlane) *
+                          0.5f;
+    frustumRender.updated = true;
+
+    auto &frustumLocation = toolsCoordinator.GetComponent<LocationComponent>(m_Frustum);
+    frustumLocation.position.y = (light.shadowFrustumFarPlane - light.shadowFrustumNearPlane) * -0.5f;
 
     m_SunSelected = gameLayer().getCoordinator().HasComponent<DirectedLightComponent>(m_Model.entity());
     if (m_isVisible) {
         toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Sun, m_SunSelected);
+        toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, m_SunSelected);
+
+        const auto &camera = Application::get().getCamera();
+        m_Shader->bind();
+        m_Shader->setMatrix4("u_view", camera.viewMatrix());
+        m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
+        m_Shader->unbind();
     }
 }
 
@@ -99,11 +136,13 @@ bool DirectedLightDirector::handleSelection(Entity entity) {
 
 void DirectedLightDirector::show() {
     toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Sun, true);
+    toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, true);
     BaseView::show();
 }
 
 void DirectedLightDirector::hide() {
     toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Sun, false);
+    toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, false);
     BaseView::hide();
 }
 

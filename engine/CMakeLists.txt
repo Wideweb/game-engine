@@ -84,6 +84,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/MeshBody.cpp
     src/Engine/EditTools/Components/SkyboxPanel.cpp
     src/Engine/EditTools/Components/Text2DPanel.cpp
+    src/Engine/EditTools/Components/CameraPanel.cpp
     src/ECS/EntityManager.cpp
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp

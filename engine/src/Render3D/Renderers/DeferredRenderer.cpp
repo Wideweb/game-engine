@@ -50,7 +50,7 @@ void DeferredRenderer::doDraw(Texture &colorMap, Texture &positionMap, Texture &
     m_Shader.setInt("u_hasDirectedLight", 0);
     if (scene.hasDirectedLight()) {
         m_Shader.setInt("u_hasDirectedLight", 1);
-        m_DirectedLightRenderer.apply(camera, scene.getDirectedLight(), m_Shader, scene, models, state);
+        m_DirectedLightRenderer.apply(camera, m_Shader, scene, models, state);
         m_Shader.bind();
     }
 

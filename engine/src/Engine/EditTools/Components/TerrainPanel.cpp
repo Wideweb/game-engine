@@ -138,10 +138,14 @@ void TerrainPanel::onDraw() {
 
     {
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputInt("columns", &m_Columns, 1, 10);
+        ImGui::InputInt("##terrain_columns", &m_Columns, 1, 10);
+        ImGui::SameLine();
+        ImGui::Text("Columns");
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputInt("rows", &m_Rows, 1, 10);
+        ImGui::InputInt("##terrain_rows", &m_Rows, 1, 10);
+        ImGui::SameLine();
+        ImGui::Text("Rows");
     }
 
     {
@@ -149,10 +153,14 @@ void TerrainPanel::onDraw() {
         ImGui::Text("Brush: ");
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("radius", &brushRadius, 0.1f, 0.01f);
+        ImGui::InputFloat("##terrain_brush_radius", &brushRadius, 0.1f, 0.01f);
+        ImGui::SameLine();
+        ImGui::Text("Radius");
 
         ImGuiWidgets::PaddingLeft(padding);
-        ImGui::InputFloat("strength", &brushStrength, 0.01f, 0.001f);
+        ImGui::InputFloat("##terrain_brush_strength", &brushStrength, 0.01f, 0.001f);
+        ImGui::SameLine();
+        ImGui::Text("Strength");
     }
 
     if (m_Columns <= 0) {

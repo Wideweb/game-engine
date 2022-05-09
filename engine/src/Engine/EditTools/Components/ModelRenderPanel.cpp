@@ -97,7 +97,7 @@ void ModelRenderPanel::onDraw() {
             float prevShininess = m_Model.material().shininess;
             float shininess = m_Model.material().shininess;
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("shininess", &shininess, 0.1f, 0.01f);
+            ImGui::InputFloat("Shininess", &shininess, 0.1f, 0.01f);
             if (prevShininess != shininess) {
                 m_Model.materialShininess(shininess);
             }
@@ -105,7 +105,7 @@ void ModelRenderPanel::onDraw() {
             float prevSpecular = m_Model.material().specular;
             float specular = m_Model.material().specular;
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("specular", &specular, 0.1f, 0.01f);
+            ImGui::InputFloat("Specular", &specular, 0.1f, 0.01f);
             if (prevSpecular != specular) {
                 m_Model.materialShininess(specular);
             }

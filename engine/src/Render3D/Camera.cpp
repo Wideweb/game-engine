@@ -33,22 +33,35 @@ void Camera::setSize(int width, int height) {
     this->height = height;
 
     setPerspective(fieldOfView, zNear, zFar);
+    setOrthogonal(zNear, zFar, zoom);
 }
+
+void Camera::setZoom(float zoom) { setOrthogonal(zNear, zFar, zoom); }
 
 void Camera::setPerspective(float fieldOfView, float zNear, float zFar) {
     this->fieldOfView = fieldOfView;
+    this->zoom = 1.0f / (glm::tan(this->fieldOfView / 2.0f));
     this->zNear = zNear;
     this->zFar = zFar;
-    perspective = glm::perspective(fieldOfView, static_cast<float>(width) / static_cast<float>(height), zNear, zFar);
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+
+    perspective = glm::perspective(fieldOfView, aspect, zNear, zFar);
 }
 
-void Camera::setFieldOfView(float fieldOfView) {
-    this->fieldOfView = fieldOfView;
-    perspective = glm::perspective(fieldOfView, static_cast<float>(width) / static_cast<float>(height), zNear, zFar);
-}
+void Camera::setFieldOfView(float fieldOfView) { setPerspective(fieldOfView, zNear, zFar); }
 
-void Camera::setOrthogonal(float zNear, float zFar) {
-    orthogonal = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), zNear, zFar);
+void Camera::setOrthogonal(float zNear, float zFar, float zoom) {
+    this->zNear = zNear;
+    this->zFar = zFar;
+    this->zoom = zoom;
+    this->fieldOfView = 2.0f * glm::atan(1.0f / this->zoom);
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+
+    float distance = glm::length(this->position);
+
+    float widthHalf = (1.0f / zoom) * distance * aspect;
+    float heightHalf = (1.0f / zoom) * distance;
+    orthogonal = glm::ortho(-widthHalf, widthHalf, -heightHalf, heightHalf, zNear, zFar);
 }
 
 void Camera::setProjection(Projection mode) { this->mode = mode; }
