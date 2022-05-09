@@ -363,8 +363,8 @@ UI for Transform 2D:
 | Property | Function |
 | :--- | :--- |
 | **NDC**              | Allows you to specify the position of the object in normalized device coordinates. This means that the coordinates must be between -1.0 and 1.0. |
-| **Location X and Y** | Object coordinates in screen space. |
-| **Scale X and Y**    | Сontrols the stretching of the object along the coordinate axes. |
+| **Location** | Object coordinates in screen space. |
+| **Scale**    | Сontrols the stretching of the object. |
 
 **7.12 Camera**
 
