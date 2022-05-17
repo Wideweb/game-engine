@@ -415,3 +415,10 @@ Object outside Shadow Frustum:
 
 <img width="500" alt="Screenshot 2022-05-08 at 23 58 28" src="https://user-images.githubusercontent.com/3997537/167315563-885a2c13-c236-4360-acc9-9dcc30a63161.png">
 
+**7.14 Spot Light**
+
+<img width="500" alt="Screenshot 2022-05-17 at 17 43 40" src="https://user-images.githubusercontent.com/3997537/168839323-22ffeb7f-0398-4e6d-90ed-14219dd9990f.png">
+
+<img width="350" alt="Screenshot 2022-05-17 at 18 01 13" src="https://user-images.githubusercontent.com/3997537/168843469-c7b75053-6349-4692-bc40-8523007b3536.png">
+
+
