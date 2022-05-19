@@ -19,11 +19,12 @@ class CubeMap {
 
   public:
     CubeMap();
-    CubeMap(int width, int height, float farPlane, glm::vec3 position);
-    ~CubeMap();
+    CubeMap(int width, int height, float nearPlane, float farPlane, glm::vec3 position);
 
+    void free();
     void bind(Shader &shader);
     void setPosition(const glm::vec3 &position);
+    void set(int width, int height, float nearPlane, float farPlane);
 
     const Texture &texture() const { return m_CubeMapTexture; }
     float farPlane() const { return m_FarPlane; }

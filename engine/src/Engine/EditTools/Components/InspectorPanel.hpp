@@ -48,8 +48,8 @@ template <typename... TComponents> class ComponentEditTool : public IComponentEd
 class InspectorPanel : public BaseView {
   private:
     GameObjectModel &m_GameObject;
-    std::array<std::unique_ptr<IComponentEditTool>, 18> m_Tools;
-    std::array<bool, 6> m_SceneToolsVisibility = {false};
+    std::array<std::unique_ptr<IComponentEditTool>, 20> m_Tools;
+    std::array<bool, 7> m_SceneToolsVisibility = {false};
     size_t toolsIndex = 0;
 
     template <typename... TComponents> void addPanel(std::shared_ptr<BaseView> panel) {

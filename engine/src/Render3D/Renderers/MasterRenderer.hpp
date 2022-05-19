@@ -36,7 +36,7 @@ class MasterRenderer {
   private:
     unsigned int m_BloomScale = 4;
 
-    Shader m_Shader, m_HdrShader, m_BlurGaussianShader, m_SSAOShader, m_BlurSimpleShader, m_GammaShader;
+    Shader m_DefaultShader, m_ShaderWithSpotLight, m_HdrShader, m_BlurGaussianShader, m_SSAOShader, m_BlurSimpleShader, m_GammaShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -78,6 +78,7 @@ class MasterRenderer {
     MasterRenderer(unsigned int width, unsigned int height);
     ~MasterRenderer();
 
+    Shader& resolveShader(Scene &scene);
     void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings);
     void setClearColor(glm::vec4 color);
     glm::vec4 getClearColor();

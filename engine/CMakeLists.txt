@@ -64,6 +64,8 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/TransformControlsRotation.cpp
     src/Engine/EditTools/Components/TransformControlsScale.cpp
     src/Engine/EditTools/Components/DirectedLightPanel.cpp
+    src/Engine/EditTools/Components/SpotLightPanel.cpp
+    src/Engine/EditTools/Components/SpotLightSceneTool.cpp
     src/Engine/EditTools/Components/ParticlesPanel.cpp
     src/Engine/EditTools/Components/SceneHierarchyPanel.cpp
     src/Engine/EditTools/Components/ContentBrowserPanel.cpp

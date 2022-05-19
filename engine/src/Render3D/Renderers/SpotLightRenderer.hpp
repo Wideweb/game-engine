@@ -20,7 +20,7 @@ class SpotLightRenderer {
     Framebuffer m_DepthCubeMapFramebuffer;
     std::array<CubeMap, 4> m_SadowCubeMaps;
 
-    Viewport m_Viewport;
+    Viewport &m_Viewport;
     ModelRenderer &m_ModelRenderer;
 
     unsigned int m_ActiveLights = 0;

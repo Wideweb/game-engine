@@ -62,7 +62,7 @@ void Framebuffer::addAttachment(const Texture &attachment, bool own) {
 
         m_Attachments[m_AttachmentsIndex] = Framebuffer::Attachment(attachment, m_AttachmentsIndex, own);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_AttachmentsIndex, GL_TEXTURE_2D, attachment.id,
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_AttachmentsIndex, attachment.id,
                                0);
         Gfx::checkError();
 
@@ -114,7 +114,7 @@ void Framebuffer::setDepthAttachment(const Texture &attachment, bool own) {
     if (attachment.format != Texture::InternalFormat::DEPTH_COMPONENT) {
         throw std::invalid_argument("Framebuffer::setDepthAttachment: Invalid attachment type.");
     }
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, attachment.id, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, attachment.id, 0);
     Gfx::checkError();
     m_DepthAttachment = Framebuffer::Attachment(attachment, 0, own);
 }

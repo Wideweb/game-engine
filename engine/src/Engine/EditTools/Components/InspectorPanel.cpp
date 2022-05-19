@@ -10,6 +10,7 @@
 #include "ParticlesPanel.hpp"
 #include "RigitBodyPanel.hpp"
 #include "SkeletPanel.hpp"
+#include "SpotLightPanel.hpp"
 #include "TerrainPanel.hpp"
 #include "Text2DPanel.hpp"
 #include "Transform2DPanel.hpp"
@@ -18,6 +19,7 @@
 
 #include "CollisionBody.hpp"
 #include "MeshBody.hpp"
+#include "SpotLightSceneTool.hpp"
 #include "TerrainTransform.hpp"
 #include "TransformControlsPosition.hpp"
 #include "TransformControlsRotation.hpp"
@@ -33,6 +35,7 @@
 #include "PhysicsComponent.hpp"
 #include "Render3DComponent.hpp"
 #include "SkeletComponent.hpp"
+#include "SpotLightComponent.hpp"
 #include "StaticCollisionComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "Text2DComponent.hpp"
@@ -56,6 +59,7 @@ void InspectorPanel::onAttach() {
     auto velocityPanel = std::make_shared<VelocityPanel>(m_GameObject);
     auto particlesPanel = std::make_shared<ParticlesPanel>(m_GameObject);
     auto directedLightPanel = std::make_shared<DirectedLightPanel>(m_GameObject);
+    auto spotLightPanel = std::make_shared<SpotLightPanel>(m_GameObject);
     auto modelRenderPanel = std::make_shared<ModelRenderPanel>(m_GameObject);
     auto behaviourPanel = std::make_shared<BehaviourPanel>(m_GameObject);
     auto skeletPanel = std::make_shared<SkeletPanel>(m_GameObject);
@@ -63,6 +67,7 @@ void InspectorPanel::onAttach() {
     auto terrainPanel = std::make_shared<TerrainPanel>(m_GameObject);
     auto terrainTransformTool = std::make_shared<TerrainTransform>(m_GameObject, *terrainPanel);
     auto collisionBodyTool = std::make_shared<CollisionBody>(m_GameObject);
+    auto spotLightSceneTool = std::make_shared<SpotLightSceneTool>(m_GameObject);
     auto meshBodyTool = std::make_shared<MeshBody>(m_GameObject);
     auto cameraPanel = std::make_shared<CameraPanel>(m_GameObject);
 
@@ -73,6 +78,7 @@ void InspectorPanel::onAttach() {
     addPanel<VelocityComponent>(velocityPanel);
     addPanel<ParticlesComponent>(particlesPanel);
     addPanel<DirectedLightComponent>(directedLightPanel);
+    addPanel<SpotLightComponent>(spotLightPanel);
     addPanel<Render3DComponent>(modelRenderPanel);
     addPanel<BehaviourComponent>(behaviourPanel);
     addPanel<SkeletComponent>(skeletPanel);
@@ -85,7 +91,7 @@ void InspectorPanel::onAttach() {
     addSceneTool<LocationComponent>(TransformScaleTool);
     addSceneTool<TerrainCollisionComponent>(terrainTransformTool);
     addSceneTool<CollisionComponent, StaticCollisionComponent>(collisionBodyTool);
-    addSceneTool<Render3DComponent>(meshBodyTool);
+    addSceneTool<SpotLightComponent>(spotLightSceneTool);
 
     for (auto &tool : m_Tools) {
         tool->view->onAttach();

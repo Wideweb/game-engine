@@ -3,31 +3,27 @@
 #include "BaseView.hpp"
 #include "Entity.hpp"
 #include "GameObjectModel.hpp"
+#include "Render3DComponent.hpp"
+#include "Shader.hpp"
 #include "Texture.hpp"
 
-#include <memory>
-
 #include <glm/vec3.hpp>
+#include <memory>
 
 namespace Engine {
 
-class CameraDirector : public BaseView {
+class SpotLightSceneTool : public BaseView {
   private:
-    Entity m_Camera, m_Frustum;
+    Entity m_Sun, m_SphereX, m_SphereY, m_SphereZ;
     GameObjectModel &m_Model;
-    Texture m_CameraIcon;
-    glm::vec3 m_CameraPosition;
-    bool m_CameraSelected;
 
     std::shared_ptr<Shader> m_Shader;
 
   public:
-    CameraDirector(GameObjectModel &model);
+    SpotLightSceneTool(GameObjectModel &model);
 
     void onAttach() override;
     void onUpdate() override;
-    void onDraw() override;
-    bool handleSelection(Entity entity) override;
 
     void show() override;
     void hide() override;

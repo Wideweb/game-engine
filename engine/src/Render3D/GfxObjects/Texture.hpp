@@ -8,7 +8,7 @@ namespace Engine {
 
 class Texture : public GfxImage {
   public:
-    enum class TextureType { COLOR, CUBE_MAP, DEPTH_BUFFER };
+    enum class TextureType { NONE, COLOR, CUBE_MAP, DEPTH_BUFFER };
 
     TextureType type;
     DataFormat dataFormat;

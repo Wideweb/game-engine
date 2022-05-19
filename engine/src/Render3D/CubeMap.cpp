@@ -8,19 +8,17 @@ namespace Engine {
 
 CubeMap::CubeMap() {}
 
-CubeMap::CubeMap(int width, int height, float farPlane, glm::vec3 position)
+CubeMap::CubeMap(int width, int height, float nearPlane, float farPlane, glm::vec3 position)
     : m_FarPlane(farPlane), m_Position(position) {
     m_CubeMapTexture = CubeMapTexture::createCubeDepthBuffer(width, height);
-
-    float aspect = width / height;
-    float near = 1.0f;
-
-    m_Projection = glm::perspective(glm::radians(90.0f), aspect, near, farPlane);
-
-    updateTransforms();
+    set(width, height, nearPlane, farPlane);
 }
 
-CubeMap::~CubeMap() { m_CubeMapTexture.free(); }
+void CubeMap::free() {
+    if (!m_CubeMapTexture.empty()) {
+        m_CubeMapTexture.free();
+    }
+}
 
 void CubeMap::bind(Shader &shader) {
     shader.setFloat("u_farPlane", m_FarPlane);
@@ -28,6 +26,17 @@ void CubeMap::bind(Shader &shader) {
     for (unsigned int i = 0; i < 6; ++i) {
         shader.setMatrix4("u_cubeMatrices[" + std::to_string(i) + "]", m_Transforms[i]);
     }
+}
+
+void CubeMap::set(int width, int height, float nearPlane, float farPlane) {
+    if (m_CubeMapTexture.width != width || m_CubeMapTexture.height != height) {
+        m_CubeMapTexture.resize(width, height);
+    }
+    float aspect = width / height;
+
+    m_Projection = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
+
+    updateTransforms();
 }
 
 void CubeMap::setPosition(const glm::vec3 &position) {

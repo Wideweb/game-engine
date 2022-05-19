@@ -3,7 +3,9 @@
 #include "Application.hpp"
 #include "CameraComponent.hpp"
 #include "Configs.hpp"
+#include "File.hpp"
 #include "LocationComponent.hpp"
+#include "ModelFactory.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
 #include "TagComponent.hpp"
@@ -18,8 +20,16 @@ namespace Engine {
 CameraDirector::CameraDirector(GameObjectModel &model) : m_Model(model) {}
 
 void CameraDirector::onAttach() {
+    auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
+    auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
+    auto geometrySrc = File::read("./shaders/edge-geometry-shader.glsl");
+    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
+
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Camera",
                                                  ModelLoader::load("./assets/models/box/arrow-z.fbx"));
+
+    Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "camera-frustum",
+                                                 ModelFactory::createFrastum(glm::radians(45.0f), 0.1f, 50.0f));
 
     m_CameraIcon = TextureLoader::loadTexture("assets/textures/icons/camera.png");
 
@@ -33,6 +43,16 @@ void CameraDirector::onAttach() {
     render.rotation.y = 3.14f;
     toolsCoordinator.AddComponent(camera, render);
     m_Camera = camera;
+
+    auto frustum = toolsCoordinator.CreateEntity("Camera Frustum");
+    auto frustumLocation = LocationComponent(glm::vec3(0.0f));
+    frustumLocation.rotation.y = 3.14f;
+    toolsCoordinator.AddComponent(frustum, frustumLocation);
+    toolsCoordinator.AddComponent(frustum, ParentComponent(m_Camera));
+    auto frustumRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "camera-frustum", 1.0, true);
+    frustumRender.shader = m_Shader;
+    toolsCoordinator.AddComponent(frustum, frustumRender);
+    m_Frustum = frustum;
 }
 
 void CameraDirector::onUpdate() {
@@ -67,6 +87,34 @@ void CameraDirector::onUpdate() {
     m_CameraSelected = gameLayer().getCoordinator().HasComponent<CameraComponent>(m_Model.entity());
     if (m_isVisible) {
         toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Camera, m_CameraSelected);
+        toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, m_CameraSelected);
+
+        float tangent = std::tanf(camera.getFieldOfView() / 2.0f);
+
+        float fronDelta = camera.getZNear() * tangent;
+        float backDelta = camera.getZFar() * tangent;
+
+        auto frustumModel =
+            Application::get().getModels().GetModel<InstancedModel>(Configs::c_EditToolsModelPrefix + "camera-frustum");
+        auto &frustumVertices = frustumModel->meshes[0].vertices;
+
+        frustumVertices[0].position = glm::vec3(-fronDelta, -fronDelta, camera.getZNear());
+        frustumVertices[1].position = glm::vec3(-fronDelta, fronDelta, camera.getZNear());
+        frustumVertices[2].position = glm::vec3(fronDelta, fronDelta, camera.getZNear());
+        frustumVertices[3].position = glm::vec3(fronDelta, -fronDelta, camera.getZNear());
+
+        frustumVertices[4].position = glm::vec3(-backDelta, -backDelta, camera.getZFar());
+        frustumVertices[5].position = glm::vec3(-backDelta, backDelta, camera.getZFar());
+        frustumVertices[6].position = glm::vec3(backDelta, backDelta, camera.getZFar());
+        frustumVertices[7].position = glm::vec3(backDelta, -backDelta, camera.getZFar());
+
+        frustumModel->update();
+
+        const auto &camera = Application::get().getCamera();
+        m_Shader->bind();
+        m_Shader->setMatrix4("u_view", camera.viewMatrix());
+        m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
+        m_Shader->unbind();
     }
 }
 
@@ -102,11 +150,13 @@ bool CameraDirector::handleSelection(Entity entity) {
 
 void CameraDirector::show() {
     toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Camera, true);
+    toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, true);
     BaseView::show();
 }
 
 void CameraDirector::hide() {
     toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Camera, false);
+    toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, false);
     BaseView::hide();
 }
 

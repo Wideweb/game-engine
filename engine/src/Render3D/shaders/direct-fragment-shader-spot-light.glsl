@@ -18,6 +18,24 @@ struct DirectedLight {
     sampler2D shadowMap;
 };
 
+struct SpotLight {
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
+
+    samplerCube shadowMap;
+    float farPlane;
+    float bias;
+    float pcfDiskRadius;
+    int pcfSamples;
+};
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -36,8 +54,21 @@ struct FragmentMaterial {
     float shininess;
 };
 
+vec3 spotLightCalculation(SpotLight light, FragmentMaterial material, vec3 fragPos, vec3 viewDir);
+float spotLightShadowCalculation(SpotLight light, vec3 fragPos, float bias);
+
 vec3 directedLightCalculation(DirectedLight light, FragmentMaterial material, vec3 fragPos, vec3 viewDir);
 float directedLightShadowCalculation(DirectedLight light, vec3 fragPos, float bias);
+
+/////////////////////////////////////////////////////////////
+//////////////////////// DEFINES ////////////////////////////
+/////////////////////////////////////////////////////////////
+const int c_maxSpotLights = 4;
+
+const vec3 c_sampleOffsetDirections[20] = vec3[](
+    vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1), vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1),
+    vec3(-1, 1, -1), vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0), vec3(1, 0, 1), vec3(-1, 0, 1),
+    vec3(1, 0, -1), vec3(-1, 0, -1), vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1));
 
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
@@ -45,6 +76,8 @@ float directedLightShadowCalculation(DirectedLight light, vec3 fragPos, float bi
 uniform int u_hasMaterial;
 uniform int u_hasDirectedLight;
 uniform DirectedLight u_directedLight;
+uniform SpotLight u_spotLights[c_maxSpotLights];
+uniform int u_spotLightsNumber;
 uniform Material u_material;
 uniform vec3 u_viewPos;
 uniform float u_threshold;
@@ -112,6 +145,10 @@ void main() {
         result += directedLightCalculation(u_directedLight, material, v_fragPos, viewDir);
     }
 
+    if (u_spotLightsNumber > 0) {
+        result += spotLightCalculation(u_spotLights[0], material, v_fragPos, viewDir);
+    }
+
     o_fragColor = vec4(result, 1.0);
     if (u_fog > 0) {
         float distanceToCamera = length(v_fragCameraPos.xyz);
@@ -125,6 +162,51 @@ void main() {
         o_brightColor = vec4(o_fragColor.rgb, 1.0);
     else
         o_brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+}
+
+/////////////////////////////////////////////////////////////
+/////////////////////// SPOT LIGHT //////////////////////////
+/////////////////////////////////////////////////////////////
+vec3 spotLightCalculation(SpotLight light, FragmentMaterial material, vec3 fragPos, vec3 viewDir) {
+    float distance = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+    vec3 ambient = light.ambient * material.diffuse;
+
+    vec3 lightDir = normalize(light.position - fragPos);
+    float diff = max(dot(material.normal, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * material.diffuse;
+
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(material.normal, halfwayDir), 0.0), material.shininess);
+    vec3 specular = light.specular * spec * material.specular;
+
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    float shadow = spotLightShadowCalculation(light, fragPos, light.bias);
+    vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);
+
+    return lighting;
+}
+
+float spotLightShadowCalculation(SpotLight light, vec3 fragPos, float bias) {
+    vec3 fragToLight = fragPos - light.position;
+    float currentDepth = length(fragToLight);
+
+    float shadow = 0.0;
+
+    for (int i = 0; i < light.pcfSamples; ++i) {
+        float closestDepth =
+            texture(light.shadowMap, fragToLight + c_sampleOffsetDirections[i] * light.pcfDiskRadius).r;
+        closestDepth *= light.farPlane;
+        if (currentDepth - bias > closestDepth)
+            shadow += 1.0;
+    }
+    shadow /= float(light.pcfSamples);
+
+    return shadow;
 }
 
 /////////////////////////////////////////////////////////////

@@ -1,6 +1,7 @@
 canJump = true;
 
 function init(entity)
+    canJump = true;
 end
 
 function update(entity)

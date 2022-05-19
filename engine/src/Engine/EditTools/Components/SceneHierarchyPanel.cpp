@@ -10,6 +10,7 @@
 #include "ParticlesComponent.hpp"
 #include "PhysicsComponent.hpp"
 #include "SkeletComponent.hpp"
+#include "SpotLightComponent.hpp"
 #include "TagComponent.hpp"
 #include "TerrainCollisionComponent.hpp"
 #include "Text2DComponent.hpp"
@@ -116,6 +117,10 @@ void SceneHierarchyNode::addTools(GameObjectModel &model, Coordinator &coordinat
                 coordinator.RemoveComponent<DirectedLightComponent>(entity);
             }
             coordinator.AddComponent<DirectedLightComponent>(entity, cmp);
+        }
+
+        if (!coordinator.HasComponent<SpotLightComponent>(entity) && ImGui::MenuItem("Add Spot Light")) {
+            coordinator.AddComponent<SpotLightComponent>(entity, SpotLightComponent());
         }
 
         if (ImGui::MenuItem("Delete Entity")) {

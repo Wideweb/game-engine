@@ -154,7 +154,8 @@ void LuaCore::add(lua_State *state) {
         .addProperty("constant", &SpotLight::constant)
         .addProperty("linear", &SpotLight::linear)
         .addProperty("quadratic", &SpotLight::quadratic)
-        .addProperty("farPlane", &SpotLight::farPlane)
+        .addProperty("nearPlane", &SpotLight::shadowFrustumNearPlane)
+        .addProperty("farPlane", &SpotLight::shadowFrustumFarPlane)
         .endClass()
         .endNamespace();
 

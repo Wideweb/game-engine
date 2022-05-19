@@ -167,8 +167,8 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vec
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t)), &id, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    // glDisable(GL_DEPTH_TEST);
 
     if (hasMaterial) {
         shader.setInt("u_hasMaterial", 1);

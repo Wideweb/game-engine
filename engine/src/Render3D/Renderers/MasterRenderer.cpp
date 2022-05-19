@@ -16,7 +16,11 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
 
     auto vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/direct-fragment-shader.glsl");
-    m_Shader = Shader(vertexSrc, fragmentSrc);
+    m_DefaultShader = Shader(vertexSrc, fragmentSrc);
+
+    vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/direct-fragment-shader-spot-light.glsl");
+    m_ShaderWithSpotLight = Shader(vertexSrc, fragmentSrc);
 
     vertexSrc = File::read("./shaders/gamma-vertex-shader.glsl");
     fragmentSrc = File::read("./shaders/gamma-fragment-shader.glsl");
@@ -170,7 +174,8 @@ MasterRenderer::~MasterRenderer() {
     m_PingpongColorBuffer[0].free();
     m_PingpongColorBuffer[1].free();
 
-    m_Shader.free();
+    m_DefaultShader.free();
+    m_ShaderWithSpotLight.free();
     m_HdrShader.free();
     m_BlurGaussianShader.free();
 
@@ -183,6 +188,10 @@ MasterRenderer::~MasterRenderer() {
     m_GPositionAttachment.free();
     m_GNormalAttachment.free();
     m_GSpecularAttachment.free();
+}
+
+Shader &MasterRenderer::resolveShader(Scene &scene) {
+    return scene.getSpotLights().empty() ? m_DefaultShader : m_ShaderWithSpotLight;
 }
 
 void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings) {
@@ -229,30 +238,32 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     }
     m_State.framebuffer.bind();
 
-    m_Shader.bind();
-    m_Shader.setFloat3("u_viewPos", camera.positionVec());
-    m_Shader.setMatrix4("u_view", camera.viewMatrix());
-    m_Shader.setMatrix4("u_projection", camera.projectionMatrix());
-    m_Shader.setFloat("u_threshold", settings.threshold);
+    auto &shader = resolveShader(scene);
 
-    m_Shader.setInt("u_hasNormalMapping", settings.normalMapping);
+    shader.bind();
+    shader.setFloat3("u_viewPos", camera.positionVec());
+    shader.setMatrix4("u_view", camera.viewMatrix());
+    shader.setMatrix4("u_projection", camera.projectionMatrix());
+    shader.setFloat("u_threshold", settings.threshold);
 
-    m_Shader.setInt("u_fog", settings.fog);
-    m_Shader.setFloat3("u_fogColor", settings.fogColor);
-    m_Shader.setFloat("u_density", settings.fogDensity);
-    m_Shader.setFloat("u_gradient", settings.fogGradient);
+    shader.setInt("u_hasNormalMapping", settings.normalMapping);
 
-    m_Shader.setInt("u_hasDirectedLight", 0);
-    m_Shader.setInt("u_spotLightsNumber", 0);
+    shader.setInt("u_fog", settings.fog);
+    shader.setFloat3("u_fogColor", settings.fogColor);
+    shader.setFloat("u_density", settings.fogDensity);
+    shader.setFloat("u_gradient", settings.fogGradient);
+
+    shader.setInt("u_hasDirectedLight", 0);
+    shader.setInt("u_spotLightsNumber", 0);
 
     if (scene.hasDirectedLight()) {
-        m_Shader.setInt("u_hasDirectedLight", 1);
-        m_DirectedLightRenderer->apply(camera, m_Shader, scene, models, m_State);
+        shader.setInt("u_hasDirectedLight", 1);
+        m_DirectedLightRenderer->apply(camera, shader, scene, models, m_State);
     }
 
-    // for (const auto &obj : scene.getSpotLights()) {
-    //     m_SpotLightRenderer->apply(obj.light, obj.position, m_Shader, scene, models, m_State);
-    // }
+    for (const auto &obj : scene.getSpotLights()) {
+        m_SpotLightRenderer->apply(obj.light, obj.position, shader, scene, models, m_State);
+    }
 
     m_SkyboxRenderer->draw(camera, scene, settings);
 
@@ -260,15 +271,15 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_ParticlesRenderer->draw(obj.particles, obj.position, camera, settings);
     }
 
-    m_Shader.bind();
+    shader.bind();
     if (settings.ssao) {
-        m_Shader.setInt("u_hasSSAO", 1);
-        m_Shader.setTexture("u_ssao", m_BlurAttachment);
+        shader.setInt("u_hasSSAO", 1);
+        shader.setTexture("u_ssao", m_BlurAttachment);
     } else {
-        m_Shader.setInt("u_hasSSAO", 0);
+        shader.setInt("u_hasSSAO", 0);
     }
 
-    m_ModelRenderer->draw(m_Shader, scene, models);
+    m_ModelRenderer->draw(shader, scene, models);
     // m_WaterRenderer->draw(camera, scene, models, m_State, settings);
 
     if (settings.hdr) {

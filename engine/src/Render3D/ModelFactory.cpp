@@ -4,8 +4,7 @@
 #include "Mesh.hpp"
 #include "TBN.hpp"
 
-#include <glm/vec3.hpp>
-
+#include <cmath>
 #include <numeric>
 
 namespace Engine {
@@ -132,6 +131,187 @@ std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int co
 
     Mesh mesh(vertices, indices);
     auto model = std::shared_ptr<InstancedModel>(new InstancedModel({mesh}));
+    model->setUp();
+    return model;
+}
+
+std::shared_ptr<Model> ModelFactory::createCircle(float radius, int segments, float lineWidth, glm::vec3 color) {
+    float dAngle = 2.0f * 3.1415926f / static_cast<float>(segments);
+    float angle = 0.0f;
+
+    std::vector<glm::vec2> corclePoints;
+    corclePoints.reserve(segments);
+    for (int i = 0; i < segments; i++) {
+        corclePoints.emplace_back(std::cosf(angle) * radius, std::sinf(angle) * radius);
+        angle += dAngle;
+    }
+
+    std::vector<Mesh::Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    for (int i = 0; i < segments + 1; i++) {
+        glm::vec2 prev = corclePoints[(i + segments - 1) % segments];
+        glm::vec2 point = corclePoints[i % segments];
+        glm::vec2 next = corclePoints[(i + 1) % segments];
+
+        glm::vec2 prevNormal = glm::vec2(point.y - prev.y, prev.x - point.x);
+        glm::vec2 nextNormal = glm::vec2(next.y - point.y, point.x - next.x);
+        glm::vec2 normal = glm::normalize(prevNormal + nextNormal);
+
+        glm::vec2 v0 = point - normal * lineWidth * 0.5f;
+        glm::vec2 v1 = point + normal * lineWidth * 0.5f;
+
+        glm::vec2 uv0 = glm::vec2(0.0f, 0.0f);
+        glm::vec2 uv1 = glm::vec2(1.0f, 0.0f);
+
+        if (i % 2 == 0) {
+            uv0.y = 1.0f;
+            uv1.y = 1.0f;
+        }
+
+        vertices.emplace_back(glm::vec3(v0, lineWidth * 0.5f), glm::vec3(0.0f), uv0, glm::vec3(0.0f), glm::vec3(0.0f),
+                              color);
+        vertices.emplace_back(glm::vec3(v1, lineWidth * 0.5f), glm::vec3(0.0f), uv1, glm::vec3(0.0f), glm::vec3(0.0f),
+                              color);
+        vertices.emplace_back(glm::vec3(v0, lineWidth * -0.5f), glm::vec3(0.0f), uv0, glm::vec3(0.0f), glm::vec3(0.0f),
+                              color);
+        vertices.emplace_back(glm::vec3(v1, lineWidth * -0.5f), glm::vec3(0.0f), uv1, glm::vec3(0.0f), glm::vec3(0.0f),
+                              color);
+
+        // Front
+        indices.push_back((i % segments) * 4 + 0);
+        indices.push_back((i % segments) * 4 + 5);
+        indices.push_back((i % segments) * 4 + 4);
+
+        indices.push_back((i % segments) * 4 + 0);
+        indices.push_back((i % segments) * 4 + 1);
+        indices.push_back((i % segments) * 4 + 5);
+
+        // Right
+        indices.push_back((i % segments) * 4 + 1);
+        indices.push_back((i % segments) * 4 + 7);
+        indices.push_back((i % segments) * 4 + 5);
+
+        indices.push_back((i % segments) * 4 + 1);
+        indices.push_back((i % segments) * 4 + 3);
+        indices.push_back((i % segments) * 4 + 7);
+
+        // Left
+        indices.push_back((i % segments) * 4 + 2);
+        indices.push_back((i % segments) * 4 + 4);
+        indices.push_back((i % segments) * 4 + 6);
+
+        indices.push_back((i % segments) * 4 + 2);
+        indices.push_back((i % segments) * 4 + 0);
+        indices.push_back((i % segments) * 4 + 4);
+
+        // Back
+        indices.push_back((i % segments) * 4 + 3);
+        indices.push_back((i % segments) * 4 + 6);
+        indices.push_back((i % segments) * 4 + 7);
+
+        indices.push_back((i % segments) * 4 + 3);
+        indices.push_back((i % segments) * 4 + 2);
+        indices.push_back((i % segments) * 4 + 6);
+    }
+
+    Render3D::Utils::tbn(vertices, indices);
+
+    Mesh mesh(vertices, indices);
+    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
+    model->setUp();
+    return model;
+}
+
+std::shared_ptr<Model> ModelFactory::createFrastum(float fieldOfView, float nearPlane, float farPlane,
+                                                   glm::vec3 color) {
+    float tangent = std::tanf(fieldOfView / 2.0f);
+
+    float fronDelta = nearPlane * tangent;
+    float backDelta = farPlane * tangent;
+
+    std::vector<Mesh::Vertex> vertices;
+
+    // Front
+    vertices.emplace_back(glm::vec3(-fronDelta, -fronDelta, nearPlane), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+    vertices.emplace_back(glm::vec3(-fronDelta, fronDelta, nearPlane), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+    vertices.emplace_back(glm::vec3(fronDelta, fronDelta, nearPlane), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+    vertices.emplace_back(glm::vec3(fronDelta, -fronDelta, nearPlane), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+
+    // Back
+    vertices.emplace_back(glm::vec3(-backDelta, -backDelta, farPlane), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+    vertices.emplace_back(glm::vec3(-backDelta, backDelta, farPlane), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+    vertices.emplace_back(glm::vec3(backDelta, backDelta, farPlane), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+    vertices.emplace_back(glm::vec3(backDelta, -backDelta, farPlane), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f),
+                          glm::vec3(0.0f), glm::vec3(0.0f), color);
+
+    std::vector<unsigned int> indices;
+
+    // Front
+    indices.push_back(2);
+    indices.push_back(1);
+    indices.push_back(0);
+
+    indices.push_back(0);
+    indices.push_back(3);
+    indices.push_back(2);
+
+    // Right
+    indices.push_back(6);
+    indices.push_back(2);
+    indices.push_back(3);
+
+    indices.push_back(3);
+    indices.push_back(7);
+    indices.push_back(6);
+
+    // Left
+    indices.push_back(1);
+    indices.push_back(5);
+    indices.push_back(4);
+
+    indices.push_back(4);
+    indices.push_back(0);
+    indices.push_back(1);
+
+    // Back
+    indices.push_back(5);
+    indices.push_back(6);
+    indices.push_back(7);
+
+    indices.push_back(7);
+    indices.push_back(4);
+    indices.push_back(5);
+
+    // Top
+    indices.push_back(6);
+    indices.push_back(5);
+    indices.push_back(1);
+
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(6);
+
+    // Bottom
+    indices.push_back(3);
+    indices.push_back(0);
+    indices.push_back(4);
+
+    indices.push_back(4);
+    indices.push_back(7);
+    indices.push_back(3);
+
+    Render3D::Utils::tbn(vertices, indices);
+
+    Mesh mesh(vertices, indices);
+    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
     model->setUp();
     return model;
 }

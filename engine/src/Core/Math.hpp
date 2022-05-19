@@ -35,4 +35,24 @@ inline glm::vec3 rescale(glm::vec3 value, glm::vec3 prevScale, glm::vec3 newScal
                      rescale(value.z, prevScale.z, newScale.z));
 }
 
+inline glm::vec2 solve(float a, float b, float c) {
+    if (isEqual(a, 0.0f)) {
+        return glm::vec2(c / b);
+    }
+
+    float D = b * b - 4 * a * c;
+    if (D < 0.0f) {
+        return glm::vec2(0.0f);
+    }
+
+    if (isEqual(D, 0.0f)) {
+        return glm::vec2(-1.0f * b / (2.0f * a));
+    }
+
+    float x1 = (-1.0f * b + std::sqrtf(D)) / (2.0f * a);
+    float x2 = (-1.0f * b - std::sqrtf(D)) / (2.0f * a);
+
+    return glm::vec2(x1, x2);
+}
+
 } // namespace Engine::Math
