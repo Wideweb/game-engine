@@ -417,8 +417,16 @@ Object outside Shadow Frustum:
 
 **7.14 Spot Light**
 
-<img width="500" alt="Screenshot 2022-05-17 at 17 43 40" src="https://user-images.githubusercontent.com/3997537/168839323-22ffeb7f-0398-4e6d-90ed-14219dd9990f.png">
+UI for Spot Light:
 
 <img width="350" alt="Screenshot 2022-05-17 at 18 01 13" src="https://user-images.githubusercontent.com/3997537/168843469-c7b75053-6349-4692-bc40-8523007b3536.png">
+
+Scene with Spot Light:
+
+<img width="500" alt="Screenshot 2022-05-17 at 17 43 40" src="https://user-images.githubusercontent.com/3997537/168839323-22ffeb7f-0398-4e6d-90ed-14219dd9990f.png">
+
+Spot Light Area:
+
+<img width="500" alt="Screenshot 2022-05-19 at 11 57 08" src="https://user-images.githubusercontent.com/3997537/169254894-d31f23ae-fd5b-4fb9-9f66-8ac4fc116dbe.png">
 
 
