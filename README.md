@@ -1,3 +1,7 @@
+# \<Name\> Engine
+
+ECS based 3D game engine in C++ and Opengl ES.
+
 ## Editor Interface
 
 By default, the editor consist of the following tabs:
