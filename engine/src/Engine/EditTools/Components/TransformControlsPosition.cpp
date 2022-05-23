@@ -162,9 +162,14 @@ void TransformControlsPosition::hide() {
 
 void TransformControlsPosition::onTransform() {
     auto mousePos = Application::get().getMousePicker().ray();
-    auto pos = Application::get().getCamera().positionVec();
+    auto cameraPos = Application::get().getCamera().positionVec();
 
-    glm::vec3 dPosition = (mousePos - m_PrevMouseWorldPos) * glm::distance(pos, m_Model.position());
+    glm::vec3 half = glm::normalize(mousePos + m_PrevMouseWorldPos);
+    glm::quat deltaRotation = glm::quat(glm::dot(half, mousePos), glm::cross(half, mousePos));
+
+    glm::vec3 currentPos = m_Model.position();
+    glm::vec3 nextPos = cameraPos + deltaRotation * (m_Model.position() - cameraPos);
+    glm::vec3 dPosition = nextPos - currentPos;
 
     if (m_ActiveControl != m_ControlX) {
         dPosition.x = 0;

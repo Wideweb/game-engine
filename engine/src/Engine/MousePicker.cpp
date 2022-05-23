@@ -1,7 +1,6 @@
 #include "MousePicker.hpp"
 
 #include <glm/gtx/transform.hpp>
-#include <iostream>
 
 namespace Engine {
 
