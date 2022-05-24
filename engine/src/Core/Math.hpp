@@ -55,4 +55,14 @@ inline glm::vec2 solve(float a, float b, float c) {
     return glm::vec2(x1, x2);
 }
 
+inline glm::vec3 moveAlongAxis(glm::vec3 viewPos, glm::vec3 objPos, glm::vec3 ray0, glm::vec3 ray1, glm::vec3 axis) {
+    float sin0 = glm::length(glm::cross(ray0, axis));
+    float sin1 = glm::length(glm::cross(ray1, axis));
+
+    glm::vec3 distance0 = objPos - viewPos;
+    glm::vec3 distance1 = ray1 * glm::length(distance0) / sin1 * sin0;
+
+    return (distance1 - distance0) * axis;
+}
+
 } // namespace Engine::Math

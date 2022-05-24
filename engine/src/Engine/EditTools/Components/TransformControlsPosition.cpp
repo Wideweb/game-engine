@@ -132,14 +132,37 @@ void TransformControlsPosition::onMouseEvent(MouseEvent &event) {
         m_ActiveControl = c_NoEntity;
     }
 
-    m_PrevMouseWorldPos = Application::get().getMousePicker().ray();
+    m_PrevMouseRay = Application::get().getMousePicker().ray();
 
     m_HoveredControl = *(static_cast<Entity *>(event.data));
 }
 
 bool TransformControlsPosition::handleSelection(Entity entity) {
     m_ActiveControl = entity;
-    return entity == m_ControlX || entity == m_ControlY || entity == m_ControlZ;
+    float selected = entity == m_ControlX || entity == m_ControlY || entity == m_ControlZ;
+
+    if (selected) {
+        glm::vec3 axis = glm::vec3(0.0f);
+
+        if (m_ActiveControl == m_ControlX) {
+            axis = glm::vec3(1.0f, 0.0f, 0.0f);
+        }
+        if (m_ActiveControl == m_ControlY) {
+            axis = glm::vec3(0.0f, 1.0f, 0.0f);
+        }
+        if (m_ActiveControl == m_ControlZ) {
+            axis = glm::vec3(0.0f, 0.0f, 1.0f);
+        }
+
+        auto cameraPos = Application::get().getCamera().positionVec();
+        auto mouseRay = Application::get().getMousePicker().ray();
+        auto objPos = m_Model.position();
+        auto toObjRay = glm::normalize(objPos - cameraPos);
+
+        m_GrabOffset = Math::moveAlongAxis(cameraPos, m_Model.position(), toObjRay, mouseRay, axis);
+    }
+
+    return selected;
 }
 
 void TransformControlsPosition::hide() {
@@ -161,31 +184,30 @@ void TransformControlsPosition::hide() {
 }
 
 void TransformControlsPosition::onTransform() {
-    auto mousePos = Application::get().getMousePicker().ray();
+    glm::vec3 axis = glm::vec3(0.0f);
+
+    if (m_ActiveControl == m_ControlX) {
+        axis = glm::vec3(1.0f, 0.0f, 0.0f);
+    }
+    if (m_ActiveControl == m_ControlY) {
+        axis = glm::vec3(0.0f, 1.0f, 0.0f);
+    }
+    if (m_ActiveControl == m_ControlZ) {
+        axis = glm::vec3(0.0f, 0.0f, 1.0f);
+    }
+
     auto cameraPos = Application::get().getCamera().positionVec();
+    auto mouseRay = Application::get().getMousePicker().ray();
+    auto objPos = m_Model.position();
+    auto toObjRay = glm::normalize(objPos - cameraPos);
 
-    glm::vec3 half = glm::normalize(mousePos + m_PrevMouseWorldPos);
-    glm::quat deltaRotation = glm::quat(glm::dot(half, mousePos), glm::cross(half, mousePos));
-
-    glm::vec3 currentPos = m_Model.position();
-    glm::vec3 nextPos = cameraPos + deltaRotation * (m_Model.position() - cameraPos);
-    glm::vec3 dPosition = nextPos - currentPos;
-
-    if (m_ActiveControl != m_ControlX) {
-        dPosition.x = 0;
-    }
-    if (m_ActiveControl != m_ControlY) {
-        dPosition.y = 0;
-    }
-    if (m_ActiveControl != m_ControlZ) {
-        dPosition.z = 0;
-    }
+    glm::vec3 move = Math::moveAlongAxis(cameraPos, m_Model.position() + m_GrabOffset, m_PrevMouseRay, mouseRay, axis);
 
     if (m_Model.transformOrientation() == GameObjectModel::TransformOrientation::Local) {
-        dPosition = glm::quat(m_Model.rotation()) * dPosition;
-        m_Model.moveLocal(dPosition);
+        move = glm::quat(m_Model.rotation()) * move;
+        m_Model.moveLocal(move);
     } else {
-        m_Model.move(dPosition);
+        m_Model.move(move);
     }
 }
 

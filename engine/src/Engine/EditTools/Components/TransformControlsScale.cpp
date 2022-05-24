@@ -192,12 +192,6 @@ void TransformControlsScale::hide() {
 }
 
 void TransformControlsScale::onTransform() {
-    auto mousePos = Application::get().getMousePicker().ray();
-    auto pos = Application::get().getCamera().positionVec();
-
-    glm::vec3 dPosition = (mousePos - m_PrevMouseWorldPos) * glm::distance(pos, m_Model.position());
-    glm::vec3 dRotation = dPosition;
-
     auto &camera = Application::get().getCamera();
     glm::vec4 screenPos = camera.projectionMatrix() * camera.viewMatrix() * glm::vec4(m_Model.position(), 1.0f);
     screenPos /= screenPos.w;
