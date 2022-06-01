@@ -251,6 +251,10 @@ UI for Render 3D:
 
 <img width="350" alt="Render 3D UI" src="https://user-images.githubusercontent.com/3997537/167114204-3a02a70d-4683-4fd9-8ec4-d9c818df66b9.png">
 
+Material settings when PBR is enabled:
+
+<img width="139" alt="PBR Material" src="https://user-images.githubusercontent.com/3997537/171487576-e0912b17-b635-4c5e-b295-566540ebf6c3.png">
+
 **7.4 Skelet.**
 
 UI for Skelet:
