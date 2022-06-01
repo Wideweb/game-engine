@@ -88,6 +88,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
  4. Normal Mapping
  5. Fog
  6. Skybox
+ 7. PBR
 
  **5.1 Gamma Correction.** Allows you to apply monitor gamma inversion to the final color before displaying it on the monitor. A gamma of 2.2 is the default value and approximates the average gamma of most displays.
  
@@ -196,6 +197,16 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   Scene with Skybox:
   
   <img width="364" alt="Skybox - cubemap scene" src="https://user-images.githubusercontent.com/3997537/166562324-b966a7df-0edd-48f7-8460-750f0dbf9750.png">
+  
+  **5.7 PBR.** Aims to mimic light in a physically plausible way. The algorithm used is based on the metal workflow that allows you to define metal and roughness maps for materials.
+  
+ Blinn-Phong model:
+  
+ <img width="300" alt="Blinn-Phong" src="https://user-images.githubusercontent.com/3997537/171480658-5641b76f-ef2b-4c6e-b14b-b2810e83abf6.jpg">
+
+ PBR:
+ 
+ <img width="300" alt="PBR" src="https://user-images.githubusercontent.com/3997537/171480677-16595c5c-822f-4827-bcf4-ae27e22ad0a3.jpg">
     
 ### 6. Console
 
