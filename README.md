@@ -198,7 +198,7 @@ In the scene tab you can directly edit the contents of the scene: move, scale, r
   
   <img width="364" alt="Skybox - cubemap scene" src="https://user-images.githubusercontent.com/3997537/166562324-b966a7df-0edd-48f7-8460-750f0dbf9750.png">
   
-  **5.7 PBR.** Aims to mimic light in a physically plausible way. The algorithm used is based on the metal workflow that allows you to define metal and roughness maps for materials.
+  **5.7 PBR.** Aims to mimic light in a physically plausible way. The algorithm used is based on the metal workflow that allows you to define *metal*, *roughness* and *ambient occlusion* maps for materials.
   
  Blinn-Phong model:
   
