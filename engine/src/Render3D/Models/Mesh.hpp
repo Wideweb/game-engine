@@ -63,7 +63,6 @@ class Mesh {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     Material material;
-    bool hasMaterial = false;
 
     Mesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, const Material &material);
     Mesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);

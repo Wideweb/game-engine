@@ -39,7 +39,6 @@ class SkinnedMesh {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     Material material;
-    bool hasMaterial = false;
 
     SkinnedMesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
 

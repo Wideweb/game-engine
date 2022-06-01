@@ -200,55 +200,80 @@ GLuint Shader::compileShader(unsigned int type, const std::string &source) {
 
 void Shader::setInt(const std::string &name, int value) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform1i(location, value);
 }
 
 void Shader::setFloat(const std::string &name, float value) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform1f(location, value);
 }
 
 void Shader::setFloat2(const std::string &name, float value1, float value2) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform2f(location, value1, value2);
 }
 
 void Shader::setFloat2(const std::string &name, glm::vec2 value) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform2f(location, value.x, value.y);
 }
 
 void Shader::setFloat3(const std::string &name, float value1, float value2, float value3) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform3f(location, value1, value2, value3);
 }
 
 void Shader::setFloat3(const std::string &name, glm::vec3 value) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform3f(location, value.x, value.y, value.z);
 }
 
 void Shader::setFloat4(const std::string &name, glm::vec4 value) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
 void Shader::setMatrix4(const std::string &name, const glm::mat4 &matrix) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void Shader::setMatrix2x3(const std::string &name, const std::vector<float> &matrix) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniformMatrix2x3fv(location, 1, GL_FALSE, matrix.data());
 }
 
 void Shader::setMatrix2(const std::string &name, const std::vector<float> &matrix) {
     GLint location = getUniformLocation(name);
+    if (location == -1)
+        return;
     glUniformMatrix2fv(location, 1, GL_FALSE, matrix.data());
 }
 
 void Shader::setTexture(const std::string &name, const Texture &texture) {
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        return;
+    }
+
     unsigned int index = 0;
     auto it = m_TextureIndex.find(name);
     if (it != m_TextureIndex.end()) {
@@ -259,7 +284,7 @@ void Shader::setTexture(const std::string &name, const Texture &texture) {
     }
     glActiveTexture(GL_TEXTURE0 + index);
     texture.bind();
-    setInt(name, index);
+    glUniform1i(location, index);
 }
 
 int Shader::getUniformLocation(const std::string &name) {
@@ -268,7 +293,9 @@ int Shader::getUniformLocation(const std::string &name) {
         return it->second;
     }
     GLint location = glGetUniformLocation(id, name.c_str());
-    m_UniformLocationMap[name] = location;
+    if (location != -1) {
+        m_UniformLocationMap[name] = location;
+    }
     return location;
 }
 

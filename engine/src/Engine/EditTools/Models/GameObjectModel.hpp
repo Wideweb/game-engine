@@ -521,8 +521,6 @@ class GameObjectModel {
                 mesh.material.diffuseMap.free();
             }
             mesh.material.diffuseMap = texture;
-            mesh.hasMaterial = !mesh.material.diffuseMap.empty() || !mesh.material.specularMap.empty() ||
-                               !mesh.material.normalMap.empty();
         }
     }
 
@@ -545,8 +543,6 @@ class GameObjectModel {
                 mesh.material.specularMap.free();
             }
             mesh.material.specularMap = texture;
-            mesh.hasMaterial = !mesh.material.diffuseMap.empty() || !mesh.material.specularMap.empty() ||
-                               !mesh.material.normalMap.empty();
         }
     }
 
@@ -569,14 +565,78 @@ class GameObjectModel {
                 mesh.material.normalMap.free();
             }
             mesh.material.normalMap = texture;
-            mesh.hasMaterial = !mesh.material.diffuseMap.empty() || !mesh.material.specularMap.empty() ||
-                               !mesh.material.normalMap.empty();
         }
     }
 
     void setNormalMap(Texture texture) {
         setNormalMap<InstancedModel>(texture);
         setNormalMap<SkinnedModel>(texture);
+    }
+
+    template <typename TModel> void setMetallicMap(Texture texture) {
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+        const auto &models = Application::get().getModels();
+
+        if (!models.Is<TModel>(render.model)) {
+            return;
+        }
+
+        const auto &model = Application::get().getModels().GetModel<TModel>(render.model);
+        for (auto &mesh : model->meshes) {
+            if (mesh.material.metallicMap.id != TextureLoader::placeholder().id) {
+                mesh.material.metallicMap.free();
+            }
+            mesh.material.metallicMap = texture;
+        }
+    }
+
+    void setMetallicMap(Texture texture) {
+        setMetallicMap<InstancedModel>(texture);
+        setMetallicMap<SkinnedModel>(texture);
+    }
+
+    template <typename TModel> void setRoughnessMap(Texture texture) {
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+        const auto &models = Application::get().getModels();
+
+        if (!models.Is<TModel>(render.model)) {
+            return;
+        }
+
+        const auto &model = Application::get().getModels().GetModel<TModel>(render.model);
+        for (auto &mesh : model->meshes) {
+            if (mesh.material.roughnessMap.id != TextureLoader::placeholder().id) {
+                mesh.material.roughnessMap.free();
+            }
+            mesh.material.roughnessMap = texture;
+        }
+    }
+
+    void setRoughnessMap(Texture texture) {
+        setRoughnessMap<InstancedModel>(texture);
+        setRoughnessMap<SkinnedModel>(texture);
+    }
+
+    template <typename TModel> void setAmbientOcclusionMap(Texture texture) {
+        auto &render = coordinator().GetComponent<Render3DComponent>(m_Entity);
+        const auto &models = Application::get().getModels();
+
+        if (!models.Is<TModel>(render.model)) {
+            return;
+        }
+
+        const auto &model = Application::get().getModels().GetModel<TModel>(render.model);
+        for (auto &mesh : model->meshes) {
+            if (mesh.material.ambientOcclusionMap.id != TextureLoader::placeholder().id) {
+                mesh.material.ambientOcclusionMap.free();
+            }
+            mesh.material.ambientOcclusionMap = texture;
+        }
+    }
+
+    void setAmbientOcclusionMap(Texture texture) {
+        setAmbientOcclusionMap<InstancedModel>(texture);
+        setAmbientOcclusionMap<SkinnedModel>(texture);
     }
 
     template <typename TModel> void materialSpecular(float value) {

@@ -18,9 +18,14 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     auto fragmentSrc = File::read("./shaders/direct-fragment-shader.glsl");
     m_DefaultShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
     fragmentSrc = File::read("./shaders/direct-fragment-shader-spot-light.glsl");
     m_ShaderWithSpotLight = Shader(vertexSrc, fragmentSrc);
+
+    fragmentSrc = File::read("./shaders/direct-fragment-shader-pbr.glsl");
+    m_DefaultShaderPBR = Shader(vertexSrc, fragmentSrc);
+
+    fragmentSrc = File::read("./shaders/direct-fragment-shader-spot-light-pbr.glsl");
+    m_ShaderWithSpotLightPBR = Shader(vertexSrc, fragmentSrc);
 
     vertexSrc = File::read("./shaders/gamma-vertex-shader.glsl");
     fragmentSrc = File::read("./shaders/gamma-fragment-shader.glsl");
@@ -190,7 +195,10 @@ MasterRenderer::~MasterRenderer() {
     m_GSpecularAttachment.free();
 }
 
-Shader &MasterRenderer::resolveShader(Scene &scene) {
+Shader &MasterRenderer::resolveShader(Scene &scene, RenderSettings settings) {
+    if (settings.pbr) {
+        return scene.getSpotLights().empty() ? m_DefaultShaderPBR : m_ShaderWithSpotLightPBR;
+    }
     return scene.getSpotLights().empty() ? m_DefaultShader : m_ShaderWithSpotLight;
 }
 
@@ -238,7 +246,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     }
     m_State.framebuffer.bind();
 
-    auto &shader = resolveShader(scene);
+    auto &shader = resolveShader(scene, settings);
 
     shader.bind();
     shader.setFloat3("u_viewPos", camera.positionVec());

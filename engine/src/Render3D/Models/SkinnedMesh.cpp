@@ -170,7 +170,7 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vec
     glDisable(GL_CULL_FACE);
     // glDisable(GL_DEPTH_TEST);
 
-    if (hasMaterial) {
+    if (!material.empty()) {
         shader.setInt("u_hasMaterial", 1);
 
         if (!material.diffuseMap.empty()) {

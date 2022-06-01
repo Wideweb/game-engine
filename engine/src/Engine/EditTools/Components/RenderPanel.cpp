@@ -36,7 +36,10 @@ void RenderPanel::onDraw() {
     onDrawFogPanel();
 
     ImGuiWidgets::PaddingLeft(2.0f);
-    ImGui::Checkbox("NormalMapping", &gameLayer().renderSettings.normalMapping);
+    ImGui::Checkbox("Normal Mapping", &gameLayer().renderSettings.normalMapping);
+
+    ImGuiWidgets::PaddingLeft(2.0f);
+    ImGui::Checkbox("PBR", &gameLayer().renderSettings.pbr);
 
     if (m_SkyboxPanel->isVisible()) {
         m_SkyboxPanel->onDraw();

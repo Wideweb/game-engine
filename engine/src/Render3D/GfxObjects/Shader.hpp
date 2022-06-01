@@ -28,6 +28,12 @@ class Shader : public GfxObject {
            std::vector<std::string> transformFeedbackVaryings);
     Shader(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
 
+    Shader(const Shader &shader) = delete;
+    Shader &operator=(const Shader &shader) = delete;
+
+    Shader(Shader &&shader) = default;
+    Shader &operator=(Shader &&shader) = default;
+
     void bind() const override;
     void unbind() const override;
     void free() override;

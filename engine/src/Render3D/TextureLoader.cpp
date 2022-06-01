@@ -39,6 +39,9 @@ Texture TextureLoader::loadTexture(const std::string &path) {
     } else if (channels == 3) {
         internalFormat = GL_RGB8;
         dataFormat = GL_RGB;
+    } else if (channels == 1) {
+        internalFormat = GL_R8;
+        dataFormat = GL_RED;
     }
 
     glGenTextures(1, &texture.id);
@@ -73,8 +76,17 @@ Texture TextureLoader::loadTexture(const std::string &path) {
     texture.width = width;
     texture.height = height;
     texture.type = Texture::TextureType::COLOR;
-    texture.format = GL_RGB8 ? Texture::InternalFormat::RGB8F : Texture::InternalFormat::RGBA8F;
-    texture.dataFormat = GL_RGB ? Texture::DataFormat::RGB : Texture::DataFormat::RGBA;
+
+    if (internalFormat == GL_RGBA8) {
+        texture.format = Texture::InternalFormat::RGBA8F;
+        texture.dataFormat = Texture::DataFormat::RGBA;
+    } else if (internalFormat == GL_RGB8) {
+        texture.format = Texture::InternalFormat::RGB8F;
+        texture.dataFormat = Texture::DataFormat::RGB;
+    } else if (internalFormat == GL_R8) {
+        texture.format = Texture::InternalFormat::R8F;
+        texture.dataFormat = Texture::DataFormat::RED;
+    }
     texture.dataType = Texture::DataType::UNSIGNED_BYTE;
 
     return texture;

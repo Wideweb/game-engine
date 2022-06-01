@@ -9,12 +9,11 @@ Mesh::Mesh() {}
 Mesh::~Mesh() {}
 
 Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices, const Material &material)
-    : vertices(vertices), indices(indices), material(material), hasMaterial(true) {}
+    : vertices(vertices), indices(indices), material(material) {}
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices)
-    : vertices(vertices), indices(indices), hasMaterial(false) {}
+Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices) : vertices(vertices), indices(indices) {}
 
-Mesh::Mesh(const std::vector<Vertex> &vertices) : vertices(vertices), hasMaterial(false) {}
+Mesh::Mesh(const std::vector<Vertex> &vertices) : vertices(vertices) {}
 
 Mesh::Mesh(const Mesh &mesh) {
     VAO = mesh.VAO;
@@ -24,7 +23,6 @@ Mesh::Mesh(const Mesh &mesh) {
     vertices = mesh.vertices;
     indices = mesh.indices;
     material = mesh.material;
-    hasMaterial = mesh.hasMaterial;
 }
 
 void Mesh::setUp() {
@@ -143,7 +141,7 @@ void Mesh::setInstances(GLuint idVBO, GLuint instanceVBO) const {
 void Mesh::draw(Shader &shader, size_t instanceCount) const {
     shader.bind();
 
-    if (hasMaterial) {
+    if (!material.empty()) {
         shader.setInt("u_hasMaterial", 1);
 
         if (!material.diffuseMap.empty()) {
@@ -165,6 +163,27 @@ void Mesh::draw(Shader &shader, size_t instanceCount) const {
             shader.setTexture("u_material.normal", material.normalMap);
         } else {
             shader.setInt("u_material.hasNormal", 0);
+        }
+
+        if (!material.metallicMap.empty()) {
+            shader.setInt("u_material.hasMetallic", 1);
+            shader.setTexture("u_material.metallic", material.metallicMap);
+        } else {
+            shader.setInt("u_material.hasMetallic", 0);
+        }
+
+        if (!material.roughnessMap.empty()) {
+            shader.setInt("u_material.hasRoughness", 1);
+            shader.setTexture("u_material.roughness", material.roughnessMap);
+        } else {
+            shader.setInt("u_material.hasRoughness", 0);
+        }
+
+        if (!material.ambientOcclusionMap.empty()) {
+            shader.setInt("u_material.hasAmbientOcclusion", 1);
+            shader.setTexture("u_material.ambientOcclusion", material.ambientOcclusionMap);
+        } else {
+            shader.setInt("u_material.hasAmbientOcclusion", 0);
         }
 
         shader.setFloat("u_material.shininess", material.shininess);

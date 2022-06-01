@@ -35,6 +35,21 @@ void ModelRenderPanel::onUpdate() {
         m_Model.setNormalMap(Texture::getEmpty());
         m_FreeNormalMap = false;
     }
+
+    if (m_FreeMetallicMap) {
+        m_Model.setMetallicMap(Texture::getEmpty());
+        m_FreeMetallicMap = false;
+    }
+
+    if (m_FreeRoughnessMap) {
+        m_Model.setRoughnessMap(Texture::getEmpty());
+        m_FreeRoughnessMap = false;
+    }
+
+    if (m_FreeAmbientOcclusionMap) {
+        m_Model.setAmbientOcclusionMap(Texture::getEmpty());
+        m_FreeAmbientOcclusionMap = false;
+    }
 }
 
 void ModelRenderPanel::onDraw() {
@@ -45,6 +60,8 @@ void ModelRenderPanel::onDraw() {
     if (!ImGuiWidgets::ComponentPanel<Render3DComponent>("3D Model", expanded, m_Model.entity(), coordinator, true)) {
         return;
     }
+
+    bool isPBR = gameLayer().renderSettings.pbr;
 
     float padding = 10.0f;
 
@@ -94,20 +111,22 @@ void ModelRenderPanel::onDraw() {
         ImGui::Text("Material");
 
         {
-            float prevShininess = m_Model.material().shininess;
-            float shininess = m_Model.material().shininess;
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("Shininess", &shininess, 0.1f, 0.01f);
-            if (prevShininess != shininess) {
-                m_Model.materialShininess(shininess);
-            }
+            if (!isPBR) {
+                float prevShininess = m_Model.material().shininess;
+                float shininess = m_Model.material().shininess;
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::InputFloat("Shininess", &shininess, 0.1f, 0.01f);
+                if (prevShininess != shininess) {
+                    m_Model.materialShininess(shininess);
+                }
 
-            float prevSpecular = m_Model.material().specular;
-            float specular = m_Model.material().specular;
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::InputFloat("Specular", &specular, 0.1f, 0.01f);
-            if (prevSpecular != specular) {
-                m_Model.materialShininess(specular);
+                float prevSpecular = m_Model.material().specular;
+                float specular = m_Model.material().specular;
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::InputFloat("Specular", &specular, 0.1f, 0.01f);
+                if (prevSpecular != specular) {
+                    m_Model.materialShininess(specular);
+                }
             }
 
             const auto &material = m_Model.material();
@@ -119,7 +138,7 @@ void ModelRenderPanel::onDraw() {
                 !material.normalMap.empty() ? material.normalMap.id : TextureLoader::placeholder().id;
 
             ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Text("Diffuse map");
+            ImGui::Text(isPBR ? "Albedo map" : "Diffuse map");
             ImGuiWidgets::PaddingLeft(padding);
             ImGui::Image(reinterpret_cast<void *>(diffuseMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
             if (ImGui::BeginDragDropTarget()) {
@@ -144,30 +163,32 @@ void ModelRenderPanel::onDraw() {
                 ImGuiWidgets::PaddingTop(-2.0f);
             }
 
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Text("Specular map");
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Image(reinterpret_cast<void *>(specularMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const char *path = static_cast<const char *>(payload->Data);
-                    if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                        std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                        m_Model.setSpecularMap(TextureLoader::loadTexture(textureSrc));
+            if (!isPBR) {
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Text("Specular map");
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Image(reinterpret_cast<void *>(specularMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const char *path = static_cast<const char *>(payload->Data);
+                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                            m_Model.setSpecularMap(TextureLoader::loadTexture(textureSrc));
+                        }
                     }
+                    ImGui::EndDragDropTarget();
                 }
-                ImGui::EndDragDropTarget();
-            }
-            if (!material.specularMap.empty()) {
-                ImGui::SameLine();
-                ImGuiWidgets::PaddingLeft(-24.0f);
-                ImGuiWidgets::PaddingTop(2.0f);
-                ImGui::PushID("##ModelRender_specularMap_clear");
-                if (ImGui::SmallButton("x")) {
-                    m_FreeSpecularMap = true;
+                if (!material.specularMap.empty()) {
+                    ImGui::SameLine();
+                    ImGuiWidgets::PaddingLeft(-24.0f);
+                    ImGuiWidgets::PaddingTop(2.0f);
+                    ImGui::PushID("##ModelRender_specularMap_clear");
+                    if (ImGui::SmallButton("x")) {
+                        m_FreeSpecularMap = true;
+                    }
+                    ImGui::PopID();
+                    ImGuiWidgets::PaddingTop(-2.0f);
                 }
-                ImGui::PopID();
-                ImGuiWidgets::PaddingTop(-2.0f);
             }
 
             ImGuiWidgets::PaddingLeft(padding);
@@ -194,6 +215,95 @@ void ModelRenderPanel::onDraw() {
                 }
                 ImGui::PopID();
                 ImGuiWidgets::PaddingTop(-2.0f);
+            }
+
+            if (isPBR) {
+                const GfxObjectId metallicMapId =
+                    !material.metallicMap.empty() ? material.metallicMap.id : TextureLoader::placeholder().id;
+                const GfxObjectId roughnessMapId =
+                    !material.roughnessMap.empty() ? material.roughnessMap.id : TextureLoader::placeholder().id;
+                const GfxObjectId ambientOcclusionMapId = !material.ambientOcclusionMap.empty()
+                                                              ? material.ambientOcclusionMap.id
+                                                              : TextureLoader::placeholder().id;
+
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Text("Metallic map");
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Image(reinterpret_cast<void *>(metallicMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const char *path = static_cast<const char *>(payload->Data);
+                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                            m_Model.setMetallicMap(TextureLoader::loadTexture(textureSrc));
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                if (!material.metallicMap.empty()) {
+                    ImGui::SameLine();
+                    ImGuiWidgets::PaddingLeft(-24.0f);
+                    ImGuiWidgets::PaddingTop(2.0f);
+                    ImGui::PushID("##ModelRender_metallicMap_clear");
+                    if (ImGui::SmallButton("x")) {
+                        m_FreeMetallicMap = true;
+                    }
+                    ImGui::PopID();
+                    ImGuiWidgets::PaddingTop(-2.0f);
+                }
+
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Text("Roughness map");
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Image(reinterpret_cast<void *>(roughnessMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const char *path = static_cast<const char *>(payload->Data);
+                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                            m_Model.setRoughnessMap(TextureLoader::loadTexture(textureSrc));
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                if (!material.roughnessMap.empty()) {
+                    ImGui::SameLine();
+                    ImGuiWidgets::PaddingLeft(-24.0f);
+                    ImGuiWidgets::PaddingTop(2.0f);
+                    ImGui::PushID("##ModelRender_roughnessMap_clear");
+                    if (ImGui::SmallButton("x")) {
+                        m_FreeRoughnessMap = true;
+                    }
+                    ImGui::PopID();
+                    ImGuiWidgets::PaddingTop(-2.0f);
+                }
+
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Text("Ambient Occlusion map");
+                ImGuiWidgets::PaddingLeft(padding);
+                ImGui::Image(reinterpret_cast<void *>(ambientOcclusionMapId), ImVec2(75, 75), ImVec2(0, 0),
+                             ImVec2(1, 1));
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const char *path = static_cast<const char *>(payload->Data);
+                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                            m_Model.setAmbientOcclusionMap(TextureLoader::loadTexture(textureSrc));
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                if (!material.ambientOcclusionMap.empty()) {
+                    ImGui::SameLine();
+                    ImGuiWidgets::PaddingLeft(-24.0f);
+                    ImGuiWidgets::PaddingTop(2.0f);
+                    ImGui::PushID("##ModelRender_ambientOcclusion_clear");
+                    if (ImGui::SmallButton("x")) {
+                        m_FreeAmbientOcclusionMap = true;
+                    }
+                    ImGui::PopID();
+                    ImGuiWidgets::PaddingTop(-2.0f);
+                }
             }
         }
 
