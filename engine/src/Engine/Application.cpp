@@ -17,9 +17,7 @@ Application::Application(ApplicationSettings settings) {
 
     m_Input = std::unique_ptr<Input>(Input::create());
 
-    std::cout << "INIT RENDER START" << std::endl;
     m_Render = std::make_unique<MasterRenderer>(960, 540);
-    std::cout << "INIT RENDER END" << std::endl;
 
     m_Camera =
         std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0, 0.0f, -1.0f));

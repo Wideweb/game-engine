@@ -111,7 +111,7 @@ void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::ve
     GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
     GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
     GLboolean last_enable_stencil_test = glIsEnabled(GL_STENCIL_TEST);
-    GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
+    // GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
 
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
@@ -119,7 +119,7 @@ void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::ve
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
-    glEnable(GL_SCISSOR_TEST);
+    // glEnable(GL_SCISSOR_TEST);
 
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
@@ -144,9 +144,9 @@ void Renderer2D::draw(const std::vector<Mesh2D::Vertex> &vertices, const std::ve
         glEnable(GL_STENCIL_TEST);
     }
 
-    if (!last_enable_scissor_test) {
-        glDisable(GL_SCISSOR_TEST);
-    }
+    // if (!last_enable_scissor_test) {
+    //     glDisable(GL_SCISSOR_TEST);
+    // }
 }
 
 } // namespace Engine

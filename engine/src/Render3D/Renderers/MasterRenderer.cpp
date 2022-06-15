@@ -404,6 +404,7 @@ void MasterRenderer::setViewport(int width, int height) {
     m_GFramebuffer.resize(width, height);
     m_BlurFramebuffer.resize(width, height);
     m_SSAOFramebuffer.resize(width, height);
+    m_TmpFramebuffer.resize(width, height);
 
     updateBloom();
 }

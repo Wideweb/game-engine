@@ -119,7 +119,7 @@ void Framebuffer::setDepthAttachment(const Texture &attachment, bool own) {
     m_DepthAttachment = Framebuffer::Attachment(attachment, 0, own);
 }
 
-void Framebuffer::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+void Framebuffer::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); }
 
 void Framebuffer::clearDepth() { glClear(GL_DEPTH_BUFFER_BIT); }
 
