@@ -2,6 +2,22 @@
 
 ECS based 3D game engine in C++ and Opengl ES.
 
+## Building
+
+The following set of tools is required:
+- gcc
+- conan
+- cmake
+
+build steps:
+- cd game-engine
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Debug
+- cmake --build .
+
+run: ./EngineApp --edit
+
 ## Editor Interface
 
 By default, the editor consist of the following tabs:
