@@ -35,6 +35,18 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     fragmentSrc = File::read("./shaders/hdr-fragment-shader.glsl");
     m_HdrShader = Shader(vertexSrc, fragmentSrc);
 
+    vertexSrc = File::read("./shaders/blur-simple-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/blur-simple-fragment-shader.glsl");
+    m_BlurSimpleShader = Shader(vertexSrc, fragmentSrc);
+
+    vertexSrc = File::read("./shaders/exposure-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/exposure-fragment-shader.glsl");
+    m_ExposureShader = Shader(vertexSrc, fragmentSrc);
+
+    vertexSrc = File::read("./shaders/brightness-vertex-shader.glsl");
+    fragmentSrc = File::read("./shaders/brightness-fragment-shader.glsl");
+    m_BrightnessShader = Shader(vertexSrc, fragmentSrc);
+
     m_TmpFramebuffer = Framebuffer::create();
     m_TmpFramebuffer.bind();
     m_TmpColorBuffer = Texture::createRGBA16FBuffer(width, height);
@@ -60,24 +72,40 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_HdrFramebuffer.check();
     m_HdrFramebuffer.unbind();
 
-    vertexSrc = File::read("./shaders/blur-simple-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/blur-simple-fragment-shader.glsl");
-    m_BlurSimpleShader = Shader(vertexSrc, fragmentSrc);
+    // vertexSrc = File::read("./shaders/blur-gaussian-vertex-shader.glsl");
+    // fragmentSrc = File::read("./shaders/blur-gaussian-fragment-shader.glsl");
+    // m_BlurGaussianShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/blur-gaussian-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/blur-gaussian-fragment-shader.glsl");
-    m_BlurGaussianShader = Shader(vertexSrc, fragmentSrc);
+    // m_PingpongFramebuffer[0] = Framebuffer::create();
+    // m_PingpongFramebuffer[0].bind();
+    // m_PingpongColorBuffer[0] = Texture::createRGBA16FBuffer(width / m_BloomScale, height / m_BloomScale);
+    // m_PingpongFramebuffer[0].addAttachment(m_PingpongColorBuffer[0]);
 
-    m_PingpongFramebuffer[0] = Framebuffer::create();
-    m_PingpongFramebuffer[0].bind();
-    m_PingpongColorBuffer[0] = Texture::createRGBA16FBuffer(width / m_BloomScale, height / m_BloomScale);
-    m_PingpongFramebuffer[0].addAttachment(m_PingpongColorBuffer[0]);
+    // m_PingpongFramebuffer[1] = Framebuffer::create();
+    // m_PingpongFramebuffer[1].bind();
+    // m_PingpongColorBuffer[1] = Texture::createRGBA16FBuffer(width / m_BloomScale, height / m_BloomScale);
+    // m_PingpongFramebuffer[1].addAttachment(m_PingpongColorBuffer[1]);
+    // m_PingpongFramebuffer[1].unbind();
 
-    m_PingpongFramebuffer[1] = Framebuffer::create();
-    m_PingpongFramebuffer[1].bind();
-    m_PingpongColorBuffer[1] = Texture::createRGBA16FBuffer(width / m_BloomScale, height / m_BloomScale);
-    m_PingpongFramebuffer[1].addAttachment(m_PingpongColorBuffer[1]);
-    m_PingpongFramebuffer[1].unbind();
+    m_BloomFramebuffer = Framebuffer::create();
+    m_BloomFramebuffer.bind();
+    m_BloomColorBuffer = Texture::createRGBA16FBuffer(width, height);
+    m_BloomFramebuffer.addAttachment(m_BloomColorBuffer);
+    m_BloomFramebuffer.unbind();
+
+    m_BrightnessFramebuffer = Framebuffer::create();
+    m_BrightnessFramebuffer.bind();
+    m_BrightnessColorBuffer = Texture::createRGB16FBuffer(256, 256);
+    m_BrightnessFramebuffer.addAttachment(m_BrightnessColorBuffer);
+    m_BrightnessFramebuffer.unbind();
+
+    for (int i = 0; i < 2; i++) {
+        m_ExposureFramebuffer[i] = Framebuffer::create();
+        m_ExposureFramebuffer[i].bind();
+        m_ExposureColorBuffer[i] = Texture::createR16FBuffer(1, 1);
+        m_ExposureFramebuffer[i].addAttachment(m_BloomColorBuffer);
+        m_ExposureFramebuffer[i].unbind();
+    }
 
     m_QuadRenderer = std::make_unique<QuadRenderer>();
     m_ModelRenderer = std::make_unique<ModelRenderer>();
@@ -92,6 +120,8 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
     m_Renderer2D = std::make_unique<Renderer2D>(m_Viewport);
     m_FontRenderer = std::make_unique<FontRenderer>(m_Viewport);
+    m_BloomRenderer = std::make_unique<BloomRenderer>(m_Viewport, *m_QuadRenderer);
+    
 
     vertexSrc = File::read("./shaders/ssao-vertex-shader.glsl");
     fragmentSrc = File::read("./shaders/ssao-fragment-shader.glsl");
@@ -173,16 +203,19 @@ MasterRenderer::~MasterRenderer() {
     m_TmpColorBuffer.free();
     m_TmpEntityBuffer.free();
 
-    m_PingpongFramebuffer[0].free();
-    m_PingpongFramebuffer[1].free();
+    m_BloomFramebuffer.free();
+    m_BloomColorBuffer.free();
 
-    m_PingpongColorBuffer[0].free();
-    m_PingpongColorBuffer[1].free();
+    // m_PingpongFramebuffer[0].free();
+    // m_PingpongFramebuffer[1].free();
+
+    // m_PingpongColorBuffer[0].free();
+    // m_PingpongColorBuffer[1].free();
 
     m_DefaultShader.free();
     m_ShaderWithSpotLight.free();
     m_HdrShader.free();
-    m_BlurGaussianShader.free();
+    // m_BlurGaussianShader.free();
 
     m_ColorBuffer[0].free();
     m_ColorBuffer[1].free();
@@ -291,39 +324,68 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     // m_WaterRenderer->draw(camera, scene, models, m_State, settings);
 
     if (settings.hdr) {
-        bool horizontal = true, firstIteration = true;
-        if (settings.bloom) {
-            if (settings.bloomScale != m_BloomScale) {
-                m_BloomScale = settings.bloomScale;
-                updateBloom();
-            }
+        unsigned int lastViewportWidth = m_Viewport.width;
+        unsigned int lastViewportHeight = m_Viewport.height;
 
-            unsigned int lastViewportWidth = m_Viewport.width;
-            unsigned int lastViewportHeight = m_Viewport.height;
+        m_BrightnessShader.bind();
+        m_BrightnessShader.setTexture("u_colorBuffer", m_ColorBuffer[1]);
+        m_BrightnessFramebuffer.bind();
+        m_Viewport.resize(256, 256);
+        m_QuadRenderer->draw();
 
-            m_Viewport.resize(m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
-            m_BlurGaussianShader.bind();
-            for (unsigned int i = 0; i < settings.blur; i++) {
-                m_PingpongFramebuffer[horizontal].bind();
-                m_BlurGaussianShader.setInt("u_horizontal", horizontal);
-                if (firstIteration) {
-                    m_BlurGaussianShader.setTexture("u_colorBuffer", m_ColorBuffer[1]);
-                    firstIteration = false;
-                } else {
-                    m_BlurGaussianShader.setTexture("u_colorBuffer", m_PingpongColorBuffer[!horizontal]);
-                }
-                m_QuadRenderer->draw();
-                horizontal = !horizontal;
-            }
-            m_Viewport.resize(lastViewportWidth, lastViewportHeight);
-        }
+        m_BrightnessColorBuffer.bind();
+	    glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        m_BrightnessColorBuffer.unbind();
+
+        m_ExposureShader.bind();
+        m_ExposureShader.setTexture("u_brightness", m_BrightnessColorBuffer);
+        m_ExposureShader.setTexture("u_lastExposure", m_ExposureColorBuffer[(m_CurrentExposure + 1) % 2]);
+        m_ExposureShader.setFloat2("u_exposureMinMax", glm::vec2(0.0f, 10.0f));
+        m_ExposureShader.setFloat("u_sceneBrightness", 1.0f);
+        m_ExposureFramebuffer[m_CurrentExposure].bind();
+        m_Viewport.resize(1, 1);
+        m_QuadRenderer->draw();
+
+        m_Viewport.resize(lastViewportWidth, lastViewportHeight);
+
+        m_BloomRenderer->draw(settings, m_ColorBuffer[1], m_ExposureColorBuffer[m_CurrentExposure], m_BloomFramebuffer);
+
+        m_CurrentExposure = (m_CurrentExposure + 1) % 2;
+        // bool horizontal = true, firstIteration = true;
+        // if (settings.bloom) {
+        //     if (settings.bloomScale != m_BloomScale) {
+        //         m_BloomScale = settings.bloomScale;
+        //         updateBloom();
+        //     }
+
+        //     unsigned int lastViewportWidth = m_Viewport.width;
+        //     unsigned int lastViewportHeight = m_Viewport.height;
+
+        //     m_Viewport.resize(m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
+        //     m_BlurGaussianShader.bind();
+        //     for (unsigned int i = 0; i < settings.blur; i++) {
+        //         m_PingpongFramebuffer[horizontal].bind();
+        //         m_BlurGaussianShader.setInt("u_horizontal", horizontal);
+        //         if (firstIteration) {
+        //             m_BlurGaussianShader.setTexture("u_colorBuffer", m_ColorBuffer[1]);
+        //             firstIteration = false;
+        //         } else {
+        //             m_BlurGaussianShader.setTexture("u_colorBuffer", m_PingpongColorBuffer[!horizontal]);
+        //         }
+        //         m_QuadRenderer->draw();
+        //         horizontal = !horizontal;
+        //     }
+        //     m_Viewport.resize(lastViewportWidth, lastViewportHeight);
+        // }
 
         m_State.framebuffer = settings.gamma ? m_TmpFramebuffer : m_Framebuffer;
         m_State.framebuffer.bind();
 
         m_HdrShader.bind();
         m_HdrShader.setTexture("u_hdrBuffer", m_ColorBuffer[0]);
-        m_HdrShader.setTexture("u_blurBuffer", m_PingpongColorBuffer[horizontal]);
+        m_HdrShader.setTexture("u_blurBuffer", m_BloomColorBuffer);
         m_HdrShader.setTexture("u_id", m_EntityBuffer);
         m_HdrShader.setFloat("u_exposure", settings.exposure);
         m_HdrShader.setInt("u_toneMapping", static_cast<int>(settings.toneMapping));
@@ -361,6 +423,7 @@ void MasterRenderer::setViewport(int width, int height) {
     m_Viewport.width = width;
     m_Viewport.height = height;
     m_DirectedLightRenderer->resize();
+    m_BloomRenderer->resize();
 
     m_TmpColorBuffer.bind();
     m_TmpColorBuffer.resize(width, height);
@@ -373,6 +436,9 @@ void MasterRenderer::setViewport(int width, int height) {
 
     m_ColorBuffer[1].bind();
     m_ColorBuffer[1].resize(width, height);
+
+    m_BloomColorBuffer.bind();
+    m_BloomColorBuffer.resize(width, height);
 
     m_EntityBuffer.bind();
     m_EntityBuffer.resize(width, height);
@@ -406,17 +472,17 @@ void MasterRenderer::setViewport(int width, int height) {
     m_SSAOFramebuffer.resize(width, height);
     m_TmpFramebuffer.resize(width, height);
 
-    updateBloom();
+    // updateBloom();
 }
 
-void MasterRenderer::updateBloom() {
-    m_PingpongColorBuffer[0].bind();
-    m_PingpongColorBuffer[0].resize(m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
+// void MasterRenderer::updateBloom() {
+//     m_PingpongColorBuffer[0].bind();
+//     m_PingpongColorBuffer[0].resize(m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
 
-    m_PingpongColorBuffer[1].bind();
-    m_PingpongColorBuffer[1].resize(m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
-    m_PingpongColorBuffer[1].unbind();
-}
+//     m_PingpongColorBuffer[1].bind();
+//     m_PingpongColorBuffer[1].resize(m_Viewport.width / m_BloomScale, m_Viewport.height / m_BloomScale);
+//     m_PingpongColorBuffer[1].unbind();
+// }
 
 const Viewport &MasterRenderer::getViewport() { return m_Viewport; }
 
@@ -426,10 +492,22 @@ void MasterRenderer::clear() {
     m_SpotLightRenderer->clear();
     m_State.framebuffer = m_Framebuffer;
 
-    m_PingpongFramebuffer[0].bind();
-    m_PingpongFramebuffer[0].clear();
-    m_PingpongFramebuffer[1].bind();
-    m_PingpongFramebuffer[1].clear();
+    // m_PingpongFramebuffer[0].bind();
+    // m_PingpongFramebuffer[0].clear();
+    // m_PingpongFramebuffer[1].bind();
+    // m_PingpongFramebuffer[1].clear();
+
+    m_BrightnessFramebuffer.bind();
+    m_BrightnessFramebuffer.clear();
+
+    m_ExposureFramebuffer[0].bind();
+    m_ExposureFramebuffer[0].clear();
+
+    m_ExposureFramebuffer[1].bind();
+    m_ExposureFramebuffer[1].clear();
+    
+    m_BloomFramebuffer.bind();
+    m_BloomFramebuffer.clear();
 
     m_TmpFramebuffer.bind();
     m_TmpFramebuffer.clear();

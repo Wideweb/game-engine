@@ -114,6 +114,7 @@ set(SOURCE_EXE
     src/Render3D/Renderers/ParticlesRenderer.cpp
     src/Render3D/Renderers/Renderer2D.cpp
     src/Render3D/Renderers/DeferredRenderer.cpp
+    src/Render3D/Renderers/BloomRenderer.cpp
     src/Render3D/GfxObjects/GfxUtils.cpp
     src/Render3D/GfxObjects/GfxImage.cpp
     src/Render3D/GfxObjects/Texture.cpp

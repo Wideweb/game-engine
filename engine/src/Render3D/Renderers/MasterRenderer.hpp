@@ -24,6 +24,7 @@
 #include "RendererState.hpp"
 #include "SkyboxRenderer.hpp"
 #include "SpotLightRenderer.hpp"
+#include "BloomRenderer.hpp"
 #include "WaterRenderer.hpp"
 
 #include <glm/mat4x4.hpp>
@@ -36,8 +37,8 @@ class MasterRenderer {
   private:
     unsigned int m_BloomScale = 4;
 
-    Shader m_DefaultShader, m_ShaderWithSpotLight, m_DefaultShaderPBR, m_ShaderWithSpotLightPBR, m_HdrShader, m_BlurGaussianShader, m_SSAOShader, m_BlurSimpleShader,
-        m_GammaShader;
+    Shader m_DefaultShader, m_ShaderWithSpotLight, m_DefaultShaderPBR, m_ShaderWithSpotLightPBR, m_HdrShader, m_SSAOShader, m_BlurSimpleShader,
+        m_GammaShader, m_BrightnessFbo, m_BrightnessShader, m_ExposureShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -52,17 +53,20 @@ class MasterRenderer {
     std::unique_ptr<Renderer2D> m_Renderer2D;
     std::unique_ptr<DeferredRenderer> m_DeferredRenderer;
     std::unique_ptr<FontRenderer> m_FontRenderer;
+    std::unique_ptr<BloomRenderer> m_BloomRenderer;
 
     Viewport m_Viewport;
     RendererState m_State;
 
-    Texture m_ColorBuffer[2], m_EntityBuffer, m_TmpColorBuffer, m_TmpEntityBuffer;
+    Texture m_ColorBuffer[2], m_BloomColorBuffer, m_EntityBuffer, m_TmpColorBuffer, m_TmpEntityBuffer, m_BrightnessColorBuffer, m_ExposureColorBuffer[2];
     Renderbuffer m_DepthRenderbuffer;
 
-    Framebuffer m_Framebuffer, m_TmpFramebuffer, m_HdrFramebuffer, m_OutFramebuffer;
+    Framebuffer m_Framebuffer, m_TmpFramebuffer, m_HdrFramebuffer, m_BloomFramebuffer, m_OutFramebuffer, m_BrightnessFramebuffer, m_ExposureFramebuffer[2]; 
 
-    Framebuffer m_PingpongFramebuffer[2];
-    Texture m_PingpongColorBuffer[2];
+    int m_CurrentExposure = 0;
+
+    // Framebuffer m_PingpongFramebuffer[2];
+    // Texture m_PingpongColorBuffer[2];
 
     Framebuffer m_SSAOFramebuffer;
     Texture m_SSAONoiseTexture, m_SSAOBuffer;
@@ -99,7 +103,7 @@ class MasterRenderer {
     const std::unique_ptr<DirectedLightRenderer> &directedLightRenderer() { return m_DirectedLightRenderer; }
 
   private:
-    void updateBloom();
+    // void updateBloom();
 };
 
 } // namespace Engine

@@ -20,6 +20,29 @@ out vec4 o_fragColor;
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////
 /////////////////////////////////////////////////////////////
+// void main() {
+//     vec2 texOffset = 1.0 / textureSize(u_colorBuffer, 0);
+//     // вклад текущего фрагмента
+//     // vec3 result = texture(u_colorBuffer, v_texCoord).rgb * u_weight[0];
+
+//     if (u_horizontal) {
+//         texOffset.y = 0.0;
+//     } else {
+//         texOffset.x = 0.0;
+//     }
+
+//     vec4 result = vec4(0.0);
+//     result += texture(u_colorBuffer, v_texCoord - texOffset * 3.0) * 0.07;
+// 	result += texture(u_colorBuffer, v_texCoord - texOffset * 2.0) * 0.13;
+// 	result += texture(u_colorBuffer, v_texCoord - texOffset * 1.0) * 0.19;
+// 	result += texture(u_colorBuffer, v_texCoord) * 0.22;
+// 	result += texture(u_colorBuffer, v_texCoord + texOffset * 1.0) * 0.19;
+// 	result += texture(u_colorBuffer, v_texCoord + texOffset * 2.0) * 0.13;
+// 	result += texture(u_colorBuffer, v_texCoord + texOffset * 3.0) * 0.07;
+
+//     o_fragColor = result;
+// }
+
 void main() {
     vec2 texOffset = 1.0 / textureSize(u_colorBuffer, 0);
     // вклад текущего фрагмента

@@ -1,0 +1,43 @@
+#version 330 core
+
+/////////////////////////////////////////////////////////////
+//////////////////////// UNIFORMS ///////////////////////////
+/////////////////////////////////////////////////////////////
+uniform sampler2D u_colorBuffer;
+uniform sampler2D u_exposure;
+uniform float u_threshold;
+uniform float u_scale;
+
+/////////////////////////////////////////////////////////////
+//////////////////////// VARYING ////////////////////////////
+/////////////////////////////////////////////////////////////
+in vec2 v_texCoord;
+
+/////////////////////////////////////////////////////////////
+/////////////////////////// OUT /////////////////////////////
+/////////////////////////////////////////////////////////////
+out vec4 o_fragColor;
+
+/////////////////////////////////////////////////////////////
+////////////////////////// MAIN /////////////////////////////
+/////////////////////////////////////////////////////////////
+
+void main() {
+    float exposure = texture(u_exposure, vec2(0.5)).r;
+	exposure = clamp(exposure, 0.01f, 10.0f);
+    vec2 texOffset = 1.0 / textureSize(u_colorBuffer, 0) * 0.5;
+
+	vec4 c0 = texture(u_colorBuffer, v_texCoord + vec2(-texOffset.x, -texOffset.y));
+	vec4 c1 = texture(u_colorBuffer, v_texCoord + vec2(texOffset.x, -texOffset.y));
+	vec4 c2 = texture(u_colorBuffer, v_texCoord + vec2(texOffset.x, texOffset.y));
+	vec4 c3 = texture(u_colorBuffer, v_texCoord + vec2(-texOffset.x, texOffset.y));
+	vec4 ma = c0;
+	ma = max(ma, c1);
+	ma = max(ma, c2);
+	ma = max(ma, c3);
+	float l = max(max(ma.r, ma.g), ma.b) + 0.001;
+	float threshold = u_threshold / exposure;
+	ma *= clamp((l - threshold), 0.0, 0.5) / l;
+
+	o_fragColor = ma * u_scale * 3.0;
+}
