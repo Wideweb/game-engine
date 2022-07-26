@@ -103,7 +103,7 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
         m_ExposureFramebuffer[i] = Framebuffer::create();
         m_ExposureFramebuffer[i].bind();
         m_ExposureColorBuffer[i] = Texture::createR16FBuffer(1, 1);
-        m_ExposureFramebuffer[i].addAttachment(m_BloomColorBuffer);
+        m_ExposureFramebuffer[i].addAttachment(m_ExposureColorBuffer[i]);
         m_ExposureFramebuffer[i].unbind();
     }
 
@@ -328,7 +328,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         unsigned int lastViewportHeight = m_Viewport.height;
 
         m_BrightnessShader.bind();
-        m_BrightnessShader.setTexture("u_colorBuffer", m_ColorBuffer[1]);
+        m_BrightnessShader.setTexture("u_colorBuffer", m_ColorBuffer[0]);
         m_BrightnessFramebuffer.bind();
         m_Viewport.resize(256, 256);
         m_QuadRenderer->draw();
@@ -352,7 +352,7 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
         m_BloomRenderer->draw(settings, m_ColorBuffer[1], m_ExposureColorBuffer[m_CurrentExposure], m_BloomFramebuffer);
 
-        m_CurrentExposure = (m_CurrentExposure + 1) % 2;
+        
         // bool horizontal = true, firstIteration = true;
         // if (settings.bloom) {
         //     if (settings.bloomScale != m_BloomScale) {
@@ -389,6 +389,8 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_HdrShader.setTexture("u_id", m_EntityBuffer);
         m_HdrShader.setFloat("u_exposure", settings.exposure);
         m_HdrShader.setInt("u_toneMapping", static_cast<int>(settings.toneMapping));
+
+        m_CurrentExposure = (m_CurrentExposure + 1) % 2;
 
         m_QuadRenderer->draw();
     }

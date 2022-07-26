@@ -11,7 +11,7 @@ uniform vec2 u_exposureMinMax;
 /////////////////////////////////////////////////////////////
 /////////////////////////// OUT /////////////////////////////
 /////////////////////////////////////////////////////////////
-layout(location = 0) out vec4 o_fragColor;
+layout(location = 0) out float o_fragColor;
 
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////
@@ -27,5 +27,5 @@ void main() {
 	float targetExposure = clamp(0.5 * u_sceneBrightness / brightness, u_exposureMinMax.x, u_exposureMinMax.y);
 	float lastExposure = texture(u_lastExposure, vec2(0.5, 0.5)).r;
 	float newExposure = mix(lastExposure, targetExposure, 0.05);
-	o_fragColor = vec4(newExposure);
+	o_fragColor = newExposure;
 }
