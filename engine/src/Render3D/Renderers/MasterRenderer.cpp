@@ -170,6 +170,7 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_GPositionAttachment = Texture::createRGB16FBuffer(width, height);
     m_GNormalAttachment = Texture::createRGB16FBuffer(width, height);
     m_GSpecularAttachment = Texture::createRGBA16FBuffer(width, height);
+    m_GMotionAttachment = Texture::createRGB16FBuffer(width, height);
 
     m_GFramebuffer = Framebuffer::create();
     m_GFramebuffer.bind();
@@ -177,6 +178,7 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_GFramebuffer.addAttachment(m_GPositionAttachment);
     m_GFramebuffer.addAttachment(m_GNormalAttachment);
     m_GFramebuffer.addAttachment(m_GSpecularAttachment);
+    m_GFramebuffer.addAttachment(m_GMotionAttachment);
     m_GFramebuffer.setDepthAttachment(
         Renderbuffer::create(width, height, Renderbuffer::InternalFormat::DEPTH_COMPONENT), true);
     m_GFramebuffer.unbind();
@@ -386,8 +388,8 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_HdrShader.bind();
         m_HdrShader.setTexture("u_hdrBuffer", m_ColorBuffer[0]);
         m_HdrShader.setTexture("u_blurBuffer", m_BloomColorBuffer);
+        m_HdrShader.setTexture("u_exposure", m_ExposureColorBuffer[m_CurrentExposure]);
         m_HdrShader.setTexture("u_id", m_EntityBuffer);
-        m_HdrShader.setFloat("u_exposure", settings.exposure);
         m_HdrShader.setInt("u_toneMapping", static_cast<int>(settings.toneMapping));
 
         m_CurrentExposure = (m_CurrentExposure + 1) % 2;

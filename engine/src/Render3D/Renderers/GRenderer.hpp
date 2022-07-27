@@ -11,6 +11,8 @@
 #include "Shader.hpp"
 #include "SkyboxRenderer.hpp"
 
+#include <glm/mat4x4.hpp>
+
 namespace Engine {
 
 class GRenderer {
@@ -20,6 +22,8 @@ class GRenderer {
     ModelRenderer &m_ModelRenderer;
     SkyboxRenderer &m_SkyboxRenderer;
     ParticlesRenderer &m_ParticlesRenderer;
+
+    glm::mat4 m_PrevViewProjectionMatrix;
 
   public:
     GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer, ParticlesRenderer &m_ParticlesRenderer);

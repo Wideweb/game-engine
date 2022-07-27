@@ -71,7 +71,7 @@ class MasterRenderer {
     Framebuffer m_SSAOFramebuffer;
     Texture m_SSAONoiseTexture, m_SSAOBuffer;
 
-    Texture m_GColorAttachment, m_GPositionAttachment, m_GNormalAttachment, m_GSpecularAttachment;
+    Texture m_GColorAttachment, m_GPositionAttachment, m_GNormalAttachment, m_GSpecularAttachment, m_GMotionAttachment;
     Framebuffer m_GFramebuffer;
 
     Texture m_BlurAttachment;

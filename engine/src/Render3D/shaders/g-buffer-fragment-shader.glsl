@@ -30,6 +30,8 @@ in vec3 v_normal;
 in vec2 v_texCoord;
 in vec4 v_fragPos;
 in mat3 v_TBN;
+in vec4 v_currPos;
+in vec4 v_prevPos;
 
 /////////////////////////////////////////////////////////////
 //////////////////////////// OUT ////////////////////////////
@@ -38,6 +40,7 @@ layout(location = 0) out vec4 o_gColor;
 layout(location = 1) out vec3 o_gPosition;
 layout(location = 2) out vec3 o_gNormal;
 layout(location = 3) out vec4 o_gSpecular;
+layout(location = 4) out vec3 o_gMotion;
 
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////
@@ -75,4 +78,9 @@ void main() {
     o_gNormal = normal;
     o_gSpecular.rgb = specular;
     o_gSpecular.a = shininess;
+
+    vec2 currScreenPos = v_currPos.xy / v_currPos.w * 0.5 + vec2(0.5);
+	vec2 prevScreenPos = v_prevPos.xy / v_prevPos.w * 0.5 + vec2(0.5);
+
+	o_gMotion = vec3(currScreenPos - prevScreenPos, 0.0);
 }

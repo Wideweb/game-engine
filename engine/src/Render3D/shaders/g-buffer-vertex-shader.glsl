@@ -31,6 +31,8 @@ layout(location = 15) in int a_vertexJointsNumber;
 /////////////////////////////////////////////////////////////
 uniform mat4 u_view;
 uniform mat4 u_projection;
+uniform mat4 u_currViewProjection;
+uniform mat4 u_prevViewProjection;
 uniform mat4 u_joints[c_maxJoints];
 uniform int u_jointsNumber;
 uniform int u_hasNormalMapping;
@@ -43,6 +45,8 @@ out vec3 v_normal;
 out vec2 v_texCoord;
 out vec4 v_fragPos;
 out mat3 v_TBN;
+out vec4 v_currPos;
+out vec4 v_prevPos;
 
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////
@@ -64,6 +68,9 @@ void main() {
         vec3 N = normalize(vec3(worldPos * vec4(a_vertexNormal, 0.0)));
         v_TBN = mat3(T, B, N);
     }
+
+    v_currPos = u_currViewProjection * v_fragPos;
+	v_prevPos = u_prevViewProjection * v_fragPos;
 }
 
 mat4 getVertexTransform() {
