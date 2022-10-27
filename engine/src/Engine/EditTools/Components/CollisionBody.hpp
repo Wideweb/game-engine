@@ -4,6 +4,8 @@
 #include "Entity.hpp"
 #include "GameObjectModel.hpp"
 #include "Render3DComponent.hpp"
+#include "Shader.hpp"
+#include "Material.hpp"
 
 namespace Engine {
 
@@ -12,14 +14,10 @@ class CollisionBody : public BaseView {
     Entity m_CollisionBody;
     GameObjectModel &m_Model;
 
-    std::shared_ptr<Shader> m_Shader;
-
   public:
     CollisionBody(GameObjectModel &model);
 
     void onAttach() override;
-
-    void onUpdate() override;
 
     void show() override;
     void hide() override;

@@ -1,5 +1,8 @@
 #include "Application.hpp"
 
+#include "AStar.hpp"
+#include "MapObject.hpp"
+
 #include <chrono>
 #include <cmath>
 #include <iostream>
@@ -27,7 +30,16 @@ Application::Application(ApplicationSettings settings) {
 
     m_CameraController = std::make_unique<CameraController>(*m_Camera);
 
-    m_Texture = std::make_unique<TextureManager>();
+    m_Models = std::make_unique<ModelManager>();
+
+    m_Textures = std::make_unique<Textures>();
+    m_Textures->init();
+
+    m_Shaders = std::make_unique<Shaders>();
+    m_Shaders->init();
+
+    m_Materials = std::make_unique<Materials>();
+    m_Materials->init(*m_Shaders);
 
     m_Fonts = std::make_unique<FontManager>();
 
@@ -37,6 +49,9 @@ Application::Application(ApplicationSettings settings) {
 
     m_MousePicker = std::make_unique<MousePicker>(*m_Input, *m_Window, *m_Camera);
 
+    m_Map = std::make_unique<Map>(128, 128);
+    m_PathfindingGraph = std::make_unique<PathfindingGraph>(1, 5, 3, 5, 0, *m_Map, MapObject(1u, 1u), std::static_pointer_cast<PathfinderConcrete>(std::make_shared<AStar>()), Heuristic::DIAGONAL, true);
+
     s_Instance = this;
 }
 
@@ -45,6 +60,8 @@ void Application::run() {
     m_Render->setClearColor({0.25f, 0.6f, 0.6f, 1.0f});
     m_Time.tick();
     m_GlobalTime.tick();
+
+    RenderContext renderContext = m_Render->createContext();
 
     while (m_Running) {
         m_Time.tick();
@@ -67,7 +84,7 @@ void Application::run() {
 
         m_Render->clear();
         for (auto layer : m_LayerStack) {
-            m_Render->draw(*m_Camera, layer->getScene(), m_Models, layer->renderSettings);
+            m_Render->draw(*m_Camera, layer->getScene(), *m_Models, layer->renderSettings, renderContext);
             layer->draw();
         }
 

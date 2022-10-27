@@ -1,7 +1,7 @@
 #pragma once
 
+#include "ModelInstanceBatch.hpp"
 #include "Shader.hpp"
-#include "ShaderModelInstanceManager.hpp"
 
 #include <vector>
 
@@ -13,7 +13,7 @@ class Model {
 
     virtual void setUp() = 0;
     virtual void update() = 0;
-    virtual void draw(Shader &shader, ShaderModelInstanceManager &instances) = 0;
+    virtual void draw(ModelInstanceBatch *batch, Shader* activeShader = nullptr) = 0;
 };
 
 } // namespace Engine

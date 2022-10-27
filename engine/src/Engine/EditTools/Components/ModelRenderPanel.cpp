@@ -8,6 +8,7 @@
 #include "SkinnedModel.hpp"
 #include "Texture.hpp"
 #include "TextureLoader.hpp"
+#include "Material.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -15,42 +16,11 @@
 
 #include <filesystem>
 #include <memory>
+#include <string>
 
 namespace Engine {
 
 ModelRenderPanel::ModelRenderPanel(GameObjectModel &model) : m_Model(model) {}
-
-void ModelRenderPanel::onUpdate() {
-    if (m_FreeDiffuseMap) {
-        m_Model.setDiffuseMap(Texture::getEmpty());
-        m_FreeDiffuseMap = false;
-    }
-
-    if (m_FreeSpecularMap) {
-        m_Model.setSpecularMap(Texture::getEmpty());
-        m_FreeSpecularMap = false;
-    }
-
-    if (m_FreeNormalMap) {
-        m_Model.setNormalMap(Texture::getEmpty());
-        m_FreeNormalMap = false;
-    }
-
-    if (m_FreeMetallicMap) {
-        m_Model.setMetallicMap(Texture::getEmpty());
-        m_FreeMetallicMap = false;
-    }
-
-    if (m_FreeRoughnessMap) {
-        m_Model.setRoughnessMap(Texture::getEmpty());
-        m_FreeRoughnessMap = false;
-    }
-
-    if (m_FreeAmbientOcclusionMap) {
-        m_Model.setAmbientOcclusionMap(Texture::getEmpty());
-        m_FreeAmbientOcclusionMap = false;
-    }
-}
 
 void ModelRenderPanel::onDraw() {
     auto &coordinator = gameLayer().getCoordinator();
@@ -61,15 +31,11 @@ void ModelRenderPanel::onDraw() {
         return;
     }
 
-    bool isPBR = gameLayer().renderSettings.pbr;
-
-    float padding = 10.0f;
-
-    ImGuiWidgets::PaddingLeft(padding);
+    ImGuiWidgets::PaddingLeft(m_Padding);
     ImGui::Text("Model");
 
-    ImGuiWidgets::PaddingLeft(padding);
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - padding);
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - m_Padding);
     if (ImGui::BeginCombo("##ModelRender_model", render.model.c_str())) {
         if (ImGui::Selectable("", render.model.empty())) {
             m_Model.set3DModel("");
@@ -105,226 +71,27 @@ void ModelRenderPanel::onDraw() {
         ImGui::EndDragDropTarget();
     }
 
+    showMaterialProperties(render.material);
+
     if (!render.model.empty()) {
-
-        ImGuiWidgets::PaddingLeft(padding);
-        ImGui::Text("Material");
-
-        {
-            if (!isPBR) {
-                float prevShininess = m_Model.material().shininess;
-                float shininess = m_Model.material().shininess;
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::InputFloat("Shininess", &shininess, 0.1f, 0.01f);
-                if (prevShininess != shininess) {
-                    m_Model.materialShininess(shininess);
-                }
-
-                float prevSpecular = m_Model.material().specular;
-                float specular = m_Model.material().specular;
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::InputFloat("Specular", &specular, 0.1f, 0.01f);
-                if (prevSpecular != specular) {
-                    m_Model.materialShininess(specular);
-                }
-            }
-
-            const auto &material = m_Model.material();
-            const GfxObjectId diffuseMapId =
-                !material.diffuseMap.empty() ? material.diffuseMap.id : TextureLoader::placeholder().id;
-            const GfxObjectId specularMapId =
-                !material.specularMap.empty() ? material.specularMap.id : TextureLoader::placeholder().id;
-            const GfxObjectId normalMapId =
-                !material.normalMap.empty() ? material.normalMap.id : TextureLoader::placeholder().id;
-
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Text(isPBR ? "Albedo map" : "Diffuse map");
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Image(reinterpret_cast<void *>(diffuseMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const char *path = static_cast<const char *>(payload->Data);
-                    if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                        std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                        m_Model.setDiffuseMap(TextureLoader::loadTexture(textureSrc));
-                    }
-                }
-                ImGui::EndDragDropTarget();
-            }
-            if (!material.diffuseMap.empty()) {
-                ImGui::SameLine();
-                ImGuiWidgets::PaddingLeft(-24.0f);
-                ImGuiWidgets::PaddingTop(2.0f);
-                ImGui::PushID("##ModelRender_diffuseMap_clear");
-                if (ImGui::SmallButton("x")) {
-                    m_FreeDiffuseMap = true;
-                }
-                ImGui::PopID();
-                ImGuiWidgets::PaddingTop(-2.0f);
-            }
-
-            if (!isPBR) {
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Text("Specular map");
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Image(reinterpret_cast<void *>(specularMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                        const char *path = static_cast<const char *>(payload->Data);
-                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                            m_Model.setSpecularMap(TextureLoader::loadTexture(textureSrc));
-                        }
-                    }
-                    ImGui::EndDragDropTarget();
-                }
-                if (!material.specularMap.empty()) {
-                    ImGui::SameLine();
-                    ImGuiWidgets::PaddingLeft(-24.0f);
-                    ImGuiWidgets::PaddingTop(2.0f);
-                    ImGui::PushID("##ModelRender_specularMap_clear");
-                    if (ImGui::SmallButton("x")) {
-                        m_FreeSpecularMap = true;
-                    }
-                    ImGui::PopID();
-                    ImGuiWidgets::PaddingTop(-2.0f);
-                }
-            }
-
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Text("Noraml map");
-            ImGuiWidgets::PaddingLeft(padding);
-            ImGui::Image(reinterpret_cast<void *>(normalMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const char *path = static_cast<const char *>(payload->Data);
-                    if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                        std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                        m_Model.setNormalMap(TextureLoader::loadTexture(textureSrc));
-                    }
-                }
-                ImGui::EndDragDropTarget();
-            }
-            if (!material.normalMap.empty()) {
-                ImGui::SameLine();
-                ImGuiWidgets::PaddingLeft(-24.0f);
-                ImGuiWidgets::PaddingTop(2.0f);
-                ImGui::PushID("##ModelRender_normalMap_clear");
-                if (ImGui::SmallButton("x")) {
-                    m_FreeNormalMap = true;
-                }
-                ImGui::PopID();
-                ImGuiWidgets::PaddingTop(-2.0f);
-            }
-
-            if (isPBR) {
-                const GfxObjectId metallicMapId =
-                    !material.metallicMap.empty() ? material.metallicMap.id : TextureLoader::placeholder().id;
-                const GfxObjectId roughnessMapId =
-                    !material.roughnessMap.empty() ? material.roughnessMap.id : TextureLoader::placeholder().id;
-                const GfxObjectId ambientOcclusionMapId = !material.ambientOcclusionMap.empty()
-                                                              ? material.ambientOcclusionMap.id
-                                                              : TextureLoader::placeholder().id;
-
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Text("Metallic map");
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Image(reinterpret_cast<void *>(metallicMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                        const char *path = static_cast<const char *>(payload->Data);
-                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                            m_Model.setMetallicMap(TextureLoader::loadTexture(textureSrc));
-                        }
-                    }
-                    ImGui::EndDragDropTarget();
-                }
-                if (!material.metallicMap.empty()) {
-                    ImGui::SameLine();
-                    ImGuiWidgets::PaddingLeft(-24.0f);
-                    ImGuiWidgets::PaddingTop(2.0f);
-                    ImGui::PushID("##ModelRender_metallicMap_clear");
-                    if (ImGui::SmallButton("x")) {
-                        m_FreeMetallicMap = true;
-                    }
-                    ImGui::PopID();
-                    ImGuiWidgets::PaddingTop(-2.0f);
-                }
-
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Text("Roughness map");
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Image(reinterpret_cast<void *>(roughnessMapId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                        const char *path = static_cast<const char *>(payload->Data);
-                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                            m_Model.setRoughnessMap(TextureLoader::loadTexture(textureSrc));
-                        }
-                    }
-                    ImGui::EndDragDropTarget();
-                }
-                if (!material.roughnessMap.empty()) {
-                    ImGui::SameLine();
-                    ImGuiWidgets::PaddingLeft(-24.0f);
-                    ImGuiWidgets::PaddingTop(2.0f);
-                    ImGui::PushID("##ModelRender_roughnessMap_clear");
-                    if (ImGui::SmallButton("x")) {
-                        m_FreeRoughnessMap = true;
-                    }
-                    ImGui::PopID();
-                    ImGuiWidgets::PaddingTop(-2.0f);
-                }
-
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Text("Ambient Occlusion map");
-                ImGuiWidgets::PaddingLeft(padding);
-                ImGui::Image(reinterpret_cast<void *>(ambientOcclusionMapId), ImVec2(75, 75), ImVec2(0, 0),
-                             ImVec2(1, 1));
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                        const char *path = static_cast<const char *>(payload->Data);
-                        if (File::isExtension(path, Configs::c_TextureExtensions)) {
-                            std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
-                            m_Model.setAmbientOcclusionMap(TextureLoader::loadTexture(textureSrc));
-                        }
-                    }
-                    ImGui::EndDragDropTarget();
-                }
-                if (!material.ambientOcclusionMap.empty()) {
-                    ImGui::SameLine();
-                    ImGuiWidgets::PaddingLeft(-24.0f);
-                    ImGuiWidgets::PaddingTop(2.0f);
-                    ImGui::PushID("##ModelRender_ambientOcclusion_clear");
-                    if (ImGui::SmallButton("x")) {
-                        m_FreeAmbientOcclusionMap = true;
-                    }
-                    ImGui::PopID();
-                    ImGuiWidgets::PaddingTop(-2.0f);
-                }
-            }
-        }
-
         {
             glm::vec3 prevRotation = m_Model.renderRotation();
             glm::vec3 rotation = prevRotation;
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::Text("Rotation: ");
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::InputFloat("##ModelRender_rotationX", &rotation.x, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("X");
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::InputFloat("##ModelRender_rotationY", &rotation.y, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Y");
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::InputFloat("##ModelRender_rotationZ", &rotation.z, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Z");
@@ -338,20 +105,20 @@ void ModelRenderPanel::onDraw() {
             glm::vec3 prevScale = m_Model.renderScale();
             glm::vec3 scale = prevScale;
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::Text("Scale: ");
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::InputFloat("##ModelRender_scaleX", &scale.x, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("X");
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::InputFloat("##ModelRender_scaleY", &scale.y, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Y");
 
-            ImGuiWidgets::PaddingLeft(padding);
+            ImGuiWidgets::PaddingLeft(m_Padding);
             ImGui::InputFloat("##ModelRender_scaleZ", &scale.z, 0.1f, 0.01f);
             ImGui::SameLine();
             ImGui::Text("Z");
@@ -366,6 +133,80 @@ void ModelRenderPanel::onDraw() {
     ImGui::NewLine();
 
     // ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+}
+
+void ModelRenderPanel::showMaterialProperties(Material* material) {
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::Text("Material");
+
+    size_t propertiesNumber = material->keys().size();
+
+    for (size_t i = 0; i < propertiesNumber; i++) {
+        auto& propertyName = material->keys()[i];
+        auto& property = material->properties()[i];
+
+        switch (property.type)
+        {
+        case Shader::Property::Type::TEXTURE:
+            showTextureProperty(material, propertyName);
+            break;
+
+        case Shader::Property::Type::FLOAT1:
+            showFloatProperty(material, propertyName);
+            break;
+        
+        default:
+            break;
+        }
+    }
+}
+
+void ModelRenderPanel::showTextureProperty(Material* material, const std::string& propertyName) {
+    uint32_t textureId = TextureLoader::placeholder().id;
+    bool empty = material->getProperty(propertyName).value.texture == nullptr;
+
+    if (!empty) {
+        textureId = material->getProperty(propertyName).value.texture->id;
+    }
+
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::Text(propertyName.c_str());
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::Image(reinterpret_cast<void *>(textureId), ImVec2(75, 75), ImVec2(0, 0), ImVec2(1, 1));
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+            const char *path = static_cast<const char *>(payload->Data);
+            if (File::isExtension(path, Configs::c_TextureExtensions)) {
+                std::filesystem::path textureSrc = std::filesystem::path("assets") / path;
+                material->setTexture(propertyName, Application::get().getTextures().loadIfNotExist(textureSrc));
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+    if (!empty) {
+        ImGui::SameLine();
+        ImGuiWidgets::PaddingLeft(-24.0f);
+        ImGuiWidgets::PaddingTop(2.0f);
+        std::string clearId = "##ModelRender_" + propertyName + "_clear";
+        ImGui::PushID(clearId.c_str());
+        if (ImGui::SmallButton("x")) {
+            material->setTexture(propertyName, nullptr);
+        }
+        ImGui::PopID();
+        ImGuiWidgets::PaddingTop(-2.0f);
+    }
+}
+
+void ModelRenderPanel::showFloatProperty(Material* material, const std::string& propertyName) {
+    float valueOld = material->getProperty(propertyName).value.float1;
+    float valueNew = valueOld;
+
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::InputFloat(propertyName.c_str(), &valueNew, 0.1f, 0.01f);
+
+    if (valueNew != valueOld) {
+        material->setFloat(propertyName, valueNew);
+    }
 }
 
 } // namespace Engine

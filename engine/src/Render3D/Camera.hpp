@@ -40,7 +40,7 @@ class Camera {
     Projection getProjection() { return mode; }
     float getFieldOfView() { return fieldOfView; }
     float getZNear() { return zNear; }
-    float getZFar() { return zFar; }
+    float getZFar() const { return zFar; }
     float getZoom() { return zoom; }
 
   private:

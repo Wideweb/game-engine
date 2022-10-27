@@ -11,39 +11,11 @@ namespace Engine {
 
 void Render3DSystem::OnRemoveComponent(Entity entity) const {
     auto &render = getCoordinator().GetComponent<Render3DComponent>(entity);
-
-    if (render.modelChanged) {
-        OnModelChange(entity, render);
-        render.modelChanged = false;
-    }
-
     if (!render.instanced) {
         return;
     }
 
-    auto &scene = getScene();
-    if (render.overlay()) {
-        scene.removeOverlayObject(entity, render.model);
-    } else {
-        scene.removeObject(entity, render.model);
-    }
-    render.instanced = false;
-}
-
-void Render3DSystem::OnModelChange(Entity entity, Render3DComponent &render) const {
-    if (!render.instanced) {
-        return;
-    }
-
-    if (!render.prevModel.empty()) {
-        auto &scene = getScene();
-        if (render.overlay()) {
-            scene.removeOverlayObject(entity, render.prevModel);
-        } else {
-            scene.removeObject(entity, render.prevModel);
-        }
-    }
-
+    getScene().removeObject(entity);
     render.instanced = false;
 }
 
@@ -60,11 +32,6 @@ void Render3DSystem::Attach(ComponentManager &components) const {
 void Render3DSystem::Update(ComponentManager &components) const {
     for (auto entity : m_Entities) {
         auto &render = components.GetComponent<Render3DComponent>(entity);
-        if (render.modelChanged) {
-            OnModelChange(entity, render);
-            render.modelChanged = false;
-        }
-
         if (render.model.empty()) {
             continue;
         }
@@ -76,22 +43,13 @@ void Render3DSystem::Update(ComponentManager &components) const {
             auto transform = LocationComponent::getFullTransform(entity, components) *
                              glm::scale(glm::mat4(1.0), render.scale) * glm::toMat4(glm::quat(render.rotation));
 
-            if (render.overlay()) {
-                scene.addOverlayObject(entity, render.model, transform, render.shader);
-            } else {
-                scene.addObject(entity, render.model, transform, render.shader);
-            }
+            scene.addObject(entity, render.model, transform, render.material);
             render.instanced = true;
         } else if (render.updated || location.isUpdated(entity, components)) {
             auto transform = LocationComponent::getFullTransform(entity, components) *
                              glm::scale(glm::mat4(1.0), render.scale) * glm::toMat4(glm::quat(render.rotation));
 
-            if (render.overlay()) {
-                scene.updateOverlayObject(entity, render.model, transform, render.shader);
-            } else {
-                scene.updateObject(entity, render.model, transform, render.shader);
-            }
-
+            scene.updateObject(entity, render.model, transform, render.material);
             render.updated = false;
         }
     }

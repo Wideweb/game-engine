@@ -4,9 +4,9 @@
 #include "Entity.hpp"
 #include "GameObjectModel.hpp"
 #include "Render3DComponent.hpp"
-#include "Shader.hpp"
 #include "TerrainPanel.hpp"
 #include "Window.hpp"
+#include "Material.hpp"
 
 #include <memory>
 #include <vector>
@@ -24,7 +24,7 @@ class TerrainTransform : public BaseView {
 
     unsigned int m_VAO, m_VBO;
 
-    std::shared_ptr<Shader> m_Shader;
+    Material* m_Material;
 
     Entity m_Brush;
 

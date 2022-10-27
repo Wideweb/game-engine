@@ -26,6 +26,7 @@ void Texture::unbind() const { glBindTexture(getGLTextureType(type), 0); }
 void Texture::resize(unsigned int width, unsigned int height) {
     this->width = width;
     this->height = height;
+
     glTexImage2D(getGLTextureType(type), 0, GfxImage::getNativeFormat(format), width, height, 0,
                  GfxImage::getNativeDataFormat(dataFormat), GfxImage::getNativeDataType(dataType), NULL);
 }
@@ -279,7 +280,7 @@ Texture Texture::createRGB8IBuffer(int width, int height) {
     glGenTextures(1, &texture.id);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8I, width, height, 0, GL_RGB, GL_INT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8I, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -291,7 +292,30 @@ Texture Texture::createRGB8IBuffer(int width, int height) {
     texture.type = Texture::TextureType::COLOR;
     texture.format = Texture::InternalFormat::RGB8I;
     texture.dataFormat = Texture::DataFormat::RGB;
-    texture.dataType = Texture::DataType::FLOAT;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
+
+    return texture;
+}
+
+Texture Texture::createRGBA8Buffer(int width, int height, void *data) {
+    Texture texture;
+    texture.width = width;
+    texture.height = height;
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture.type = Texture::TextureType::COLOR;
+    texture.format = Texture::InternalFormat::RGBA8;
+    texture.dataFormat = Texture::DataFormat::RGBA;
+    texture.dataType = Texture::DataType::UNSIGNED_BYTE;
 
     return texture;
 }
@@ -418,6 +442,8 @@ Texture Texture::createTrueTypeGlyph(int width, int height, unsigned char *data)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     texture.type = Texture::TextureType::COLOR;
     texture.format = Texture::InternalFormat::R8F;

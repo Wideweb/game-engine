@@ -18,6 +18,7 @@ TransformControlsRotation::TransformControlsRotation(GameObjectModel &model) : m
 
 void TransformControlsRotation::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
+    auto& materials = Application::get().getMaterials();
 
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arc-x",
                                                  ModelLoader::load("./assets/models/box/arc.obj"));
@@ -56,7 +57,7 @@ void TransformControlsRotation::onAttach() {
     }
 
     auto controlX = coordinator.CreateEntity("arc-x");
-    auto renderX = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-x", 0.1f, true);
+    auto renderX = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-x", materials.defaultMaterial.get(), 0.1f);
     renderX.rotation = glm::vec3(1.57f, 1.57f, 0.0f);
     coordinator.AddComponent(controlX, renderX);
     coordinator.AddComponent(controlX, LocationComponent());
@@ -65,7 +66,7 @@ void TransformControlsRotation::onAttach() {
     m_ControlX = controlX;
 
     auto controlY = coordinator.CreateEntity("arc-y");
-    auto renderY = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-y", 0.1f, true);
+    auto renderY = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-y", materials.defaultMaterial.get(), 0.1f);
     renderY.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, renderY);
     coordinator.AddComponent(controlY, LocationComponent());
@@ -74,7 +75,7 @@ void TransformControlsRotation::onAttach() {
     m_ControlY = controlY;
 
     auto controlZ = coordinator.CreateEntity("arc-z");
-    auto renderZ = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-z", 0.1f, true);
+    auto renderZ = Render3DComponent(Configs::c_EditToolsModelPrefix + "arc-z", materials.defaultMaterial.get(), 0.1f);
     renderZ.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, renderZ);
     coordinator.AddComponent(controlZ, LocationComponent());

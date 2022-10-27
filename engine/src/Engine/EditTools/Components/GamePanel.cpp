@@ -31,6 +31,8 @@ void GamePanel::onAttach() {
     m_Framebuffer.addAttachment(m_GDepth);
     m_Framebuffer.check();
     m_Framebuffer.unbind();
+
+    m_RenderContext = Application::get().getRender().createContext();
 }
 
 void GamePanel::onUpdate() {
@@ -88,7 +90,7 @@ void GamePanel::onDraw() {
         render.setFramebuffer(m_Framebuffer);
         render.setViewport(m_ViewportSize.x, m_ViewportSize.y);
         render.clear();
-        render.draw(camera, scene, models, renderSettings);
+        render.draw(camera, scene, models, renderSettings, m_RenderContext);
         render.setFramebuffer(lastFBO);
         render.setViewport(lastViewport.width, lastViewport.height);
 

@@ -64,6 +64,8 @@ unsigned int GfxImage::getNativeFormat(InternalFormat format) {
         return GL_RGB8;
     case InternalFormat::RGB8I:
         return GL_RGB8I;
+    case InternalFormat::RGBA8:
+        return GL_RGBA8;
     case InternalFormat::RGB16F:
         return GL_RGB16F;
     case InternalFormat::RGB32F:

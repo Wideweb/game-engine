@@ -24,9 +24,11 @@ set(SOURCE_EXE
     src/IO/SDL/SDLInput.cpp
     src/Engine/Application.cpp
     src/Engine/Layer.cpp
-    src/Engine/TextureManager.cpp
     src/Engine/FontManager.cpp
     src/Engine/MousePicker.cpp
+    src/Engine/Resources/Textures.cpp
+    src/Engine/Resources/Shaders.cpp
+    src/Engine/Resources/Materials.cpp
     src/Engine/ECS/Systems/MoveSystem.cpp
     src/Engine/ECS/Systems/LocationSystem.cpp
     src/Engine/ECS/Systems/Location2DSystem.cpp
@@ -46,9 +48,11 @@ set(SOURCE_EXE
     src/Engine/ECS/Systems/ParentSystem.cpp
     src/Engine/ECS/Systems/Text2DSystem.cpp
     src/Engine/ECS/Systems/DestroySystem.cpp
+    src/Engine/ECS/Systems/MapUnitSystem.cpp
     src/Engine/Scripting/Context/LuaCore.cpp
     src/Engine/Scripting/Context/LuaEntity.cpp
     src/Engine/Scripting/Context/LuaInput.cpp
+    src/Engine/Scripting/Context/LuaResources.cpp
     src/Engine/Scripting/Context/LuaRender.cpp
     src/Engine/Scripting/Context/LuaLayer.cpp
     src/Engine/Scripting/Scripts/EntityScript.cpp
@@ -72,6 +76,7 @@ set(SOURCE_EXE
     src/Engine/EditTools/Components/ContentBrowserPanel.cpp
     src/Engine/EditTools/Components/BehaviourPanel.cpp
     src/Engine/EditTools/Components/CameraDirector.cpp
+    src/Engine/EditTools/Components/MapViewer.cpp
     src/Engine/EditTools/Components/ScenePanel.cpp
     src/Engine/EditTools/Components/GamePanel.cpp
     src/Engine/EditTools/Components/ConsolePanel.cpp
@@ -92,6 +97,7 @@ set(SOURCE_EXE
     src/Animation/AnimationLoader.cpp
     src/Render3D/Camera.cpp
     src/Render3D/CameraController.cpp
+    src/Render3D/Models/Material.cpp
     src/Render3D/Models/Mesh.cpp
     src/Render3D/Models/InstancedModel.cpp
     src/Render3D/Models/SkinnedMesh.cpp
@@ -132,7 +138,11 @@ set(SOURCE_EXE
     src/Collision/AABBOverlap.cpp
     src/Sound/SoundMixer.cpp
     src/Sound/SDL/SDLSoundBuffer.cpp
-    src/Sound/SDL/SDLSoundMixer.cpp    
+    src/Sound/SDL/SDLSoundMixer.cpp
+    src/AI/Pathfinding/Map.cpp
+    src/AI/Pathfinding/Direction.cpp
+    src/AI/Pathfinding/Heuristic.cpp
+    src/AI/Pathfinding/HAStar/Graph/PathfindingGraph.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_EXE})
@@ -143,6 +153,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree/Tasks
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/BehaviourTree/TaskDecorators
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Pathfinding
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Pathfinding/AStar
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Pathfinding/HAStar
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Pathfinding/HAStar/Graph
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/AI/Pathfinding/HAStar/Handlers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Animation
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Collision
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Collision/Shapes
@@ -159,6 +174,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Resources
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Scripting
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Scripting/Context
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/Scripting/Scripts

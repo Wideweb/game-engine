@@ -14,10 +14,10 @@ void AppLayer::onAttach() {
 }
 
 void AppLayer::onUpdate() {
-    auto writeTime = std::filesystem::last_write_time("main.lua");
-    if (m_ScriptLastWriteTime != writeTime) {
-        Engine::Application::get().reloadLayer<AppLayer>(m_Name);
-    }
+    // auto writeTime = std::filesystem::last_write_time("main.lua");
+    // if (m_ScriptLastWriteTime != writeTime) {
+    //     Engine::Application::get().reloadLayer<AppLayer>(m_Name);
+    // }
 }
 
 void AppLayer::onDetach() {}

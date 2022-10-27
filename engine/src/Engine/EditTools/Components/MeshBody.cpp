@@ -14,25 +14,15 @@ namespace Engine {
 MeshBody::MeshBody(GameObjectModel &model) : m_Model(model) {}
 
 void MeshBody::onAttach() {
-    auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    auto geometrySrc = File::read("./shaders/overlay-geometry-shader.glsl");
-    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
-
-    m_Shader->bind();
-    m_Shader->setInt("u_useColor", 1);
-    m_Shader->setFloat3("u_color", glm::vec3(0.0f, 1.0f, 0.0f));
-    m_Shader->unbind();
-
     auto &coordinator = gameLayer().getCoordinator();
+    auto& materials = Application::get().getMaterials();
 
     m_MeshBody = coordinator.CreateEntity("mesh-body");
     coordinator.AddComponent(m_MeshBody, LocationComponent());
     coordinator.AddComponent(m_MeshBody, EditToolComponent());
     coordinator.AddComponent(m_MeshBody, ParentComponent(c_NoEntity, false));
 
-    auto render = Render3DComponent("", 1.0f, true);
-    render.shader = m_Shader;
+    auto render = Render3DComponent("", materials.meshMaterial.get());
     coordinator.AddComponent(m_MeshBody, render);
 
     hide();
@@ -42,19 +32,15 @@ void MeshBody::onUpdate() {
     auto &coordinator = gameLayer().getCoordinator();
 
     if (m_Model.hasRender() && !coordinator.HasComponent<EditToolComponent>(m_Model.entity())) {
-        coordinator.GetComponent<Render3DComponent>(m_MeshBody)
-            .setModel(coordinator.GetComponent<Render3DComponent>(m_Model.entity()).model);
+        auto render = coordinator.GetComponent<Render3DComponent>(m_MeshBody);
+        render.model = coordinator.GetComponent<Render3DComponent>(m_Model.entity()).model;
+        render.updated = true;
         coordinator.GetComponent<ParentComponent>(m_MeshBody).setEntity(m_Model.entity());
     } else {
         hide();
     }
 
     const auto &camera = Application::get().getCamera();
-
-    m_Shader->bind();
-    m_Shader->setMatrix4("u_view", camera.viewMatrix());
-    m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-    m_Shader->unbind();
 }
 
 void MeshBody::show() {

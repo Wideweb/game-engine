@@ -19,7 +19,7 @@ SkinnedMesh::SkinnedMesh(const SkinnedMesh &mesh) {
 
     vertices = mesh.vertices;
     indices = mesh.indices;
-    material = mesh.material;
+    // material = mesh.material;
 }
 
 void SkinnedMesh::setUp() {
@@ -155,9 +155,8 @@ void SkinnedMesh::update() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints,
-                       uint32_t id) const {
-    shader.bind();
+void SkinnedMesh::draw(const glm::mat4 &position, const std::vector<glm::mat4> &joints, uint32_t id) const {
+    // shader.bind();
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(glm::mat4)), glm::value_ptr(position),
@@ -170,40 +169,40 @@ void SkinnedMesh::draw(Shader &shader, const glm::mat4 &position, const std::vec
     glDisable(GL_CULL_FACE);
     // glDisable(GL_DEPTH_TEST);
 
-    if (!material.empty()) {
-        shader.setInt("u_hasMaterial", 1);
+    // if (!material.empty()) {
+    //     shader.setInt("u_hasMaterial", 1);
 
-        if (!material.diffuseMap.empty()) {
-            shader.setInt("u_material.hasDiffuse", 1);
-            shader.setTexture("u_material.diffuse", material.diffuseMap);
-        } else {
-            shader.setInt("u_material.hasDiffuse", 0);
-        }
+    //     if (!material.diffuseMap.empty()) {
+    //         shader.setInt("u_material.hasDiffuse", 1);
+    //         shader.setTexture("u_material.diffuse", material.diffuseMap);
+    //     } else {
+    //         shader.setInt("u_material.hasDiffuse", 0);
+    //     }
 
-        if (!material.specularMap.empty()) {
-            shader.setInt("u_material.hasSpecular", 1);
-            shader.setTexture("u_material.specular", material.specularMap);
-        } else {
-            shader.setInt("u_material.hasSpecular", 0);
-        }
+    //     if (!material.specularMap.empty()) {
+    //         shader.setInt("u_material.hasSpecular", 1);
+    //         shader.setTexture("u_material.specular", material.specularMap);
+    //     } else {
+    //         shader.setInt("u_material.hasSpecular", 0);
+    //     }
 
-        if (!material.normalMap.empty()) {
-            shader.setInt("u_material.hasNormal", 1);
-            shader.setTexture("u_material.normal", material.normalMap);
-        } else {
-            shader.setInt("u_material.hasNormal", 0);
-        }
+    //     if (!material.normalMap.empty()) {
+    //         shader.setInt("u_material.hasNormal", 1);
+    //         shader.setTexture("u_material.normal", material.normalMap);
+    //     } else {
+    //         shader.setInt("u_material.hasNormal", 0);
+    //     }
 
-        shader.setFloat("u_material.shininess", material.shininess);
+    //     shader.setFloat("u_material.shininess", material.shininess);
 
-    } else {
-        shader.setInt("u_hasMaterial", 0);
-    }
+    // } else {
+    //     shader.setInt("u_hasMaterial", 0);
+    // }
 
-    shader.setInt("u_jointsNumber", static_cast<int>(joints.size()));
-    for (size_t i = 0; i < joints.size(); i++) {
-        shader.setMatrix4("u_joints[" + std::to_string(i) + "]", joints[i]);
-    }
+    // shader.setInt("u_jointsNumber", static_cast<int>(joints.size()));
+    // for (size_t i = 0; i < joints.size(); i++) {
+    //     shader.setMatrix4("u_joints[" + std::to_string(i) + "]", joints[i]);
+    // }
 
     glBindVertexArray(VAO);
 

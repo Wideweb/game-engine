@@ -3,28 +3,38 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <functional>
 
 namespace Engine {
 
-template <typename TKey, typename TValue> class FlatDictionary {
+template <typename TKey, typename TValue, class Hash = std::hash<TKey>>
+class FlatDictionary {
   public:
     void add(TKey key, TValue obj) {
         uint32_t index = m_Values.size();
-        m_KeyToIndex[key] = index;
+        m_KeyToIndex.insert({key, index});
         m_Keys.push_back(key);
         m_Values.push_back(obj);
     }
 
     template <typename... Args> void emplace(TKey key, Args &&...args) {
         uint32_t index = m_Values.size();
-        m_KeyToIndex[key] = index;
+        m_KeyToIndex.insert({key, index});
         m_Keys.push_back(key);
         m_Values.emplace_back(std::forward<Args>(args)...);
     }
 
-    void update(TKey id, TValue obj) {
+    void update(TKey id, const TValue& obj) {
         uint32_t index = m_KeyToIndex[id];
         m_Values[index] = obj;
+    }
+
+    void set(TKey id, const TValue& obj) {
+        if (hasKey(id)) {
+            update(id, obj);
+        } else {
+            add(id, obj);
+        }
     }
 
     void remove(TKey id) {
@@ -82,9 +92,12 @@ template <typename TKey, typename TValue> class FlatDictionary {
         m_Keys[index] = newKey;
         m_KeyToIndex[newKey] = index;
         m_KeyToIndex.erase(prevKey);
+        return false;
     }
 
     size_t size() const { return m_Values.size(); }
+
+    bool empty() const { return m_Values.empty(); }
 
     void clear() {
         m_Values.clear();
@@ -98,7 +111,7 @@ template <typename TKey, typename TValue> class FlatDictionary {
   private:
     std::vector<TValue> m_Values;
     std::vector<TKey> m_Keys;
-    std::unordered_map<TKey, uint32_t> m_KeyToIndex;
+    std::unordered_map<TKey, uint32_t, Hash> m_KeyToIndex;
 };
 
 } // namespace Engine

@@ -9,6 +9,7 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Viewport.hpp"
+#include "Material.hpp"
 
 #include "DeferredRenderer.hpp"
 #include "DirectedLightRenderer.hpp"
@@ -33,12 +34,44 @@
 
 namespace Engine {
 
+struct RenderContext {
+  Material baseMaterial;
+  Texture brightnessColorBuffer, exposureColorBuffer[2];
+  Framebuffer brightnessFramebuffer, exposureFramebuffer[2];
+  int currentExposure = 0;
+
+  ~RenderContext() {
+    if (!brightnessColorBuffer.empty()) {
+      brightnessColorBuffer.free();
+    }
+
+    if (!exposureColorBuffer[0].empty()) {
+      exposureColorBuffer[0].free();
+    }
+
+    if (!exposureColorBuffer[1].empty()) {
+      exposureColorBuffer[1].free();
+    }
+
+    if (!brightnessFramebuffer.empty()) {
+      brightnessFramebuffer.free();
+    }
+
+    if (!exposureFramebuffer[0].empty()) {
+      exposureFramebuffer[0].free();
+    }
+
+    if (!exposureFramebuffer[1].empty()) {
+      exposureFramebuffer[1].free();
+    }
+  }
+};
+
 class MasterRenderer {
   private:
     unsigned int m_BloomScale = 4;
 
-    Shader m_DefaultShader, m_ShaderWithSpotLight, m_DefaultShaderPBR, m_ShaderWithSpotLightPBR, m_HdrShader, m_SSAOShader, m_BlurSimpleShader,
-        m_GammaShader, m_BrightnessFbo, m_BrightnessShader, m_ExposureShader;
+    Shader m_HdrShader, m_SSAOShader, m_BlurSimpleShader, m_GammaShader, m_BrightnessFbo, m_BrightnessShader, m_ExposureShader;
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -58,12 +91,10 @@ class MasterRenderer {
     Viewport m_Viewport;
     RendererState m_State;
 
-    Texture m_ColorBuffer[2], m_BloomColorBuffer, m_EntityBuffer, m_TmpColorBuffer, m_TmpEntityBuffer, m_BrightnessColorBuffer, m_ExposureColorBuffer[2];
+    Texture m_ColorBuffer[2], m_BloomColorBuffer, m_EntityBuffer, m_TmpColorBuffer, m_TmpEntityBuffer;
     Renderbuffer m_DepthRenderbuffer;
 
-    Framebuffer m_Framebuffer, m_TmpFramebuffer, m_HdrFramebuffer, m_BloomFramebuffer, m_OutFramebuffer, m_BrightnessFramebuffer, m_ExposureFramebuffer[2]; 
-
-    int m_CurrentExposure = 0;
+    Framebuffer m_Framebuffer, m_TmpFramebuffer, m_HdrFramebuffer, m_BloomFramebuffer, m_OutFramebuffer; 
 
     // Framebuffer m_PingpongFramebuffer[2];
     // Texture m_PingpongColorBuffer[2];
@@ -83,8 +114,9 @@ class MasterRenderer {
     MasterRenderer(unsigned int width, unsigned int height);
     ~MasterRenderer();
 
+    RenderContext createContext();
     Shader &resolveShader(Scene &scene, RenderSettings settings);
-    void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings);
+    void draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings, RenderContext& context);
     void setClearColor(glm::vec4 color);
     glm::vec4 getClearColor();
     void setViewport(int width, int height);

@@ -20,11 +20,6 @@ namespace Engine {
 CameraDirector::CameraDirector(GameObjectModel &model) : m_Model(model) {}
 
 void CameraDirector::onAttach() {
-    auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    auto geometrySrc = File::read("./shaders/edge-geometry-shader.glsl");
-    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
-
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Camera",
                                                  ModelLoader::load("./assets/models/box/arrow-z.fbx"));
 
@@ -35,11 +30,12 @@ void CameraDirector::onAttach() {
 
     auto &toolsCoordinator = toolsLayer().getCoordinator();
     auto &gameCoordinator = gameLayer().getCoordinator();
+    auto& materials = Application::get().getMaterials();
 
     auto camera = toolsCoordinator.CreateEntity("Camera");
     toolsCoordinator.AddComponent(camera, LocationComponent(glm::vec3(0.0f, 3.0f, 5.0f), glm::vec3(-0.5f, 0.0f, 0.0f)));
     toolsCoordinator.AddComponent(camera, TagComponent("Camera"));
-    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", 0.1f, true);
+    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", materials.defaultMaterial.get(), 0.1f);
     render.rotation.y = 3.14f;
     toolsCoordinator.AddComponent(camera, render);
     m_Camera = camera;
@@ -49,8 +45,7 @@ void CameraDirector::onAttach() {
     frustumLocation.rotation.y = 3.14f;
     toolsCoordinator.AddComponent(frustum, frustumLocation);
     toolsCoordinator.AddComponent(frustum, ParentComponent(m_Camera));
-    auto frustumRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "camera-frustum", 1.0, true);
-    frustumRender.shader = m_Shader;
+    auto frustumRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "camera-frustum", materials.cubeEdgesMaterial.get(), 1.0);
     toolsCoordinator.AddComponent(frustum, frustumRender);
     m_Frustum = frustum;
 }
@@ -109,12 +104,6 @@ void CameraDirector::onUpdate() {
         frustumVertices[7].position = glm::vec3(backDelta, -backDelta, camera.getZFar());
 
         frustumModel->update();
-
-        const auto &camera = Application::get().getCamera();
-        m_Shader->bind();
-        m_Shader->setMatrix4("u_view", camera.viewMatrix());
-        m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-        m_Shader->unbind();
     }
 }
 

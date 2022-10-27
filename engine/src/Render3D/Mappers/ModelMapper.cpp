@@ -80,7 +80,7 @@ std::shared_ptr<Model> ModelMapper::map(const aiScene *scene) {
         auto &meshSrc = m_Model->meshes[i];
 
         mesh.indices = meshSrc.indices;
-        mesh.material = meshSrc.material;
+        // mesh.material = meshSrc.material;
 
         mesh.vertices.resize(meshSrc.vertices.size());
         for (size_t j = 0; j < meshSrc.vertices.size(); j++) {
@@ -154,9 +154,9 @@ SkinnedMesh ModelMapper::loadMesh(aiMesh *meshSrc, const aiScene *scene) {
         //     mesh.hasMaterial = true;
         // }
 
-        mesh.material.diffuseMap = loadMaterialTexture(materialSrc, aiTextureType_DIFFUSE);
-        mesh.material.specularMap = loadMaterialTexture(materialSrc, aiTextureType_SPECULAR);
-        mesh.material.normalMap = loadMaterialTexture(materialSrc, aiTextureType_NORMALS);
+        // mesh.material.diffuseMap = loadMaterialTexture(materialSrc, aiTextureType_DIFFUSE);
+        // mesh.material.specularMap = loadMaterialTexture(materialSrc, aiTextureType_SPECULAR);
+        // mesh.material.normalMap = loadMaterialTexture(materialSrc, aiTextureType_NORMALS);
         // mesh.hasMaterial = true;
     }
 

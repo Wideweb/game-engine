@@ -13,6 +13,7 @@ DeferredRenderer::DeferredRenderer(DirectedLightRenderer &directedLightRenderer,
     auto vertexSrc = File::read("./shaders/deferred-vertex-shader.glsl");
     auto fragmentSrc = File::read("./shaders/deferred-fragment-shader.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
+    m_Material.setShader(&m_Shader);
 }
 
 DeferredRenderer::~DeferredRenderer() { m_Shader.free(); }
@@ -50,8 +51,12 @@ void DeferredRenderer::doDraw(Texture &colorMap, Texture &positionMap, Texture &
     m_Shader.setInt("u_hasDirectedLight", 0);
     if (scene.hasDirectedLight()) {
         m_Shader.setInt("u_hasDirectedLight", 1);
-        m_DirectedLightRenderer.apply(camera, m_Shader, scene, models, state);
+        Material* baseMaterial = state.baseMaterial;
+        state.baseMaterial = &m_Material;
+        m_DirectedLightRenderer.apply(camera, scene, models, state);
+        state.baseMaterial = baseMaterial;
         m_Shader.bind();
+        m_Material.apply();
     }
 
     m_Shader.setTexture("u_colorMap", colorMap);

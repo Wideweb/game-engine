@@ -15,6 +15,7 @@ TransformControlsPosition::TransformControlsPosition(GameObjectModel &model) : m
 
 void TransformControlsPosition::onAttach() {
     auto &coordinator = toolsLayer().getCoordinator();
+    auto& materials = Application::get().getMaterials();
 
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "arrow-x",
                                                  ModelLoader::load("./assets/models/box/arrow-x.fbx"));
@@ -29,7 +30,7 @@ void TransformControlsPosition::onAttach() {
     auto locationX = LocationComponent();
     locationX.rotation = glm::vec3(0.0f, 1.57f, 0.0f);
     coordinator.AddComponent(controlX, locationX);
-    coordinator.AddComponent(controlX, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-x", 0.1f, true));
+    coordinator.AddComponent(controlX, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-x", materials.defaultMaterial.get(), 0.1f));
     coordinator.AddComponent(controlX, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlX, TagComponent("arrow"));
     m_ControlX = controlX;
@@ -38,7 +39,7 @@ void TransformControlsPosition::onAttach() {
     auto locationY = LocationComponent();
     locationY.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, locationY);
-    coordinator.AddComponent(controlY, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-y", 0.1f, true));
+    coordinator.AddComponent(controlY, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-y", materials.defaultMaterial.get(), 0.1f));
     coordinator.AddComponent(controlY, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlY, TagComponent("arrow"));
     m_ControlY = controlY;
@@ -47,7 +48,7 @@ void TransformControlsPosition::onAttach() {
     auto locationZ = LocationComponent();
     locationZ.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, locationZ);
-    coordinator.AddComponent(controlZ, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-z", 0.1f, true));
+    coordinator.AddComponent(controlZ, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-z", materials.defaultMaterial.get(), 0.1f));
     coordinator.AddComponent(controlZ, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlZ, TagComponent("arrow"));
     m_ControlZ = controlZ;

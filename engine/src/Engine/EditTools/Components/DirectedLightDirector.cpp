@@ -19,11 +19,6 @@ namespace Engine {
 DirectedLightDirector::DirectedLightDirector(GameObjectModel &model) : m_Model(model) {}
 
 void DirectedLightDirector::onAttach() {
-    auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    auto geometrySrc = File::read("./shaders/overlay-geometry-shader.glsl");
-    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
-
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "Directional Light",
                                                  ModelLoader::load("./assets/models/box/arrow-y.fbx"));
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "sun-frustum",
@@ -32,11 +27,12 @@ void DirectedLightDirector::onAttach() {
     m_SunIcon = TextureLoader::loadTexture("assets/textures/icons/light.png");
 
     auto &coordinator = toolsLayer().getCoordinator();
+    auto& materials = Application::get().getMaterials();
 
     auto sun = coordinator.CreateEntity("Directional Light");
     coordinator.AddComponent(sun, LocationComponent(glm::vec3(0.0f, 3.0f, -5.0f)));
     coordinator.AddComponent(sun, TagComponent("Directional Light"));
-    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Directional Light", 0.2f, true);
+    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Directional Light", materials.meshMaterial.get(), 0.2f);
     render.rotation.x = 1.57f;
     coordinator.AddComponent(sun, render);
     m_Sun = sun;
@@ -46,8 +42,7 @@ void DirectedLightDirector::onAttach() {
     frustumLocation.rotation.x = 1.57f;
     coordinator.AddComponent(frustum, frustumLocation);
     coordinator.AddComponent(frustum, ParentComponent(m_Sun));
-    auto frustumRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "sun-frustum", 1.0);
-    frustumRender.shader = m_Shader;
+    auto frustumRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "sun-frustum", materials.meshMaterial.get(), 1.0);
     coordinator.AddComponent(frustum, frustumRender);
     m_Frustum = frustum;
 }
@@ -95,12 +90,6 @@ void DirectedLightDirector::onUpdate() {
     if (m_isVisible) {
         toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Sun, m_SunSelected);
         toolsLayer().getCoordinator().SetComponentActive<Render3DComponent>(m_Frustum, m_SunSelected);
-
-        const auto &camera = Application::get().getCamera();
-        m_Shader->bind();
-        m_Shader->setMatrix4("u_view", camera.viewMatrix());
-        m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-        m_Shader->unbind();
     }
 }
 

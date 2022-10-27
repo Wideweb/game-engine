@@ -19,6 +19,10 @@
 #include "TerrainCollisionComponent.hpp"
 #include "Text2DComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "MapUnitComponent.hpp"
+#include "Material.hpp"
+
+#include "Point.hpp"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -26,6 +30,10 @@
 namespace Engine {
 
 void LuaCore::add(lua_State *state) {
+    luabridge::getGlobalNamespace(state)
+        .beginClass<Material>("Material")
+        .endClass();
+
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
         .beginClass<glm::vec2>("vec2")
@@ -42,6 +50,15 @@ void LuaCore::add(lua_State *state) {
         .addProperty("x", &glm::vec3::x)
         .addProperty("y", &glm::vec3::y)
         .addProperty("z", &glm::vec3::z)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<Point>("Point")
+        .addConstructor<void (*)(uint32_t, uint32_t)>()
+        .addProperty("x", &Point::x)
+        .addProperty("y", &Point::y)
         .endClass()
         .endNamespace();
 
@@ -77,7 +94,7 @@ void LuaCore::add(lua_State *state) {
     luabridge::getGlobalNamespace(state)
         .beginNamespace("Core")
         .beginClass<Render3DComponent>("Render3DComponent")
-        .addConstructor<void (*)(std::string, float)>()
+        .addConstructor<void (*)(std::string, Material*, float)>()
         .addProperty("rotation", &Render3DComponent::rotation)
         .endClass()
         .endNamespace();
@@ -242,6 +259,14 @@ void LuaCore::add(lua_State *state) {
         .beginClass<ParentComponent>("ParentComponent")
         .addConstructor<void (*)(Entity)>()
         .addProperty("entity", &ParentComponent::entity)
+        .endClass()
+        .endNamespace();
+
+    luabridge::getGlobalNamespace(state)
+        .beginNamespace("Core")
+        .beginClass<MapUnitComponent>("MapUnitComponent")
+        .addConstructor<void (*)(uint32_t, uint32_t)>()
+        .addProperty("target", &MapUnitComponent::target)
         .endClass()
         .endNamespace();
 }

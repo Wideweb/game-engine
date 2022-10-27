@@ -19,7 +19,7 @@ template <typename TEvent, size_t TSize> class ObjectPool {
         return event;
     }
 
-    bool empty() { return index == tail; }
+    bool empty() const { return index == tail; }
 
   private:
     std::array<TEvent, TSize> m_Data;

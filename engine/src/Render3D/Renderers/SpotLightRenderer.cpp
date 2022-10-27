@@ -29,7 +29,7 @@ SpotLightRenderer::~SpotLightRenderer() {
     }
 }
 
-void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
+void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position, Scene &scene,
                               const ModelManager &models, RendererState &state) {
     unsigned int lastViewportWidth = m_Viewport.width;
     unsigned int lastViewportHeight = m_Viewport.height;
@@ -47,7 +47,7 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
     cubeMap.setPosition(position);
     cubeMap.bind(m_CubeShadowShader);
 
-    m_ModelRenderer.draw(m_CubeShadowShader, scene, models);
+    m_ModelRenderer.draw(scene, models, nullptr, &m_CubeShadowShader);
 
     state.framebuffer.bind();
     m_Viewport.resize(lastViewportWidth, lastViewportHeight);
@@ -55,22 +55,21 @@ void SpotLightRenderer::apply(const SpotLight &light, const glm::vec3 &position,
 
     std::string lightRef = "u_spotLights[" + std::to_string(m_ActiveLights) + "]";
 
-    shader.bind();
-    shader.setFloat3(lightRef + ".position", position);
-    shader.setFloat3(lightRef + ".ambient", light.ambient * light.intensity);
-    shader.setFloat3(lightRef + ".diffuse", light.diffuse * light.intensity);
-    shader.setFloat3(lightRef + ".specular", light.specular * light.intensity);
-    shader.setFloat(lightRef + ".constant", light.constant);
-    shader.setFloat(lightRef + ".linear", light.linear);
-    shader.setFloat(lightRef + ".quadratic", light.quadratic);
-    shader.setTexture(lightRef + ".shadowMap", m_SadowCubeMaps[m_ActiveLights].texture());
-    shader.setFloat(lightRef + ".farPlane", m_SadowCubeMaps[m_ActiveLights].farPlane());
-    shader.setFloat(lightRef + ".bias", light.bias);
-    shader.setInt(lightRef + ".pcfSamples", light.pcfSamples);
-    shader.setFloat(lightRef + ".pcfDiskRadius", light.pcfDiskRadius);
+    state.baseMaterial->setFloat3(lightRef + ".position", position);
+    state.baseMaterial->setFloat3(lightRef + ".ambient", light.ambient * light.intensity);
+    state.baseMaterial->setFloat3(lightRef + ".diffuse", light.diffuse * light.intensity);
+    state.baseMaterial->setFloat3(lightRef + ".specular", light.specular * light.intensity);
+    state.baseMaterial->setFloat(lightRef + ".constant", light.constant);
+    state.baseMaterial->setFloat(lightRef + ".linear", light.linear);
+    state.baseMaterial->setFloat(lightRef + ".quadratic", light.quadratic);
+    state.baseMaterial->setTexture(lightRef + ".shadowMap", &m_SadowCubeMaps[m_ActiveLights].texture());
+    state.baseMaterial->setFloat(lightRef + ".farPlane", m_SadowCubeMaps[m_ActiveLights].farPlane());
+    state.baseMaterial->setFloat(lightRef + ".bias", light.bias);
+    state.baseMaterial->setInt(lightRef + ".pcfSamples", light.pcfSamples);
+    state.baseMaterial->setFloat(lightRef + ".pcfDiskRadius", light.pcfDiskRadius);
 
     m_ActiveLights++;
-    shader.setInt("u_spotLightsNumber", static_cast<int>(m_ActiveLights));
+    state.baseMaterial->setInt("u_spotLightsNumber", static_cast<int>(m_ActiveLights));
 }
 
 void SpotLightRenderer::clear() { m_ActiveLights = 0; }

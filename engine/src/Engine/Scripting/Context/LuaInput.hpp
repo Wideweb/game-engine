@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Entity.hpp"
 #include "Input.hpp"
-#include "Layer.hpp"
-#include "ScriptContext.hpp"
 
 #include "lua.hpp"
 

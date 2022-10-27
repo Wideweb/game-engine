@@ -4,9 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include "Material.hpp"
-#include "Shader.hpp"
-
 namespace Engine {
 
 class Mesh {
@@ -59,12 +56,9 @@ class Mesh {
     };
 #pragma pack(pop)
 
-    std::shared_ptr<Shader> shader;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    Material material;
 
-    Mesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, const Material &material);
     Mesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
     Mesh(const std::vector<Vertex> &vertices);
 
@@ -75,7 +69,7 @@ class Mesh {
 
     void setInstances(unsigned int idVBO, unsigned int instanceVBO) const;
 
-    void draw(Shader &shader, size_t instanceCount) const;
+    void draw(size_t instanceCount) const;
 
     void setUp();
     void update();

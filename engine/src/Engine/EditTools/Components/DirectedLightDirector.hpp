@@ -4,7 +4,6 @@
 #include "Entity.hpp"
 #include "GameObjectModel.hpp"
 #include "Render3DComponent.hpp"
-#include "Shader.hpp"
 #include "Texture.hpp"
 
 #include <glm/vec3.hpp>
@@ -19,8 +18,6 @@ class DirectedLightDirector : public BaseView {
     Texture m_SunIcon;
     glm::vec3 m_SunPosition;
     bool m_SunSelected;
-
-    std::shared_ptr<Shader> m_Shader;
 
   public:
     DirectedLightDirector(GameObjectModel &model);

@@ -14,10 +14,10 @@
 #include "IteratorRange.hpp"
 #include "Model.hpp"
 #include "Particles.hpp"
-#include "ShaderModelInstanceManager.hpp"
 #include "Skybox.hpp"
 #include "SpotLight.hpp"
 #include "Texture.hpp"
+#include "Material.hpp"
 
 namespace Engine {
 
@@ -48,37 +48,21 @@ struct SceneParticles {
     glm::mat4 position;
 };
 
-struct SceneShaderObject {
-    std::string model;
-    glm::mat4 position;
-    std::shared_ptr<Shader> shader;
-};
-
 class Scene {
   public:
     ~Scene() = default;
 
-    using ObjectsRange = IteratorRange<std::unordered_map<std::string, ShaderModelInstanceManager>::iterator>;
-
     void setSkybox(const std::shared_ptr<Skybox> skybox);
     std::shared_ptr<Skybox> getSkybox();
 
-    uint32_t addStaticObject(uint32_t id, const std::string &model, glm::mat4 position);
+    uint32_t addStaticObject(uint32_t id, const std::string &model, const glm::mat4& position, Material* material);
 
-    uint32_t addOverlayObject(uint32_t id, const std::string &model, glm::mat4 position,
-                              std::shared_ptr<Shader> shader = nullptr);
-    void removeOverlayObject(uint32_t id, const std::string &model);
-    void updateOverlayObject(uint32_t id, const std::string &model, glm::mat4 position,
-                             std::shared_ptr<Shader> shader = nullptr);
-    ObjectsRange getOverlayObjects();
-
-    uint32_t addObject(uint32_t id, const std::string &model, glm::mat4 position,
-                       std::shared_ptr<Shader> shader = nullptr);
-    void removeObject(uint32_t id, const std::string &model);
-    void updateObject(uint32_t id, const std::string &model, glm::mat4 position, std::shared_ptr<Shader> shader);
-    void updateObject(uint32_t id, const std::string &model, std::vector<glm::mat4> joints);
-    void updateObject(uint32_t id, const std::string &model, std::shared_ptr<Shader> shader = nullptr);
-    ObjectsRange getObjects();
+    uint32_t addObject(uint32_t id, const std::string &model, const glm::mat4& position, Material* material);
+    void removeObject(uint32_t id);
+    void updateObject(uint32_t id, const std::string &model, const glm::mat4& position, Material* material);
+    void updateObject(uint32_t id, const std::vector<glm::mat4>& joints);
+    std::vector<Material*>& getMaterials() { return m_Objects.keys(); }
+    std::vector<FlatDictionary<std::string, std::shared_ptr<ModelInstanceBatch>>>& getModelsInstances() { return m_Objects.values(); }
 
     void setDirectedLight(const DirectedLight &light, glm::vec3 position, glm::quat rotation);
     bool hasDirectedLight();
@@ -89,24 +73,25 @@ class Scene {
     void updateSpotLight(uint32_t id, const SpotLight &light, glm::vec3 position);
     const std::vector<SceneSpotLight> &getSpotLights() const;
 
-    uint32_t addParticlesEmitter(uint32_t id, ParticlesConfiguration config, glm::mat4 position);
+    uint32_t addParticlesEmitter(uint32_t id, ParticlesConfiguration config, const glm::mat4& position);
     void removeParticlesEmitter(uint32_t id);
-    void updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &config, glm::mat4 position,
+    void updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &config, const glm::mat4& position,
                                 double deltaTime);
     const std::vector<SceneParticles> &getParticleEmitters() const;
 
-    uint32_t addText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
-                     glm::mat4 ndcTransform, glm::vec3 color);
+    uint32_t addText(uint32_t id, std::string text, std::shared_ptr<Font> font, const glm::mat4& transform,
+                     const glm::mat4& ndcTransform, glm::vec3 color);
     void removeText(uint32_t id);
-    void updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
-                    glm::mat4 ndcTransform, glm::vec3 color);
+    void updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, const glm::mat4& transform,
+                    const glm::mat4& ndcTransform, glm::vec3 color);
     const std::vector<SceneText> &getTexts() const;
 
     void clear();
 
   private:
-    std::unordered_map<std::string, ShaderModelInstanceManager> m_Objects;
-    std::unordered_map<std::string, ShaderModelInstanceManager> m_OverlayObjects;
+    FlatDictionary<Material*, FlatDictionary<std::string, std::shared_ptr<ModelInstanceBatch>>> m_Objects;
+    std::unordered_map<uint32_t, Material*> m_IdToMaterial;
+    std::unordered_map<uint32_t, std::string> m_IdToModel;
 
     std::shared_ptr<Skybox> m_Skybox;
 

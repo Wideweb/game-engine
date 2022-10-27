@@ -33,6 +33,7 @@ class Texture : public GfxImage {
     static Texture createRGB32FBuffer(int width, int height);
 
     static Texture createRGB8IBuffer(int width, int height);
+    static Texture createRGBA8Buffer(int width, int height, void *data = nullptr);
 
     static Texture createR32IBuffer(int width, int height);
     static Texture createR8Buffer(int width, int height);

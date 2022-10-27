@@ -35,9 +35,8 @@ void LuaLayer::setSkybox(std::string right, std::string left, std::string top, s
     m_Layer->getScene().setSkybox(skybox_model);
 }
 
-void LuaLayer::load3D(std::string name, std::string obj, std::string diffuseMap, std::string specularMap,
-                      std::string normalMap) {
-    auto model = ModelLoader::load(obj, diffuseMap, specularMap, normalMap);
+void LuaLayer::load3D(std::string name, std::string obj) {
+    auto model = ModelLoader::load(obj);
     Application::get().getModels().RegisterModel(name, model);
 }
 

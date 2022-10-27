@@ -31,8 +31,7 @@ DirectedLightRenderer::~DirectedLightRenderer() {
     m_DepthMap.free();
 }
 
-void DirectedLightRenderer::apply(Camera &camera, Shader &shader, Scene &scene, const ModelManager &models,
-                                  RendererState &state) {
+void DirectedLightRenderer::apply(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state) {
     const auto &lightObj = scene.getDirectedLight();
     const auto light = lightObj.light;
 
@@ -60,22 +59,21 @@ void DirectedLightRenderer::apply(Camera &camera, Shader &shader, Scene &scene, 
     RendererState rs = {.framebuffer = m_DepthMapFramebuffer};
 
     // glCullFace(GL_FRONT);
-    m_ModelRenderer.draw(m_DepthShader, scene, models);
+    m_ModelRenderer.draw(scene, models, nullptr, &m_DepthShader);
     // glCullFace(GL_BACK);
 
     state.framebuffer.bind();
     m_Viewport.resize(lastViewportWidth, lastViewportHeight);
-
-    shader.bind();
-    shader.setInt("u_directedLight.pcf", light.pcf);
-    shader.setFloat("u_directedLight.biasFactor", light.biasFactor);
-    shader.setFloat("u_directedLight.biasMin", light.biasMin);
-    shader.setFloat3("u_directedLight.direction", direction);
-    shader.setFloat3("u_directedLight.ambient", light.ambient * light.intensity);
-    shader.setFloat3("u_directedLight.diffuse", light.diffuse * light.intensity);
-    shader.setFloat3("u_directedLight.specular", light.specular * light.intensity);
-    shader.setMatrix4("u_directedLight.spaceMatrix", lightProjection * lightView);
-    shader.setTexture("u_directedLight.shadowMap", m_DepthMap);
+    
+    state.baseMaterial->setInt("u_directedLight.pcf", light.pcf);
+    state.baseMaterial->setFloat("u_directedLight.biasFactor", light.biasFactor);
+    state.baseMaterial->setFloat("u_directedLight.biasMin", light.biasMin);
+    state.baseMaterial->setFloat3("u_directedLight.direction", direction);
+    state.baseMaterial->setFloat3("u_directedLight.ambient", light.ambient * light.intensity);
+    state.baseMaterial->setFloat3("u_directedLight.diffuse", light.diffuse * light.intensity);
+    state.baseMaterial->setFloat3("u_directedLight.specular", light.specular * light.intensity);
+    state.baseMaterial->setMatrix4("u_directedLight.spaceMatrix", lightProjection * lightView);
+    state.baseMaterial->setTexture("u_directedLight.shadowMap", &m_DepthMap);
 }
 
 void DirectedLightRenderer::resize() {

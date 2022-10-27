@@ -18,9 +18,9 @@ TerrainTransform::TerrainTransform(GameObjectModel &model, TerrainPanel &terrain
     : m_Model(model), m_TerrainPanel(terrainPanel) {}
 
 void TerrainTransform::onAttach() {
-    auto vertexSrc = File::read("./shaders/brush-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/brush-fragment-shader.glsl");
-    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
+    m_Material = Application::get().getMaterials().terrainBrushMaterial.get();
+    m_Material->setFloat("u_radius", m_TerrainPanel.brushRadius);
+    m_Material->setFloat2("u_mouse", m_MousePos);
 
     auto &coordinator = gameLayer().getCoordinator();
     m_Brush = coordinator.CreateEntity("terrain-brush");
@@ -66,12 +66,8 @@ void TerrainTransform::onUpdate() {
         }
     }
 
-    m_Shader->bind();
-    m_Shader->setMatrix4("u_view", camera.viewMatrix());
-    m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-    m_Shader->setFloat("u_radius", m_TerrainPanel.brushRadius);
-    m_Shader->setFloat2("u_mouse", m_MousePos);
-    m_Shader->unbind();
+    m_Material->setFloat("u_radius", m_TerrainPanel.brushRadius);
+    m_Material->setFloat2("u_mouse", m_MousePos);
 }
 
 void TerrainTransform::onMouseEvent(MouseEvent &event) {
@@ -94,10 +90,9 @@ void TerrainTransform::show() {
     const auto terrainRender = coordinator.GetComponent<Render3DComponent>(m_Model.entity());
     if (coordinator.HasComponent<Render3DComponent>(m_Brush)) {
         auto &brushRender = coordinator.GetComponent<Render3DComponent>(m_Brush);
-        brushRender.setModel(terrainRender.model);
+        brushRender.model = terrainRender.model;
     } else {
-        auto brushRender = Render3DComponent(terrainRender.model, 1.0, true);
-        brushRender.shader = m_Shader;
+        auto brushRender = Render3DComponent(terrainRender.model, m_Material);
         coordinator.AddComponent(m_Brush, brushRender);
     }
 

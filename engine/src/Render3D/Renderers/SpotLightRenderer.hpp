@@ -29,7 +29,7 @@ class SpotLightRenderer {
     SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer);
     ~SpotLightRenderer();
 
-    void apply(const SpotLight &light, const glm::vec3 &position, Shader &shader, Scene &scene,
+    void apply(const SpotLight &light, const glm::vec3 &position, Scene &scene,
                const ModelManager &models, RendererState &state);
     void clear();
 };

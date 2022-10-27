@@ -34,7 +34,7 @@ void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, R
     m_Shader.setFloat("u_density", settings.fogDensity);
     m_Shader.setFloat("u_gradient", settings.fogGradient);
 
-    m_ModelRenderer.draw(m_Shader, scene, models);
+    m_ModelRenderer.draw(scene, models, nullptr, &m_Shader);
     m_SkyboxRenderer.draw(camera, scene, settings);
 
     m_PrevViewProjectionMatrix = currViewProjectionMatrix;

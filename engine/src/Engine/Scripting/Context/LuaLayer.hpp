@@ -26,8 +26,7 @@ class LuaLayer {
     void setSkybox(std::string right, std::string left, std::string top, std::string bottom, std::string front,
                    std::string back);
 
-    void load3D(std::string name, std::string obj, std::string diffuseMap, std::string specularMap,
-                std::string normalMap);
+    void load3D(std::string name, std::string obj);
 
     void load3D_v2(std::string name, std::string path);
 

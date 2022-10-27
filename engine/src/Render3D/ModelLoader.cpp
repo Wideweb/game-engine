@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "InstancedModel.hpp"
-#include "Material.hpp"
 #include "Mesh.hpp"
 #include "ModelLoader.hpp"
 #include "TextureLoader.hpp"
@@ -46,9 +45,8 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &path) {
     return model;
 }
 
-std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::string &toDiffuseMap,
-                                         const std::string &toSpecularMap, const std::string &toNormalMap) {
-    std::ifstream in(toObj, std::ios::in | std::ios::binary);
+std::shared_ptr<Model> ModelLoader::loadObj(const std::string &path) {
+    std::ifstream in(path, std::ios::in | std::ios::binary);
     std::stringstream dto;
     std::string line;
 
@@ -58,7 +56,6 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::st
     std::vector<glm::vec2> tVertices;
     std::vector<Mesh::Vertex> vertices;
     std::vector<unsigned int> indices;
-    Material material;
 
     while (!in.eof() && in >> attribute) {
         if (attribute == "o") {
@@ -93,11 +90,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string &toObj, const std::st
 
     in.close();
 
-    material.diffuseMap = TextureLoader::loadTexture(toDiffuseMap);
-    material.specularMap = TextureLoader::loadTexture(toSpecularMap);
-    material.normalMap = TextureLoader::loadTexture(toNormalMap);
-
-    Mesh mesh(vertices, indices, material);
+    Mesh mesh(vertices, indices);
     auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
     model->setUp();
     return model;

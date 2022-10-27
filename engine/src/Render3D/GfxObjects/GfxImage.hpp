@@ -20,6 +20,7 @@ class GfxImage : public GfxObject {
 
         RGB8F,
         RGB8I,
+        RGBA8,
         RGB16F,
         RGB32F,
 

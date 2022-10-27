@@ -29,7 +29,7 @@ void SkeletSystem::Update(ComponentManager &components) const {
         std::vector<glm::mat4> transforms =
             skeletCmp.state.update(skelet, Application::get().getTime().getDeltaSeconds());
 
-        scene.updateObject(entity, renderCmp.model, transforms);
+        scene.updateObject(entity, transforms);
     }
 }
 

@@ -198,6 +198,33 @@ GLuint Shader::compileShader(unsigned int type, const std::string &source) {
     return shader;
 }
 
+void Shader::set(const std::string &name, const Property property) {
+    switch (property.type)
+    {
+    case Property::Type::INT1:
+        setInt(name, property.value.int1);
+        break;
+    case Property::Type::FLOAT1:
+        setFloat(name, property.value.float1);
+        break;
+    case Property::Type::FLOAT2:
+        setFloat2(name, property.value.float2);
+        break;
+    case Property::Type::FLOAT3:
+        setFloat3(name, property.value.float3);
+        break;
+    case Property::Type::FLOAT4:
+        setFloat4(name, property.value.float4);
+        break;
+    case Property::Type::MATRIX4:
+        setMatrix4(name, property.value.matrix4);
+        break;
+    case Property::Type::TEXTURE:
+        setTexture(name, property.value.texture);
+        break;
+    }
+}
+
 void Shader::setInt(const std::string &name, int value) {
     GLint location = getUniformLocation(name);
     if (location == -1)
@@ -268,8 +295,12 @@ void Shader::setMatrix2(const std::string &name, const std::vector<float> &matri
     glUniformMatrix2fv(location, 1, GL_FALSE, matrix.data());
 }
 
-void Shader::setTexture(const std::string &name, const Texture &texture) {
-    GLint location = glGetUniformLocation(id, name.c_str());
+void Shader::setTexture(const std::string &name, const Texture& texture) {
+    setTexture(name, &texture);
+}
+
+void Shader::setTexture(const std::string &name, const Texture* texture) {
+    GLint location = getUniformLocation(name);
     if (location == -1) {
         return;
     }
@@ -283,7 +314,7 @@ void Shader::setTexture(const std::string &name, const Texture &texture) {
         m_TextureIndex.emplace(name, index);
     }
     glActiveTexture(GL_TEXTURE0 + index);
-    texture.bind();
+    texture->bind();
     glUniform1i(location, index);
 }
 

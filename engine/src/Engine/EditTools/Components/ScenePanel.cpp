@@ -97,6 +97,7 @@ void ScenePanel::onDraw() {
     m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
 
     Application::get().getMousePicker().setRect(min, min + m_ViewportSize);
+    Materials& materials = Application::get().getMaterials();
 
     ImGui::Image(reinterpret_cast<void *>(m_GColor.id), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1},
                  ImVec2{1, 0});
@@ -120,7 +121,7 @@ void ScenePanel::onDraw() {
                 auto entity = coordinator.CreateEntity(name);
 
                 coordinator.AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
-                coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent(path, 1.0f));
+                coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent(path, materials.defaultMaterial.get()));
                 coordinator.AddComponent<TagComponent>(entity, TagComponent(name));
 
                 if (models.Is<SkinnedModel>(path)) {
@@ -174,7 +175,7 @@ void ScenePanel::onDraw() {
             auto entity = coordinator.CreateEntity(name);
 
             coordinator.AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
-            coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent(model, 1.0f));
+            coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent(model, materials.defaultMaterial.get()));
             coordinator.AddComponent<TagComponent>(entity, TagComponent(name));
         }
 
@@ -193,7 +194,7 @@ void ScenePanel::onDraw() {
             } while (coordinator.HasEntity(name));
             auto entity = coordinator.CreateEntity(name);
             coordinator.AddComponent<LocationComponent>(entity, LocationComponent(glm::vec3(0.0f)));
-            coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent(model, 1.0f));
+            coordinator.AddComponent<Render3DComponent>(entity, Render3DComponent(model, materials.defaultMaterial.get()));
             coordinator.AddComponent<TagComponent>(entity, TagComponent(name));
         }
         ImGui::EndPopup();

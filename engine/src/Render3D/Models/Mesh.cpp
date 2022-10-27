@@ -8,9 +8,6 @@ namespace Engine {
 Mesh::Mesh() {}
 Mesh::~Mesh() {}
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices, const Material &material)
-    : vertices(vertices), indices(indices), material(material) {}
-
 Mesh::Mesh(const std::vector<Vertex> &vertices, std::vector<GLuint> &indices) : vertices(vertices), indices(indices) {}
 
 Mesh::Mesh(const std::vector<Vertex> &vertices) : vertices(vertices) {}
@@ -22,7 +19,7 @@ Mesh::Mesh(const Mesh &mesh) {
 
     vertices = mesh.vertices;
     indices = mesh.indices;
-    material = mesh.material;
+    // material = mesh.material;
 }
 
 void Mesh::setUp() {
@@ -138,58 +135,58 @@ void Mesh::setInstances(GLuint idVBO, GLuint instanceVBO) const {
     glBindVertexArray(0);
 }
 
-void Mesh::draw(Shader &shader, size_t instanceCount) const {
-    shader.bind();
+void Mesh::draw(size_t instanceCount) const {
+    // shader.bind();
 
-    if (!material.empty()) {
-        shader.setInt("u_hasMaterial", 1);
+    // if (!material.empty()) {
+    //     shader.setInt("u_hasMaterial", 1);
 
-        if (!material.diffuseMap.empty()) {
-            shader.setInt("u_material.hasDiffuse", 1);
-            shader.setTexture("u_material.diffuse", material.diffuseMap);
-        } else {
-            shader.setInt("u_material.hasDiffuse", 0);
-        }
+    //     if (!material.diffuseMap.empty()) {
+    //         shader.setInt("u_material.hasDiffuse", 1);
+    //         shader.setTexture("u_material.diffuse", material.diffuseMap);
+    //     } else {
+    //         shader.setInt("u_material.hasDiffuse", 0);
+    //     }
 
-        if (!material.specularMap.empty()) {
-            shader.setInt("u_material.hasSpecular", 1);
-            shader.setTexture("u_material.specular", material.specularMap);
-        } else {
-            shader.setInt("u_material.hasSpecular", 0);
-        }
+    //     if (!material.specularMap.empty()) {
+    //         shader.setInt("u_material.hasSpecular", 1);
+    //         shader.setTexture("u_material.specular", material.specularMap);
+    //     } else {
+    //         shader.setInt("u_material.hasSpecular", 0);
+    //     }
 
-        if (!material.normalMap.empty()) {
-            shader.setInt("u_material.hasNormal", 1);
-            shader.setTexture("u_material.normal", material.normalMap);
-        } else {
-            shader.setInt("u_material.hasNormal", 0);
-        }
+    //     if (!material.normalMap.empty()) {
+    //         shader.setInt("u_material.hasNormal", 1);
+    //         shader.setTexture("u_material.normal", material.normalMap);
+    //     } else {
+    //         shader.setInt("u_material.hasNormal", 0);
+    //     }
 
-        if (!material.metallicMap.empty()) {
-            shader.setInt("u_material.hasMetallic", 1);
-            shader.setTexture("u_material.metallic", material.metallicMap);
-        } else {
-            shader.setInt("u_material.hasMetallic", 0);
-        }
+    //     if (!material.metallicMap.empty()) {
+    //         shader.setInt("u_material.hasMetallic", 1);
+    //         shader.setTexture("u_material.metallic", material.metallicMap);
+    //     } else {
+    //         shader.setInt("u_material.hasMetallic", 0);
+    //     }
 
-        if (!material.roughnessMap.empty()) {
-            shader.setInt("u_material.hasRoughness", 1);
-            shader.setTexture("u_material.roughness", material.roughnessMap);
-        } else {
-            shader.setInt("u_material.hasRoughness", 0);
-        }
+    //     if (!material.roughnessMap.empty()) {
+    //         shader.setInt("u_material.hasRoughness", 1);
+    //         shader.setTexture("u_material.roughness", material.roughnessMap);
+    //     } else {
+    //         shader.setInt("u_material.hasRoughness", 0);
+    //     }
 
-        if (!material.ambientOcclusionMap.empty()) {
-            shader.setInt("u_material.hasAmbientOcclusion", 1);
-            shader.setTexture("u_material.ambientOcclusion", material.ambientOcclusionMap);
-        } else {
-            shader.setInt("u_material.hasAmbientOcclusion", 0);
-        }
+    //     if (!material.ambientOcclusionMap.empty()) {
+    //         shader.setInt("u_material.hasAmbientOcclusion", 1);
+    //         shader.setTexture("u_material.ambientOcclusion", material.ambientOcclusionMap);
+    //     } else {
+    //         shader.setInt("u_material.hasAmbientOcclusion", 0);
+    //     }
 
-        shader.setFloat("u_material.shininess", material.shininess);
-    } else {
-        shader.setInt("u_hasMaterial", 0);
-    }
+    //     shader.setFloat("u_material.shininess", material.shininess);
+    // } else {
+    //     shader.setInt("u_hasMaterial", 0);
+    // }
 
     glBindVertexArray(VAO);
 

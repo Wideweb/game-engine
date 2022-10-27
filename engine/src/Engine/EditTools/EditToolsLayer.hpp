@@ -19,6 +19,7 @@
 #include "SceneHierarchyPanel.hpp"
 #include "ScenePanel.hpp"
 #include "ToolbarPanel.hpp"
+#include "MapViewer.hpp"
 #include "Window.hpp"
 
 namespace Engine {
@@ -35,7 +36,7 @@ class EditToolsLayer : public Layer {
     ImguiImpl m_Imgui;
     glm::vec3 m_Pivot;
     EditToolsEventPool m_EventPool;
-    std::array<EditToolsView, 2> m_SceneTools;
+    std::array<EditToolsView, 3> m_SceneTools;
     std::array<bool, 2> m_SceneToolsVisibility = {false};
 
     std::unique_ptr<SceneHierarchyPanel> m_SceneHierarchyPanel;

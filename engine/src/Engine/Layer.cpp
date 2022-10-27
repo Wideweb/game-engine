@@ -28,6 +28,7 @@
 #include "TerrainCollisionComponent.hpp"
 #include "Text2DComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "MapUnitComponent.hpp"
 
 #include "AISystem.hpp"
 #include "BehaviourSystem.hpp"
@@ -48,6 +49,7 @@
 #include "StaticRender3DSystem.hpp"
 #include "TerrainCollisionSystem.hpp"
 #include "Text2DSystem.hpp"
+#include "MapUnitSystem.hpp"
 
 namespace Engine {
 
@@ -73,6 +75,15 @@ Layer::Layer(std::string name) : m_Name(std::move(name)) {
     m_Coordinator.RegisterComponent<Text2DComponent>();
     m_Coordinator.RegisterComponent<Location2DComponent>();
     m_Coordinator.RegisterComponent<DestroyComponent>();
+    m_Coordinator.RegisterComponent<MapUnitComponent>();
+
+    {
+        Signature signature;
+        signature.set(m_Coordinator.GetComponentType<MapUnitComponent>());
+        signature.set(m_Coordinator.GetComponentType<VelocityComponent>());
+
+        m_Coordinator.RegisterSystem<MapUnitSystem>(signature);
+    }
 
     {
         Signature signature;

@@ -20,39 +20,34 @@ void InstancedModel::update() {
     }
 }
 
-void InstancedModel::draw(Shader &shader, ShaderModelInstanceManager &instances) {
-    for (const auto &it : instances.shaders()) {
-        ShaderId shaderId = it ? it->id : c_NoShader;
+void InstancedModel::draw(ModelInstanceBatch* batch, Shader* activeShader) {
+    // GLuint instanceVBO, idVBO;
+    // if (batchToInstanceVBO.find(batch.id) == batchToInstanceVBO.end()) {
+    //     glGenBuffers(1, &idVBO);
+    //     glGenBuffers(1, &instanceVBO);
 
-        GLuint instanceVBO, idVBO;
-        if (shaderToInstanceVBO.find(shaderId) == shaderToInstanceVBO.end()) {
-            glGenBuffers(1, &idVBO);
-            glGenBuffers(1, &instanceVBO);
+    //     batchToInstanceVBO[batch.id] = instanceVBO;
+    //     batchToIdVBO[batch.id] = idVBO;
+    // } else {
+    //     instanceVBO = batchVBO[batch.id];
+    //     idVBO = batchToIdVBO[batch.id];
+    // }
 
-            shaderToInstanceVBO[shaderId] = instanceVBO;
-            shaderToIdVBO[shaderId] = idVBO;
-        } else {
-            instanceVBO = shaderToInstanceVBO[shaderId];
-            idVBO = shaderToIdVBO[shaderId];
-        }
+    // if (batch.resized) {
+    //     setInstances(instanceVBO, idVBO, batch.positions(), instances.ids());
+    // } else if (batch.updated) {
+    //     updateInstances(instanceVBO, idVBO, batch.from, batch.to, batch.positions(),
+    //                     batch.ids());
+    // }
 
-        auto &shaderInstances = instances.instances(shaderId);
-        if (shaderInstances.resized) {
-            setInstances(instanceVBO, idVBO, shaderInstances.positions(), shaderInstances.ids());
-        } else if (shaderInstances.updated) {
-            updateInstances(instanceVBO, idVBO, shaderInstances.from, shaderInstances.to, shaderInstances.positions(),
-                            shaderInstances.ids());
-        }
+    // for (const auto &mesh : meshes) {
+    //     mesh.setInstances(idVBO, instanceVBO);
 
-        for (const auto &mesh : meshes) {
-            mesh.setInstances(idVBO, instanceVBO);
+    //     batch.resized = false;
+    //     batch.updated = false;
 
-            shaderInstances.resized = false;
-            shaderInstances.updated = false;
-
-            mesh.draw(it ? *it : shader, shaderInstances.size());
-        }
-    }
+    //     mesh.draw(batch.size());
+    // }
 
     // for (const auto &mesh : meshes) {
     //     auto &shaderInstances = instances.instances(c_NoShader);

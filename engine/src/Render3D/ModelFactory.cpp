@@ -83,11 +83,14 @@ std::shared_ptr<Model> ModelFactory::createCube(float left, float right, float b
     return model;
 }
 
-std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int columns, int rows) {
+std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int columns, int rows, bool centered) {
     // clang-format off
-    glm::vec2 center;
-    center.x = columns * tileSize / 2.0f;
-    center.y = rows * tileSize / 2.0f;
+    glm::vec2 center = glm::vec2(0.0f, 0.0f);
+
+    if (centered) {
+        center.x = columns * tileSize / 2.0f;
+        center.y = rows * tileSize / 2.0f;
+    }
 
     std::vector<Mesh::Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -100,7 +103,7 @@ std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int co
             vertices.emplace_back(
                 glm::vec3(x * tileSize - center.x, 0.0f, z * tileSize - center.y), 
                 glm::vec3(0.0f),
-                glm::vec2(x, z),
+                glm::vec2(x / columns, z / rows),
                 glm::vec3(0.0f),
                 glm::vec3(0.0f),
                 glm::vec3(0.8f, 0.6f, 0.1f)
@@ -310,8 +313,8 @@ std::shared_ptr<Model> ModelFactory::createFrastum(float fieldOfView, float near
 
     Render3D::Utils::tbn(vertices, indices);
 
-    Mesh mesh(vertices, indices);
-    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
+    Mesh mesh(std::move(vertices), indices);
+    auto model = std::shared_ptr<Model>(new InstancedModel({std::move(mesh)}));
     model->setUp();
     return model;
 }

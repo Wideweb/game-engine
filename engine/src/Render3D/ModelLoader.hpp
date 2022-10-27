@@ -13,8 +13,7 @@ class ModelLoader {
   public:
     static std::shared_ptr<Model> load(const std::string &path);
 
-    static std::shared_ptr<Model> load(const std::string &toObj, const std::string &toDiffuseMap,
-                                       const std::string &toSpecularMap, const std::string &toNormalMap);
+    static std::shared_ptr<Model> loadObj(const std::string &path);
 
     static std::shared_ptr<Skybox> loadSkybox(const std::vector<std::string> &faces);
 

@@ -4,9 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include "Material.hpp"
-#include "Shader.hpp"
-
 namespace Engine {
 
 class SkinnedMesh {
@@ -38,7 +35,6 @@ class SkinnedMesh {
 
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    Material material;
 
     SkinnedMesh(const std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
 
@@ -47,7 +43,7 @@ class SkinnedMesh {
     SkinnedMesh();
     ~SkinnedMesh();
 
-    void draw(Shader &shader, const glm::mat4 &position, const std::vector<glm::mat4> &joints, uint32_t id) const;
+    void draw(const glm::mat4 &position, const std::vector<glm::mat4> &joints, uint32_t id) const;
 
     void setUp();
     void update();

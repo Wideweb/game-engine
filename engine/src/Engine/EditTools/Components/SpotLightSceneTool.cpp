@@ -20,15 +20,11 @@ namespace Engine {
 SpotLightSceneTool::SpotLightSceneTool(GameObjectModel &model) : m_Model(model) {}
 
 void SpotLightSceneTool::onAttach() {
-    auto vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    auto geometrySrc = File::read("./shaders/overlay-geometry-shader.glsl");
-    m_Shader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
-
     Application::get().getModels().RegisterModel(Configs::c_EditToolsModelPrefix + "spot-light-sphere",
                                                  ModelFactory::createCircle(0.5f, 100, 0.001f));
 
     auto &coordinator = toolsLayer().getCoordinator();
+    auto& materials = Application::get().getMaterials();
 
     auto sun = coordinator.CreateEntity("Spot Light");
     coordinator.AddComponent(sun, LocationComponent(glm::vec3(0.0f, 3.0f, -5.0f)));
@@ -40,8 +36,7 @@ void SpotLightSceneTool::onAttach() {
         auto sphereLocation = LocationComponent(glm::vec3(0.0f));
         coordinator.AddComponent(sphere, sphereLocation);
         coordinator.AddComponent(sphere, ParentComponent(m_Sun));
-        auto sphereRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "spot-light-sphere", 1.0, true);
-        sphereRender.shader = m_Shader;
+        auto sphereRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "spot-light-sphere", materials.meshMaterial.get());
         coordinator.AddComponent(sphere, sphereRender);
         m_SphereY = sphere;
     }
@@ -52,8 +47,7 @@ void SpotLightSceneTool::onAttach() {
         sphereLocation.rotation.y = 1.57f;
         coordinator.AddComponent(sphere, sphereLocation);
         coordinator.AddComponent(sphere, ParentComponent(m_Sun));
-        auto sphereRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "spot-light-sphere", 1.0, true);
-        sphereRender.shader = m_Shader;
+        auto sphereRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "spot-light-sphere", materials.meshMaterial.get());
         coordinator.AddComponent(sphere, sphereRender);
         m_SphereZ = sphere;
     }
@@ -64,8 +58,7 @@ void SpotLightSceneTool::onAttach() {
         sphereLocation.rotation.x = 1.57f;
         coordinator.AddComponent(sphere, sphereLocation);
         coordinator.AddComponent(sphere, ParentComponent(m_Sun));
-        auto sphereRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "spot-light-sphere", 1.0, true);
-        sphereRender.shader = m_Shader;
+        auto sphereRender = Render3DComponent(Configs::c_EditToolsModelPrefix + "spot-light-sphere", materials.meshMaterial.get());
         coordinator.AddComponent(sphere, sphereRender);
         m_SphereX = sphere;
     }
@@ -123,12 +116,6 @@ void SpotLightSceneTool::onUpdate() {
         sphereRender.scale = glm::vec3(distance);
         sphereRender.updated = true;
     }
-
-    const auto &camera = Application::get().getCamera();
-    m_Shader->bind();
-    m_Shader->setMatrix4("u_view", camera.viewMatrix());
-    m_Shader->setMatrix4("u_projection", camera.projectionMatrix());
-    m_Shader->unbind();
 }
 
 void SpotLightSceneTool::show() {

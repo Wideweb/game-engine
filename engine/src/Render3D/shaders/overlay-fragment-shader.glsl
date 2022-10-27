@@ -13,10 +13,6 @@ struct Material {
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
-uniform int u_hasMaterial;
-uniform Material u_material;
-
-uniform int u_useColor;
 uniform vec3 u_color;
 
 /////////////////////////////////////////////////////////////
@@ -37,13 +33,5 @@ layout(location = 1) out int o_id;
 /////////////////////////////////////////////////////////////
 void main() {
     o_id = v_id;
-
-    vec3 color = v_color;
-    if (u_useColor > 0) {
-        color = u_color;
-    } else if (u_hasMaterial > 0) {
-        color = texture(u_material.specular, v_texCoord).rgb;
-    }
-
-    o_fragColor = vec4(color, 1.0);
+    o_fragColor = vec4(v_color, 1.0);
 }

@@ -19,8 +19,6 @@ class CameraDirector : public BaseView {
     glm::vec3 m_CameraPosition;
     bool m_CameraSelected;
 
-    std::shared_ptr<Shader> m_Shader;
-
   public:
     CameraDirector(GameObjectModel &model);
 

@@ -9,12 +9,14 @@
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "Viewport.hpp"
+#include "Material.hpp"
 
 namespace Engine {
 
 class DeferredRenderer {
   private:
     Shader m_Shader;
+    Material m_Material;
 
     QuadRenderer &m_QuadRenderer;
     DirectedLightRenderer &m_DirectedLightRenderer;

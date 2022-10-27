@@ -27,7 +27,7 @@ void StaticRender3DSystem::Update(ComponentManager &components) const {
         model = model * glm::toMat4(glm::quat(location.rotation));
         model = glm::scale(model, glm::vec3(render.scale));
 
-        scene.addStaticObject(entity, render.model, model);
+        // scene.addStaticObject(entity, render.model, model);
         coordinator.RemoveComponent<StaticRender3DComponent>(entity);
     }
 }

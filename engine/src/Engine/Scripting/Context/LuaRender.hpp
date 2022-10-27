@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include <lua.hpp>
 
 namespace Engine {
 

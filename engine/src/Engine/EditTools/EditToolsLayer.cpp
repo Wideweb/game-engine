@@ -35,6 +35,9 @@ void EditToolsLayer::onAttach() {
     m_SceneTools[1] = {std::make_unique<DirectedLightDirector>(m_GameObject),
                        [&]() { return Application::get().getTime().poused(); }};
 
+    m_SceneTools[2] = {std::make_unique<MapViewer>(),
+                       [&]() { return Application::get().getTime().poused(); }};
+
     for (auto &tool : m_SceneTools) {
         tool.view->onAttach();
         tool.view->hide();

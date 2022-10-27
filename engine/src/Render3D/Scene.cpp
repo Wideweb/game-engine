@@ -8,50 +8,55 @@ void Scene::setSkybox(const std::shared_ptr<Skybox> skybox) { m_Skybox = skybox;
 
 std::shared_ptr<Skybox> Scene::getSkybox() { return m_Skybox; }
 
-uint32_t Scene::addOverlayObject(uint32_t id, const std::string &model, glm::mat4 position,
-                                 std::shared_ptr<Shader> shader) {
-    m_OverlayObjects[model].create(id, std::move(position), false);
-    m_OverlayObjects[model].update(id, shader);
+uint32_t Scene::addStaticObject(uint32_t id, const std::string &model, const glm::mat4& position, Material* material) {
+    return addObject(id, model, position, material);
+}
+
+uint32_t Scene::addObject(uint32_t id, const std::string &model, const glm::mat4& position, Material* material) {
+    if (!m_Objects.hasKey(material)) {
+        m_Objects.emplace(material);
+    }
+
+    if (!m_Objects[material].hasKey(model)) {
+        m_Objects[material].emplace(model, std::make_shared<ModelInstanceBatch>());
+    }
+
+    m_Objects[material][model]->create(id, position);
+
+    m_IdToMaterial[id] = material;
+    m_IdToModel[id] = model;
+
     return id;
 }
 
-void Scene::removeOverlayObject(uint32_t id, const std::string &model) { m_OverlayObjects[model].remove(id); }
+void Scene::removeObject(uint32_t id) {
+    Material* material = m_IdToMaterial[id];
+    const std::string& model = m_IdToModel[id];
 
-void Scene::updateOverlayObject(uint32_t id, const std::string &model, glm::mat4 position,
-                                std::shared_ptr<Shader> shader) {
-    m_OverlayObjects[model].update(id, std::move(position));
-    m_OverlayObjects[model].update(id, shader);
+    m_Objects[material][model]->remove(id);
+    if (m_Objects[material][model]->empty()) {
+        m_Objects[material].remove(model);
+
+        if (m_Objects[material].empty()) {
+            m_Objects.remove(material);
+        }
+    }
+
+    m_IdToMaterial.erase(id);
+    m_IdToModel.erase(id);
 }
 
-Scene::ObjectsRange Scene::getOverlayObjects() { return {m_OverlayObjects.begin(), m_OverlayObjects.end()}; }
-
-uint32_t Scene::addStaticObject(uint32_t id, const std::string &model, glm::mat4 position) {
-    m_Objects[model].create(id, std::move(position), true);
-    return id;
+void Scene::updateObject(uint32_t id, const std::string &model, const glm::mat4& position, Material* material) {
+    removeObject(id);
+    addObject(id, model, position, material);
 }
 
-uint32_t Scene::addObject(uint32_t id, const std::string &model, glm::mat4 position, std::shared_ptr<Shader> shader) {
-    m_Objects[model].create(id, std::move(position), false);
-    m_Objects[model].update(id, shader);
-    return id;
+void Scene::updateObject(uint32_t id, const std::vector<glm::mat4>& joints) {
+    Material* material = m_IdToMaterial[id];
+    const std::string& model = m_IdToModel[id];
+
+    m_Objects[material][model]->update(id, joints);
 }
-
-void Scene::removeObject(uint32_t id, const std::string &model) { m_Objects[model].remove(id); }
-
-void Scene::updateObject(uint32_t id, const std::string &model, glm::mat4 position, std::shared_ptr<Shader> shader) {
-    m_Objects[model].update(id, std::move(position));
-    m_Objects[model].update(id, shader);
-}
-
-void Scene::updateObject(uint32_t id, const std::string &model, std::vector<glm::mat4> joints) {
-    m_Objects[model].update(id, std::move(joints));
-}
-
-void Scene::updateObject(uint32_t id, const std::string &model, std::shared_ptr<Shader> shader) {
-    m_Objects[model].update(id, shader);
-}
-
-Scene::ObjectsRange Scene::getObjects() { return {m_Objects.begin(), m_Objects.end()}; }
 
 void Scene::setDirectedLight(const DirectedLight &light, glm::vec3 position, glm::quat rotation) {
     m_DirectedLight = {light, position, rotation};
@@ -80,7 +85,7 @@ void Scene::updateSpotLight(uint32_t id, const SpotLight &light, glm::vec3 posit
 
 const std::vector<SceneSpotLight> &Scene::getSpotLights() const { return m_SpotLights.values(); }
 
-uint32_t Scene::addParticlesEmitter(uint32_t id, ParticlesConfiguration config, glm::mat4 position) {
+uint32_t Scene::addParticlesEmitter(uint32_t id, ParticlesConfiguration config, const glm::mat4& position) {
     m_ParticleEmitters.emplace(id);
     auto &instance = m_ParticleEmitters[id];
     instance.particles.setUp(config);
@@ -94,7 +99,7 @@ void Scene::removeParticlesEmitter(uint32_t id) {
     m_ParticleEmitters.remove(id);
 }
 
-void Scene::updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &config, glm::mat4 position,
+void Scene::updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &config, const glm::mat4& position,
                                    double deltaTime) {
     auto &instance = m_ParticleEmitters[id];
 
@@ -109,17 +114,17 @@ void Scene::updateParticlesEmitter(uint32_t id, const ParticlesConfiguration &co
 
 const std::vector<SceneParticles> &Scene::getParticleEmitters() const { return m_ParticleEmitters.values(); }
 
-uint32_t Scene::addText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
-                        glm::mat4 ndcTransform, glm::vec3 color) {
+uint32_t Scene::addText(uint32_t id, std::string text, std::shared_ptr<Font> font, const glm::mat4& transform,
+                        const glm::mat4& ndcTransform, glm::vec3 color) {
     m_Texts.add(id, {id, text, font, transform, ndcTransform, color});
     return id;
 }
 
 void Scene::removeText(uint32_t id) { m_Texts.remove(id); }
 
-void Scene::updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, glm::mat4 transform,
-                       glm::mat4 ndcTransform, glm::vec3 color) {
-    auto &instance = m_Texts[id];
+void Scene::updateText(uint32_t id, std::string text, std::shared_ptr<Font> font, const glm::mat4& transform,
+                       const glm::mat4& ndcTransform, glm::vec3 color) {
+    auto& instance = m_Texts[id];
     instance.text = text;
     instance.font = font;
     instance.transform = transform;

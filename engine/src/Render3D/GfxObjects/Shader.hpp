@@ -3,7 +3,9 @@
 #include "GfxObject.hpp"
 #include "Texture.hpp"
 
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 #include <string>
 #include <unordered_map>
@@ -16,6 +18,32 @@ using ShaderId = GfxObjectId;
 constexpr ShaderId c_NoShader = 0;
 
 class Shader : public GfxObject {
+  public:
+    struct Property {
+      enum class Type {
+        INT1,
+        FLOAT1,
+        FLOAT2,
+        FLOAT3,
+        FLOAT4,
+        MATRIX4,
+        TEXTURE
+      };
+
+      union Value {
+        int32_t int1;
+        float float1;
+        glm::vec2 float2;
+        glm::vec3 float3;
+        glm::vec4 float4;
+        glm::mat4 matrix4;
+        const Texture* texture;
+      };
+
+      Type type;
+      Value value;
+   };
+
   private:
     std::unordered_map<std::string, int> m_UniformLocationMap;
     std::unordered_map<std::string, int> m_TextureIndex;
@@ -38,6 +66,7 @@ class Shader : public GfxObject {
     void unbind() const override;
     void free() override;
 
+    void set(const std::string &name, const Property property);
     void setInt(const std::string &name, int value);
     void setFloat(const std::string &name, float value);
     void setFloat2(const std::string &name, float value1, float value2);
@@ -49,6 +78,7 @@ class Shader : public GfxObject {
     void setMatrix2x3(const std::string &name, const std::vector<float> &matrix);
     void setMatrix2(const std::string &name, const std::vector<float> &matrix);
     void setTexture(const std::string &name, const Texture &texture);
+    void setTexture(const std::string &name, const Texture *texture);
 
   private:
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc,

@@ -25,10 +25,8 @@ class DirectedLightRenderer {
     DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRender);
     ~DirectedLightRenderer();
 
-    void apply(Camera &camera, Shader &shader, Scene &scene, const ModelManager &models, RendererState &state);
+    void apply(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state);
     void resize();
-
-    const Texture &depthMap() { return m_DepthMap; }
 };
 
 } // namespace Engine

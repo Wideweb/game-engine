@@ -3,6 +3,7 @@
 #include "LuaEntity.hpp"
 #include "LuaInput.hpp"
 #include "LuaRender.hpp"
+#include "LuaResources.hpp"
 
 #include <stdexcept>
 
@@ -14,6 +15,7 @@ EntryScript::EntryScript(std::string path, LuaLayer layer) : m_Layer(layer) {
 
     LuaCore::add(L);
     LuaInput::add(L);
+    LuaResources::add(L);
     LuaRender::add(L);
     LuaEntity::add(L);
     LuaLayer::add(L);
