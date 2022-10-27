@@ -99,6 +99,7 @@ set(SOURCE_EXE
     src/Render3D/CameraController.cpp
     src/Render3D/Models/Material.cpp
     src/Render3D/Models/Mesh.cpp
+    src/Render3D/Models/Model3D.cpp
     src/Render3D/Models/InstancedModel.cpp
     src/Render3D/Models/SkinnedMesh.cpp
     src/Render3D/Models/SkinnedModel.cpp

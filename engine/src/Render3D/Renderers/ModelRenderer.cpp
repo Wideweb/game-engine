@@ -17,9 +17,9 @@ void ModelRenderer::draw(Scene &scene, const ModelManager &models, Material* bas
         Material* material = materials[i];
         auto& materialInstances = modelsInstances[i];
 
-        if (activeShader != nullptr) {
+        if (activeShader == nullptr) {
             material->bind();
-            baseMaterial->apply();
+            baseMaterial->apply(material->getShader());
             material->apply();
 
             if (material->getDepthTest()) {

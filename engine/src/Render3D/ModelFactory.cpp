@@ -78,12 +78,12 @@ std::shared_ptr<Model> ModelFactory::createCube(float left, float right, float b
     Render3D::Utils::tbn(vertices);
 
     Mesh mesh(vertices);
-    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
+    auto model = std::shared_ptr<Model>(new Model3D({mesh}));
     model->setUp();
     return model;
 }
 
-std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int columns, int rows, bool centered) {
+std::shared_ptr<Model3D> ModelFactory::createPlane(float tileSize, int columns, int rows, bool centered) {
     // clang-format off
     glm::vec2 center = glm::vec2(0.0f, 0.0f);
 
@@ -133,7 +133,7 @@ std::shared_ptr<InstancedModel> ModelFactory::createPlane(float tileSize, int co
     Render3D::Utils::tbn(vertices, indices);
 
     Mesh mesh(vertices, indices);
-    auto model = std::shared_ptr<InstancedModel>(new InstancedModel({mesh}));
+    auto model = std::shared_ptr<Model3D>(new Model3D({mesh}));
     model->setUp();
     return model;
 }
@@ -221,7 +221,7 @@ std::shared_ptr<Model> ModelFactory::createCircle(float radius, int segments, fl
     Render3D::Utils::tbn(vertices, indices);
 
     Mesh mesh(vertices, indices);
-    auto model = std::shared_ptr<Model>(new InstancedModel({mesh}));
+    auto model = std::shared_ptr<Model>(new Model3D({mesh}));
     model->setUp();
     return model;
 }
@@ -314,7 +314,7 @@ std::shared_ptr<Model> ModelFactory::createFrastum(float fieldOfView, float near
     Render3D::Utils::tbn(vertices, indices);
 
     Mesh mesh(std::move(vertices), indices);
-    auto model = std::shared_ptr<Model>(new InstancedModel({std::move(mesh)}));
+    auto model = std::shared_ptr<Model>(new Model3D({std::move(mesh)}));
     model->setUp();
     return model;
 }

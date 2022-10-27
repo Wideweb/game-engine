@@ -24,12 +24,14 @@ class  Material {
     Material(Shader* shader);
 
     void bind();
-    void apply();
+    void apply(Shader* shader = nullptr);
 
     void setDepthTest(bool depthTest) { m_DepthTest = depthTest; }
     bool getDepthTest() { return m_DepthTest; }
 
     void setShader(Shader* shader);
+    Shader* getShader() const { return m_Shader; }
+
     bool setInt(const std::string& name, int32_t value);
     bool setFloat(const std::string& name, float value);
     bool setFloat2(const std::string& name, glm::vec2 value);

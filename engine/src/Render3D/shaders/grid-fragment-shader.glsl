@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////
 uniform sampler2D u_colorBuffer;
 uniform vec3 u_viewPos;
-uniform float u_far;
+uniform float u_farPlane;
 
 /////////////////////////////////////////////////////////////
 //////////////////////// VARYING ////////////////////////////
@@ -34,7 +34,7 @@ void main() {
     float angleFactor = max(pow(dot(v_normal, viewDir), 2), 0.1);
 
     float distanceToCamera = length(v_fragCameraPosition);
-    float farPlaneFactor = clamp(1.0 - distanceToCamera / u_far, 0.0, 1.0);
+    float farPlaneFactor = clamp(1.0 - distanceToCamera / u_farPlane, 0.0, 1.0);
 
     float border = 0.01 / farPlaneFactor;
     float fade = 0.01 / angleFactor / farPlaneFactor;

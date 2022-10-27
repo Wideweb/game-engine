@@ -32,11 +32,12 @@ void MapViewer::onAttach() {
 
     m_ColorBufferData.resize(map.width * map.height * 4);
     for (int i = 0; i < map.width * map.height * 4; i++) {
-        m_ColorBufferData[i] = 0x00;
+        m_ColorBufferData[i] = 0xFF;
     }
     m_ColorBuffer = Texture::createRGBA8Buffer(map.width, map.height, m_ColorBufferData.data());
 
     materials.gridMaterial->setTexture("u_colorBuffer", &m_ColorBuffer);
+    materials.gridMaterial->setFloat("u_farPlane", Application::get().getCamera().getZFar());
 }
 
 void MapViewer::onDraw() { }

@@ -12,9 +12,10 @@ void Material::bind() {
     }
 }
 
-void Material::apply() {
+void Material::apply(Shader* shader) {
+    Shader* usedShader = shader == nullptr ? m_Shader : shader;
     for (size_t i = 0; i < m_Properties.size(); i++) {
-        m_Shader->set(m_Properties.keys()[i], m_Properties.values()[i]);
+        usedShader->set(m_Properties.keys()[i], m_Properties.values()[i]);
     }
 }
 

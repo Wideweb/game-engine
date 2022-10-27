@@ -56,7 +56,7 @@ void DeferredRenderer::doDraw(Texture &colorMap, Texture &positionMap, Texture &
         m_DirectedLightRenderer.apply(camera, scene, models, state);
         state.baseMaterial = baseMaterial;
         m_Shader.bind();
-        m_Material.apply();
+        m_Material.apply(&m_Shader);
     }
 
     m_Shader.setTexture("u_colorMap", colorMap);

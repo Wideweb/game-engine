@@ -25,10 +25,10 @@ void Model3D::update() {
 }
 
 void Model3D::draw(ModelInstanceBatch* batch, Shader* activeShader) {
-    setInstances(batch.positions(), instances.ids());
+    setInstances(batch->positions(), batch->ids());
 
     for (const auto &mesh : meshes) {
-        mesh.draw(batch.size());
+        mesh.draw(batch->size());
     }
 }
 
