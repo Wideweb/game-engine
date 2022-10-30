@@ -2,6 +2,7 @@
 
 #include "GfxObject.hpp"
 #include "Texture.hpp"
+#include "FlatDictionary.hpp"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -21,6 +22,7 @@ class Shader : public GfxObject {
   public:
     struct Property {
       enum class Type {
+        UNKNOWN,
         INT1,
         FLOAT1,
         FLOAT2,
@@ -42,11 +44,18 @@ class Shader : public GfxObject {
 
       Type type;
       Value value;
+      bool empty;
+
+      Property(): type(Type::UNKNOWN), empty(true) {}
+      Property(Type type): type(type), empty(true) {
+        value.texture = nullptr;
+      }
    };
 
   private:
     std::unordered_map<std::string, int> m_UniformLocationMap;
     std::unordered_map<std::string, int> m_TextureIndex;
+    FlatDictionary<std::string, Shader::Property::Type> m_Uniforms;
 
   public:
     Shader();
@@ -80,12 +89,18 @@ class Shader : public GfxObject {
     void setTexture(const std::string &name, const Texture &texture);
     void setTexture(const std::string &name, const Texture *texture);
 
+    const std::vector<std::string>& uniformKeys() const { return m_Uniforms.keys(); };
+    const std::vector<Shader::Property::Type>& uniformTypes() const { return m_Uniforms.values(); };
+
   private:
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc,
                  std::vector<std::string> transformFeedbackVaryings);
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc);
     unsigned int compileShader(unsigned int type, const std::string &source);
+    void readUniforms();
     int getUniformLocation(const std::string &name);
+
+    static Shader::Property::Type fromNativeType(int type);
 };
 
 } // namespace Engine

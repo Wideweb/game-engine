@@ -154,6 +154,10 @@ void ModelRenderPanel::showMaterialProperties(Material* material) {
         case Shader::Property::Type::FLOAT1:
             showFloatProperty(material, propertyName);
             break;
+
+        case Shader::Property::Type::INT1:
+            showIntProperty(material, propertyName);
+            break;
         
         default:
             break;
@@ -206,6 +210,18 @@ void ModelRenderPanel::showFloatProperty(Material* material, const std::string& 
 
     if (valueNew != valueOld) {
         material->setFloat(propertyName, valueNew);
+    }
+}
+
+void ModelRenderPanel::showIntProperty(Material* material, const std::string& propertyName) {
+    int valueOld = material->getProperty(propertyName).value.int1;
+    int valueNew = valueOld;
+
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::InputInt(propertyName.c_str(), &valueNew);
+
+    if (valueNew != valueOld) {
+        material->setInt(propertyName, valueNew);
     }
 }
 

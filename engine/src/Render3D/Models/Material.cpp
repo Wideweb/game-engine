@@ -2,9 +2,14 @@
 
 namespace Engine {
 
-Material::Material() {}
+Material::Material(): m_Shader(nullptr) {}
 
-Material::Material(Shader* shader): m_Shader(shader) {}
+Material::Material(Shader* shader): m_Shader(shader) {
+    size_t uniformsNumber = shader->uniformKeys().size();
+    for (size_t i = 0; i < uniformsNumber; i++) {
+        addProperty(shader->uniformKeys()[i], {shader->uniformTypes()[i]});
+    }
+}
 
 void Material::bind() {
     if (m_Shader != nullptr) {
@@ -15,7 +20,12 @@ void Material::bind() {
 void Material::apply(Shader* shader) {
     Shader* usedShader = shader == nullptr ? m_Shader : shader;
     for (size_t i = 0; i < m_Properties.size(); i++) {
-        usedShader->set(m_Properties.keys()[i], m_Properties.values()[i]);
+        auto& property = m_Properties.values()[i];
+        if (property.empty) {
+            continue;
+        }
+
+        usedShader->set(m_Properties.keys()[i], property);
     }
 }
 
@@ -74,10 +84,15 @@ bool Material::setTexture(const std::string& name, const Texture* value) {
 
 bool Material::setPropertyValue(const std::string& name, Shader::Property property) {
     if (!m_Properties.hasKey(name)) {
-        addProperty(name, property);
-        return true;
+        if (m_Shader == nullptr) {
+            addProperty(name, property);
+        } else {
+            std::cerr << "Material property type is unknown: " << name << "\n";
+            return false;
+        }
     }
     auto& currentProperty = m_Properties[name];
+    currentProperty.empty = false;
     if (currentProperty.type != property.type) {
         return true;
     }

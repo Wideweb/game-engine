@@ -2,37 +2,35 @@
 
 #include "File.hpp"
 
-#include <stdexcept>
-
 namespace Engine {
 
 void Shaders::init() {
-    auto vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/direct-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/direct-vertex-shader.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/direct-fragment-shader.glsl");
     defaultShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::read("./shaders/direct-fragment-shader-spot-light.glsl");
+    fragmentSrc = File::readGLSL("./shaders/direct-fragment-shader-spot-light.glsl");
     phongShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::read("./shaders/direct-fragment-shader-pbr.glsl");
+    fragmentSrc = File::readGLSL("./shaders/direct-fragment-shader-pbr.glsl");
     pbrShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    auto geometrySrc = File::read("./shaders/overlay-geometry-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/overlay-vertex-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/overlay-fragment-shader.glsl");
+    auto geometrySrc = File::readGLSL("./shaders/overlay-geometry-shader.glsl");
     meshShader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
 
-    vertexSrc = File::read("./shaders/overlay-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/overlay-fragment-shader.glsl");
-    geometrySrc = File::read("./shaders/edge-geometry-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/overlay-vertex-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/overlay-fragment-shader.glsl");
+    geometrySrc = File::readGLSL("./shaders/edge-geometry-shader.glsl");
     cubeEdgesShader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
 
-    vertexSrc = File::read("./shaders/grid-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/grid-fragment-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/grid-vertex-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/grid-fragment-shader.glsl");
     gridShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/brush-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/brush-fragment-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/brush-vertex-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/brush-fragment-shader.glsl");
     terrainBrushShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
     m_Map.insert({"default", defaultShader});

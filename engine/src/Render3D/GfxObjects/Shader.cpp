@@ -119,6 +119,8 @@ void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSr
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    readUniforms();
 }
 
 void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSrc, const std::string &geometrySrc) {
@@ -171,6 +173,8 @@ void Shader::compile(const std::string &vertexSrc, const std::string &fragmentSr
     glDeleteShader(vertexShader);
     glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
+
+    readUniforms();
 }
 
 GLuint Shader::compileShader(unsigned int type, const std::string &source) {
@@ -196,6 +200,61 @@ GLuint Shader::compileShader(unsigned int type, const std::string &source) {
     }
 
     return shader;
+}
+
+void Shader::readUniforms() {
+    GLint count;
+    GLint size; // size of the variable
+    GLenum type; // type of the variable (float, vec3 or mat4, etc)
+    const GLsizei bufSize = 32; // maximum name length
+    GLchar name[bufSize]; // variable name in GLSL
+    GLsizei length; // name length
+
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
+    for (GLuint i = 0; i < count; i++) {
+        glGetActiveUniform(id, i, bufSize, &length, &size, &type, name);
+        m_Uniforms.add(std::string(name), fromNativeType(type));
+    }
+}
+
+Shader::Property::Type Shader::fromNativeType(int type) {
+    switch (type)
+    {
+    case GL_INT:
+    case GL_UNSIGNED_INT_SAMPLER_2D:
+        return Property::Type::INT1;
+    case GL_FLOAT:
+        return Property::Type::FLOAT1;
+    case GL_FLOAT_VEC2:
+        return Property::Type::FLOAT2;
+    case GL_FLOAT_VEC3:
+        return Property::Type::FLOAT3;
+    case GL_FLOAT_VEC4:
+        return Property::Type::FLOAT4;
+    case GL_FLOAT_MAT4:
+        return Property::Type::MATRIX4;
+    case GL_SAMPLER_2D:
+        return Property::Type::TEXTURE;
+    case GL_SAMPLER_CUBE:
+        return Property::Type::TEXTURE;
+    }
+
+    // GL_BOOL 0x8B56
+
+    std::cerr << "Shader property type is unknown: " << type << "\n";
+    return Property::Type::UNKNOWN;
+
+        // #define GL_INT_VEC2 0x8B53
+        // #define GL_INT_VEC3 0x8B54
+        // #define GL_INT_VEC4 0x8B55
+
+        // #define GL_BOOL 0x8B56
+        // #define GL_BOOL_VEC2 0x8B57
+        // #define GL_BOOL_VEC3 0x8B58
+        // #define GL_BOOL_VEC4 0x8B59
+
+        // #define GL_FLOAT_MAT2 0x8B5A
+        // #define GL_FLOAT_MAT3 0x8B5B
 }
 
 void Shader::set(const std::string &name, const Property property) {
@@ -300,6 +359,10 @@ void Shader::setTexture(const std::string &name, const Texture& texture) {
 }
 
 void Shader::setTexture(const std::string &name, const Texture* texture) {
+    if (texture == nullptr) {
+        return;
+    }
+
     GLint location = getUniformLocation(name);
     if (location == -1) {
         return;
