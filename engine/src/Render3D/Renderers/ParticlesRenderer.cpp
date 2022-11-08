@@ -12,8 +12,8 @@
 namespace Engine {
 
 ParticlesRenderer::ParticlesRenderer() {
-    auto vertexSrc = File::read("./shaders/particles-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/particles-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/particles.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/particles.fragment.glsl");
 
     std::vector<std::string> transformFeedbackVaryings = {"v_startPosition", "v_startVelocity", "v_position",
                                                           "v_velocity", "v_startTime"};

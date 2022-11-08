@@ -8,20 +8,15 @@ namespace Engine {
 void Materials::init(const Shaders& shaders) {
     defaultMaterial = std::make_shared<Material>(shaders.defaultShader.get());
     m_Map.insert({"default", defaultMaterial});
-    
-    phongMaterial = std::make_shared<Material>(shaders.phongShader.get());
-    m_Map.insert({"phong", phongMaterial});
-    
-    pbrMaterial = std::make_shared<Material>(shaders.pbrShader.get());
-    m_Map.insert({"pbr", pbrMaterial});
+
+    sceneToolMaterial = std::make_shared<Material>(shaders.sceneToolShader.get());
+    m_Map.insert({"sceneTool", sceneToolMaterial});
 
     meshMaterial = std::make_shared<Material>(shaders.meshShader.get());
-    meshMaterial->setDepthTest(false);
     meshMaterial->addFloat3("u_color", glm::vec3(0.0f, 1.0f, 0.0f));
     m_Map.insert({"mesh", meshMaterial});
 
     cubeEdgesMaterial = std::make_shared<Material>(shaders.cubeEdgesShader.get());
-    cubeEdgesMaterial->setDepthTest(false);
     m_Map.insert({"cubeEdges", cubeEdgesMaterial});
 
     gridMaterial = std::make_shared<Material>(shaders.gridShader.get());

@@ -1,0 +1,56 @@
+#version 330 core
+
+/////////////////////////////////////////////////////////////
+/////////////////////// DECLARATION /////////////////////////
+/////////////////////////////////////////////////////////////
+#define PHONG
+#define NOMRAL_MAPPING
+
+/////////////////////////////////////////////////////////////
+//////////////////////// ATTRIBUTES /////////////////////////
+/////////////////////////////////////////////////////////////
+layout(location = 1) in mat4 a_model;
+layout(location = 5) in vec3 a_vertexPosition;
+layout(location = 6) in vec3 a_vertexNormal;
+layout(location = 7) in vec2 a_vertexTextureCoord;
+layout(location = 8) in vec3 a_vertexTangent;
+layout(location = 9) in vec3 a_vertexBitangent;
+layout(location = 10) in vec3 a_vertexColor;
+
+/////////////////////////////////////////////////////////////
+//////////////////////// UNIFORMS ///////////////////////////
+/////////////////////////////////////////////////////////////
+uniform mat4 u_view;
+uniform mat4 u_projection;
+uniform mat4 u_currViewProjection;
+uniform mat4 u_prevViewProjection;
+
+/////////////////////////////////////////////////////////////
+///////////////////////// VARYING ///////////////////////////
+/////////////////////////////////////////////////////////////
+out vec3 v_color;
+out vec2 v_texCoord;
+out vec4 v_fragPos;
+out vec4 v_currPos;
+out vec4 v_prevPos;
+
+#include "lib/normal/vertex.glsl"
+#include "lib/skelet/vertex.glsl"
+
+/////////////////////////////////////////////////////////////
+////////////////////////// MAIN /////////////////////////////
+/////////////////////////////////////////////////////////////
+void main() {
+    mat4 worldPos = a_model * getSkeletVertexTransform();
+    vec4 positionRelativeToCamera = u_view * worldPos * vec4(a_vertexPosition, 1.0);
+
+    gl_Position = u_projection * positionRelativeToCamera;
+    v_color = a_vertexColor;
+    v_texCoord = a_vertexTextureCoord;
+    v_fragPos = worldPos * vec4(a_vertexPosition, 1.0);
+
+    handleNormal(worldPos, a_vertexTangent, a_vertexNormal);
+
+    v_currPos = u_currViewProjection * v_fragPos;
+	v_prevPos = u_prevViewProjection * v_fragPos;
+}

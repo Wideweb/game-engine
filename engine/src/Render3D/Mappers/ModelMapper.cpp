@@ -73,7 +73,7 @@ std::shared_ptr<Model> ModelMapper::map(const aiScene *scene) {
         return m_Model;
     }
 
-    auto model = std::make_shared<InstancedModel>();
+    auto model = std::make_shared<Model3D>();
     model->meshes.resize(m_Model->meshes.size());
     for (size_t i = 0; i < m_Model->meshes.size(); i++) {
         auto &mesh = model->meshes[i];

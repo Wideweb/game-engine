@@ -12,8 +12,8 @@
 namespace Engine {
 
 FontRenderer::FontRenderer(Viewport &viewport) : m_Viewport(viewport) {
-    auto vertexSrc = File::read("./shaders/font-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/font-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/font.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/font.fragment.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
 
     glGenVertexArrays(1, &m_VAO);

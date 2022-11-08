@@ -2,6 +2,7 @@
 
 #include "Camera.hpp"
 #include "DirectedLightRenderer.hpp"
+#include "SpotLightRenderer.hpp"
 #include "Framebuffer.hpp"
 #include "QuadRenderer.hpp"
 #include "RenderSettings.hpp"
@@ -20,9 +21,10 @@ class DeferredRenderer {
 
     QuadRenderer &m_QuadRenderer;
     DirectedLightRenderer &m_DirectedLightRenderer;
+    SpotLightRenderer &m_SpotLightRenderer;
 
   public:
-    DeferredRenderer(DirectedLightRenderer &directedLightRenderer, QuadRenderer &quadRenderer);
+    DeferredRenderer(DirectedLightRenderer &directedLightRenderer, SpotLightRenderer &spotLightRenderer, QuadRenderer &quadRenderer);
     ~DeferredRenderer();
 
     void draw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap, Camera &camera,

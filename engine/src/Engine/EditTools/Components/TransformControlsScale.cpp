@@ -61,7 +61,7 @@ void TransformControlsScale::onAttach() {
     }
 
     auto controlX = coordinator.CreateEntity("modelAxis-x");
-    auto renderX = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-x", materials.defaultMaterial.get(), 0.1f);
+    auto renderX = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-x", materials.sceneToolMaterial.get(), 0.1f);
     renderX.rotation = glm::vec3(0.0f, 0.0f, -1.57f);
     coordinator.AddComponent(controlX, renderX);
     coordinator.AddComponent(controlX, LocationComponent());
@@ -70,7 +70,7 @@ void TransformControlsScale::onAttach() {
     m_ControlX = controlX;
 
     auto controlY = coordinator.CreateEntity("modelAxis-y");
-    auto renderY = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-y", materials.defaultMaterial.get(), 0.1f);
+    auto renderY = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-y", materials.sceneToolMaterial.get(), 0.1f);
     renderY.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, renderY);
     coordinator.AddComponent(controlY, LocationComponent());
@@ -79,7 +79,7 @@ void TransformControlsScale::onAttach() {
     m_ControlY = controlY;
 
     auto controlZ = coordinator.CreateEntity("modelAxis-z");
-    auto renderZ = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-z", materials.defaultMaterial.get(), 0.1f);
+    auto renderZ = Render3DComponent(Configs::c_EditToolsModelPrefix + "scale-z", materials.sceneToolMaterial.get(), 0.1f);
     renderZ.rotation = glm::vec3(1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, renderZ);
     coordinator.AddComponent(controlZ, LocationComponent());

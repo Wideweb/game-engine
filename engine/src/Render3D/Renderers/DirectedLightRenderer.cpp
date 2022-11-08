@@ -13,8 +13,8 @@ namespace Engine {
 
 DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer)
     : m_Viewport(viewport), m_ModelRenderer(modelRenderer) {
-    auto vertexSrc = File::read("./shaders/depth-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/depth-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/depth.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/depth.fragment.glsl");
     m_DepthShader = Shader(vertexSrc, fragmentSrc);
 
     m_DepthMap = Texture::createDepthBuffer(viewport.width * 2.0f, viewport.height * 2.0f);
@@ -29,6 +29,13 @@ DirectedLightRenderer::~DirectedLightRenderer() {
     m_DepthShader.free();
     m_DepthMapFramebuffer.free();
     m_DepthMap.free();
+}
+
+void DirectedLightRenderer::prepareContext(RenderContext& context) {
+    for (size_t i = 0; i < 4; i++) {
+        std::string ref = "u_directedLights[" + std::to_string(i) + "].shadowMap";
+        context.baseMaterial.setTexture(ref, &m_DepthMap);
+    }
 }
 
 void DirectedLightRenderer::apply(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state) {
@@ -64,16 +71,18 @@ void DirectedLightRenderer::apply(Camera &camera, Scene &scene, const ModelManag
 
     state.framebuffer.bind();
     m_Viewport.resize(lastViewportWidth, lastViewportHeight);
+
+    state.baseMaterial->setInt("u_directedLights[0].pcf", light.pcf);
+    state.baseMaterial->setFloat("u_directedLights[0].biasFactor", light.biasFactor);
+    state.baseMaterial->setFloat("u_directedLights[0].biasMin", light.biasMin);
+    state.baseMaterial->setFloat3("u_directedLights[0].direction", direction);
+    state.baseMaterial->setFloat3("u_directedLights[0].ambient", light.ambient * light.intensity);
+    state.baseMaterial->setFloat3("u_directedLights[0].diffuse", light.diffuse * light.intensity);
+    state.baseMaterial->setFloat3("u_directedLights[0].specular", light.specular * light.intensity);
+    state.baseMaterial->setMatrix4("u_directedLights[0].spaceMatrix", lightProjection * lightView);
+    state.baseMaterial->setTexture("u_directedLights[0].shadowMap", &m_DepthMap);
     
-    state.baseMaterial->setInt("u_directedLight.pcf", light.pcf);
-    state.baseMaterial->setFloat("u_directedLight.biasFactor", light.biasFactor);
-    state.baseMaterial->setFloat("u_directedLight.biasMin", light.biasMin);
-    state.baseMaterial->setFloat3("u_directedLight.direction", direction);
-    state.baseMaterial->setFloat3("u_directedLight.ambient", light.ambient * light.intensity);
-    state.baseMaterial->setFloat3("u_directedLight.diffuse", light.diffuse * light.intensity);
-    state.baseMaterial->setFloat3("u_directedLight.specular", light.specular * light.intensity);
-    state.baseMaterial->setMatrix4("u_directedLight.spaceMatrix", lightProjection * lightView);
-    state.baseMaterial->setTexture("u_directedLight.shadowMap", &m_DepthMap);
+    state.baseMaterial->setInt("u_directedLightsNumber", 1);
 }
 
 void DirectedLightRenderer::resize() {

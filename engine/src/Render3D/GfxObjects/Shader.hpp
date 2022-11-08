@@ -29,7 +29,8 @@ class Shader : public GfxObject {
         FLOAT3,
         FLOAT4,
         MATRIX4,
-        TEXTURE
+        TEXTURE,
+        CUBE_MAP_TEXTURE
       };
 
       union Value {

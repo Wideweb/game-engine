@@ -1,19 +1,32 @@
 #include "Shaders.hpp"
+#include "Texture.hpp"
 
 #include "File.hpp"
 
 namespace Engine {
 
 void Shaders::init() {
-    auto vertexSrc = File::readGLSL("./shaders/direct-vertex-shader.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/direct-fragment-shader.glsl");
+    Texture defaultTexture = Texture::createR8Buffer(1, 1);
+    Texture defaultCubeMapTexture = CubeMapTexture::createCubeDepthBuffer(1, 1);
+
+    auto vertexSrc = File::readGLSL("./shaders/pass/direct.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/direct.fragment.glsl");
     defaultShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::readGLSL("./shaders/direct-fragment-shader-spot-light.glsl");
-    phongShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
+    vertexSrc = File::readGLSL("./shaders/pass/utils/scene-tool.vertex.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/utils/scene-tool.fragment.glsl");
+    sceneToolShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::readGLSL("./shaders/direct-fragment-shader-pbr.glsl");
-    pbrShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
+    // size_t uniformsNumber = defaultShader->uniformKeys().size();
+    // for (size_t i = 0; i < uniformsNumber; i++) {
+    //     if (defaultShader->uniformTypes()[i] == Shader::Property::Type::TEXTURE) {
+    //         defaultShader->setTexture(defaultShader->uniformKeys()[i], defaultTexture);
+    //     }
+
+    //     if (defaultShader->uniformTypes()[i] == Shader::Property::Type::CUBE_MAP_TEXTURE) {
+    //         defaultShader->setTexture(defaultShader->uniformKeys()[i], defaultCubeMapTexture);
+    //     }
+    // }
 
     vertexSrc = File::readGLSL("./shaders/overlay-vertex-shader.glsl");
     fragmentSrc = File::readGLSL("./shaders/overlay-fragment-shader.glsl");
@@ -22,20 +35,18 @@ void Shaders::init() {
 
     vertexSrc = File::readGLSL("./shaders/overlay-vertex-shader.glsl");
     fragmentSrc = File::readGLSL("./shaders/overlay-fragment-shader.glsl");
-    geometrySrc = File::readGLSL("./shaders/edge-geometry-shader.glsl");
+    geometrySrc = File::readGLSL("./shaders/pass/utils/edge.geometry.glsl");
     cubeEdgesShader = std::make_shared<Shader>(vertexSrc, fragmentSrc, geometrySrc);
 
-    vertexSrc = File::readGLSL("./shaders/grid-vertex-shader.glsl");
-    fragmentSrc = File::readGLSL("./shaders/grid-fragment-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/pass/utils/grid.vertex.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/utils/grid.fragment.glsl");
     gridShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::readGLSL("./shaders/brush-vertex-shader.glsl");
-    fragmentSrc = File::readGLSL("./shaders/brush-fragment-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/pass/utils/brush.vertex.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/utils/brush.fragment.glsl");
     terrainBrushShader = std::make_shared<Shader>(vertexSrc, fragmentSrc);
 
     m_Map.insert({"default", defaultShader});
-    m_Map.insert({"phong", phongShader});
-    m_Map.insert({"pbr", pbrShader});
     m_Map.insert({"mesh", meshShader});
     m_Map.insert({"cubeEdges", cubeEdgesShader});
     m_Map.insert({"grid", gridShader});

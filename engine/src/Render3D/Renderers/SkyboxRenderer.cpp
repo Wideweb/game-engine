@@ -9,8 +9,8 @@
 namespace Engine {
 
 SkyboxRenderer::SkyboxRenderer() {
-    auto vertexSrc = File::read("./shaders/skybox-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/skybox-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/skybox.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/skybox.fragment.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 

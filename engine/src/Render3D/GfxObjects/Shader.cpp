@@ -195,7 +195,8 @@ GLuint Shader::compileShader(unsigned int type, const std::string &source) {
 
         glDeleteShader(shader);
 
-        std::cerr << "Error compiling shader(vertex)\n" << infoLog.data();
+        std::cerr << "Error compiling shader(vertex)\n" << infoLog.data() << "\n";
+        std::cerr << source << "\n";
         return 0;
     }
 
@@ -236,7 +237,7 @@ Shader::Property::Type Shader::fromNativeType(int type) {
     case GL_SAMPLER_2D:
         return Property::Type::TEXTURE;
     case GL_SAMPLER_CUBE:
-        return Property::Type::TEXTURE;
+        return Property::Type::CUBE_MAP_TEXTURE;
     }
 
     // GL_BOOL 0x8B56
@@ -279,6 +280,7 @@ void Shader::set(const std::string &name, const Property property) {
         setMatrix4(name, property.value.matrix4);
         break;
     case Property::Type::TEXTURE:
+    case Property::Type::CUBE_MAP_TEXTURE:
         setTexture(name, property.value.texture);
         break;
     }

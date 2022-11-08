@@ -11,8 +11,8 @@ namespace Engine {
 
 GRenderer::GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer, ParticlesRenderer &particlesRenderer)
     : m_ModelRenderer(modelRenderer), m_SkyboxRenderer(skyboxRenderer), m_ParticlesRenderer(particlesRenderer) {
-    auto vertexSrc = File::read("./shaders/g-buffer-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/g-buffer-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/g-buffer.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/g-buffer.fragment.glsl");
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 

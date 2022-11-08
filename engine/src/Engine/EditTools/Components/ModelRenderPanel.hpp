@@ -20,8 +20,9 @@ class ModelRenderPanel : public BaseView {
   private:
     void showMaterialProperties(Material* material);
     void showTextureProperty(Material* material, const std::string& propertyName);
-    void showFloatProperty(Material* material, const std::string& propertyName);
     void showIntProperty(Material* material, const std::string& propertyName);
+    void showFloatProperty(Material* material, const std::string& propertyName);
+    void showFloat3Property(Material* material, const std::string& propertyName);
 };
 
 } // namespace Engine

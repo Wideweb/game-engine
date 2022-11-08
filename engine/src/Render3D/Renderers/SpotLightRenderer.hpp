@@ -9,6 +9,7 @@
 #include "Shader.hpp"
 #include "SpotLight.hpp"
 #include "Viewport.hpp"
+#include "RenderContext.hpp"
 
 #include <glm/glm.hpp>
 
@@ -29,6 +30,7 @@ class SpotLightRenderer {
     SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer);
     ~SpotLightRenderer();
 
+    void prepareContext(RenderContext& context);
     void apply(const SpotLight &light, const glm::vec3 &position, Scene &scene,
                const ModelManager &models, RendererState &state);
     void clear();

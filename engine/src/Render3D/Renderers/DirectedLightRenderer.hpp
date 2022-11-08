@@ -9,6 +9,7 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Viewport.hpp"
+#include "RenderContext.hpp"
 
 namespace Engine {
 
@@ -25,6 +26,7 @@ class DirectedLightRenderer {
     DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRender);
     ~DirectedLightRenderer();
 
+    void prepareContext(RenderContext& context);
     void apply(Camera &camera, Scene &scene, const ModelManager &models, RendererState &state);
     void resize();
 };

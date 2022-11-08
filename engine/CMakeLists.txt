@@ -110,7 +110,6 @@ set(SOURCE_EXE
     src/Render3D/Renderers/MasterRenderer.cpp
     src/Render3D/Renderers/QuadRenderer.cpp
     src/Render3D/Renderers/ModelRenderer.cpp
-    src/Render3D/Renderers/OverlayRenderer.cpp
     src/Render3D/Renderers/SkyboxRenderer.cpp
     src/Render3D/Renderers/DirectedLightRenderer.cpp
     src/Render3D/Renderers/SpotLightRenderer.cpp

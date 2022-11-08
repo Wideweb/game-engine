@@ -28,11 +28,11 @@ function main(app)
     --     box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
     -- end
 
-    local box = app:createEntity("Box");
-    box:addLocationComponent(Core.LocationComponent(0.0, 0.0, 0.0));
-    box:addRender3DComponent(Core.Render3DComponent("box", 1.0));
-    box:addTagComponent(Core.TagComponent("platform"));
-    box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
+    -- local box = app:createEntity("Box");
+    -- box:addLocationComponent(Core.LocationComponent(0.0, 0.0, 0.0));
+    -- box:addRender3DComponent(Core.Render3DComponent("box", Resourses.Material.get("default"), 1.0));
+    -- box:addTagComponent(Core.TagComponent("platform"));
+    -- box:addStaticCollisionComponent(Core.StaticCollisionComponent(2.0, 2.0, 2.0));
 
     local messageContainer = app:createEntity("MessageContainer");
     local messageContainerLocation = Core.Location2DComponent(0.0, 1.0);

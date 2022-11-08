@@ -32,7 +32,7 @@ void DirectedLightDirector::onAttach() {
     auto sun = coordinator.CreateEntity("Directional Light");
     coordinator.AddComponent(sun, LocationComponent(glm::vec3(0.0f, 3.0f, -5.0f)));
     coordinator.AddComponent(sun, TagComponent("Directional Light"));
-    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Directional Light", materials.meshMaterial.get(), 0.2f);
+    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Directional Light", materials.sceneToolMaterial.get(), 0.2f);
     render.rotation.x = 1.57f;
     coordinator.AddComponent(sun, render);
     m_Sun = sun;

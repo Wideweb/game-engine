@@ -11,8 +11,8 @@ namespace Engine {
 
 FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     : m_Viewport(viewport), m_QuadRenderer(quadRenderer) {
-    auto vertexSrc = File::read("./shaders/screen-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/screen-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/screen-vertex-shader.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/screen-fragment-shader.glsl");
     auto m_LensShader = Shader(vertexSrc, fragmentSrc);
 
     m_LensFlares[0] = TextureLoader::loadTexture("./assets/textures/lensFlare/tex6.png");

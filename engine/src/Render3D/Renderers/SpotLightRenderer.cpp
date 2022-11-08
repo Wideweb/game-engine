@@ -9,9 +9,9 @@ namespace Engine {
 
 SpotLightRenderer::SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer)
     : m_Viewport(viewport), m_ModelRenderer(modelRenderer) {
-    auto vertexSrc = File::read("./shaders/cube-shadow-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/cube-shadow-fragment-shader.glsl");
-    auto geometrySrc = File::read("./shaders/cube-shadow-geometry-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/cube-shadow.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/cube-shadow.fragment.glsl");
+    auto geometrySrc = File::readGLSL("./shaders/pass/cube-shadow.geometry.glsl");
     m_CubeShadowShader = Shader(vertexSrc, fragmentSrc, geometrySrc);
 
     for (size_t i = 0; i < 4; i++) {
@@ -26,6 +26,13 @@ SpotLightRenderer::~SpotLightRenderer() {
     m_DepthCubeMapFramebuffer.free();
     for (size_t i = 0; i < 4; i++) {
         m_SadowCubeMaps[i].free();
+    }
+}
+
+void SpotLightRenderer::prepareContext(RenderContext& context) {
+    for (size_t i = 0; i < 4; i++) {
+        std::string ref = "u_spotLights[" + std::to_string(i) + "].shadowMap";
+        context.baseMaterial.setTexture(ref, &m_SadowCubeMaps[i].texture());
     }
 }
 

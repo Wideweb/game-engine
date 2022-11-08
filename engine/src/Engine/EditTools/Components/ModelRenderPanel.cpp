@@ -151,12 +151,16 @@ void ModelRenderPanel::showMaterialProperties(Material* material) {
             showTextureProperty(material, propertyName);
             break;
 
+        case Shader::Property::Type::INT1:
+            showIntProperty(material, propertyName);
+            break;
+
         case Shader::Property::Type::FLOAT1:
             showFloatProperty(material, propertyName);
             break;
 
-        case Shader::Property::Type::INT1:
-            showIntProperty(material, propertyName);
+        case Shader::Property::Type::FLOAT3:
+            showFloat3Property(material, propertyName);
             break;
         
         default:
@@ -201,6 +205,18 @@ void ModelRenderPanel::showTextureProperty(Material* material, const std::string
     }
 }
 
+void ModelRenderPanel::showIntProperty(Material* material, const std::string& propertyName) {
+    int valueOld = material->getProperty(propertyName).value.int1;
+    int valueNew = valueOld;
+
+    ImGuiWidgets::PaddingLeft(m_Padding);
+    ImGui::InputInt(propertyName.c_str(), &valueNew);
+
+    if (valueNew != valueOld) {
+        material->setInt(propertyName, valueNew);
+    }
+}
+
 void ModelRenderPanel::showFloatProperty(Material* material, const std::string& propertyName) {
     float valueOld = material->getProperty(propertyName).value.float1;
     float valueNew = valueOld;
@@ -213,15 +229,15 @@ void ModelRenderPanel::showFloatProperty(Material* material, const std::string& 
     }
 }
 
-void ModelRenderPanel::showIntProperty(Material* material, const std::string& propertyName) {
-    int valueOld = material->getProperty(propertyName).value.int1;
-    int valueNew = valueOld;
+void ModelRenderPanel::showFloat3Property(Material* material, const std::string& propertyName) {
+    glm::vec3 valueOld = material->getProperty(propertyName).value.float3;
+    glm::vec3 valueNew = valueOld;
 
     ImGuiWidgets::PaddingLeft(m_Padding);
-    ImGui::InputInt(propertyName.c_str(), &valueNew);
+    ImGui::ColorEdit3(propertyName.c_str(), glm::value_ptr(valueNew));
 
     if (valueNew != valueOld) {
-        material->setInt(propertyName, valueNew);
+        material->setFloat3(propertyName, valueNew);
     }
 }
 

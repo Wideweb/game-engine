@@ -14,38 +14,22 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     : m_Viewport{width, height}, m_Framebuffer(Framebuffer::createDefault()), m_State{.framebuffer = m_Framebuffer} {
     m_OutFramebuffer = m_Framebuffer;
 
-    // auto vertexSrc = File::read("./shaders/direct-vertex-shader.glsl");
-    // auto fragmentSrc = File::read("./shaders/direct-fragment-shader.glsl");
-    // m_DefaultShader = Shader(vertexSrc, fragmentSrc);
-
-    // fragmentSrc = File::read("./shaders/direct-fragment-shader-spot-light.glsl");
-    // m_ShaderWithSpotLight = Shader(vertexSrc, fragmentSrc);
-
-    // fragmentSrc = File::read("./shaders/direct-fragment-shader-pbr.glsl");
-    // m_DefaultShaderPBR = Shader(vertexSrc, fragmentSrc);
-
-    // fragmentSrc = File::read("./shaders/direct-fragment-shader-spot-light-pbr.glsl");
-    // m_ShaderWithSpotLightPBR = Shader(vertexSrc, fragmentSrc);
-
-    auto vertexSrc = File::read("./shaders/gamma-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/gamma-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space-textured.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/gamma.fragment.glsl");
     m_GammaShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/hdr-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/hdr-fragment-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/hdr.fragment.glsl");
     m_HdrShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/blur-simple-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/blur-simple-fragment-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/blur-simple.fragment.glsl");
     m_BlurSimpleShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/exposure-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/exposure-fragment-shader.glsl");
-    m_ExposureShader = Shader(vertexSrc, fragmentSrc);
-
-    vertexSrc = File::read("./shaders/brightness-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/brightness-fragment-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/brightness.fragment.glsl");
     m_BrightnessShader = Shader(vertexSrc, fragmentSrc);
+
+    vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space.vertex.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/exposure.fragment.glsl");
+    m_ExposureShader = Shader(vertexSrc, fragmentSrc);
 
     m_TmpFramebuffer = Framebuffer::create();
     m_TmpFramebuffer.bind();
@@ -80,21 +64,20 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
 
     m_QuadRenderer = std::make_unique<QuadRenderer>();
     m_ModelRenderer = std::make_unique<ModelRenderer>();
-    m_OverlayRenderer = std::make_unique<OverlayRenderer>();
     m_SkyboxRenderer = std::make_unique<SkyboxRenderer>();
     m_ParticlesRenderer = std::make_unique<ParticlesRenderer>();
     m_GRenderer = std::make_unique<GRenderer>(*m_ModelRenderer, *m_SkyboxRenderer, *m_ParticlesRenderer);
     m_DirectedLightRenderer = std::make_unique<DirectedLightRenderer>(m_Viewport, *m_ModelRenderer);
-    m_DeferredRenderer = std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_QuadRenderer);
     m_SpotLightRenderer = std::make_unique<SpotLightRenderer>(m_Viewport, *m_ModelRenderer);
+    m_DeferredRenderer = std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_SpotLightRenderer, *m_QuadRenderer);
     m_WaterRenderer = std::make_unique<WaterRenderer>(m_Viewport, *m_GRenderer, *m_DeferredRenderer);
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
     m_Renderer2D = std::make_unique<Renderer2D>(m_Viewport);
     m_FontRenderer = std::make_unique<FontRenderer>(m_Viewport);
     m_BloomRenderer = std::make_unique<BloomRenderer>(m_Viewport, *m_QuadRenderer);
 
-    vertexSrc = File::read("./shaders/ssao-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/ssao-fragment-shader.glsl");
+    vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space-textured.vertex.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/ssao.fragment.glsl");
     m_SSAOShader = Shader(vertexSrc, fragmentSrc);
 
     m_SSAOShader.bind();
@@ -138,17 +121,17 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
 
     m_GColorAttachment = Texture::createRGBA16FBuffer(width, height);
     m_GPositionAttachment = Texture::createRGB16FBuffer(width, height);
+    m_GMotionAttachment = Texture::createRGB16FBuffer(width, height);
     m_GNormalAttachment = Texture::createRGB16FBuffer(width, height);
     m_GSpecularAttachment = Texture::createRGBA16FBuffer(width, height);
-    m_GMotionAttachment = Texture::createRGB16FBuffer(width, height);
 
     m_GFramebuffer = Framebuffer::create();
     m_GFramebuffer.bind();
     m_GFramebuffer.addAttachment(m_GColorAttachment);
     m_GFramebuffer.addAttachment(m_GPositionAttachment);
+    m_GFramebuffer.addAttachment(m_GMotionAttachment);
     m_GFramebuffer.addAttachment(m_GNormalAttachment);
     m_GFramebuffer.addAttachment(m_GSpecularAttachment);
-    m_GFramebuffer.addAttachment(m_GMotionAttachment);
     m_GFramebuffer.setDepthAttachment(
         Renderbuffer::create(width, height, Renderbuffer::InternalFormat::DEPTH_COMPONENT), true);
     m_GFramebuffer.unbind();
@@ -215,6 +198,9 @@ RenderContext MasterRenderer::createContext() {
         context.exposureFramebuffer[i].unbind();
     }
 
+    m_DirectedLightRenderer->prepareContext(context);
+    m_SpotLightRenderer->prepareContext(context);
+
     return context;
 }
 
@@ -275,11 +261,10 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
     context.baseMaterial.setFloat("u_density", settings.fogDensity);
     context.baseMaterial.setFloat("u_gradient", settings.fogGradient);
 
-    context.baseMaterial.setInt("u_hasDirectedLight", 0);
+    context.baseMaterial.setInt("u_directedLightsNumber", 0);
     context.baseMaterial.setInt("u_spotLightsNumber", 0);
 
     if (scene.hasDirectedLight()) {
-        context.baseMaterial.setInt("u_hasDirectedLight", 1);
         m_DirectedLightRenderer->apply(camera, scene, models, m_State);
     }
 
@@ -346,8 +331,6 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
         m_QuadRenderer->draw();
     }
-
-    m_OverlayRenderer->draw(camera, scene, models);
 
     if (settings.gamma) {
         m_Framebuffer.bind();

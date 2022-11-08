@@ -15,7 +15,7 @@ class Materials {
     std::unordered_map<std::string, std::shared_ptr<Material>> m_Map;
 
   public:
-    std::shared_ptr<Material> defaultMaterial, phongMaterial, pbrMaterial, meshMaterial, cubeEdgesMaterial, gridMaterial, terrainBrushMaterial;
+    std::shared_ptr<Material> defaultMaterial, meshMaterial, cubeEdgesMaterial, gridMaterial, terrainBrushMaterial, sceneToolMaterial;
 
     void init(const Shaders& shaders);
     void add(const std::string &name, Shader* shader);

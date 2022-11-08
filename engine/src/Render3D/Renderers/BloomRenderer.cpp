@@ -7,16 +7,14 @@
 namespace Engine {
 
 BloomRenderer::BloomRenderer(Viewport &viewport, QuadRenderer &quadRenderer) : m_Viewport(viewport), m_QuadRenderer(quadRenderer) {
-    auto vertexSrc = File::read("./shaders/blur-gaussian-vertex-shader.glsl");
-    auto fragmentSrc = File::read("./shaders/blur-gaussian-fragment-shader.glsl");
+    auto vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space-textured.vertex.glsl");
+    auto fragmentSrc = File::readGLSL("./shaders/pass/blur-gaussian.fragment.glsl");
     m_BlurShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/blit-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/blit-fragment-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/common/textured.fragment.glsl");
     m_BlitShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::read("./shaders/bloom-vertex-shader.glsl");
-    fragmentSrc = File::read("./shaders/bloom-fragment-shader.glsl");
+    fragmentSrc = File::readGLSL("./shaders/pass/bloom.fragment.glsl");
     m_BloomShader = Shader(vertexSrc, fragmentSrc);
 
     int width = m_Viewport.width;

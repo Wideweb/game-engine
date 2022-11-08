@@ -30,7 +30,7 @@ void TransformControlsPosition::onAttach() {
     auto locationX = LocationComponent();
     locationX.rotation = glm::vec3(0.0f, 1.57f, 0.0f);
     coordinator.AddComponent(controlX, locationX);
-    coordinator.AddComponent(controlX, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-x", materials.defaultMaterial.get(), 0.1f));
+    coordinator.AddComponent(controlX, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-x", materials.sceneToolMaterial.get(), 0.1f));
     coordinator.AddComponent(controlX, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlX, TagComponent("arrow"));
     m_ControlX = controlX;
@@ -39,7 +39,7 @@ void TransformControlsPosition::onAttach() {
     auto locationY = LocationComponent();
     locationY.rotation = glm::vec3(-1.57f, 0.0f, 0.0f);
     coordinator.AddComponent(controlY, locationY);
-    coordinator.AddComponent(controlY, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-y", materials.defaultMaterial.get(), 0.1f));
+    coordinator.AddComponent(controlY, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-y", materials.sceneToolMaterial.get(), 0.1f));
     coordinator.AddComponent(controlY, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlY, TagComponent("arrow"));
     m_ControlY = controlY;
@@ -48,7 +48,7 @@ void TransformControlsPosition::onAttach() {
     auto locationZ = LocationComponent();
     locationZ.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     coordinator.AddComponent(controlZ, locationZ);
-    coordinator.AddComponent(controlZ, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-z", materials.defaultMaterial.get(), 0.1f));
+    coordinator.AddComponent(controlZ, Render3DComponent(Configs::c_EditToolsModelPrefix + "arrow-z", materials.sceneToolMaterial.get(), 0.1f));
     coordinator.AddComponent(controlZ, StaticCollisionComponent(0.5, 0.5, 0.5));
     coordinator.AddComponent(controlZ, TagComponent("arrow"));
     m_ControlZ = controlZ;

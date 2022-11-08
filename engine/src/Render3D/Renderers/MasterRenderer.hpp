@@ -10,6 +10,7 @@
 #include "Texture.hpp"
 #include "Viewport.hpp"
 #include "Material.hpp"
+#include "RenderContext.hpp"
 
 #include "DeferredRenderer.hpp"
 #include "DirectedLightRenderer.hpp"
@@ -17,7 +18,6 @@
 #include "FontRenderer.hpp"
 #include "GRenderer.hpp"
 #include "ModelRenderer.hpp"
-#include "OverlayRenderer.hpp"
 #include "ParticlesRenderer.hpp"
 #include "QuadRenderer.hpp"
 #include "RenderSettings.hpp"
@@ -34,39 +34,6 @@
 
 namespace Engine {
 
-struct RenderContext {
-  Material baseMaterial;
-  Texture brightnessColorBuffer, exposureColorBuffer[2];
-  Framebuffer brightnessFramebuffer, exposureFramebuffer[2];
-  int currentExposure = 0;
-
-  ~RenderContext() {
-    if (!brightnessColorBuffer.empty()) {
-      brightnessColorBuffer.free();
-    }
-
-    if (!exposureColorBuffer[0].empty()) {
-      exposureColorBuffer[0].free();
-    }
-
-    if (!exposureColorBuffer[1].empty()) {
-      exposureColorBuffer[1].free();
-    }
-
-    if (!brightnessFramebuffer.empty()) {
-      brightnessFramebuffer.free();
-    }
-
-    if (!exposureFramebuffer[0].empty()) {
-      exposureFramebuffer[0].free();
-    }
-
-    if (!exposureFramebuffer[1].empty()) {
-      exposureFramebuffer[1].free();
-    }
-  }
-};
-
 class MasterRenderer {
   private:
     unsigned int m_BloomScale = 4;
@@ -75,7 +42,6 @@ class MasterRenderer {
 
     std::unique_ptr<QuadRenderer> m_QuadRenderer;
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
-    std::unique_ptr<OverlayRenderer> m_OverlayRenderer;
     std::unique_ptr<SkyboxRenderer> m_SkyboxRenderer;
     std::unique_ptr<DirectedLightRenderer> m_DirectedLightRenderer;
     std::unique_ptr<SpotLightRenderer> m_SpotLightRenderer;

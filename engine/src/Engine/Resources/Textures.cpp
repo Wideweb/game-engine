@@ -5,9 +5,7 @@
 
 namespace Engine {
 
-void Textures::init() {
-
-}
+void Textures::init() { }
 
 void Textures::load(const std::string &name, const std::string &path) {
     if (m_Map.find(name) != m_Map.end()) {

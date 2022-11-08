@@ -29,13 +29,12 @@ void CameraDirector::onAttach() {
     m_CameraIcon = TextureLoader::loadTexture("assets/textures/icons/camera.png");
 
     auto &toolsCoordinator = toolsLayer().getCoordinator();
-    auto &gameCoordinator = gameLayer().getCoordinator();
     auto& materials = Application::get().getMaterials();
 
     auto camera = toolsCoordinator.CreateEntity("Camera");
     toolsCoordinator.AddComponent(camera, LocationComponent(glm::vec3(0.0f, 3.0f, 5.0f), glm::vec3(-0.5f, 0.0f, 0.0f)));
     toolsCoordinator.AddComponent(camera, TagComponent("Camera"));
-    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", materials.defaultMaterial.get(), 0.1f);
+    auto render = Render3DComponent(Configs::c_EditToolsModelPrefix + "Camera", materials.sceneToolMaterial.get(), 0.1f);
     render.rotation.y = 3.14f;
     toolsCoordinator.AddComponent(camera, render);
     m_Camera = camera;
