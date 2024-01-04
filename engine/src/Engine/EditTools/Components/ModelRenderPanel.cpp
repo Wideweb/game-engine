@@ -3,12 +3,12 @@
 #include "Configs.hpp"
 #include "File.hpp"
 #include "ImGuiWidgets.hpp"
+#include "Material.hpp"
 #include "ModelLoader.hpp"
 #include "Render3DComponent.hpp"
 #include "SkinnedModel.hpp"
 #include "Texture.hpp"
 #include "TextureLoader.hpp"
-#include "Material.hpp"
 
 #include "imgui/imgui.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -135,18 +135,59 @@ void ModelRenderPanel::onDraw() {
     // ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
 
-void ModelRenderPanel::showMaterialProperties(Material* material) {
+GLPropertyMetaData *ModelRenderPanel::getPropertyMetaData(std::string property, Shader *shader) {
+    auto &uniforms = shader->getFragmentMetaData().uniforms;
+    auto &structs = shader->getFragmentMetaData().structs;
+
+    if (property.find('.') == std::string::npos) {
+        if (!uniforms.hasKey(property)) {
+            return nullptr;
+        }
+
+        return uniforms.getValue(property).get();
+    }
+
+    size_t dotPos = property.find('.');
+    std::string structUniformName = property.substr(0, dotPos);
+    property.erase(0, dotPos + 1);
+
+    if (!uniforms.hasKey(structUniformName)) {
+        return nullptr;
+    }
+
+    const auto &structUniform = uniforms.getValue(structUniformName);
+
+    if (!structs.hasKey(structUniform->type)) {
+        return nullptr;
+    }
+
+    const GlStructMetaData &structMetaData = structs.getValue(structUniform->type);
+
+    if (!structMetaData.fields.hasKey(property)) {
+        return nullptr;
+    }
+
+    return structMetaData.fields.getValue(property).get();
+}
+
+void ModelRenderPanel::showMaterialProperties(Material *material) {
     ImGuiWidgets::PaddingLeft(m_Padding);
     ImGui::Text("Material");
 
     size_t propertiesNumber = material->keys().size();
 
-    for (size_t i = 0; i < propertiesNumber; i++) {
-        auto& propertyName = material->keys()[i];
-        auto& property = material->properties()[i];
+    Shader *shader = material->getShader();
 
-        switch (property.type)
-        {
+    for (size_t i = 0; i < propertiesNumber; i++) {
+        auto &propertyName = material->keys()[i];
+        auto &property = material->properties()[i];
+        GLPropertyMetaData *propertyMetaData = getPropertyMetaData(propertyName, shader);
+
+        if (propertyMetaData == nullptr || !propertyMetaData->hasAttribute<GLEditableAttribute>()) {
+            continue;
+        }
+
+        switch (property.type) {
         case Shader::Property::Type::TEXTURE:
             showTextureProperty(material, propertyName);
             break;
@@ -162,14 +203,14 @@ void ModelRenderPanel::showMaterialProperties(Material* material) {
         case Shader::Property::Type::FLOAT3:
             showFloat3Property(material, propertyName);
             break;
-        
+
         default:
             break;
         }
     }
 }
 
-void ModelRenderPanel::showTextureProperty(Material* material, const std::string& propertyName) {
+void ModelRenderPanel::showTextureProperty(Material *material, const std::string &propertyName) {
     uint32_t textureId = TextureLoader::placeholder().id;
     bool empty = material->getProperty(propertyName).value.texture == nullptr;
 
@@ -205,7 +246,7 @@ void ModelRenderPanel::showTextureProperty(Material* material, const std::string
     }
 }
 
-void ModelRenderPanel::showIntProperty(Material* material, const std::string& propertyName) {
+void ModelRenderPanel::showIntProperty(Material *material, const std::string &propertyName) {
     int valueOld = material->getProperty(propertyName).value.int1;
     int valueNew = valueOld;
 
@@ -217,7 +258,7 @@ void ModelRenderPanel::showIntProperty(Material* material, const std::string& pr
     }
 }
 
-void ModelRenderPanel::showFloatProperty(Material* material, const std::string& propertyName) {
+void ModelRenderPanel::showFloatProperty(Material *material, const std::string &propertyName) {
     float valueOld = material->getProperty(propertyName).value.float1;
     float valueNew = valueOld;
 
@@ -229,7 +270,7 @@ void ModelRenderPanel::showFloatProperty(Material* material, const std::string& 
     }
 }
 
-void ModelRenderPanel::showFloat3Property(Material* material, const std::string& propertyName) {
+void ModelRenderPanel::showFloat3Property(Material *material, const std::string &propertyName) {
     glm::vec3 valueOld = material->getProperty(propertyName).value.float3;
     glm::vec3 valueNew = valueOld;
 

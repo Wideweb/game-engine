@@ -1,6 +1,7 @@
 #include "ParticlesRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 
 #include "glad/glad.h"
 
@@ -12,8 +13,8 @@
 namespace Engine {
 
 ParticlesRenderer::ParticlesRenderer() {
-    auto vertexSrc = File::readGLSL("./shaders/pass/particles.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/particles.fragment.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/particles.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/particles.fragment.glsl").sourceCode;
 
     std::vector<std::string> transformFeedbackVaryings = {"v_startPosition", "v_startVelocity", "v_position",
                                                           "v_velocity", "v_startTime"};

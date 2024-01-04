@@ -42,7 +42,8 @@ std::string File::readGLSL(const std::string& path, const std::string& srcDir) {
 
     while (std::regex_search(sourceCode, matches, includePattern)) {
         if (matches.size() < 2) {
-            std::cerr << "Invalid #include: " << matches[0].str() << "\n";
+            std::cerr << "Invalid shader #include: " << matches[0].str() << "\n";
+            return "";
         }
 
         std::string includePath = srcDir + matches[1].str();

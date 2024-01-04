@@ -10,11 +10,18 @@ namespace Engine {
 template <typename TKey, typename TValue, class Hash = std::hash<TKey>>
 class FlatDictionary {
   public:
-    void add(TKey key, TValue obj) {
+    void add(TKey key, const TValue& obj) {
         uint32_t index = m_Values.size();
         m_KeyToIndex.insert({key, index});
         m_Keys.push_back(key);
         m_Values.push_back(obj);
+    }
+
+    void add(TKey key, TValue&& obj) {
+        uint32_t index = m_Values.size();
+        m_KeyToIndex.insert({key, index});
+        m_Keys.push_back(key);
+        m_Values.push_back(std::move(obj));
     }
 
     template <typename... Args> void emplace(TKey key, Args &&...args) {

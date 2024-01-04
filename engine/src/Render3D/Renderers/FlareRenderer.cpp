@@ -1,6 +1,7 @@
 #include "FlareRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 #include "TextureLoader.hpp"
 
 #include "glad/glad.h"
@@ -11,8 +12,8 @@ namespace Engine {
 
 FlareRenderer::FlareRenderer(Viewport &viewport, QuadRenderer &quadRenderer)
     : m_Viewport(viewport), m_QuadRenderer(quadRenderer) {
-    auto vertexSrc = File::readGLSL("./shaders/screen-vertex-shader.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/screen-fragment-shader.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/screen-vertex-shader.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/screen-fragment-shader.glsl").sourceCode;
     auto m_LensShader = Shader(vertexSrc, fragmentSrc);
 
     m_LensFlares[0] = TextureLoader::loadTexture("./assets/textures/lensFlare/tex6.png");

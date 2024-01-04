@@ -1,6 +1,7 @@
 #include "SpotLightRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>
@@ -9,9 +10,9 @@ namespace Engine {
 
 SpotLightRenderer::SpotLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer)
     : m_Viewport(viewport), m_ModelRenderer(modelRenderer) {
-    auto vertexSrc = File::readGLSL("./shaders/pass/cube-shadow.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/cube-shadow.fragment.glsl");
-    auto geometrySrc = File::readGLSL("./shaders/pass/cube-shadow.geometry.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/cube-shadow.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/cube-shadow.fragment.glsl").sourceCode;
+    auto geometrySrc = GLSLPreprocessor::preprocess("./shaders/pass/cube-shadow.geometry.glsl").sourceCode;
     m_CubeShadowShader = Shader(vertexSrc, fragmentSrc, geometrySrc);
 
     for (size_t i = 0; i < 4; i++) {
@@ -29,7 +30,7 @@ SpotLightRenderer::~SpotLightRenderer() {
     }
 }
 
-void SpotLightRenderer::prepareContext(RenderContext& context) {
+void SpotLightRenderer::prepareContext(RenderContext &context) {
     for (size_t i = 0; i < 4; i++) {
         std::string ref = "u_spotLights[" + std::to_string(i) + "].shadowMap";
         context.baseMaterial.setTexture(ref, &m_SadowCubeMaps[i].texture());

@@ -1,12 +1,13 @@
 #pragma once
 
+#include "FlatDictionary.hpp"
+#include "GLMetaData.hpp"
 #include "GfxObject.hpp"
 #include "Texture.hpp"
-#include "FlatDictionary.hpp"
 
+#include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
 
 #include <string>
 #include <unordered_map>
@@ -21,42 +22,32 @@ constexpr ShaderId c_NoShader = 0;
 class Shader : public GfxObject {
   public:
     struct Property {
-      enum class Type {
-        UNKNOWN,
-        INT1,
-        FLOAT1,
-        FLOAT2,
-        FLOAT3,
-        FLOAT4,
-        MATRIX4,
-        TEXTURE,
-        CUBE_MAP_TEXTURE
-      };
+        enum class Type { UNKNOWN, INT1, FLOAT1, FLOAT2, FLOAT3, FLOAT4, MATRIX4, TEXTURE, CUBE_MAP_TEXTURE };
 
-      union Value {
-        int32_t int1;
-        float float1;
-        glm::vec2 float2;
-        glm::vec3 float3;
-        glm::vec4 float4;
-        glm::mat4 matrix4;
-        const Texture* texture;
-      };
+        union Value {
+            int32_t int1;
+            float float1;
+            glm::vec2 float2;
+            glm::vec3 float3;
+            glm::vec4 float4;
+            glm::mat4 matrix4;
+            const Texture *texture;
+        };
 
-      Type type;
-      Value value;
-      bool empty;
+        Type type;
+        Value value;
+        bool empty;
 
-      Property(): type(Type::UNKNOWN), empty(true) {}
-      Property(Type type): type(type), empty(true) {
-        value.texture = nullptr;
-      }
-   };
+        Property() : type(Type::UNKNOWN), empty(true) {}
+        Property(Type type) : type(type), empty(true) { value.texture = nullptr; }
+    };
 
   private:
     std::unordered_map<std::string, int> m_UniformLocationMap;
     std::unordered_map<std::string, int> m_TextureIndex;
     FlatDictionary<std::string, Shader::Property::Type> m_Uniforms;
+    GlMetaData m_VertexMetaData;
+    GlMetaData m_FragmentMetaData;
 
   public:
     Shader();
@@ -90,8 +81,14 @@ class Shader : public GfxObject {
     void setTexture(const std::string &name, const Texture &texture);
     void setTexture(const std::string &name, const Texture *texture);
 
-    const std::vector<std::string>& uniformKeys() const { return m_Uniforms.keys(); };
-    const std::vector<Shader::Property::Type>& uniformTypes() const { return m_Uniforms.values(); };
+    const std::vector<std::string> &uniformKeys() const { return m_Uniforms.keys(); };
+    const std::vector<Shader::Property::Type> &uniformTypes() const { return m_Uniforms.values(); };
+
+    void setVertexMetaData(GlMetaData metaData) { m_VertexMetaData = std::move(metaData); };
+    const GlMetaData &getVertexMetaData() const { return m_VertexMetaData; };
+
+    void setFragmentMetaData(GlMetaData metaData) { m_FragmentMetaData = std::move(metaData); };
+    const GlMetaData &getFragmentMetaData() const { return m_FragmentMetaData; };
 
   private:
     void compile(const std::string &vertexSrc, const std::string &fragmentSrc,

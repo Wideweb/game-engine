@@ -127,6 +127,7 @@ set(SOURCE_EXE
     src/Render3D/GfxObjects/Renderbuffer.cpp
     src/Render3D/GfxObjects/Framebuffer.cpp
     src/Render3D/GfxObjects/Shader.cpp
+    src/Render3D/GL/GLSLPreprocessor.cpp
     src/Render3D/ModelLoader.cpp
     src/Render3D/ModelFactory.cpp
     src/Render3D/Viewport.cpp
@@ -170,6 +171,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Models
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Mappers
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Renderers
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/GL
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Render3D/Utils
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound
                                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Sound/SDL

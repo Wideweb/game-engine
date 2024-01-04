@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseView.hpp"
+#include "GLMetaData.hpp"
 #include "GameObjectModel.hpp"
 #include "Material.hpp"
 #include "Shader.hpp"
@@ -18,11 +19,12 @@ class ModelRenderPanel : public BaseView {
     void onDraw() override;
 
   private:
-    void showMaterialProperties(Material* material);
-    void showTextureProperty(Material* material, const std::string& propertyName);
-    void showIntProperty(Material* material, const std::string& propertyName);
-    void showFloatProperty(Material* material, const std::string& propertyName);
-    void showFloat3Property(Material* material, const std::string& propertyName);
+    void showMaterialProperties(Material *material);
+    void showTextureProperty(Material *material, const std::string &propertyName);
+    void showIntProperty(Material *material, const std::string &propertyName);
+    void showFloatProperty(Material *material, const std::string &propertyName);
+    void showFloat3Property(Material *material, const std::string &propertyName);
+    GLPropertyMetaData *getPropertyMetaData(std::string property, Shader *shader);
 };
 
 } // namespace Engine

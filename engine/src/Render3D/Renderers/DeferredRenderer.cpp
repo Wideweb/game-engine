@@ -1,6 +1,7 @@
 #include "DeferredRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 
 #include "glad/glad.h"
 
@@ -8,10 +9,13 @@
 
 namespace Engine {
 
-DeferredRenderer::DeferredRenderer(DirectedLightRenderer &directedLightRenderer, SpotLightRenderer &spotLightRenderer, QuadRenderer &quadRenderer)
-    : m_DirectedLightRenderer(directedLightRenderer), m_SpotLightRenderer(spotLightRenderer), m_QuadRenderer(quadRenderer) {
-    auto vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space-textured.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/deferred.fragment.glsl");
+DeferredRenderer::DeferredRenderer(DirectedLightRenderer &directedLightRenderer, SpotLightRenderer &spotLightRenderer,
+                                   QuadRenderer &quadRenderer)
+    : m_DirectedLightRenderer(directedLightRenderer), m_SpotLightRenderer(spotLightRenderer),
+      m_QuadRenderer(quadRenderer) {
+    auto vertexSrc =
+        GLSLPreprocessor::preprocess("./shaders/pass/common/clipping-space-textured.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/deferred.fragment.glsl").sourceCode;
     m_Shader = Shader(vertexSrc, fragmentSrc);
     m_Material.setShader(&m_Shader);
 }
@@ -36,7 +40,7 @@ void DeferredRenderer::draw(Texture &colorMap, Texture &positionMap, Texture &no
 void DeferredRenderer::doDraw(Texture &colorMap, Texture &positionMap, Texture &normalMap, Texture &specularMap,
                               Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings,
                               RendererState &state) {
-    Material* baseMaterial = state.baseMaterial;
+    Material *baseMaterial = state.baseMaterial;
     state.baseMaterial = &m_Material;
 
     m_Material.setFloat3("u_viewPos", camera.positionVec());

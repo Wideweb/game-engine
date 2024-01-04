@@ -12,15 +12,15 @@ struct Material {
 
     int normalUseTexture;
     sampler2D normalMap;
-    
+
     float metallic;
     int metallicUseTexture;
     sampler2D metallicMap;
-    
+
     float roughness;
     int roughnessUseTexture;
     sampler2D roughnessMap;
-    
+
     float mbientOcclusion;
     int ambientUseTexture;
     sampler2D ambientOcclusionMap;
@@ -39,7 +39,7 @@ FragmentMaterial getFragmentMaterial(vec2 texCoord, vec3 normal);
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
-uniform Material u_material;
+@Editable("Material") uniform Material u_material;
 
 /////////////////////////////////////////////////////////////
 ////////////////////////// MAIN /////////////////////////////

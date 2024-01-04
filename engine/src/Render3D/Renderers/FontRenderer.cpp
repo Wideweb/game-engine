@@ -2,6 +2,7 @@
 
 #include "File.hpp"
 #include "Font.hpp"
+#include "GLSLPreprocessor.hpp"
 
 #include "glad/glad.h"
 #include <glm/gtx/transform.hpp>
@@ -12,8 +13,8 @@
 namespace Engine {
 
 FontRenderer::FontRenderer(Viewport &viewport) : m_Viewport(viewport) {
-    auto vertexSrc = File::readGLSL("./shaders/pass/font.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/font.fragment.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/font.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/font.fragment.glsl").sourceCode;
     m_Shader = Shader(vertexSrc, fragmentSrc);
 
     glGenVertexArrays(1, &m_VAO);

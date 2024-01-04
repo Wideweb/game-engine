@@ -75,9 +75,9 @@ void Camera::setRotation(glm::quat rotation) {
 }
 
 void Camera::move(const glm::vec3 &offset) {
-    position += front * offset.x;
+    position += front * offset.z;
     position += up * offset.y;
-    position += glm::normalize(glm::cross(front, up)) * offset.z;
+    position += glm::normalize(glm::cross(front, up)) * offset.x;
 }
 
 void Camera::inversePitch() {

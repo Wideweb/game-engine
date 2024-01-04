@@ -6,17 +6,40 @@
 /////////////////////// DECLARATION /////////////////////////
 /////////////////////////////////////////////////////////////
 struct Material {
+    @Color
+    @Editable("Diffuse Color")
     vec3 diffuseColor;
+    
+    @Bool
+    @Editable("Use Diffuse Map")
     int diffuseUseTexture;
+    
+    @Texture
+    @Editable("Diffuse Map")
     sampler2D diffuseMap;
     
+    @Color
+    @Editable("Diffuse Color")
     vec3 specularColor;
+
+    @Bool
+    @Editable("Use Specular Map")
     int specularUseTexture;
+    
+    @Texture
+    @Editable("Specular Map")
     sampler2D specularMap;
 
+    @Bool
+    @Editable("Use Normal Map")
     int normalUseTexture;
+    
+    @Texture
+    @Editable("Normal Map")
     sampler2D normalMap;
     
+    @Range(0, 128)
+    @Editable("Shininess")
     float shininess;
 };
 
@@ -32,6 +55,7 @@ FragmentMaterial getFragmentMaterial(vec2 texCoord, vec3 normal);
 /////////////////////////////////////////////////////////////
 //////////////////////// UNIFORMS ///////////////////////////
 /////////////////////////////////////////////////////////////
+@Editable("Material")
 uniform Material u_material;
 
 /////////////////////////////////////////////////////////////

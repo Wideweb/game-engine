@@ -1,6 +1,7 @@
 #include "SkyboxRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>
@@ -9,8 +10,8 @@
 namespace Engine {
 
 SkyboxRenderer::SkyboxRenderer() {
-    auto vertexSrc = File::readGLSL("./shaders/pass/skybox.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/skybox.fragment.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/skybox.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/skybox.fragment.glsl").sourceCode;
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 

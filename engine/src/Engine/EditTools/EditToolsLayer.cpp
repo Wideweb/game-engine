@@ -83,22 +83,22 @@ void EditToolsLayer::onUpdate() {
         auto &input = Application::get().getInput();
         auto &camera = Application::get().getCamera();
         if (input.IsKeyPressed(KeyCode::W)) {
-            glm::vec3 delta = glm::vec3(0.5, 0.0f, 0.0f);
+            glm::vec3 delta = glm::vec3(0.0, 0.0f, 0.5f);
             Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::S)) {
-            glm::vec3 delta = glm::vec3(-0.5, 0.0f, 0.0f);
+            glm::vec3 delta = glm::vec3(0.0, 0.0f, -0.5f);
             Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::A)) {
-            glm::vec3 delta = glm::vec3(0.0f, 0.0f, -0.5);
+            glm::vec3 delta = glm::vec3(-0.5f, 0.0f, 0.0);
             Application::get().getCameraController().move(delta, 0.1);
         }
 
         if (input.IsKeyPressed(KeyCode::D)) {
-            glm::vec3 delta = glm::vec3(0.0f, 0.0f, 0.5);
+            glm::vec3 delta = glm::vec3(0.5f, 0.0f, 0.0);
             Application::get().getCameraController().move(delta, 0.1);
         }
 

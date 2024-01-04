@@ -1,6 +1,7 @@
 #include "MasterRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 #include "TextureLoader.hpp"
 
 #include "glad/glad.h"
@@ -14,21 +15,22 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     : m_Viewport{width, height}, m_Framebuffer(Framebuffer::createDefault()), m_State{.framebuffer = m_Framebuffer} {
     m_OutFramebuffer = m_Framebuffer;
 
-    auto vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space-textured.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/gamma.fragment.glsl");
+    auto vertexSrc =
+        GLSLPreprocessor::preprocess("./shaders/pass/common/clipping-space-textured.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/gamma.fragment.glsl").sourceCode;
     m_GammaShader = Shader(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::readGLSL("./shaders/pass/hdr.fragment.glsl");
+    fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/hdr.fragment.glsl").sourceCode;
     m_HdrShader = Shader(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::readGLSL("./shaders/pass/blur-simple.fragment.glsl");
+    fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/blur-simple.fragment.glsl").sourceCode;
     m_BlurSimpleShader = Shader(vertexSrc, fragmentSrc);
 
-    fragmentSrc = File::readGLSL("./shaders/pass/brightness.fragment.glsl");
+    fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/brightness.fragment.glsl").sourceCode;
     m_BrightnessShader = Shader(vertexSrc, fragmentSrc);
 
-    vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space.vertex.glsl");
-    fragmentSrc = File::readGLSL("./shaders/pass/exposure.fragment.glsl");
+    vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/common/clipping-space.vertex.glsl").sourceCode;
+    fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/exposure.fragment.glsl").sourceCode;
     m_ExposureShader = Shader(vertexSrc, fragmentSrc);
 
     m_TmpFramebuffer = Framebuffer::create();
@@ -69,15 +71,16 @@ MasterRenderer::MasterRenderer(unsigned int width, unsigned int height)
     m_GRenderer = std::make_unique<GRenderer>(*m_ModelRenderer, *m_SkyboxRenderer, *m_ParticlesRenderer);
     m_DirectedLightRenderer = std::make_unique<DirectedLightRenderer>(m_Viewport, *m_ModelRenderer);
     m_SpotLightRenderer = std::make_unique<SpotLightRenderer>(m_Viewport, *m_ModelRenderer);
-    m_DeferredRenderer = std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_SpotLightRenderer, *m_QuadRenderer);
+    m_DeferredRenderer =
+        std::make_unique<DeferredRenderer>(*m_DirectedLightRenderer, *m_SpotLightRenderer, *m_QuadRenderer);
     m_WaterRenderer = std::make_unique<WaterRenderer>(m_Viewport, *m_GRenderer, *m_DeferredRenderer);
     m_FlareRenderer = std::make_unique<FlareRenderer>(m_Viewport, *m_QuadRenderer);
     m_Renderer2D = std::make_unique<Renderer2D>(m_Viewport);
     m_FontRenderer = std::make_unique<FontRenderer>(m_Viewport);
     m_BloomRenderer = std::make_unique<BloomRenderer>(m_Viewport, *m_QuadRenderer);
 
-    vertexSrc = File::readGLSL("./shaders/pass/common/clipping-space-textured.vertex.glsl");
-    fragmentSrc = File::readGLSL("./shaders/pass/ssao.fragment.glsl");
+    vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/common/clipping-space-textured.vertex.glsl").sourceCode;
+    fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/ssao.fragment.glsl").sourceCode;
     m_SSAOShader = Shader(vertexSrc, fragmentSrc);
 
     m_SSAOShader.bind();
@@ -204,7 +207,8 @@ RenderContext MasterRenderer::createContext() {
     return context;
 }
 
-void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings, RenderContext& context) {
+void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings settings,
+                          RenderContext &context) {
     m_State.baseMaterial = &context.baseMaterial;
     if (settings.gamma) {
         m_State.framebuffer = m_TmpFramebuffer;
@@ -299,9 +303,9 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
         m_QuadRenderer->draw();
 
         context.brightnessColorBuffer.bind();
-	    glGenerateMipmap(GL_TEXTURE_2D);
+        glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         context.brightnessColorBuffer.unbind();
 
         m_ExposureShader.bind();
@@ -315,7 +319,8 @@ void MasterRenderer::draw(Camera &camera, Scene &scene, const ModelManager &mode
 
         m_Viewport.resize(lastViewportWidth, lastViewportHeight);
 
-        m_BloomRenderer->draw(settings, m_ColorBuffer[1], context.exposureColorBuffer[context.currentExposure], m_BloomFramebuffer);
+        m_BloomRenderer->draw(settings, m_ColorBuffer[1], context.exposureColorBuffer[context.currentExposure],
+                              m_BloomFramebuffer);
 
         m_State.framebuffer = settings.gamma ? m_TmpFramebuffer : m_Framebuffer;
         m_State.framebuffer.bind();
@@ -442,7 +447,7 @@ void MasterRenderer::clear() {
 
     // m_ExposureFramebuffer[1].bind();
     // m_ExposureFramebuffer[1].clear();
-    
+
     m_BloomFramebuffer.bind();
     m_BloomFramebuffer.clear();
 

@@ -1,6 +1,7 @@
 #include "DirectedLightRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 #include "TextureLoader.hpp"
 
 #include "glad/glad.h"
@@ -13,8 +14,8 @@ namespace Engine {
 
 DirectedLightRenderer::DirectedLightRenderer(Viewport &viewport, ModelRenderer &modelRenderer)
     : m_Viewport(viewport), m_ModelRenderer(modelRenderer) {
-    auto vertexSrc = File::readGLSL("./shaders/pass/depth.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/depth.fragment.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/depth.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/depth.fragment.glsl").sourceCode;
     m_DepthShader = Shader(vertexSrc, fragmentSrc);
 
     m_DepthMap = Texture::createDepthBuffer(viewport.width * 2.0f, viewport.height * 2.0f);
@@ -31,7 +32,7 @@ DirectedLightRenderer::~DirectedLightRenderer() {
     m_DepthMap.free();
 }
 
-void DirectedLightRenderer::prepareContext(RenderContext& context) {
+void DirectedLightRenderer::prepareContext(RenderContext &context) {
     for (size_t i = 0; i < 4; i++) {
         std::string ref = "u_directedLights[" + std::to_string(i) + "].shadowMap";
         context.baseMaterial.setTexture(ref, &m_DepthMap);
@@ -81,7 +82,7 @@ void DirectedLightRenderer::apply(Camera &camera, Scene &scene, const ModelManag
     state.baseMaterial->setFloat3("u_directedLights[0].specular", light.specular * light.intensity);
     state.baseMaterial->setMatrix4("u_directedLights[0].spaceMatrix", lightProjection * lightView);
     state.baseMaterial->setTexture("u_directedLights[0].shadowMap", &m_DepthMap);
-    
+
     state.baseMaterial->setInt("u_directedLightsNumber", 1);
 }
 

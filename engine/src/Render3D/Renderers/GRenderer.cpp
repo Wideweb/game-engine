@@ -1,6 +1,7 @@
 #include "GRenderer.hpp"
 
 #include "File.hpp"
+#include "GLSLPreprocessor.hpp"
 #include "TextureLoader.hpp"
 
 #include "glad/glad.h"
@@ -11,15 +12,15 @@ namespace Engine {
 
 GRenderer::GRenderer(ModelRenderer &modelRenderer, SkyboxRenderer &skyboxRenderer, ParticlesRenderer &particlesRenderer)
     : m_ModelRenderer(modelRenderer), m_SkyboxRenderer(skyboxRenderer), m_ParticlesRenderer(particlesRenderer) {
-    auto vertexSrc = File::readGLSL("./shaders/pass/g-buffer.vertex.glsl");
-    auto fragmentSrc = File::readGLSL("./shaders/pass/g-buffer.fragment.glsl");
+    auto vertexSrc = GLSLPreprocessor::preprocess("./shaders/pass/g-buffer.vertex.glsl").sourceCode;
+    auto fragmentSrc = GLSLPreprocessor::preprocess("./shaders/pass/g-buffer.fragment.glsl").sourceCode;
     m_Shader = Shader(vertexSrc, fragmentSrc);
 }
 
 GRenderer::~GRenderer() { m_Shader.free(); }
 
 void GRenderer::draw(Camera &camera, Scene &scene, const ModelManager &models, RenderSettings &settings) {
-	glm::mat4 currViewProjectionMatrix = camera.projectionMatrix() * camera.viewMatrix();
+    glm::mat4 currViewProjectionMatrix = camera.projectionMatrix() * camera.viewMatrix();
 
     m_Shader.bind();
     m_Shader.setMatrix4("u_view", camera.viewMatrix());
